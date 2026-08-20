@@ -1,0 +1,31 @@
+/**
+ * Estilos de la demo (reset mínimo + shell). La librería no impone estilos
+ * globales: esto es del consumidor (la página real trae su propio CSS).
+ *
+ * Las utilidades de las pantallas (catálogo, pasarelas, recarga) las genera
+ * la propia demo con UnoCSS (scripts/uno.js) — no son de la librería.
+ */
+*::before, *::after {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: #f5f7fa;
+  -webkit-font-smoothing: antialiased;
+}
+/* Título del shell (App), no un h1 global: las pantallas tienen sus propios títulos. */
+.demo-title {
+  margin: 20px auto 0;
+  font-size: 1.5rem;
+  max-width: 720px;
+  padding: 0 20px;
+}
+.page {
+  background: white;
+  padding: 24px;
+  margin: 20px auto;
+  max-width: 720px;
+  border-radius: var(--vui-radius-lg);
+  box-shadow: var(--vui-shadow-sm);
+}

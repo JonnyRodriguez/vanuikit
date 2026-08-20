@@ -1,0 +1,38 @@
+{
+  "name": "vanui",
+  "version": "0.1.0",
+  "description": "Librería universal de componentes VanJS: botones, campos, formularios, modal, spinner, validación, router y auth como base de SPA",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./styles.css": "./dist/vanui.css",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "npm run css && npm run bundle",
+    "bundle": "esbuild src/index.ts --outdir=dist --bundle --format=esm --external:vanjs-core",
+    "types": "tsc --project tsconfig.build.json",
+    "css": "node scripts/uno.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "vanjs-core": ">=1.6.0"
+  },
+  "devDependencies": {
+    "@unocss/core": "^66.7.5",
+    "@unocss/preset-uno": "^66.7.5",
+    "esbuild": "^0.25.0",
+    "typescript": "^5.8.2",
+    "vanjs-core": "^1.6.0"
+  }
+}

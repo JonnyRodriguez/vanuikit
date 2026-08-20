@@ -1,0 +1,33 @@
+{
+  "name": "vanui-demo",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Demo de vanui: flujo de recarga, login, registro y catálogo de componentes. Consume vanui como paquete (file:../vanui).",
+  "type": "module",
+  "scripts": {
+    "build": "npm run build:client",
+    "build:client": "esbuild main.ts --bundle --outdir=dist --format=esm && npm run css && npm run uno",
+    "css": "node -e \"import('node:fs').then(fs => { fs.mkdirSync('dist', {recursive:true}); fs.copyFileSync('../vanui/dist/vanui.css', 'dist/vanui.css'); })\"",
+    "uno": "node scripts/uno.js",
+    "dev": "npm run build:client && tsx server/index.ts",
+    "start": "tsx server/index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.13.8",
+    "hono": "^4.13.2",
+    "qr-code-styling": "^1.9.0",
+    "vanjs-core": "^1.6.0",
+    "vanui": "file:../vanui",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.8",
+    "@unocss/core": "^66.7.5",
+    "@unocss/preset-uno": "^66.7.5",
+    "esbuild": "^0.25.0",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
+  }
+}
+

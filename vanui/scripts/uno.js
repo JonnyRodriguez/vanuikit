@@ -1,0 +1,150 @@
+/**
+ * Genera el CSS estático de la librería vanui, sin el runtime del CDN.
+ *
+ * Escanea los fuentes del paquete (vanui/src), extrae las clases de sus
+ * componentes y las compila con @unocss/preset-uno -> dist/vanui.css
+ *
+ * Uso: node scripts/uno.js  (o npm run css, que lo invoca)
+ *
+ * Dependencias (dev): @unocss/core y @unocss/preset-uno
+ *
+ * Tema: los colores, radios y sombras se resuelven con variables CSS `--vui-*`
+ * definidas en :root (ver VUI_THEME). El consumidor re-tematiza la librería
+ * sobreescribiendo esas variables en su propio CSS (cargado después de este).
+ */
+
+/** Reset mínimo (reemplaza el preflight que el preset trae por defecto y
+ *  que el `preflights` propio del generador elimina). Sin `border-style:
+ *  solid` los bordes con ancho (border-t-2, border-border…) se computan a
+ *  0px y no se pintan — p. ej. el anillo del Spin quedaba invisible. */
+const RESET = `
+*, *::before, *::after {
+  box-sizing: border-box;
+  border-width: 0;
+  border-style: solid;
+  border-color: currentColor;
+}
+`.trim();
+
+/** Variables del tema por defecto (mismos valores que las clases originales). */
+const VUI_THEME = `
+:root{
+--vui-primary:#22c55e;
+--vui-primary-hover:#16a34a;
+--vui-primary-active:#15803d;
+--vui-primary-fg:#ffffff;
+--vui-primary-shadow:rgb(34 197 94 / .5);
+--vui-secondary:#d1d5db;
+--vui-secondary-hover:#9ca3af;
+--vui-secondary-active:#6b7280;
+--vui-secondary-fg:#1f2937;
+--vui-accent:#2563eb;
+--vui-accent-hover:#1d4ed8;
+--vui-focus:#3b82f6;
+--vui-background:#ffffff;
+--vui-foreground:#111827;
+--vui-foreground-soft:#374151;
+--vui-muted:#6b7280;
+--vui-border:#d1d5db;
+--vui-overlay:rgb(0 0 0 / .5);
+--vui-destructive:#dc2626;
+--vui-radius-md:0.375rem;
+--vui-radius-lg:0.5rem;
+--vui-radius-2xl:1rem;
+--vui-radius-full:9999px;
+--vui-shadow-sm:0 1px 2px 0 rgb(0 0 0 / .05);
+--vui-shadow-lg:0 10px 15px -3px rgb(0 0 0 / .1),0 4px 6px -4px rgb(0 0 0 / .1);
+--vui-shadow-xl:0 20px 25px -5px rgb(0 0 0 / .1),0 8px 10px -6px rgb(0 0 0 / .1);
+--vui-shadow-2xl:0 25px 50px -12px rgb(0 0 0 / .25);
+}
+`.trim();
+
+/** Mapea las clases de color/radio/sombra a las variables del tema. */
+const THEME = {
+  colors: {
+    primary: "var(--vui-primary)",
+    "primary-hover": "var(--vui-primary-hover)",
+    "primary-active": "var(--vui-primary-active)",
+    "primary-fg": "var(--vui-primary-fg)",
+    "primary-shadow": "var(--vui-primary-shadow)",
+    secondary: "var(--vui-secondary)",
+    "secondary-hover": "var(--vui-secondary-hover)",
+    "secondary-active": "var(--vui-secondary-active)",
+    "secondary-fg": "var(--vui-secondary-fg)",
+    accent: "var(--vui-accent)",
+    "accent-hover": "var(--vui-accent-hover)",
+    focus: "var(--vui-focus)",
+    background: "var(--vui-background)",
+    foreground: "var(--vui-foreground)",
+    "foreground-soft": "var(--vui-foreground-soft)",
+    muted: "var(--vui-muted)",
+    border: "var(--vui-border)",
+    overlay: "var(--vui-overlay)",
+    destructive: "var(--vui-destructive)",
+  },
+  borderRadius: {
+    md: "var(--vui-radius-md)",
+    lg: "var(--vui-radius-lg)",
+    "2xl": "var(--vui-radius-2xl)",
+    full: "var(--vui-radius-full)",
+  },
+  boxShadow: {
+    sm: "var(--vui-shadow-sm)",
+    lg: "var(--vui-shadow-lg)",
+    xl: "var(--vui-shadow-xl)",
+    "2xl": "var(--vui-shadow-2xl)",
+  },
+};
+
+import fs from "node:fs";
+import path from "node:path";
+import { createGenerator } from "@unocss/core";
+import presetUno from "@unocss/preset-uno";
+
+const OUT = "dist/vanui.css";
+
+function getFiles(dir) {
+  if (!fs.existsSync(dir)) return [];
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+  const files = [];
+  for (const entry of entries) {
+    const res = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...getFiles(res));
+    } else if (entry.isFile() && res.endsWith(".ts")) {
+      files.push(res);
+    }
+  }
+  return files;
+}
+
+const files = getFiles("src");
+
+// El extractor de UnoCSS toma los tokens de clases de cualquier texto;
+// concatenamos todo el código fuente.
+const source = files.map((f) => fs.readFileSync(f, "utf-8")).join("\n");
+
+const generator = await createGenerator({
+  // El theme va a nivel del generador, no dentro del preset: así las clases
+  // de color custom, borderRadius y boxShadow resuelven a var(--vui-*).
+  theme: THEME,
+  presets: [presetUno()],
+  preflights: [
+    {
+      layer: "preflights",
+      getCSS: () => RESET,
+    },
+    {
+      layer: "preflights",
+      getCSS: () => VUI_THEME,
+    },
+  ],
+});
+const { css } = await generator.generate(source, { id: "vanui" });
+
+fs.mkdirSync(path.dirname(OUT), { recursive: true });
+fs.writeFileSync(OUT, css, "utf-8");
+console.log(
+  `vanui.css generado (${files.length} archivos escaneados, ${css.length} bytes)`,
+);
+

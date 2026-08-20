@@ -1,0 +1,6 @@
+{
+  "name": "VanUI Demo",
+  "description": "Component library and demo application with VanJS, Hono, and UnoCSS.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

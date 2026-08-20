@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- círculo azul tocando los 4 bordes, esquinas transparentes -->
+  <circle cx="256" cy="256" r="256" fill="#084C7D"/>
+  <!-- mango + trazo izquierdo de la V + barra base -->
+  <path d="M89 156 H167 L228 312 H370" fill="none" stroke="#fff"
+        stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- trazo derecho de la V -->
+  <path d="M238 304 L311 148" fill="none" stroke="#fff"
+        stroke-width="24" stroke-linecap="round"/>
+  <!-- canasta (paralelogramo, ahora por encima de la barra, sin tocarla) -->
+  <path d="M323 181 H414 L367 286 H276 Z" fill="#fff"/>
+  <!-- ruedas -->
+  <circle cx="233" cy="364" r="25" fill="#fff"/>
+  <circle cx="337" cy="364" r="25" fill="#fff"/>
+</svg>

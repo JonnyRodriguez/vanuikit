@@ -1,0 +1,159 @@
+/**
+ * Referencia — pantallas del flujo de recarga construidas con los
+ * componentes de la librería (Form, Field, Button, Modal, Spin).
+ */
+import { van } from "vanui";
+import {
+  Form,
+  Field,
+  PrimaryButton,
+  Spin,
+  type Validator,
+  type ModalContent,
+  type ModalProps,
+} from "vanui";
+import { GatewayItem, type Gateway } from "./gateways.js";
+
+export type RechargeParams = {
+  id: number;
+  tipo: string;
+  monto_min_recarga: string;
+  monto_max_recarga: string;
+  [key: string]: unknown;
+};
+
+/** Resultado de handleRechargeAmount: {} si fue bien, { error } si falló. */
+export type RecargaResult = { error: string } | {};
+
+/** Lo que RechargeAmount necesita de su orquestador (RechargeModule). */
+export interface RechargeInfo {
+  gateway: Gateway;
+  params: RechargeParams;
+  handleRechargeAmount: (data: Record<string, unknown>) => Promise<RecargaResult>;
+}
+
+/**
+ * Validación propia del ejemplo: el monto debe ser un número dentro de un
+ * rango. Se agrega al campo base con addValidator (patrón proxy).
+ */
+const Between = (
+  min: number,
+  max: number,
+  tipo: string,
+): Validator => ({
+  validate: (value) => {
+    const num = parseFloat(value);
+    if (!value || Number.isNaN(num)) return "Ingresa un monto válido";
+    if (num < min) return "El monto debe ser superior a " + min + " " + tipo;
+    if (num > max) return "El monto debe ser inferior a " + max + " " + tipo;
+    return null;
+  },
+});
+
+/**
+ * Formulario de monto. `info` es la instancia de RechargeModule e
+ * implementa: info.gateway, info.params, info.handleRechargeAmount.
+ */
+export const RechargeAmount = (info: RechargeInfo) => {
+  const { div } = van.tags;
+
+  const msg = van.state<Element | null>(null);
+  const formError = van.state("");
+
+  const params = info.params;
+  const gateway = info.gateway;
+
+  const amount = Field({ label: "Monto a recargar (" + params.tipo + ")", name: "amount", inputType: "number" });
+  amount.addValidator(
+    Between(
+      parseFloat(params.monto_min_recarga),
+      parseFloat(params.monto_max_recarga),
+      params.tipo,
+    ),
+  );
+
+  const form = Form(async (data) => {
+    formError.val = "";
+    msg.val = Spin("Generando recarga...");
+    data.gateway = gateway;
+    const result = await info.handleRechargeAmount(data);
+    if ("error" in result) {
+      formError.val = result.error;
+      msg.val = null;
+    }
+  });
+  form.add(amount);
+
+  return div(
+    {},
+    GatewayItem(gateway),
+    div(
+      { class: "mt-8" },
+      form.dom(
+        div(
+          { class: "text-muted text-sm mt-2" },
+          "Mínimo: " +
+            params.monto_min_recarga +
+            " " +
+            params.tipo +
+            ", Máximo: " +
+            params.monto_max_recarga +
+            " " +
+            params.tipo,
+        ),
+        div(
+          { class: "pt-4" },
+          () => (msg.val && msg.val) || PrimaryButton({ type: "submit" }, "Recargar"),
+        ),
+      ),
+      () =>
+        formError.val
+          ? van.tags.p({ class: "text-destructive text-sm mt-3" }, formError.val)
+          : "",
+    ),
+  );
+};
+
+export const RechargeAmountModal = (info: RechargeInfo): ModalProps => ({
+  title: "Recargar con " + info.gateway.id,
+  body: () => RechargeAmount(info),
+});
+
+export const RechargeQr = (qr: string, url: string) => {
+  const { div, button, img, span } = van.tags;
+
+  return div(
+    {},
+    button(
+      {
+        class:
+          "block border-4 border-accent rounded-2xl p-4 my-4 w-full bg-background shadow-xl cursor-pointer " +
+          "transition-all duration-200 ease-in-out " +
+          "hover:border-accent-hover hover:shadow-2xl hover:-translate-y-0.5 hover:scale-105",
+        type: "button",
+        onclick: () => window.open(url, "_blank"),
+      },
+      span(
+        { class: "text-xl font-bold text-accent flex items-center" },
+        "Haz clic aquí para abrir la plataforma",
+      ),
+      div(
+        { class: "text-muted text-sm italic" },
+        "o escanea el código QR con tu app móvil",
+      ),
+      img({
+        class: "mx-auto",
+        src: qr,
+        alt: "Código QR para recargar",
+      }),
+      div(
+        { class: "text-muted text-sm italic" },
+        "Tu saldo se actualizará automáticamente.",
+      ),
+    ),
+  );
+};
+
+export const RechargeQrModal = (qr: string, url: string): ModalContent => ({
+  body: () => RechargeQr(qr, url),
+});

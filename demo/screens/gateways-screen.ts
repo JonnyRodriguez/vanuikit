@@ -3,16 +3,14 @@
  *
  * Patrón store/web: un componente (función) que devuelve DOM reactivo.
  * Es la dueña de sus propios datos: carga gateways + params desde el
- * backend y muestra un spinner mientras tanto. El Nav global y el título
- * de la app viven en el shell de App (app.ts), no en cada pantalla.
+ * backend y muestra un spinner mientras tanto con createQuery y createMutation.
  *
  * El flujo:
  *   1. GatewaysList → al hacer clic, abre el modal de monto
  *   2. formulario de monto → POST /api/payment/recharge → genera URL
  *   3. QRGenerator → abre el modal de QR
  */
-import { van } from "vanui";
-import { Modal, Spin } from "vanui";
+import { van, Modal, Spin, createQuery, createMutation } from "vanui";
 import { GatewaysList, type Gateway } from "./gateways.js";
 import { QRGenerator } from "./qr.js";
 
@@ -28,38 +26,17 @@ type PaymentData = { gateways: Gateway[]; params: RechargeParams };
 
 const RECHARGE_ENDPOINT = "/api/payment/recharge";
 
-/** Carga gateways + params desde el backend Hono (datos propios de la pantalla). */
-async function loadPaymentData(): Promise<PaymentData> {
-  const [gwRes, paramsRes] = await Promise.all([
-    fetch("/api/payment/gateways"),
-    fetch("/api/payment/params"),
-  ]);
-
-  if (!gwRes.ok || !paramsRes.ok) {
-    throw new Error("No se pudieron cargar los datos del backend");
-  }
-
-  const [gwJson, paramsJson] = await Promise.all([
-    gwRes.json(),
-    paramsRes.json(),
-  ]);
-
-  return { gateways: gwJson.data, params: paramsJson.data };
-}
-
 export const GatewaysScreen = () => {
   const { div, h1, p, form, input, button, img, span, hr } = van.tags;
 
-  // Datos de la pantalla: se cargan aquí, no en App.
-  const data = van.state<PaymentData | null>(null);
-  const loadError = van.state<string | null>(null);
+  // Carga reactiva de datos con el helper createQuery
+  const gatewaysQuery = createQuery<Gateway[]>("/api/payment/gateways", {
+    transform: (json) => json.data,
+  });
 
-  loadPaymentData()
-    .then((payload) => (data.val = payload))
-    .catch((err) => {
-      console.error("Error cargando datos de pago:", err);
-      loadError.val = "No se pudieron cargar los datos del backend";
-    });
+  const paramsQuery = createQuery<RechargeParams>("/api/payment/params", {
+    transform: (json) => json.data,
+  });
 
   const modal = Modal();
   modal.mount();
@@ -68,13 +45,42 @@ export const GatewaysScreen = () => {
 
   // Gateway activo en el flujo (monto → QR).
   const activeGateway = van.state<Gateway | null>(null);
-  // Estado de envío del formulario de monto.
-  const formError = van.state("");
-  const isGenerating = van.state(false);
+  // Estado de error local del formulario.
+  const validationError = van.state("");
+
+  // Mutación reactiva para generar la recarga
+  const rechargeMutation = createMutation<{ status: string; data: { url: string } }, any>(
+    RECHARGE_ENDPOINT,
+    {
+      onSuccess: async (result) => {
+        const url = result.data?.url;
+        if (!url) {
+          validationError.val = "No se pudo generar la URL de recarga";
+          return;
+        }
+
+        const qrResult = await qr.generate(url, activeGateway.val?.img);
+        if ("error" in qrResult) {
+          validationError.val = "No se pudo generar el código QR";
+          return;
+        }
+
+        modal.set({
+          title: "Código QR",
+          body: () => qrBody(qrResult.qr, url),
+          footer: null,
+        });
+      },
+      onError: (err) => {
+        validationError.val = err.message || "Error al procesar la recarga";
+      },
+    }
+  );
 
   const openAmountModal = (gateway: Gateway) => {
     activeGateway.val = gateway;
-    formError.val = "";
+    validationError.val = "";
+    rechargeMutation.reset();
     modal.set(
       {
         title: `Recargar con ${gateway.id}`,
@@ -89,68 +95,36 @@ export const GatewaysScreen = () => {
     e.preventDefault();
     const formEl = e.target as HTMLFormElement;
     const amount = (formEl.elements.namedItem("amount") as HTMLInputElement).value;
-    const params = data.val!.params;
+    const params = paramsQuery.data.val;
+
+    if (!params) return;
 
     const numAmount = parseFloat(amount);
     if (Number.isNaN(numAmount)) {
-      formError.val = "Ingresa un monto válido";
+      validationError.val = "Ingresa un monto válido";
       return;
     }
     if (numAmount < parseFloat(params.monto_min_recarga)) {
-      formError.val = `El monto debe ser superior a ${params.monto_min_recarga} ${params.tipo}`;
+      validationError.val = `El monto debe ser superior a ${params.monto_min_recarga} ${params.tipo}`;
       return;
     }
     if (numAmount > parseFloat(params.monto_max_recarga)) {
-      formError.val = `El monto debe ser inferior a ${params.monto_max_recarga} ${params.tipo}`;
+      validationError.val = `El monto debe ser inferior a ${params.monto_max_recarga} ${params.tipo}`;
       return;
     }
 
-    formError.val = "";
-    isGenerating.val = true;
-
-    try {
-      const res = await fetch(RECHARGE_ENDPOINT, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          amount,
-          gateway: activeGateway.val,
-        }),
-      });
-
-      const result = await res.json();
-      if (!res.ok || result.error) {
-        formError.val = result.error || "No se pudo generar la recarga";
-        return;
-      }
-
-      const url: string = result.data?.url;
-      if (!url) {
-        formError.val = "No se pudo generar la recarga";
-        return;
-      }
-
-      const qrResult = await qr.generate(url, activeGateway.val?.img);
-      if ("error" in qrResult) {
-        formError.val = "No se pudo generar el código QR";
-        return;
-      }
-
-      modal.set({
-        title: "Código QR",
-        body: () => qrBody(qrResult.qr, url),
-        footer: null,
-      });
-    } catch {
-      formError.val = "Error de conexión, intenta de nuevo";
-    } finally {
-      isGenerating.val = false;
-    }
+    validationError.val = "";
+    await rechargeMutation.mutate({
+      amount,
+      gateway: activeGateway.val,
+    });
   };
 
   /** Cuerpo del modal de monto: badge + formulario. */
   const amountBody = () => {
-    const params = data.val!.params;
+    const params = paramsQuery.data.val;
+    if (!params) return div("Cargando parámetros...");
+
     return div(
       {},
       () =>
@@ -197,14 +171,14 @@ export const GatewaysScreen = () => {
         ),
         div(
           { class: "pt-2" },
+          () => {
+            const err = validationError.val || rechargeMutation.error.val;
+            return err ? p({ class: "text-destructive text-sm mb-2" }, err) : "";
+          },
           () =>
-            formError.val
-              ? p({ class: "text-destructive text-sm mb-2" }, formError.val)
-              : "",
-          () =>
-            isGenerating.val
+            rechargeMutation.loading.val
               ? div(
-                  { class: "flex items-center gap-2 text-sm text-foreground" },
+                  { class: "flex items-center gap-2 text-sm text-foreground justify-center py-2" },
                   Spin("Generando..."),
                   "Procesando recarga",
                 )
@@ -252,18 +226,39 @@ export const GatewaysScreen = () => {
 
   return div(
     { class: "page" },
-    () =>
-      data.val
-        ? div(
-            {},
-            h1({ class: "text-2xl font-bold text-center mb-6" }, "Recargar saldo"),
-            div(
-              { class: "flex justify-center" },
-              GatewaysList(data.val.gateways, openAmountModal),
-            ),
-          )
-        : loadError.val
-          ? div({ class: "text-center p-4 text-destructive" }, loadError.val)
-          : div({ class: "p-4 text-center" }, "Cargando pasarelas..."),
+    () => {
+      if (gatewaysQuery.loading.val || paramsQuery.loading.val) {
+        return div({ class: "p-8 text-center flex items-center justify-center gap-3" }, Spin(), "Cargando pasarelas...");
+      }
+
+      if (gatewaysQuery.error.val || paramsQuery.error.val) {
+        const errMsg = gatewaysQuery.error.val || paramsQuery.error.val;
+        return div(
+          { class: "text-center p-6 text-destructive" },
+          p({ class: "font-semibold mb-2" }, "Error al cargar datos"),
+          p({ class: "text-sm text-muted mb-4" }, errMsg),
+          button(
+            {
+              class: "px-4 py-2 bg-primary text-white rounded-lg text-sm cursor-pointer",
+              onclick: () => {
+                gatewaysQuery.refetch();
+                paramsQuery.refetch();
+              },
+            },
+            "Reintentar",
+          ),
+        );
+      }
+
+      const gateways = gatewaysQuery.data.val || [];
+      return div(
+        {},
+        h1({ class: "text-2xl font-bold text-center mb-6" }, "Recargar saldo"),
+        div(
+          { class: "flex justify-center" },
+          GatewaysList(gateways, openAmountModal),
+        ),
+      );
+    },
   );
 };

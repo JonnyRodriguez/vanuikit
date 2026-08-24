@@ -16,6 +16,7 @@ export { cx } from "./util.js";
 // base de desarrollo SPA (sin frameworks externos)
 export { Router } from "./router.js";
 export { createAuth, requireAuth } from "./auth.js";
+export { createQuery, createMutation } from "./fetch.js";
 export type {
   RouteParams,
   RouteContext,
@@ -24,6 +25,12 @@ export type {
   RouteFactory,
 } from "./router.js";
 export type { AuthApi, AuthState, AuthStatus, AuthUser } from "./auth.js";
+export type {
+  QueryOptions,
+  QueryResult,
+  MutationOptions,
+  MutationResult,
+} from "./fetch.js";
 
 // componentes — de simple a complejo
 export {

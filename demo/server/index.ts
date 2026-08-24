@@ -1,16 +1,13 @@
 // server/index.ts
 /**
- * Punto de entrada del backend demo — equivalente a store/api/src/index.ts.
+ * Punto de entrada del backend demo (Hono + Node.js / Bun).
  *
- * Patron:
+ * Patrón:
  *   1. App Hono con middleware CORS
- *   2. createApiRouter escanea server/controllers/ dinamicamente
- *   3. API montada bajo el prefijo global /api
+ *   2. createApiRouter escanea recursivamente server/routes/
+ *   3. Rutas montadas automáticamente (p. ej. server/routes/api/ -> /api/*)
  *   4. serveStatic para archivos frontend (HTML, CSS, bundles)
- *   5. SPA fallback: notFound sirve index.html para rutas cliente
- *
- * Ejecutar:  node demo/server/index.js (o tsx demo/server/index.ts)
- * Navegar:   http://localhost:3000
+ *   5. SPA fallback: notFound sirve index.html para el router cliente de VanJS
  */
 import { Hono } from "hono";
 import { cors } from "hono/cors";
@@ -19,7 +16,7 @@ import { serveStatic } from "@hono/node-server/serve-static";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { createApiRouter } from "./apiRouter.js";
+import { loadRoutes } from "./router.loader.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -28,7 +25,6 @@ const demoDir = path.resolve(__dirname, "..");
 const app = new Hono();
 
 // --- Middleware ---
-// CORS: permite a la SPA en desarrollo (mismo origen, pero por si acaso)
 app.use(
   "*",
   cors({
@@ -37,11 +33,11 @@ app.use(
   }),
 );
 
-// --- API Router (controladores PHP-style) ---
-// Escanea server/controllers/ y monta cada *.controller.ts en /api/{resource}
-const controllersDir = path.join(__dirname, "controllers");
-const apiRouter = await createApiRouter(controllersDir);
-app.route("/api", apiRouter);
+// --- Carga dinámica de rutas desde server/routes/ ---
+// Escanea server/routes/api/*.route.ts y los monta según su estructura de carpetas
+const routesDir = path.join(__dirname, "routes");
+const routesApp = await loadRoutes(routesDir);
+app.route("/", routesApp);
 
 // --- Health check ---
 app.get("/health", (c) => {
@@ -53,14 +49,15 @@ app.get("/health", (c) => {
 });
 
 // --- Static assets serving ---
-// Serves static files from demo directory
-app.use("/*", serveStatic({
-  root: path.relative(process.cwd(), demoDir),
-}));
+app.use(
+  "/*",
+  serveStatic({
+    root: path.relative(process.cwd(), demoDir),
+  }),
+);
 
 // --- SPA fallback ---
-// Para un demo SPA de pagina unica: cualquier ruta que no sea /api/*, /health
-// o un archivo estatico sirve index.html (el router cliente resuelve el resto).
+// Sirve index.html para que el router de VanJS resuelva las rutas cliente
 app.notFound((c) => {
   const url = new URL(c.req.url);
   if (!url.pathname.startsWith("/api") && !url.pathname.startsWith("/health")) {
@@ -81,4 +78,3 @@ serve({
 });
 
 console.log(`Servidor Hono (demo) -> http://0.0.0.0:${port}`);
-

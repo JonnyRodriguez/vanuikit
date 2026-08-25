@@ -1,124 +1,65 @@
-// demo/app.ts
 /**
- * App — Raíz de la SPA demo.
+ * App — orquestador de la SPA de demostración de VanUI.
  *
- * Patrón store/web: Router de vanui + páginas declarativas (*.page.ts)
- * y componentes reutilizables (*.component.ts).
+ * Configura:
+ * - Rutas con guards de autenticación (`requireAuth`)
+ * - Estado de autenticación (`createAuth`)
+ * - Vista principal montada con Router
  */
-import { van, Nav, Router } from "vanui";
-import { GatewaysPage } from "./pages/gateways.page.js";
+import { van, createAuth, requireAuth, Router } from "vanui";
 import { LoginPage } from "./pages/login.page.js";
 import { RegisterPage } from "./pages/register.page.js";
+import { GatewaysPage } from "./pages/gateways.page.js";
 import { ComponentsPage } from "./pages/components.page.js";
-import type { AuthUser } from "./shared/auth.schema.js";
 
-const { div, h1, span, button } = van.tags;
-export const router = new Router();
-
-// Estado global reactivo del usuario autenticado
-export const authState = {
-  user: van.state<AuthUser | null>(null),
-  async checkSession() {
+// Estado de sesión
+export const authState = createAuth({
+  me: async () => {
     try {
-      const token = typeof localStorage !== "undefined" ? localStorage.getItem("session_token") : null;
-      const res = await fetch("/api/auth/me", {
-        credentials: "include",
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
-      if (res.ok) {
-        const json = await res.json();
-        authState.user.val = json.data?.user || null;
-      } else {
-        authState.user.val = null;
-      }
+      const res = await fetch("/api/auth/me", { credentials: "include" });
+      if (!res.ok) return { user: null };
+      const data = await res.json();
+      return { user: data.user || null };
     } catch {
-      authState.user.val = null;
+      return { user: null };
     }
   },
-  async logout() {
+  login: async (email, password) => {
+    const res = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ email, password }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || "Error al iniciar sesión");
+    }
+    const data = await res.json();
+    return { user: data.user };
+  },
+  logout: async () => {
     try {
-      const token = typeof localStorage !== "undefined" ? localStorage.getItem("session_token") : null;
-      await fetch("/api/auth/logout", {
-        method: "POST",
-        credentials: "include",
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
-    } finally {
-      if (typeof localStorage !== "undefined") {
-        try {
-          localStorage.removeItem("session_token");
-        } catch {}
-      }
-      authState.user.val = null;
-      router.navigate("/login");
-    }
+      await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
+    } catch {}
   },
-};
+});
 
-// ---------------------------------------------------------------------------
-// Navegación compartida
-// ---------------------------------------------------------------------------
-export const NAV_LINKS = [
-  { href: "/gateways", label: "Recarga" },
-  { href: "/login", label: "Login" },
-  { href: "/register", label: "Registro" },
-  { href: "/components", label: "Componentes" },
-];
+export function App(): Node {
+  const router = new Router();
 
-// ---------------------------------------------------------------------------
-// Registro de rutas (pages)
-// ---------------------------------------------------------------------------
-function registerRoutes() {
   router
-    .redirect("/", "/gateways")
-    .add("/gateways", () => GatewaysPage({ router }))
     .add("/login", () => LoginPage({ router }))
     .add("/register", () => RegisterPage({ router }))
-    .add("/components", () => ComponentsPage())
-    .setNotFound(
-      () =>
-        div(
-          { class: "text-center p-8" },
-          van.tags.h2({ class: "text-xl font-bold mb-2" }, "404"),
-          van.tags.p({ class: "text-muted" }, "Página no encontrada"),
-        ),
-    );
+    .add("/gateways", () => GatewaysPage({ router }), {
+      beforeEnter: requireAuth(authState, "/login"),
+    })
+    .add("/components", () => ComponentsPage({ router }))
+    .redirect("/", "/gateways");
+
+  void authState.boot().then(() => {
+    router.resolve();
+  });
+
+  return router.start()();
 }
-
-// ---------------------------------------------------------------------------
-// App — Shell principal
-// ---------------------------------------------------------------------------
-export const App = () => {
-  registerRoutes();
-  // Verificar sesión al montar la app
-  authState.checkSession();
-
-  return div(
-    { class: "app-shell" },
-    div(
-      { class: "flex items-center justify-between px-4 py-2 border-b border-border mb-4" },
-      h1({ class: "demo-title text-xl font-bold text-primary m-0" }, "VanUI — Demo"),
-      () =>
-        authState.user.val
-          ? div(
-              { class: "flex items-center gap-3 text-xs" },
-              span(
-                { class: "text-muted" },
-                "Hola, ",
-                span({ class: "font-semibold text-foreground" }, authState.user.val.name),
-              ),
-              button(
-                {
-                  class:
-                    "px-2.5 py-1 text-destructive border border-destructive/30 rounded hover:bg-destructive/10 transition cursor-pointer font-medium",
-                  onclick: () => authState.logout(),
-                },
-                "Cerrar sesión",
-              ),
-            )
-          : div(),
-    ),
-    () => Nav(NAV_LINKS, { current: router.path.val }),
-    router.start(),
-  );
-};

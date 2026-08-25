@@ -2,7 +2,10 @@
 /**
  * QRGenerator Component — Wrapper de qr-code-styling para generar QR como data-URI SVG.
  */
-import QRCodeStyling from "qr-code-styling";
+import * as QRCodeStylingModule from "qr-code-styling";
+
+const QRCodeStylingClass: any =
+  (QRCodeStylingModule as any).default || QRCodeStylingModule;
 
 export type QRResult = { qr: string } | { error: unknown };
 
@@ -34,7 +37,7 @@ export class QRGenerator {
     if (!this.qrCode) {
       this.config.data = text;
       this.config.image = image;
-      this.qrCode = new QRCodeStyling(this.config);
+      this.qrCode = new QRCodeStylingClass(this.config);
     } else {
       this.qrCode.update({ data: text, image });
     }

@@ -1,79 +1,65 @@
+// vanui/src/index.ts
 /**
- * API pública de la librería. Importa desde aquí:
- *   import { Modal, Field, PrimaryButton } from "vanui";
- *
- * Estructura:
- *   components/  — componentes de simple a complejo (Button -> Modal)
- *   screens/     — pantallas de ejemplo (composición de componentes)
- *   router.ts    — base de SPA: navegación con params, guards y redirects
- *   auth.ts      — base de sesión: createAuth + requireAuth
+ * VanUI — Biblioteca de componentes modulares y reactivos para VanJS.
  */
-export { default as van } from "vanjs-core";
+import van from "vanjs-core";
 
-// utilidades compartidas
-export { cx } from "./util.js";
+export { van };
 
-// base de desarrollo SPA (sin frameworks externos)
-export { Router } from "./router.js";
-export { createAuth, requireAuth } from "./auth.js";
-export { createQuery, createMutation } from "./fetch.js";
-export type {
-  RouteParams,
-  RouteContext,
-  Guard,
-  RouteOptions,
-  RouteFactory,
-} from "./router.js";
-export type { AuthApi, AuthState, AuthStatus, AuthUser } from "./auth.js";
-export type {
-  QueryOptions,
-  QueryResult,
-  MutationOptions,
-  MutationResult,
-} from "./fetch.js";
-
-// componentes — de simple a complejo
-export {
-  Button,
-  PrimaryButton,
-  SecondaryButton,
-} from "./components/button.js";
-export {
-  Input,
-  Select,
-  Textarea,
-  Label,
-  Field,
-  TextField,
-  EmailField,
-  PasswordField,
-} from "./components/field.js";
+// Componentes Básicos
+export { Button, PrimaryButton, SecondaryButton, type ButtonVariant, type ButtonSize } from "./components/button.js";
+export { Field, Input, Select, Textarea } from "./components/field.js";
 export { Form } from "./components/form.js";
-export {
-  ModalBase,
-  ModalTitle,
-  ModalClose,
-  ModalHeaderWithTitleAndClose,
-  ModalFooterWithCloseButton,
-  Modal,
-} from "./components/modal.js";
+export { Modal, ModalBase, type ModalContent, type ModalZone } from "./components/modal.js";
 export { Spin } from "./components/spin.js";
 export { SpinModal } from "./components/spin-modal.js";
-export { Nav } from "./components/nav.js";
+export { Nav, type NavLink } from "./components/nav.js";
+export { Badge, type BadgeProps, type BadgeVariant, type BadgeSize } from "./components/badge.js";
+export { Table, type TableProps, type TableColumn } from "./components/table.js";
+export { toast, type ToastType, type ToastOptions, type ToastItem } from "./components/toast.js";
 
-// validadores de campos (se componen en los campos tipados)
-export { Required, Email, MinLength, Match, type Validator } from "./validators.js";
-
-// screens públicas: login y register (formularios reutilizables)
+// Pantallas / Formularios preconstruidos
 export { LoginForm } from "./screens/login.js";
 export { RegisterForm } from "./screens/register.js";
 
-// tipos de los contratos
-export type { ModalZone, ModalContent, ModalProps } from "./components/modal.js";
-export type { NavLink } from "./components/nav.js";
-export type { AuthResult, LoginInfo } from "./screens/login.js";
-export type { RegisterInfo } from "./screens/register.js";
+// Autenticación de Cliente
+export {
+  createAuth,
+  requireAuth,
+  type AuthUser,
+  type AuthApi,
+  type AuthStatus,
+  type AuthState,
+} from "./auth.js";
 
-// NOTA: el flujo de recarga (gateways, qr, recharge, recharge-module) NO es
-// parte de la librería: es el ejemplo de partida, vive en la demo
-// (../demo/screens/) y se consume solo desde ella. No se exporta desde aquí.
+// Enrutador SPA
+export {
+  Router,
+  type RouteParams,
+  type RouteContext,
+  type Guard,
+  type RouteOptions,
+  type RouteFactory,
+} from "./router.js";
+
+// Helpers de red y reactividad
+export {
+  createQuery,
+  createMutation,
+  type QueryOptions,
+  type QueryResult,
+  type MutationOptions,
+  type MutationResult,
+} from "./fetch.js";
+
+// Validadores
+export {
+  Required,
+  Email,
+  MinLength,
+  Match,
+  type Validator,
+} from "./validators.js";
+
+// Utilidades generales
+export { cx } from "./util.js";

@@ -1,35 +1,25 @@
+// demo/pages/gateways.page.ts
 /**
- * GatewaysScreen — pantalla principal del flujo de recarga.
+ * GatewaysPage — Vista principal del flujo de recarga (Ruta protegida).
  *
- * Patrón store/web: un componente (función) que devuelve DOM reactivo.
- * Es la dueña de sus propios datos: carga gateways + params desde el
- * backend y muestra un spinner mientras tanto con createQuery y createMutation.
- *
- * El flujo:
- *   1. GatewaysList → al hacer clic, abre el modal de monto
- *   2. formulario de monto → POST /api/payment/recharge → genera URL
- *   3. QRGenerator → abre el modal de QR
+ * Utiliza createQuery y createMutation de vanui y componentes modulares.
+ * Si la petición es rechazada por falta de sesión (401), permite redirigir al login.
  */
-import { van, Modal, Spin, createQuery, createMutation } from "vanui";
-import { GatewaysList, type Gateway } from "./gateways.js";
-import { QRGenerator } from "./qr.js";
-
-export type RechargeParams = {
-  id: number;
-  tipo: string;
-  monto_min_recarga: string;
-  monto_max_recarga: string;
-  [key: string]: unknown;
-};
-
-type PaymentData = { gateways: Gateway[]; params: RechargeParams };
+import { van, Modal, Spin, createQuery, createMutation, type Router } from "vanui";
+import { GatewaysList } from "../components/gateways-list.component.js";
+import { QRGenerator } from "../components/qr-generator.component.js";
+import type { Gateway, RechargeParams, RechargeResponse } from "../shared/payment.schema.js";
 
 const RECHARGE_ENDPOINT = "/api/payment/recharge";
 
-export const GatewaysScreen = () => {
+export interface GatewaysPageProps {
+  router?: Router;
+}
+
+export const GatewaysPage = ({ router }: GatewaysPageProps = {}) => {
   const { div, h1, p, form, input, button, img, span, hr } = van.tags;
 
-  // Carga reactiva de datos con el helper createQuery
+  // Carga reactiva de datos protegidos por sesión
   const gatewaysQuery = createQuery<Gateway[]>("/api/payment/gateways", {
     transform: (json) => json.data,
   });
@@ -43,13 +33,11 @@ export const GatewaysScreen = () => {
 
   const qr = new QRGenerator();
 
-  // Gateway activo en el flujo (monto → QR).
   const activeGateway = van.state<Gateway | null>(null);
-  // Estado de error local del formulario.
   const validationError = van.state("");
 
   // Mutación reactiva para generar la recarga
-  const rechargeMutation = createMutation<{ status: string; data: { url: string } }, any>(
+  const rechargeMutation = createMutation<{ status: string; data: RechargeResponse }, any>(
     RECHARGE_ENDPOINT,
     {
       onSuccess: async (result) => {
@@ -74,7 +62,7 @@ export const GatewaysScreen = () => {
       onError: (err) => {
         validationError.val = err.message || "Error al procesar la recarga";
       },
-    }
+    },
   );
 
   const openAmountModal = (gateway: Gateway) => {
@@ -120,7 +108,7 @@ export const GatewaysScreen = () => {
     });
   };
 
-  /** Cuerpo del modal de monto: badge + formulario. */
+  /** Cuerpo del modal de monto */
   const amountBody = () => {
     const params = paramsQuery.data.val;
     if (!params) return div("Cargando parámetros...");
@@ -195,7 +183,7 @@ export const GatewaysScreen = () => {
     );
   };
 
-  /** Cuerpo del modal de QR. */
+  /** Cuerpo del modal de QR */
   const qrBody = (qrData: string, url: string) =>
     div(
       {},
@@ -228,24 +216,43 @@ export const GatewaysScreen = () => {
     { class: "page" },
     () => {
       if (gatewaysQuery.loading.val || paramsQuery.loading.val) {
-        return div({ class: "p-8 text-center flex items-center justify-center gap-3" }, Spin(), "Cargando pasarelas...");
+        return div(
+          { class: "p-8 text-center flex items-center justify-center gap-3" },
+          Spin(),
+          "Cargando pasarelas...",
+        );
       }
 
-      if (gatewaysQuery.error.val || paramsQuery.error.val) {
-        const errMsg = gatewaysQuery.error.val || paramsQuery.error.val;
+      const errMsg = gatewaysQuery.error.val || paramsQuery.error.val;
+      if (errMsg) {
+        const isUnauthorized =
+          errMsg.toLowerCase().includes("no autorizado") ||
+          errMsg.includes("401");
+
         return div(
-          { class: "text-center p-6 text-destructive" },
-          p({ class: "font-semibold mb-2" }, "Error al cargar datos"),
-          p({ class: "text-sm text-muted mb-4" }, errMsg),
-          button(
-            {
-              class: "px-4 py-2 bg-primary text-white rounded-lg text-sm cursor-pointer",
-              onclick: () => {
-                gatewaysQuery.refetch();
-                paramsQuery.refetch();
-              },
-            },
-            "Reintentar",
+          { class: "text-center p-8 border border-border rounded-xl bg-surface max-w-md mx-auto my-6" },
+          p({ class: "font-semibold mb-2 text-lg text-foreground" }, isUnauthorized ? "Acceso Restringido" : "Error al cargar datos"),
+          p({ class: "text-sm text-muted mb-6" }, isUnauthorized ? "Debes iniciar sesión para acceder a las pasarelas de pago y recargas." : errMsg),
+          div(
+            { class: "flex gap-3 justify-center" },
+            isUnauthorized && router
+              ? button(
+                  {
+                    class: "px-5 py-2.5 bg-primary text-white font-medium rounded-lg text-sm cursor-pointer hover:bg-primary-hover transition",
+                    onclick: () => router.navigate("/login?redirect=/gateways"),
+                  },
+                  "Ir al Login",
+                )
+              : button(
+                  {
+                    class: "px-4 py-2 bg-primary text-white rounded-lg text-sm cursor-pointer",
+                    onclick: () => {
+                      gatewaysQuery.refetch();
+                      paramsQuery.refetch();
+                    },
+                  },
+                  "Reintentar",
+                ),
           ),
         );
       }

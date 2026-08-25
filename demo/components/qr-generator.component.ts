@@ -1,13 +1,10 @@
+// demo/components/qr-generator.component.ts
 /**
- * Referencia — wrapper de qr-code-styling: genera el QR como data-URI SVG.
- * Instancia por uso para evitar carreras entre generate() concurrentes.
- *
- * Internamente usa any porque los tipos de qr-code-styling son poco fiables;
- * la API pública (generate) sí está tipada.
+ * QRGenerator Component — Wrapper de qr-code-styling para generar QR como data-URI SVG.
  */
 import QRCodeStyling from "qr-code-styling";
 
-type QRResult = { qr: string } | { error: unknown };
+export type QRResult = { qr: string } | { error: unknown };
 
 export class QRGenerator {
   private config: Record<string, any>;

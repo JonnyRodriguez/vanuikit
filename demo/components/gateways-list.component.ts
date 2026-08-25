@@ -1,18 +1,9 @@
+// demo/components/gateways-list.component.ts
 /**
- * Referencia — selección de pasarelas de pago.
- * Muestra cómo componer elementos simples (img, span, button) con clases
- * UnoCSS y un callback por selección.
+ * GatewaysList Component — Selección visual de pasarelas de pago.
  */
 import { van } from "vanui";
-
-export type Gateway = {
-  img: string;
-  name: string;
-  id: string;
-  currency?: string;
-  /** Si la pasarela tiene url, al seleccionarla se redirige (pago externo). */
-  url?: string;
-};
+import type { Gateway } from "../shared/payment.schema.js";
 
 export type OnSelectGateway = (gateway: Gateway) => void;
 

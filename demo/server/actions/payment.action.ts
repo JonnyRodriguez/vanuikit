@@ -1,19 +1,17 @@
 // server/actions/payment.action.ts
 /**
  * Payment Actions — Lógica pura de pasarelas y procesamiento de recargas.
- * Desacoplada de la capa de transporte HTTP.
+ * Consume esquemas compartidos de demo/shared/payment.schema.ts.
  */
-import { z } from "zod";
 import { PaymentRepository } from "../repositories/payment.repository.js";
+import {
+  rechargeSchema,
+  type RechargeInput,
+  type RechargeResponse,
+} from "../../shared/payment.schema.js";
 
-// --- Schemas Zod ---
-
-export const rechargeSchema = z.object({
-  amount: z.string().min(1, "El monto es requerido"),
-  gateway: z.record(z.string(), z.unknown()),
-});
-
-export type RechargeInput = z.infer<typeof rechargeSchema>;
+export { rechargeSchema };
+export type { RechargeInput };
 
 export interface ActionResult<T = unknown> {
   success: boolean;
@@ -22,8 +20,6 @@ export interface ActionResult<T = unknown> {
   error?: string;
   details?: unknown;
 }
-
-// --- Funciones de acción (actions) ---
 
 /**
  * Obtiene la lista de pasarelas de pago disponibles.
@@ -42,7 +38,9 @@ export async function getParamsAction() {
 /**
  * Procesa la solicitud de recarga y genera la URL / referencia de pago.
  */
-export async function processRechargeAction(input: RechargeInput): Promise<ActionResult<{ url: string }>> {
+export async function processRechargeAction(
+  input: RechargeInput,
+): Promise<ActionResult<RechargeResponse>> {
   const params = PaymentRepository.getParams();
   const amount = parseFloat(input.amount);
   const min = parseFloat(params.monto_min_recarga);
@@ -72,7 +70,7 @@ export async function processRechargeAction(input: RechargeInput): Promise<Actio
     };
   }
 
-  // Simulación de latencia con pasarela real (800ms)
+  // Simulación de latencia con pasarela (800ms)
   await new Promise((resolve) => setTimeout(resolve, 800));
 
   const rechargeId = Math.floor(Math.random() * 100000);

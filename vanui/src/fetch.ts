@@ -21,6 +21,7 @@ export interface QueryResult<T> {
 export interface MutationOptions<TData, TVariables> {
   onSuccess?: (data: TData, variables: TVariables) => void;
   onError?: (error: Error, variables: TVariables) => void;
+  init?: RequestInit | (() => RequestInit);
 }
 
 export interface MutationResult<TData, TVariables> {
@@ -31,18 +32,21 @@ export interface MutationResult<TData, TVariables> {
   reset: () => void;
 }
 
+function getStoredAuthHeaders(): Record<string, string> {
+  try {
+    if (typeof localStorage !== "undefined") {
+      const token = localStorage.getItem("session_token");
+      if (token) {
+        return { Authorization: `Bearer ${token}` };
+      }
+    }
+  } catch {}
+  return {};
+}
+
 /**
  * Hook reactivo para realizar peticiones GET / consultas a una API con VanJS.
  * Mantiene data, loading y error sincronizados con states de VanJS.
- *
- * @example
- * const { data, loading, error, refetch } = createQuery<Gateway[]>("/api/payment/gateways");
- *
- * return () => {
- *   if (loading.val) return Spin();
- *   if (error.val) return div({ class: "text-red-500" }, error.val);
- *   return div(data.val?.map(g => div(g.name)));
- * }
  */
 export function createQuery<T>(
   url: string | (() => string),
@@ -63,12 +67,16 @@ export function createQuery<T>(
       const targetUrl = typeof url === "function" ? url() : url;
       const fetchInit = typeof init === "function" ? init() : init;
 
+      const authHeaders = getStoredAuthHeaders();
+
       const res = await fetch(targetUrl, {
+        credentials: "include",
+        ...fetchInit,
         headers: {
           Accept: "application/json",
+          ...authHeaders,
           ...(fetchInit?.headers || {}),
         },
-        ...fetchInit,
       });
 
       status.val = res.status;
@@ -99,7 +107,6 @@ export function createQuery<T>(
   };
 
   if (immediate) {
-    // Iniciar llamada asíncrona sin bloquear la inicialización
     fetcher();
   }
 
@@ -119,14 +126,6 @@ export function createQuery<T>(
 
 /**
  * Hook reactivo para realizar mutaciones (POST, PUT, DELETE, PATCH) en APIs con VanJS.
- *
- * @example
- * const { mutate, loading, error } = createMutation<AuthResult, LoginInfo>({
- *   onSuccess: (res) => router.navigate("/dashboard"),
- *   onError: (err) => console.error(err)
- * });
- *
- * mutate({ email, password });
  */
 export function createMutation<TData = any, TVariables = any>(
   urlOrFn:
@@ -150,11 +149,18 @@ export function createMutation<TData = any, TVariables = any>(
         result = await (urlOrFn as (vars: TVariables) => Promise<TData>)(variables);
       } else {
         const targetUrl = typeof urlOrFn === "function" ? (urlOrFn as (v: TVariables) => string)(variables) : urlOrFn;
+        const fetchInit = typeof options.init === "function" ? options.init() : options.init;
+        const authHeaders = getStoredAuthHeaders();
+
         const res = await fetch(targetUrl, {
           method: "POST",
+          credentials: "include",
+          ...fetchInit,
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
+            ...authHeaders,
+            ...(fetchInit?.headers || {}),
           },
           body: JSON.stringify(variables),
         });

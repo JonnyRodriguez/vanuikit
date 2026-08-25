@@ -1,13 +1,6 @@
 // server/index.ts
 /**
  * Punto de entrada del backend demo (Hono + Node.js / Bun).
- *
- * Patrón:
- *   1. App Hono con middleware CORS
- *   2. createApiRouter escanea recursivamente server/routes/
- *   3. Rutas montadas automáticamente (p. ej. server/routes/api/ -> /api/*)
- *   4. serveStatic para archivos frontend (HTML, CSS, bundles)
- *   5. SPA fallback: notFound sirve index.html para el router cliente de VanJS
  */
 import { Hono } from "hono";
 import { cors } from "hono/cors";
@@ -24,17 +17,18 @@ const demoDir = path.resolve(__dirname, "..");
 
 const app = new Hono();
 
-// --- Middleware ---
+// --- Middleware global CORS ---
 app.use(
   "*",
   cors({
-    origin: ["http://localhost:3000"],
+    origin: (origin) => origin || "*",
     credentials: true,
+    allowHeaders: ["Content-Type", "Authorization", "Accept"],
+    allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   }),
 );
 
 // --- Carga dinámica de rutas desde server/routes/ ---
-// Escanea server/routes/api/*.route.ts y los monta según su estructura de carpetas
 const routesDir = path.join(__dirname, "routes");
 const routesApp = await loadRoutes(routesDir);
 app.route("/", routesApp);

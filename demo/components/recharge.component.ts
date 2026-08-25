@@ -1,6 +1,6 @@
+// demo/components/recharge.component.ts
 /**
- * Referencia — pantallas del flujo de recarga construidas con los
- * componentes de la librería (Form, Field, Button, Modal, Spin).
+ * Recharge Component — Modales y formularios de recarga.
  */
 import { van } from "vanui";
 import {
@@ -12,30 +12,17 @@ import {
   type ModalContent,
   type ModalProps,
 } from "vanui";
-import { GatewayItem, type Gateway } from "./gateways.js";
+import { GatewayItem } from "./gateways-list.component.js";
+import type { Gateway, RechargeParams } from "../shared/payment.schema.js";
 
-export type RechargeParams = {
-  id: number;
-  tipo: string;
-  monto_min_recarga: string;
-  monto_max_recarga: string;
-  [key: string]: unknown;
-};
-
-/** Resultado de handleRechargeAmount: {} si fue bien, { error } si falló. */
 export type RecargaResult = { error: string } | {};
 
-/** Lo que RechargeAmount necesita de su orquestador (RechargeModule). */
 export interface RechargeInfo {
   gateway: Gateway;
   params: RechargeParams;
   handleRechargeAmount: (data: Record<string, unknown>) => Promise<RecargaResult>;
 }
 
-/**
- * Validación propia del ejemplo: el monto debe ser un número dentro de un
- * rango. Se agrega al campo base con addValidator (patrón proxy).
- */
 const Between = (
   min: number,
   max: number,
@@ -50,10 +37,6 @@ const Between = (
   },
 });
 
-/**
- * Formulario de monto. `info` es la instancia de RechargeModule e
- * implementa: info.gateway, info.params, info.handleRechargeAmount.
- */
 export const RechargeAmount = (info: RechargeInfo) => {
   const { div } = van.tags;
 
@@ -63,7 +46,11 @@ export const RechargeAmount = (info: RechargeInfo) => {
   const params = info.params;
   const gateway = info.gateway;
 
-  const amount = Field({ label: "Monto a recargar (" + params.tipo + ")", name: "amount", inputType: "number" });
+  const amount = Field({
+    label: "Monto a recargar (" + params.tipo + ")",
+    name: "amount",
+    inputType: "number",
+  });
   amount.addValidator(
     Between(
       parseFloat(params.monto_min_recarga),

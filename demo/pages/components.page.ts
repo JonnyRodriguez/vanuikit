@@ -65,16 +65,13 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
   return div(
     {
       id: "components-page",
-      class: "min-h-screen bg-background text-foreground flex flex-col font-sans",
+      class: "space-y-10 py-4",
     },
-    Header("/components"),
     div(
-      { class: "flex-1 max-w-5xl w-full mx-auto px-4 py-8 space-y-10" },
-      div(
-        { class: "border-b border-border pb-5" },
-        h1({ class: "text-3xl font-extrabold text-foreground" }, "Catálogo de Componentes VanUI"),
-        p({ class: "text-foreground-soft text-sm mt-1" }, "Componentes reactivos, accesibles y modulares para VanJS."),
-      ),
+      { class: "border-b border-border pb-5" },
+      h1({ class: "text-3xl font-extrabold text-foreground" }, "Catálogo de Componentes VanUI"),
+      p({ class: "text-foreground-soft text-sm mt-1" }, "Componentes reactivos, accesibles y modulares para VanJS."),
+    ),
 
       // 1. Toast Notifications
       section(
@@ -184,6 +181,5 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
         ),
         modal.dom(),
       ),
-    ),
-  );
+    );
 }

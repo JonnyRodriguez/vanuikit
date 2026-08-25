@@ -1,28 +1,65 @@
 /**
- * Genera el CSS de utilidades de la demo con UnoCSS, sin el runtime del CDN.
+ * Genera el CSS de utilidades de la demo con UnoCSS.
  *
- * Escanea SOLO los archivos de la demo (pantallas, bundles y html), extrae
- * sus clases y las compila con @unocss/preset-uno -> dist/uno.css
- *
- * El CSS de la librería NO se genera aquí: viene compilado en el paquete
- * (vanui/dist/vanui.css) y el build lo copia a dist/. Este script cubre
- * únicamente lo que la demo estiliza por su cuenta.
- *
- * Uso: bun run uno  (o bun run build, que lo invoca)
- *
- * Dependencias (dev): @unocss/core y @unocss/preset-uno
- *
- * Tema: las clases de color/radio/sombra resuelven a variables `--vui-*`
- * (ver THEME). Las variables están definidas en vanui.css (el paquete),
- * que se carga antes que este archivo; el consumidor re-tematiza
- * sobreescribiéndolas en su propio CSS.
+ * Escanea archivos de demo/ y vanui/src/, extrae sus clases y las compila
+ * a demo/dist/uno.css y demo/dist/vanui.css
  */
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { createGenerator } from "@unocss/core";
 import presetUno from "@unocss/preset-uno";
 
-const OUT = "dist/uno.css";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const rootDir = path.resolve(__dirname, "../..");
+const demoDir = path.resolve(__dirname, "..");
+const vanuiDir = path.resolve(rootDir, "vanui");
+
+const OUT_DEMO = path.join(demoDir, "dist/uno.css");
+const OUT_VANUI = path.join(demoDir, "dist/vanui.css");
+const OUT_VANUI_PKG = path.join(vanuiDir, "dist/vanui.css");
+
+const RESET = `
+*, *::before, *::after {
+  box-sizing: border-box;
+  border-width: 0;
+  border-style: solid;
+  border-color: currentColor;
+}
+`.trim();
+
+const VUI_THEME = `
+:root{
+--vui-primary:#22c55e;
+--vui-primary-hover:#16a34a;
+--vui-primary-active:#15803d;
+--vui-primary-fg:#ffffff;
+--vui-primary-shadow:rgb(34 197 94 / .5);
+--vui-secondary:#d1d5db;
+--vui-secondary-hover:#9ca3af;
+--vui-secondary-active:#6b7280;
+--vui-secondary-fg:#1f2937;
+--vui-accent:#2563eb;
+--vui-accent-hover:#1d4ed8;
+--vui-focus:#3b82f6;
+--vui-background:#ffffff;
+--vui-foreground:#111827;
+--vui-foreground-soft:#374151;
+--vui-muted:#6b7280;
+--vui-border:#d1d5db;
+--vui-overlay:rgb(0 0 0 / .5);
+--vui-destructive:#dc2626;
+--vui-radius-md:0.375rem;
+--vui-radius-lg:0.5rem;
+--vui-radius-2xl:1rem;
+--vui-radius-full:9999px;
+--vui-shadow-sm:0 1px 2px 0 rgb(0 0 0 / .05);
+--vui-shadow-lg:0 10px 15px -3px rgb(0 0 0 / .1),0 4px 6px -4px rgb(0 0 0 / .1);
+--vui-shadow-xl:0 20px 25px -5px rgb(0 0 0 / .1),0 8px 10px -6px rgb(0 0 0 / .1);
+--vui-shadow-2xl:0 25px 50px -12px rgb(0 0 0 / .25);
+}
+`.trim();
 
 /** Mapea las clases de color/radio/sombra a las variables del tema (vanui.css). */
 const THEME = {
@@ -61,42 +98,50 @@ const THEME = {
   },
 };
 
-// Recolecta los archivos a escanear.
-const files = [];
-
-// Escanea archivos raíz de demo (.html, .ts)
-for (const f of fs.readdirSync(".")) {
-  if (f.endsWith(".html") || f.endsWith(".ts")) {
-    files.push(f);
-  }
-}
-
-// Escanea screens/
-if (fs.existsSync("screens")) {
-  for (const f of fs.readdirSync("screens")) {
-    if (f.endsWith(".ts")) {
-      files.push(path.join("screens", f));
+function getFiles(dir) {
+  if (!fs.existsSync(dir)) return [];
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+  const files = [];
+  for (const entry of entries) {
+    const res = path.join(dir, entry.name);
+    if (entry.isDirectory() && entry.name !== "node_modules" && entry.name !== "dist") {
+      files.push(...getFiles(res));
+    } else if (entry.isFile() && (res.endsWith(".ts") || res.endsWith(".html") || res.endsWith(".js"))) {
+      files.push(res);
     }
   }
+  return files;
 }
 
-// El extractor de UnoCSS toma los tokens de clases de cualquier texto;
-// concatenamos todo el código fuente.
-const source = files.map((f) => fs.readFileSync(f, "utf-8")).join("\n");
+const demoFiles = getFiles(demoDir);
+const vanuiFiles = getFiles(path.join(vanuiDir, "src"));
+const allFiles = [...demoFiles, ...vanuiFiles];
+
+const source = allFiles.map((f) => fs.readFileSync(f, "utf-8")).join("\n");
 
 const generator = await createGenerator({
-  // El theme va a nivel del generador, no dentro del preset: así las clases
-  // de color custom, borderRadius y boxShadow resuelven a var(--vui-*).
   theme: THEME,
   presets: [presetUno()],
-  // Sin preflights: el reset y las variables --vui-* vienen de vanui.css.
-  preflights: [],
+  preflights: [
+    {
+      layer: "preflights",
+      getCSS: () => RESET,
+    },
+    {
+      layer: "preflights",
+      getCSS: () => VUI_THEME,
+    },
+  ],
 });
+
 const { css } = await generator.generate(source, { id: "vanui-demo" });
 
-fs.mkdirSync(path.dirname(OUT), { recursive: true });
-fs.writeFileSync(OUT, css, "utf-8");
-console.log(
-  `uno.css generado (${files.length} archivos escaneados, ${css.length} bytes)`,
-);
+fs.mkdirSync(path.dirname(OUT_DEMO), { recursive: true });
+fs.writeFileSync(OUT_DEMO, css, "utf-8");
+fs.writeFileSync(OUT_VANUI, css, "utf-8");
+fs.mkdirSync(path.dirname(OUT_VANUI_PKG), { recursive: true });
+fs.writeFileSync(OUT_VANUI_PKG, css, "utf-8");
 
+console.log(
+  `CSS generado exitosamente (${allFiles.length} archivos escaneados, ${css.length} bytes)`,
+);

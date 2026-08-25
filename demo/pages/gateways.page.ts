@@ -217,9 +217,8 @@ export const GatewaysPage = ({ router }: GatewaysPageProps = {}) => {
     () => {
       if (gatewaysQuery.loading.val || paramsQuery.loading.val) {
         return div(
-          { class: "p-8 text-center flex items-center justify-center gap-3" },
-          Spin(),
-          "Cargando pasarelas...",
+          { class: "p-8 text-center flex items-center justify-center" },
+          Spin("Cargando pasarelas..."),
         );
       }
 

@@ -7,6 +7,7 @@
  * - Vista principal montada con Router
  */
 import { van, createAuth, requireAuth, Router } from "vanui";
+import { Header } from "./components/header.component.js";
 import { LoginPage } from "./pages/login.page.js";
 import { RegisterPage } from "./pages/register.page.js";
 import { GatewaysPage } from "./pages/gateways.page.js";
@@ -45,7 +46,7 @@ export const authState = createAuth({
   },
 });
 
-export function App(): Node {
+export function App() {
   const router = new Router();
 
   router
@@ -61,5 +62,10 @@ export function App(): Node {
     router.resolve();
   });
 
-  return router.start()();
+  const { div } = van.tags;
+  return div(
+    { class: "min-h-screen bg-background text-foreground flex flex-col font-sans" },
+    () => Header(router.path.val),
+    div({ class: "flex-1 max-w-5xl w-full mx-auto px-4 py-4" }, router.start()),
+  );
 }

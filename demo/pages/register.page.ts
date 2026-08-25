@@ -14,7 +14,7 @@ export type RegisterPageProps = {
 };
 
 export const RegisterPage = ({ router }: RegisterPageProps) => {
-  const { div } = van.tags;
+  const { div, h1, p, a } = van.tags;
 
   const registerMutation = createMutation<{ status: string; data: AuthResponse }, RegisterInput>(
     "/api/auth/register",
@@ -34,7 +34,9 @@ export const RegisterPage = ({ router }: RegisterPageProps) => {
   );
 
   return div(
-    { class: "page max-w-md mx-auto" },
+    { class: "max-w-md mx-auto my-8 p-6 bg-background rounded-xl border border-border shadow-sm" },
+    h1({ class: "text-2xl font-bold text-foreground text-center mb-1" }, "Crear Cuenta"),
+    p({ class: "text-sm text-foreground-soft text-center mb-6" }, "Regístrate para acceder a las pasarelas"),
     RegisterForm({
       handleRegister: async (data) => {
         const result = await registerMutation.mutate(data as RegisterInput);
@@ -44,5 +46,20 @@ export const RegisterPage = ({ router }: RegisterPageProps) => {
         return {};
       },
     }),
+    div(
+      { class: "mt-6 text-center text-xs text-foreground-soft border-t border-border pt-4" },
+      "¿Ya tienes cuenta? ",
+      a(
+        {
+          href: "/login",
+          class: "text-accent hover:underline font-medium cursor-pointer",
+          onclick: (e: MouseEvent) => {
+            e.preventDefault();
+            router.navigate("/login");
+          },
+        },
+        "Inicia sesión aquí",
+      ),
+    ),
   );
 };

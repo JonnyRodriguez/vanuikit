@@ -14,7 +14,7 @@ export type LoginPageProps = {
 };
 
 export const LoginPage = ({ router }: LoginPageProps) => {
-  const { div } = van.tags;
+  const { div, h1, p, a } = van.tags;
 
   const loginMutation = createMutation<{ status: string; data: AuthResponse }, LoginInput>(
     "/api/auth/login",
@@ -37,7 +37,9 @@ export const LoginPage = ({ router }: LoginPageProps) => {
   );
 
   return div(
-    { class: "page max-w-md mx-auto" },
+    { class: "max-w-md mx-auto my-8 p-6 bg-background rounded-xl border border-border shadow-sm" },
+    h1({ class: "text-2xl font-bold text-foreground text-center mb-1" }, "Iniciar Sesión"),
+    p({ class: "text-sm text-foreground-soft text-center mb-6" }, "Ingresa con tus credenciales"),
     LoginForm({
       handleLogin: async (data) => {
         const result = await loginMutation.mutate(data as LoginInput);
@@ -47,5 +49,20 @@ export const LoginPage = ({ router }: LoginPageProps) => {
         return {};
       },
     }),
+    div(
+      { class: "mt-6 text-center text-xs text-foreground-soft border-t border-border pt-4" },
+      "¿No tienes cuenta? ",
+      a(
+        {
+          href: "/register",
+          class: "text-accent hover:underline font-medium cursor-pointer",
+          onclick: (e: MouseEvent) => {
+            e.preventDefault();
+            router.navigate("/register");
+          },
+        },
+        "Regístrate aquí",
+      ),
+    ),
   );
 };

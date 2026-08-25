@@ -93,6 +93,7 @@ export const ModalBase = (
     mount,
     isVisible,
     render,
+    dom: render,
   };
 };
 

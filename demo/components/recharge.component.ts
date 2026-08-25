@@ -1,6 +1,6 @@
+// demo/components/***REMOVED***.component.ts
 /**
- * Referencia — pantallas del flujo de ***REMOVED*** construidas con los
- * componentes de la librería (Form, Field, Button, Modal, Spin).
+ * ***REMOVED*** Component — Modales y formularios de ***REMOVED***.
  */
 import { van } from "vanui";
 import {
@@ -12,30 +12,17 @@ import {
   type ModalContent,
   type ModalProps,
 } from "vanui";
-import { ***REMOVED***Item, type ***REMOVED*** } from "./***REMOVED***.js";
+import { ***REMOVED***Item } from "./***REMOVED***-list.component.js";
+import type { ***REMOVED***, ***REMOVED***Params } from "../shared/***REMOVED***.schema.js";
 
-export type ***REMOVED***Params = {
-  id: number;
-  tipo: string;
-  monto_min_***REMOVED***: string;
-  monto_max_***REMOVED***: string;
-  [key: string]: unknown;
-};
-
-/** Resultado de handle***REMOVED***Amount: {} si fue bien, { error } si falló. */
 export type ***REMOVED***Result = { error: string } | {};
 
-/** Lo que ***REMOVED***Amount necesita de su orquestador (***REMOVED***Module). */
 export interface ***REMOVED***Info {
   ***REMOVED***: ***REMOVED***;
   params: ***REMOVED***Params;
   handle***REMOVED***Amount: (data: Record<string, unknown>) => Promise<***REMOVED***Result>;
 }
 
-/**
- * Validación propia del ejemplo: el monto debe ser un número dentro de un
- * rango. Se agrega al campo base con addValidator (patrón proxy).
- */
 const Between = (
   min: number,
   max: number,
@@ -50,10 +37,6 @@ const Between = (
   },
 });
 
-/**
- * Formulario de monto. `info` es la instancia de ***REMOVED***Module e
- * implementa: info.***REMOVED***, info.params, info.handle***REMOVED***Amount.
- */
 export const ***REMOVED***Amount = (info: ***REMOVED***Info) => {
   const { div } = van.tags;
 
@@ -63,7 +46,11 @@ export const ***REMOVED***Amount = (info: ***REMOVED***Info) => {
   const params = info.params;
   const ***REMOVED*** = info.***REMOVED***;
 
-  const amount = Field({ label: "Monto a ***REMOVED***r (" + params.tipo + ")", name: "amount", inputType: "number" });
+  const amount = Field({
+    label: "Monto a ***REMOVED***r (" + params.tipo + ")",
+    name: "amount",
+    inputType: "number",
+  });
   amount.addValidator(
     Between(
       parseFloat(params.monto_min_***REMOVED***),

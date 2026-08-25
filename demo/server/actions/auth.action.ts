@@ -1,28 +1,19 @@
 // server/actions/auth.action.ts
 /**
  * Auth Actions — Lógica pura de autenticación y registro.
- * Desacoplada de la capa de transporte HTTP.
+ * Consume esquemas compartidos de demo/shared/auth.schema.ts.
  */
-import { z } from "zod";
 import { UserRepository, FAIL_EMAIL } from "../repositories/user.repository.js";
+import {
+  loginSchema,
+  registerSchema,
+  type LoginInput,
+  type RegisterInput,
+  type AuthResponse,
+} from "../../shared/auth.schema.js";
 
-// --- Schemas Zod ---
-
-export const loginSchema = z.object({
-  email: z.string().email("Correo electrónico inválido"),
-  password: z.string().min(1, "La contraseña es requerida"),
-});
-
-export type LoginInput = z.infer<typeof loginSchema>;
-
-export const registerSchema = z.object({
-  name: z.string().min(1, "El nombre es requerido"),
-  email: z.string().email("Correo electrónico inválido"),
-  password: z.string().min(1, "La contraseña es requerida"),
-  confirm: z.string().min(1, "Confirma la contraseña"),
-});
-
-export type RegisterInput = z.infer<typeof registerSchema>;
+export { loginSchema, registerSchema };
+export type { LoginInput, RegisterInput };
 
 export interface ActionResult<T = unknown> {
   success: boolean;
@@ -32,15 +23,12 @@ export interface ActionResult<T = unknown> {
   details?: unknown;
 }
 
-// --- Funciones de acción (actions) ---
-
 /**
  * Autentica las credenciales de un usuario.
  */
-export async function loginAction(input: LoginInput): Promise<ActionResult> {
+export async function loginAction(input: LoginInput): Promise<ActionResult<AuthResponse>> {
   const { email, password } = input;
 
-  // Reproducción del caso de prueba mock: fail@example.com siempre falla
   if (email === FAIL_EMAIL) {
     return {
       success: false,
@@ -68,7 +56,7 @@ export async function loginAction(input: LoginInput): Promise<ActionResult> {
 /**
  * Registra un nuevo usuario en el sistema.
  */
-export async function registerAction(input: RegisterInput): Promise<ActionResult> {
+export async function registerAction(input: RegisterInput): Promise<ActionResult<AuthResponse>> {
   const { name, email, password, confirm } = input;
 
   if (email === FAIL_EMAIL || UserRepository.findByEmail(email)) {

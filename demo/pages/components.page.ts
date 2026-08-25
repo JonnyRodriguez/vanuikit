@@ -1,9 +1,6 @@
+// demo/pages/components.page.ts
 /**
- * ComponentsScreen — catálogo visual de componentes de la librería.
- *
- * Reúne todos los componentes (Button, Select, Textarea, Label, Field,
- * Modal, Spin) en una sola pantalla SPA con Nav, reemplazando el viejo
- * components.html + components.js por un único componente.
+ * ComponentsPage — Catálogo visual interactivo de componentes de la librería.
  */
 import { van } from "vanui";
 import type { ChildDom } from "vanjs-core";
@@ -29,8 +26,7 @@ const section = (title: string, ...children: ChildDom[]) =>
     ...children,
   );
 
-
-export const ComponentsScreen = () => {
+export const ComponentsPage = () => {
   const { div } = van.tags;
 
   // ---- Modal ----
@@ -56,10 +52,12 @@ export const ComponentsScreen = () => {
     div(
       { class: "mb-4" },
       Label({}, "País"),
-      Select({ name: "country" },
+      Select(
+        { name: "country" },
         option({ value: "" }, "Selecciona..."),
         option({ value: "cl" }, "Chile"),
-        option({ value: "mx" }, "México")),
+        option({ value: "mx" }, "México"),
+      ),
     ),
     div(
       { class: "mb-4" },
@@ -71,7 +69,6 @@ export const ComponentsScreen = () => {
   const confirmField = PasswordField("Confirmar contraseña", "confirm");
   confirmField.addValidator(Match("password", "Las contraseñas no coinciden"));
 
-  // Demo: campo con validador extra (Match) encadenado sin perder el del tipo.
   const extraFieldDemo = div(
     { class: "max-w-sm mb-4" },
     confirmField.dom(),
@@ -86,8 +83,21 @@ export const ComponentsScreen = () => {
       "Campos",
       fields,
       extraFieldDemo,
-      div({ class: "mt-4" },
-        Button({ variant: "primary", onclick: () => alert("Formulario enviado") }, "Enviar")),
+      div(
+        { class: "mt-4" },
+        Button(
+          {
+            variant: "primary",
+            onclick: () => {
+              modal.set({
+                title: "Formulario",
+                body: "¡Formulario enviado con éxito!",
+              }, true);
+            },
+          },
+          "Enviar",
+        ),
+      ),
     ),
     section(
       "Modal",

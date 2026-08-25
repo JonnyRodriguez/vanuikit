@@ -8,6 +8,7 @@
 import { van, RegisterForm, createMutation, type Router } from "vanui";
 import type { RegisterInput, AuthResponse } from "../shared/auth.schema.js";
 import { authState } from "../app.js";
+import { i18n } from "../shared/i18n.config.js";
 
 export type RegisterPageProps = {
   router: Router;
@@ -35,30 +36,32 @@ export const RegisterPage = ({ router }: RegisterPageProps) => {
 
   return div(
     { class: "max-w-md mx-auto my-8 p-6 bg-background rounded-xl border border-border shadow-sm" },
-    h1({ class: "text-2xl font-bold text-foreground text-center mb-1" }, "Crear Cuenta"),
-    p({ class: "text-sm text-foreground-soft text-center mb-6" }, "Regístrate para acceder a las ***REMOVED***s"),
+    h1({ class: "text-2xl font-bold text-foreground text-center mb-1" }, i18n.t("register.title")),
+    p({ class: "text-sm text-foreground-soft text-center mb-6" }, i18n.t("register.subtitle")),
     RegisterForm({
       handleRegister: async (data) => {
         const result = await registerMutation.mutate(data as RegisterInput);
         if (!result) {
-          return { error: registerMutation.error.val || "Error al crear cuenta" };
+          return { error: i18n.raw("register.errGeneric") };
         }
         return {};
       },
+      i18n,
     }),
     div(
       { class: "mt-6 text-center text-xs text-foreground-soft border-t border-border pt-4" },
-      "¿Ya tienes cuenta? ",
-      a(
-        {
-          href: "/login",
-          class: "text-accent hover:underline font-medium cursor-pointer",
-          onclick: (e: MouseEvent) => {
-            e.preventDefault();
-            router.navigate("/login");
+      () => div({}, i18n.t("register.haveAccount"), " ",
+        a(
+          {
+            href: "/login",
+            class: "text-accent hover:underline font-medium cursor-pointer",
+            onclick: (e: MouseEvent) => {
+              e.preventDefault();
+              router.navigate("/login");
+            },
           },
-        },
-        "Inicia sesión aquí",
+          i18n.t("register.loginLink"),
+        ),
       ),
     ),
   );

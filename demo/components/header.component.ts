@@ -5,7 +5,7 @@ import { i18n } from "../shared/i18n.config.js";
 import { theme } from "../shared/theme.config.js";
 
 export function Header(currentPath: string = "/") {
-  const { header, div, span, a, button } = van.tags;
+  const { header, div, span, a, button, select, option } = van.tags;
 
   const links: NavLink[] = [
     { href: "/***REMOVED***", label: i18n.t("nav.***REMOVED***") },
@@ -18,17 +18,18 @@ export function Header(currentPath: string = "/") {
     else theme.setMode("system");
   };
 
-  const toggleLang = () => {
-    i18n.setLocale(i18n.currentLocale.val === "es" ? "en" : "es");
-  };
+  // Opciones del selector de idioma: toma los idiomas del diccionario. Cada
+  // opción se etiqueta con el nombre nativo (locales[código].lang[código]).
+  const localeOptions = i18n.locales
+    ? Object.keys(i18n.locales).map((code) => ({
+        code,
+        label: i18n.locales[code]?.lang?.[code] ?? code,
+      }))
+    : [];
 
   const themeIcon = van.derive(() => {
     if (theme.mode.val === "system") return "💻 Auto";
     return theme.mode.val === "dark" ? "🌙 Dark" : "☀️ Light";
-  });
-
-  const langLabel = van.derive(() => {
-    return i18n.currentLocale.val === "es" ? "🌐 ES" : "🌐 EN";
   });
 
   return header(
@@ -50,16 +51,22 @@ export function Header(currentPath: string = "/") {
         { class: "flex items-center gap-3" },
         Nav(links, { current: currentPath, class: "my-0 px-0" }),
 
-        // Selector de Idioma
-        button(
+        // Selector de Idioma (dinámico: toma los idiomas del diccionario)
+        select(
           {
-            type: "button",
             class:
-              "text-xs px-2.5 py-1 rounded border border-border bg-background hover:bg-secondary/40 text-foreground font-medium cursor-pointer transition-colors",
-            title: "Cambiar idioma / Switch language",
-            onclick: toggleLang,
+              "text-xs px-2 py-1.5 rounded border border-border bg-background text-foreground font-medium cursor-pointer transition-colors",
+            "aria-label": "Idioma / Language",
+            onchange: (e: Event) =>
+              i18n.setLocale((e.target as HTMLSelectElement).value),
+            value: () => i18n.currentLocale.val,
           },
-          langLabel,
+          localeOptions.map(({ code, label }) =>
+            option(
+              { value: code, selected: () => i18n.currentLocale.val === code },
+              label,
+            ),
+          ),
         ),
 
         // Selector de Tema

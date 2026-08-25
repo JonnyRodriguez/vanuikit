@@ -8,6 +8,7 @@
 import { van, LoginForm, createMutation, type Router } from "vanui";
 import type { LoginInput, AuthResponse } from "../shared/auth.schema.js";
 import { authState } from "../app.js";
+import { i18n } from "../shared/i18n.config.js";
 
 export type LoginPageProps = {
   router: Router;
@@ -38,30 +39,32 @@ export const LoginPage = ({ router }: LoginPageProps) => {
 
   return div(
     { class: "max-w-md mx-auto my-8 p-6 bg-background rounded-xl border border-border shadow-sm" },
-    h1({ class: "text-2xl font-bold text-foreground text-center mb-1" }, "Iniciar Sesión"),
-    p({ class: "text-sm text-foreground-soft text-center mb-6" }, "Ingresa con tus credenciales"),
+    h1({ class: "text-2xl font-bold text-foreground text-center mb-1" }, i18n.t("login.title")),
+    p({ class: "text-sm text-foreground-soft text-center mb-6" }, i18n.t("login.subtitle")),
     LoginForm({
       handleLogin: async (data) => {
         const result = await loginMutation.mutate(data as LoginInput);
         if (!result) {
-          return { error: loginMutation.error.val || "Error al iniciar sesión" };
+          return { error: i18n.raw("login.errGeneric") };
         }
         return {};
       },
+      i18n,
     }),
     div(
       { class: "mt-6 text-center text-xs text-foreground-soft border-t border-border pt-4" },
-      "¿No tienes cuenta? ",
-      a(
-        {
-          href: "/register",
-          class: "text-accent hover:underline font-medium cursor-pointer",
-          onclick: (e: MouseEvent) => {
-            e.preventDefault();
-            router.navigate("/register");
+      () => div({}, i18n.t("login.noAccount"), " ",
+        a(
+          {
+            href: "/register",
+            class: "text-accent hover:underline font-medium cursor-pointer",
+            onclick: (e: MouseEvent) => {
+              e.preventDefault();
+              router.navigate("/register");
+            },
           },
-        },
-        "Regístrate aquí",
+          i18n.t("login.signupLink"),
+        ),
       ),
     ),
   );

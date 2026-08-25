@@ -1,8 +1,8 @@
 # VanUI — librería de componentes VanJS
 
 Componentes VanJS organizados **de simple a complejo** en una sola capa de
-`components/`, y las **pantallas de ejemplo** (composición de componentes) en
-`screens/`. Librería universal de UI, sin dependencias del backend: el tema se
+`components/`, y las **páginas y formularios preconstruidos** en
+`pages/`. Librería universal de UI, sin dependencias del backend: el tema se
 personaliza con variables CSS `--vui-*`.
 
 ## Estructura
@@ -13,22 +13,23 @@ personaliza con variables CSS `--vui-*`.
     ├── validators.ts            <- Validator y subclases (Required, Email, …)
     ├── router.ts                <- base de SPA: navegación con params, guards y redirects
     ├── auth.ts                  <- base de sesión: createAuth + requireAuth
+    ├── fetch.ts                 <- capa de datos reactiva: createQuery + createMutation
+    ├── theme.ts                 <- gestor reactivo de tema: createTheme (light, dark, system)
+    ├── i18n.ts                  <- internacionalización reactiva: createI18n ({ currentLocale, setLocale, t })
     ├── components/              <- de simple a complejo
-    │   ├── button.ts            <-   Button (variant/size), PrimaryButton,
-    │   │                            SecondaryButton
-    │   ├── field.ts             <-   Input, Select, Textarea, Label y las
-    │   │                            fábricas Field, TextField, EmailField,
-    │   │                            PasswordField
+    │   ├── button.ts            <-   Button (variant/size), PrimaryButton, SecondaryButton
+    │   ├── field.ts             <-   Input, Select, Textarea, Label y las fábricas Field, TextField, EmailField, PasswordField
     │   ├── form.ts              <-   Form (fábrica: itera las validaciones)
-    │   ├── modal.ts             <-   ModalBase, ModalTitle, ModalClose,
-    │   │                            ModalHeaderWithTitleAndClose,
-    │   │                            ModalFooterWithCloseButton, Modal
+    │   ├── badge.ts             <-   Badge (variantes e indicadores de estado)
+    │   ├── table.ts             <-   Table (tabla declarativa y tipada)
+    │   ├── toast.ts             <-   toast (notificaciones flotantes reactivas)
+    │   ├── modal.ts             <-   ModalBase, ModalTitle, ModalClose, Modal
     │   ├── nav.ts               <-   Nav (formato completo + aria-current)
     │   ├── spin.ts              <-   Spin
     │   └── spin-modal.ts        <-   SpinModal (contenido de modal)
-    └── screens/                 <- pantallas públicas reutilizables
-        ├── login.ts             <-   Formulario de inicio de sesión
-        └── register.ts          <-   Formulario de registro
+    └── pages/                   <- páginas y formularios públicos reutilizables
+        ├── login.ts             <-   LoginForm (formulario de inicio de sesión)
+        └── register.ts          <-   RegisterForm (formulario de registro)
     ├── scripts/uno.js           <- compila las clases de src/ a dist/vanui.css
     └── dist/vanui.css           <- hoja de estilos publicada (generada)
 
@@ -39,7 +40,7 @@ de la librería.
 
 Cada familia va de lo más básico a lo compuesto:
 
-1. **`button.ts`** — `Button` unificado con `variant` (`primary`/`secondary`)
+1. **`button.ts`** — `Button` unificado con `variant` (`primary`/`secondary`/`destructive`/`ghost`)
    y `size` (`sm`/`md`/`lg`); `PrimaryButton` y `SecondaryButton` quedan como
    wrappers de compatibilidad. `Button` usa `type: "button"` por defecto
    (pasa `type: "submit"` cuando vaya dentro de un `Form`).
@@ -53,18 +54,19 @@ Cada familia va de lo más básico a lo compuesto:
    `Email`, `MinLength`, `Match` (compara con otro campo del formulario).
 4. **`form.ts`** — la fábrica `Form` junta los valores, **itera por defecto las
    verificaciones de sus campos** y solo llama al handler si todas pasan.
-5. **`modal.ts`** — `ModalBase` (overlay + zonas header/body/footer) y encima
+5. **`badge.ts`** — etiquetas semánticas de estado (`default`, `success`, `warning`, `destructive`, `outline`).
+6. **`table.ts`** — componente de tabla declarativo con columnas tipadas, renderizado custom y estado vacío.
+7. **`toast.ts`** — despachador global de notificaciones flotantes auto-cerrables (`toast.success`, `toast.error`, etc.).
+8. **`modal.ts`** — `ModalBase` (overlay + zonas header/body/footer) y encima
    `Modal`, que ya trae título, botón de cierre y footer con "Cerrar".
-6. **`nav.ts`** — `Nav` trae el formato completo (contenedor centrado, links
+9. **`nav.ts`** — `Nav` trae el formato completo (contenedor centrado, links
    accent, hover underline, activo en bold con `aria-current`); acepta
    `class` extra para ajustes del consumidor.
-7. **`spin.ts` / `spin-modal.ts`** — el indicador y su contenido de modal.
+10. **`spin.ts` / `spin-modal.ts`** — el indicador y su contenido de modal.
 
-**API pública de `screens/`:** `LoginForm` y `RegisterForm` (formularios
-reutilizables). El flujo de recarga (`gateways`, `qr`, `recharge`,
-`recharge-module`) **no** es parte de la librería: es el ejemplo de partida y
-vive en la demo (`../demo/screens/`), consumido solo por ella. Úsalo como
-referencia de cómo se combinan los componentes.
+**API pública de `pages/`:** `LoginForm` y `RegisterForm` (formularios/vistas
+reutilizables). El flujo de recarga (`gateways`, `qr`, `recharge`)
+vive en la demo (`../demo/pages/` y `../demo/components/`), consumido solo por ella.
 
 ## Base de desarrollo SPA
 
@@ -72,7 +74,7 @@ Sin frameworks externos (ni Next.js, ni SvelteKit, ni solid-router): la
 librería trae lo mínimo para armar una SPA con backend Hono.
 
 **`Router`** (`router.ts`) — navegación cliente con pushState/popstate e
-intercepción de clicks, **params** (`/product/:id` → facory recibe `{ params }`),
+intercepción de clicks, **params** (`/product/:id` → factory recibe `{ params }`),
 **guards** (`beforeEnter`) y **redirects**. El matcher está escrito a mano
 (sin dependencias):
 
@@ -168,6 +170,50 @@ Botones con variante y tamaño (defaults: `primary`, `md`):
 
     Button({ variant: "secondary", size: "sm" }, "Cancelar");
     Button({ variant: "primary", size: "lg", type: "submit" }, "Guardar");
+
+## Tema (createTheme)
+
+Gestor reactivo de tema (Claro / Oscuro / Sistema) sin dependencias:
+
+```ts
+import { createTheme } from "vanui";
+
+const theme = createTheme({
+  defaultMode: "system", // "light" | "dark" | "system"
+  storageKey: "my-app-theme",
+});
+
+// Métodos y estados reactivos:
+theme.setMode("dark");
+theme.toggle(); // Alterna entre light y dark
+console.log(theme.mode.val);   // "dark"
+console.log(theme.isDark.val); // true
+```
+
+Aplica automáticamente la clase `.dark` y `data-theme="dark"` al elemento `<html>`, sincronizando con las variables CSS `--vui-*`.
+
+## Internacionalización (createI18n)
+
+Sistema reactivo ultraligero de traducción e interpolación:
+
+```ts
+import { createI18n } from "vanui";
+
+const i18n = createI18n({
+  defaultLocale: "es",
+  locales: {
+    es: { greeting: "Hola {name}", buttons: { save: "Guardar" } },
+    en: { greeting: "Hello {name}", buttons: { save: "Save" } },
+  },
+});
+
+// Reactivo: dentro de un nodo VanJS se actualiza solo al cambiar de idioma
+div(i18n.t("buttons.save"));
+div(i18n.t("greeting", { name: "Carlos" }));
+
+// Cambiar idioma:
+i18n.setLocale("en");
+```
 
 ## CSS
 

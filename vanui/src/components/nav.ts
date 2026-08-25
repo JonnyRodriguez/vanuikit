@@ -3,7 +3,7 @@ import { cx } from "../util.js";
 
 export type NavLink = {
   href: string;
-  label: string;
+  label: string | import("vanjs-core").State<string> | (() => string | Node);
 };
 
 type NavProps = {

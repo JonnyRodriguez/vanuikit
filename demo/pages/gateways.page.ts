@@ -9,6 +9,7 @@ import { van, Modal, Spin, createQuery, createMutation, type Router } from "vanu
 import { GatewaysList } from "../components/gateways-list.component.js";
 import { QRGenerator } from "../components/qr-generator.component.js";
 import type { Gateway, RechargeParams, RechargeResponse } from "../shared/payment.schema.js";
+import { i18n } from "../shared/i18n.config.js";
 
 const RECHARGE_ENDPOINT = "/api/payment/recharge";
 
@@ -259,7 +260,7 @@ export const GatewaysPage = ({ router }: GatewaysPageProps = {}) => {
       const gateways = gatewaysQuery.data.val || [];
       return div(
         {},
-        h1({ class: "text-2xl font-bold text-center mb-6" }, "Recargar saldo"),
+        h1({ class: "text-2xl font-bold text-center mb-6" }, i18n.t("gateways.title")),
         div(
           { class: "flex justify-center" },
           GatewaysList(gateways, openAmountModal),

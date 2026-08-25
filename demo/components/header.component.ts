@@ -1,22 +1,43 @@
 // demo/components/header.component.ts
-import { van, Nav, type NavLink } from "vanui";
+import { van, Nav, Button, type NavLink } from "vanui";
 import { authState } from "../app.js";
+import { i18n } from "../shared/i18n.config.js";
+import { theme } from "../shared/theme.config.js";
 
 export function Header(currentPath: string = "/") {
-  const { header, div, span, a } = van.tags;
+  const { header, div, span, a, button } = van.tags;
 
   const links: NavLink[] = [
-    { href: "/gateways", label: "Pasarelas" },
-    { href: "/components", label: "Componentes" },
+    { href: "/gateways", label: i18n.t("nav.gateways") },
+    { href: "/components", label: i18n.t("nav.components") },
   ];
+
+  const cycleTheme = () => {
+    if (theme.mode.val === "system") theme.setMode("dark");
+    else if (theme.mode.val === "dark") theme.setMode("light");
+    else theme.setMode("system");
+  };
+
+  const toggleLang = () => {
+    i18n.setLocale(i18n.currentLocale.val === "es" ? "en" : "es");
+  };
+
+  const themeIcon = van.derive(() => {
+    if (theme.mode.val === "system") return "💻 Auto";
+    return theme.mode.val === "dark" ? "🌙 Dark" : "☀️ Light";
+  });
+
+  const langLabel = van.derive(() => {
+    return i18n.currentLocale.val === "es" ? "🌐 ES" : "🌐 EN";
+  });
 
   return header(
     {
       class:
-        "w-full border-b border-border bg-background/80 backdrop-blur sticky top-0 z-40 px-4 py-3 mb-6",
+        "w-full border-b border-border bg-background/80 backdrop-blur sticky top-0 z-40 px-4 py-3 mb-6 transition-colors",
     },
     div(
-      { class: "max-w-5xl mx-auto flex items-center justify-between" },
+      { class: "max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-3" },
       a(
         {
           href: "/gateways",
@@ -27,7 +48,33 @@ export function Header(currentPath: string = "/") {
       ),
       div(
         { class: "flex items-center gap-3" },
-        Nav(links, { current: currentPath }),
+        Nav(links, { current: currentPath, class: "my-0 px-0" }),
+
+        // Selector de Idioma
+        button(
+          {
+            type: "button",
+            class:
+              "text-xs px-2.5 py-1 rounded border border-border bg-background hover:bg-secondary/40 text-foreground font-medium cursor-pointer transition-colors",
+            title: "Cambiar idioma / Switch language",
+            onclick: toggleLang,
+          },
+          langLabel,
+        ),
+
+        // Selector de Tema
+        button(
+          {
+            type: "button",
+            class:
+              "text-xs px-2.5 py-1 rounded border border-border bg-background hover:bg-secondary/40 text-foreground font-medium cursor-pointer transition-colors",
+            title: "Alternar tema (Claro / Oscuro / Sistema)",
+            onclick: cycleTheme,
+          },
+          themeIcon,
+        ),
+
+        // Auth action
         () =>
           authState.user.val
             ? a(
@@ -40,14 +87,14 @@ export function Header(currentPath: string = "/") {
                     window.location.pathname = "/login";
                   },
                 },
-                "Salir",
+                i18n.t("nav.logout"),
               )
             : a(
                 {
                   href: "/login",
-                  class: "text-sm bg-primary text-primary-fg px-3 py-1.5 rounded-md font-medium no-underline",
+                  class: "text-sm bg-primary text-primary-fg px-3 py-1.5 rounded-md font-medium no-underline hover:opacity-90 transition-opacity",
                 },
-                "Acceder",
+                i18n.t("nav.login"),
               ),
       ),
     ),

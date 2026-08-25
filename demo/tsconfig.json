@@ -13,5 +13,5 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["screens", "*.ts", "*.js", "server"]
+  "include": ["pages", "components", "*.ts", "*.js", "server"]
 }

@@ -19,8 +19,8 @@ export { Table, type TableProps, type TableColumn } from "./components/table.js"
 export { toast, type ToastType, type ToastOptions, type ToastItem } from "./components/toast.js";
 
 // Pantallas / Formularios preconstruidos
-export { LoginForm } from "./screens/login.js";
-export { RegisterForm } from "./screens/register.js";
+export { LoginForm } from "./pages/login.js";
+export { RegisterForm } from "./pages/register.js";
 
 // Autenticación de Cliente
 export {
@@ -63,3 +63,18 @@ export {
 
 // Utilidades generales
 export { cx } from "./util.js";
+
+// Tema (Claro / Oscuro / Sistema)
+export {
+  createTheme,
+  type ThemeMode,
+  type ThemeOptions,
+  type ThemeInstance,
+} from "./theme.js";
+
+// Internacionalización (i18n)
+export {
+  createI18n,
+  type I18nOptions,
+  type I18nInstance,
+} from "./i18n.js";

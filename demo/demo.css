@@ -8,11 +8,21 @@
 *::before, *::after {
   box-sizing: border-box;
 }
+:root {
+  --demo-bg: #f5f7fa;
+}
+
+:root.dark, [data-theme="dark"] {
+  --demo-bg: #111827;
+}
+
 body {
   margin: 0;
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  background: #f5f7fa;
+  background: var(--demo-bg);
+  color: var(--vui-foreground);
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 /* Título del shell (App), no un h1 global: las pantallas tienen sus propios títulos. */
 .demo-title {
@@ -20,12 +30,15 @@ body {
   font-size: 1.5rem;
   max-width: 720px;
   padding: 0 20px;
+  color: var(--vui-foreground);
 }
 .page {
-  background: white;
+  background: var(--vui-background);
+  color: var(--vui-foreground);
   padding: 24px;
   margin: 20px auto;
   max-width: 720px;
   border-radius: var(--vui-radius-lg);
   box-shadow: var(--vui-shadow-sm);
+  border: 1px solid var(--vui-border);
 }

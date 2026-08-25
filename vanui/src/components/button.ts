@@ -10,6 +10,8 @@ const VARIANT_CLASSES = {
     "bg-primary text-primary-fg hover:bg-primary-hover active:bg-primary-active shadow-primary-shadow",
   secondary:
     "bg-secondary text-secondary-fg hover:bg-secondary-hover active:bg-secondary-active",
+  destructive:
+    "bg-destructive text-white hover:opacity-90 active:opacity-80",
 } as const;
 
 /** Tamaños estándar (bootstrap/shadcn-like). */

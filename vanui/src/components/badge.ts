@@ -52,7 +52,7 @@ export function Badge(props: BadgeProps) {
 
   return span(
     {
-      id: props.id,
+      ...(props.id ? { id: props.id } : {}),
       class: `inline-flex items-center gap-1.5 font-medium rounded-full whitespace-nowrap ${variantStyles[variant]} ${sizeStyles[size]} ${props.class ?? ""}`,
     },
     props.dot

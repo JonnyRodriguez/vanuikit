@@ -24,7 +24,7 @@ import type { Guard } from "./router.js";
 
 /** Usuario de sesión (lo define la app; el mínimo es id + email). */
 export type AuthUser = {
-  id: string;
+  id: string | number;
   email: string;
   [key: string]: unknown;
 };

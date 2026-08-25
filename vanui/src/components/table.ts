@@ -41,7 +41,7 @@ export function Table<T extends Record<string, any> = any>(props: TableProps<T>)
 
   return div(
     {
-      id: props.id,
+      ...(props.id ? { id: props.id } : {}),
       class: `w-full overflow-x-auto rounded-xl border border-slate-800 bg-slate-900/50 shadow-sm ${props.class ?? ""}`,
     },
     () => {
@@ -92,8 +92,8 @@ export function Table<T extends Record<string, any> = any>(props: TableProps<T>)
                 return th(
                   {
                     class: `px-4 py-3.5 ${alignClass} ${col.sortable ? "cursor-pointer select-none hover:text-white transition-colors" : ""}`,
-                    style: col.width ? `width: ${col.width}` : undefined,
-                    onclick: col.sortable ? () => handleSort(col.key) : undefined,
+                    ...(col.width ? { style: `width: ${col.width}` } : {}),
+                    ...(col.sortable ? { onclick: () => handleSort(col.key) } : {}),
                   },
                   div(
                     { class: `inline-flex items-center gap-1.5 ${col.align === "right" ? "justify-end" : col.align === "center" ? "justify-center" : "justify-start"}` },

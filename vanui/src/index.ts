@@ -10,7 +10,7 @@ export { van };
 export { Button, PrimaryButton, SecondaryButton, type ButtonVariant, type ButtonSize } from "./components/button.js";
 export { Field, Input, Select, Textarea } from "./components/field.js";
 export { Form } from "./components/form.js";
-export { Modal, ModalBase, type ModalContent, type ModalZone } from "./components/modal.js";
+export { Modal, ModalBase, type ModalContent, type ModalZone, type ModalProps } from "./components/modal.js";
 export { Spin } from "./components/spin.js";
 export { SpinModal } from "./components/spin-modal.js";
 export { Nav, type NavLink } from "./components/nav.js";

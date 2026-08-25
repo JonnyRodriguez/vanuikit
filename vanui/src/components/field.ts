@@ -11,6 +11,9 @@ const FORM_CONTROL_CLASSES =
   " focus:outline-none focus:ring-2 focus:ring-focus focus:border-focus" +
   " transition duration-150 ease-in-out";
 
+/** Texto de un control: string estático o State reactivo (para i18n). */
+export type FieldText = string | State<string>;
+
 /** Props passthrough de un control: atributos HTML válidos de VanJS. */
 type FieldProps = { class?: string } & Record<string, PropValueOrDerived>;
 
@@ -64,11 +67,11 @@ export type Field = {
 
 /** Config del Field base. `control` reemplaza el input (p. ej. un select). */
 export type FieldConfig = {
-  label: string;
+  label: FieldText;
   name: string;
   inputType?: string;
-  placeholder?: string;
-  hint?: string;
+  placeholder?: FieldText;
+  hint?: FieldText;
   control?: () => ChildDom;
 };
 

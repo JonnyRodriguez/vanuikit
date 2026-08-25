@@ -1,4 +1,5 @@
 import van from "vanjs-core";
+import type { State } from "vanjs-core";
 
 export interface I18nOptions<T extends Record<string, any> = Record<string, any>> {
   defaultLocale: string;
@@ -113,4 +114,48 @@ export function createI18n<T extends Record<string, any> = Record<string, any>>(
     t,
     raw,
   };
+}
+
+// ---------------------------------------------------------------------
+// Helper para formularios de la librería (fuente única de verdad)
+// ---------------------------------------------------------------------
+
+/** Descriptor de un texto de formulario. */
+export type I18nFormEntry = {
+  /** Nombre local del texto (cómo se accede, p. ej. "emailLabel"). */
+  name: string;
+  /** Llave del diccionario i18n (p. ej. "auth.emailLabel"); usada a falta de default. */
+  key: string;
+     /** Default en inglés (fallback cuando no hay i18n o falta la llave). */
+  default: string;
+  /** true → raw() (string, no reactivo) para validación/spinner; false → t() reactivo. */
+  raw?: boolean;
+  /** Params de interpolación, p. ej. { min: 6 }. */
+  params?: Record<string, string | number>;
+};
+
+/**
+ * Construye el mapa `{ nombre: texto }` de un formulario a partir de un array
+ * de descriptores (una única fuente de verdad). Así, extender un formulario
+ * con un idioma/texto nuevo es añadir una línea al array, no tocar varios
+ * sitios. El tipo de retorno deriva que las entradas `raw: true` son `string`
+ * y el resto `State<string>` (reactivas), según el `i18n` provisto.
+ */
+export function makeFormTexts<const T extends readonly I18nFormEntry[]>(
+  entries: T,
+  i18n?: I18nInstance,
+): {
+  [K in T[number]["name"]]: Extract<T[number], { name: K }> extends { raw: true }
+    ? string
+    : State<string>;
+} {
+  const out = {} as Record<string, string | State<string>>;
+  for (const entry of entries) {
+    out[entry.name] = i18n
+      ? entry.raw
+        ? i18n.raw(entry.key, entry.params)
+        : i18n.t(entry.key, entry.params)
+      : entry.default;
+  }
+  return out as any;
 }

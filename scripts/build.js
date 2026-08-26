@@ -1,28 +1,24 @@
 import { execSync } from "node:child_process";
-
-/**
- * Orquesta el build del monorepo (vanui + demo).
- *
- * El orden es importante: el demo consume `vanui` como paquete (file:../vanui),
- * así que su typecheck y su bundle necesitan que `vanui/dist/` (bundle + tipos)
- * exista primero. Construimos la librería, luego typecheck, luego el bundle del
- * demo y por último los estilos UnoCSS.
- */
+import fs from "node:fs";
 
 function run(cmd, label) {
   console.log(`==> ${label}`);
   execSync(cmd, { stdio: "inherit" });
 }
 
-// [1/4] Construir la librería vanui (CSS + bundle + declaraciones de tipos).
-// Necesario para que tsc y bun resuelvan `vanui` desde su dist/.
-run(
-  "cd vanui && npm run css && npm run bundle && npm run types",
-  "[1/4] Construyendo vanui (dist/vanui.css + dist/index.js + dist/*.d.ts)...",
-);
+// Asegurar enlace simbólico de vanui en node_modules para resolución limpia
+if (!fs.existsSync("./node_modules/vanui")) {
+  fs.symlinkSync("../vanui", "./node_modules/vanui", "junction");
+}
 
-// [2/4] Typecheck global: ahora demo resuelve `vanui` desde su dist/
-run("tsc -b", "[2/4] Typecheck con tsc...");
+// [1/4] Typecheck con tsc
+run("tsc --noEmit", "[1/4] Typecheck con tsc...");
+
+// [2/4] Bundling vanui/dist/index.js
+run(
+  "bun build vanui/src/index.ts --outfile=vanui/dist/index.js --target=browser --external=vanjs-core",
+  "[2/4] Bundling vanui/dist/index.js...",
+);
 
 // [3/4] Bundle del cliente de la demo (SPA)
 run(
@@ -34,3 +30,5 @@ run(
 run("node demo/scripts/uno.js", "[4/4] Generando estilos CSS con UnoCSS...");
 
 console.log("✅ Build completado exitosamente.");
+
+

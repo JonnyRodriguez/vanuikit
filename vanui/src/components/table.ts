@@ -1,14 +1,15 @@
-import van, { type State } from "vanjs-core";
+import van, { type State, type ChildDom } from "vanjs-core";
 
-const { div, table, thead, tbody, tr, th, td, span, button } = van.tags;
+const { div, table, thead, tbody, tr, th, td, span, button, input } = van.tags;
 
 export interface TableColumn<T = any> {
   key: string;
-  header: string;
-  render?: (row: T, index: number) => any;
+  header: string | State<string>;
+  render?: (row: T, index: number) => ChildDom;
   sortable?: boolean;
   align?: "left" | "center" | "right";
   width?: string;
+  compare?: (a: T, b: T) => number;
 }
 
 export interface TableProps<T = any> {
@@ -16,8 +17,13 @@ export interface TableProps<T = any> {
   columns: TableColumn<T>[];
   data: T[] | State<T[]>;
   keyField?: string;
-  emptyText?: string;
+  emptyText?: string | State<string>;
   pageSize?: number;
+  searchable?: boolean;
+  searchPlaceholder?: string;
+  selectable?: boolean;
+  selectedRows?: State<T[]>;
+  onSelectionChange?: (selected: T[]) => void;
   class?: string;
 }
 
@@ -25,9 +31,19 @@ export function Table<T extends Record<string, any> = any>(props: TableProps<T>)
   const currentPage = van.state<number>(1);
   const sortKey = van.state<string | null>(null);
   const sortDirection = van.state<"asc" | "desc">("asc");
+  const searchQuery = van.state<string>("");
+  const internalSelected = van.state<T[]>([]);
+  const selectedRows = props.selectedRows ?? internalSelected;
 
   const getData = (): T[] => {
     return Array.isArray(props.data) ? props.data : props.data.val;
+  };
+
+  const getKey = (row: T, index: number): string | number => {
+    if (props.keyField && row[props.keyField] !== undefined) {
+      return row[props.keyField];
+    }
+    return row.id ?? index;
   };
 
   const handleSort = (key: string) => {
@@ -39,26 +55,100 @@ export function Table<T extends Record<string, any> = any>(props: TableProps<T>)
     }
   };
 
+  const toggleSelectRow = (row: T) => {
+    const key = props.keyField ?? "id";
+    const current = [...selectedRows.val];
+    const existsIdx = current.findIndex((r) =>
+      key in r && key in row ? r[key] === row[key] : r === row,
+    );
+
+    if (existsIdx >= 0) {
+      current.splice(existsIdx, 1);
+    } else {
+      current.push(row);
+    }
+    selectedRows.val = current;
+    props.onSelectionChange?.(current);
+  };
+
+  const toggleSelectAll = (displayRows: T[]) => {
+    const key = props.keyField ?? "id";
+    const allSelected = displayRows.every((row) =>
+      selectedRows.val.some((r) =>
+        key in r && key in row ? r[key] === row[key] : r === row,
+      ),
+    );
+
+    if (allSelected) {
+      // Unselect display rows
+      const current = selectedRows.val.filter(
+        (r) =>
+          !displayRows.some((dr) =>
+            key in r && key in dr ? r[key] === dr[key] : r === dr,
+          ),
+      );
+      selectedRows.val = current;
+      props.onSelectionChange?.(current);
+    } else {
+      // Select all display rows
+      const current = [...selectedRows.val];
+      for (const dr of displayRows) {
+        if (
+          !current.some((r) =>
+            key in r && key in dr ? r[key] === dr[key] : r === dr,
+          )
+        ) {
+          current.push(dr);
+        }
+      }
+      selectedRows.val = current;
+      props.onSelectionChange?.(current);
+    }
+  };
+
   return div(
     {
       ...(props.id ? { id: props.id } : {}),
-      class: `w-full overflow-x-auto rounded-xl border border-slate-800 bg-slate-900/50 shadow-sm ${props.class ?? ""}`,
+      class: `w-full rounded-xl border border-border bg-background shadow-sm overflow-hidden ${
+        props.class ?? ""
+      }`,
     },
     () => {
       let rows = [...getData()];
 
+      // Búsqueda / Filtro
+      if (props.searchable && searchQuery.val.trim()) {
+        const q = searchQuery.val.toLowerCase();
+        rows = rows.filter((row) =>
+          props.columns.some((col) => {
+            const val = row[col.key];
+            return val !== undefined && val !== null && String(val).toLowerCase().includes(q);
+          }),
+        );
+      }
+
       // Ordenamiento
       if (sortKey.val) {
         const key = sortKey.val;
+        const colDef = props.columns.find((c) => c.key === key);
         const dir = sortDirection.val === "asc" ? 1 : -1;
-        rows.sort((a, b) => {
-          const valA = a[key];
-          const valB = b[key];
-          if (valA === valB) return 0;
-          if (valA === undefined || valA === null) return 1;
-          if (valB === undefined || valB === null) return -1;
-          return valA > valB ? dir : -dir;
-        });
+
+        if (colDef?.compare) {
+          const comp = colDef.compare;
+          rows.sort((a, b) => comp(a, b) * dir);
+        } else {
+          rows.sort((a, b) => {
+            const valA = a[key];
+            const valB = b[key];
+            if (valA === valB) return 0;
+            if (valA === undefined || valA === null) return 1;
+            if (valB === undefined || valB === null) return -1;
+            if (typeof valA === "number" && typeof valB === "number") {
+              return (valA - valB) * dir;
+            }
+            return String(valA).localeCompare(String(valB)) * dir;
+          });
+        }
       }
 
       // Paginación
@@ -74,84 +164,186 @@ export function Table<T extends Record<string, any> = any>(props: TableProps<T>)
         displayRows = rows.slice(start, start + pageSize);
       }
 
-      return div(
-        { class: "flex flex-col" },
-        table(
-          { class: "w-full text-left text-sm border-collapse" },
-          thead(
-            { class: "border-b border-slate-800 bg-slate-950/60 text-slate-400 text-xs font-semibold uppercase tracking-wider" },
-            tr(
-              props.columns.map((col) => {
-                const alignClass =
-                  col.align === "right"
-                    ? "text-right"
-                    : col.align === "center"
-                    ? "text-center"
-                    : "text-left";
+      const isAllSelected =
+        displayRows.length > 0 &&
+        displayRows.every((row) => {
+          const key = props.keyField ?? "id";
+          return selectedRows.val.some((r) =>
+            key in r && key in row ? r[key] === row[key] : r === row,
+          );
+        });
 
-                return th(
-                  {
-                    class: `px-4 py-3.5 ${alignClass} ${col.sortable ? "cursor-pointer select-none hover:text-white transition-colors" : ""}`,
-                    ...(col.width ? { style: `width: ${col.width}` } : {}),
-                    ...(col.sortable ? { onclick: () => handleSort(col.key) } : {}),
+      return div(
+        { class: "flex flex-col w-full" },
+        // Barra de búsqueda superior (si searchable = true)
+        props.searchable
+          ? div(
+              {
+                class:
+                  "flex items-center justify-between gap-3 p-3.5 border-b border-border bg-secondary/5",
+              },
+              div(
+                { class: "relative flex-1 max-w-sm" },
+                input({
+                  type: "text",
+                  placeholder: props.searchPlaceholder ?? "Buscar en la tabla...",
+                  value: searchQuery.val,
+                  class:
+                    "w-full pl-8 pr-3 py-1.5 text-xs rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-focus transition-all",
+                  oninput: (e: Event) => {
+                    searchQuery.val = (e.target as HTMLInputElement).value;
+                    currentPage.val = 1;
                   },
-                  div(
-                    { class: `inline-flex items-center gap-1.5 ${col.align === "right" ? "justify-end" : col.align === "center" ? "justify-center" : "justify-start"}` },
-                    span(col.header),
-                    col.sortable
-                      ? span(
-                          { class: "text-[10px] text-slate-500 font-mono" },
-                          sortKey.val === col.key
-                            ? sortDirection.val === "asc"
-                              ? "▲"
-                              : "▼"
-                            : "⇅",
-                        )
-                      : null,
-                  ),
-                );
-              }),
+                }),
+                span(
+                  { class: "absolute left-2.5 top-2 text-xs text-muted pointer-events-none" },
+                  "🔍",
+                ),
+              ),
+              props.selectable && selectedRows.val.length > 0
+                ? span(
+                    { class: "text-xs text-primary font-semibold" },
+                    `${selectedRows.val.length} seleccionados`,
+                  )
+                : null,
+            )
+          : null,
+        // Tabla con scroll horizontal responsivo
+        div(
+          { class: "w-full overflow-x-auto" },
+          table(
+            { class: "w-full text-left text-sm border-collapse" },
+            thead(
+              {
+                class:
+                  "border-b border-border bg-secondary/15 text-foreground-soft text-xs font-semibold uppercase tracking-wider",
+              },
+              tr(
+                props.selectable
+                  ? th(
+                      { class: "w-10 px-4 py-3.5 text-center" },
+                      input({
+                        type: "checkbox",
+                        checked: isAllSelected,
+                        class: "rounded border-border text-primary cursor-pointer",
+                        onchange: () => toggleSelectAll(displayRows),
+                      }),
+                    )
+                  : null,
+                props.columns.map((col) => {
+                  const alignClass =
+                    col.align === "right"
+                      ? "text-right"
+                      : col.align === "center"
+                      ? "text-center"
+                      : "text-left";
+
+                  return th(
+                    {
+                      class: `px-4 py-3.5 ${alignClass} ${
+                        col.sortable
+                          ? "cursor-pointer select-none hover:text-foreground hover:bg-secondary/15 transition-colors"
+                          : ""
+                      }`,
+                      ...(col.width ? { style: `width: ${col.width}` } : {}),
+                      ...(col.sortable ? { onclick: () => handleSort(col.key) } : {}),
+                    },
+                    div(
+                      {
+                        class: `inline-flex items-center gap-1.5 ${
+                          col.align === "right"
+                            ? "justify-end"
+                            : col.align === "center"
+                            ? "justify-center"
+                            : "justify-start"
+                        }`,
+                      },
+                      span(col.header),
+                      col.sortable
+                        ? span(
+                            {
+                              class: `text-xs font-mono transition-colors ${
+                                sortKey.val === col.key
+                                  ? "text-primary font-bold"
+                                  : "text-muted"
+                              }`,
+                            },
+                            sortKey.val === col.key
+                              ? sortDirection.val === "asc"
+                                ? "▲"
+                                : "▼"
+                              : "⇅",
+                          )
+                        : null,
+                    ),
+                  );
+                }),
+              ),
+            ),
+            tbody(
+              { class: "divide-y divide-border text-foreground" },
+              displayRows.length === 0
+                ? tr(
+                    td(
+                      {
+                        colspan: props.columns.length + (props.selectable ? 1 : 0),
+                        class: "px-4 py-8 text-center text-muted text-sm italic",
+                      },
+                      props.emptyText ?? "No hay datos disponibles",
+                    ),
+                  )
+                : displayRows.map((row, index) => {
+                    const key = props.keyField ?? "id";
+                    const isSelected = selectedRows.val.some((r) =>
+                      key in r && key in row ? r[key] === row[key] : r === row,
+                    );
+
+                    return tr(
+                      {
+                        key: getKey(row, index),
+                        class: `transition-colors ${
+                          isSelected
+                            ? "bg-primary/10 hover:bg-primary/15 font-medium"
+                            : "hover:bg-secondary/10"
+                        }`,
+                      },
+                      props.selectable
+                        ? td(
+                            { class: "w-10 px-4 py-3.5 text-center" },
+                            input({
+                              type: "checkbox",
+                              checked: isSelected,
+                              class: "rounded border-border text-primary cursor-pointer",
+                              onchange: () => toggleSelectRow(row),
+                            }),
+                          )
+                        : null,
+                      props.columns.map((col) => {
+                        const alignClass =
+                          col.align === "right"
+                            ? "text-right"
+                            : col.align === "center"
+                            ? "text-center"
+                            : "text-left";
+
+                        return td(
+                          { class: `px-4 py-3.5 ${alignClass}` },
+                          col.render
+                            ? col.render(row, index)
+                            : (row[col.key] ?? "-"),
+                        );
+                      }),
+                    );
+                  }),
             ),
           ),
-          tbody(
-            { class: "divide-y divide-slate-800/60 text-slate-200" },
-            displayRows.length === 0
-              ? tr(
-                  td(
-                    {
-                      colspan: props.columns.length,
-                      class: "px-4 py-8 text-center text-slate-500 text-sm italic",
-                    },
-                    props.emptyText ?? "No hay datos disponibles",
-                  ),
-                )
-              : displayRows.map((row, index) =>
-                  tr(
-                    {
-                      class: "hover:bg-slate-800/30 transition-colors",
-                    },
-                    props.columns.map((col) => {
-                      const alignClass =
-                        col.align === "right"
-                          ? "text-right"
-                          : col.align === "center"
-                          ? "text-center"
-                          : "text-left";
-
-                      return td(
-                        { class: `px-4 py-3.5 ${alignClass}` },
-                        col.render ? col.render(row, index) : (row[col.key] ?? "-"),
-                      );
-                    }),
-                  ),
-                ),
-          ),
         ),
+        // Paginación
         pageSize > 0 && totalItems > 0
           ? div(
               {
                 class:
-                  "flex items-center justify-between px-4 py-3 border-t border-slate-800 text-xs text-slate-400 bg-slate-950/30",
+                  "flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-t border-border text-xs text-foreground-soft bg-secondary/5",
               },
               span(
                 `Mostrando ${(currentPage.val - 1) * pageSize + 1} - ${Math.min(
@@ -166,19 +358,23 @@ export function Table<T extends Record<string, any> = any>(props: TableProps<T>)
                     type: "button",
                     disabled: () => currentPage.val <= 1,
                     class:
-                      "px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:pointer-events-none text-slate-200 transition-colors",
+                      "px-2.5 py-1 rounded-md border border-border bg-background hover:bg-secondary/20 disabled:opacity-40 disabled:pointer-events-none text-foreground transition-colors cursor-pointer",
                     onclick: () => (currentPage.val = Math.max(1, currentPage.val - 1)),
                   },
                   "← Anterior",
                 ),
-                span({ class: "px-2 font-medium text-slate-300" }, () => `${currentPage.val} / ${totalPages}`),
+                span(
+                  { class: "px-2 font-medium text-foreground" },
+                  () => `${currentPage.val} / ${totalPages}`,
+                ),
                 button(
                   {
                     type: "button",
                     disabled: () => currentPage.val >= totalPages,
                     class:
-                      "px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:pointer-events-none text-slate-200 transition-colors",
-                    onclick: () => (currentPage.val = Math.min(totalPages, currentPage.val + 1)),
+                      "px-2.5 py-1 rounded-md border border-border bg-background hover:bg-secondary/20 disabled:opacity-40 disabled:pointer-events-none text-foreground transition-colors cursor-pointer",
+                    onclick: () =>
+                      (currentPage.val = Math.min(totalPages, currentPage.val + 1)),
                   },
                   "Siguiente →",
                 ),
@@ -189,3 +385,8 @@ export function Table<T extends Record<string, any> = any>(props: TableProps<T>)
     },
   );
 }
+
+/**
+ * DataGrid — Alias semántico con configuración avanzada para tablas de datos completas.
+ */
+export const DataGrid = Table;

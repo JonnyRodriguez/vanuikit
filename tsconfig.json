@@ -3,6 +3,11 @@
     "target": "ESNext",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
+    "baseUrl": ".",
+    "paths": {
+      "vanui": ["./vanui/src/index.ts"],
+      "vanui/*": ["./vanui/src/*"]
+    },
     "esModuleInterop": true,
     "strict": false,
     "skipLibCheck": true,

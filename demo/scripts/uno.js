@@ -162,12 +162,16 @@ const generator = await createGenerator({
 
 const { css } = await generator.generate(source, { id: "vanui-demo" });
 
+const demoCssPath = path.join(demoDir, "demo.css");
+const demoCustomCss = fs.existsSync(demoCssPath) ? fs.readFileSync(demoCssPath, "utf-8") : "";
+const finalDemoCss = `${css}\n\n/* demo.css */\n${demoCustomCss}`;
+
 fs.mkdirSync(path.dirname(OUT_DEMO), { recursive: true });
-fs.writeFileSync(OUT_DEMO, css, "utf-8");
-fs.writeFileSync(OUT_VANUI, css, "utf-8");
+fs.writeFileSync(OUT_DEMO, finalDemoCss, "utf-8");
+fs.writeFileSync(OUT_VANUI, finalDemoCss, "utf-8");
 fs.mkdirSync(path.dirname(OUT_VANUI_PKG), { recursive: true });
 fs.writeFileSync(OUT_VANUI_PKG, css, "utf-8");
 
 console.log(
-  `CSS generado exitosamente (${allFiles.length} archivos escaneados, ${css.length} bytes)`,
+  `CSS generado exitosamente (${allFiles.length} archivos escaneados, ${finalDemoCss.length} bytes)`,
 );

@@ -15,7 +15,22 @@ export { Spin } from "./components/spin.js";
 export { SpinModal } from "./components/spin-modal.js";
 export { Nav, type NavLink } from "./components/nav.js";
 export { Badge, type BadgeProps, type BadgeVariant, type BadgeSize } from "./components/badge.js";
-export { Table, type TableProps, type TableColumn } from "./components/table.js";
+export { Table, DataGrid, type TableProps, type TableColumn } from "./components/table.js";
+export { Tabs, type TabItem, type TabsProps } from "./components/tabs.js";
+export {
+  SelectDropdown,
+  DropdownMenu,
+  type SelectOption,
+  type SelectDropdownProps,
+  type DropdownMenuItem,
+  type DropdownMenuProps,
+} from "./components/dropdown.js";
+export {
+  ConfirmDialog,
+  confirmDialog,
+  type ConfirmDialogProps,
+  type ConfirmVariant,
+} from "./components/confirm-dialog.js";
 export { toast, type ToastType, type ToastOptions, type ToastItem } from "./components/toast.js";
 
 // Pantallas / Formularios preconstruidos

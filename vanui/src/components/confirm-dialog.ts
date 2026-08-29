@@ -1,10 +1,23 @@
 import van, { type State, type ChildDom } from "vanjs-core";
 import { Button } from "./button.js";
 import { Spin } from "./spin.js";
+import { t } from "../i18n.js";
 
 const { div, h3, p, span } = van.tags;
 
 export type ConfirmVariant = "primary" | "danger" | "warning";
+
+/**
+ * =========================================================================
+ * DEFINICIÓN LOCAL DE TEXTOS (TEXTS)
+ * =========================================================================
+ */
+export const TEXTS = {
+  title: { key: "dialog.confirmTitle", default: "Confirmar acción" },
+  cancel: { key: "dialog.cancel", default: "Cancelar" },
+  confirm: { key: "dialog.confirm", default: "Confirmar" },
+  processing: { key: "dialog.processing", default: "Procesando..." },
+};
 
 export interface ConfirmDialogProps {
   id?: string;
@@ -114,7 +127,7 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
             { class: "flex-1" },
             h3(
               { class: "text-lg font-bold text-foreground m-0" },
-              props.title ?? "Confirmar acción",
+              props.title ?? t(TEXTS.title.key, undefined, TEXTS.title.default),
             ),
             div(
               { class: "text-sm text-foreground-soft mt-1 leading-relaxed" },
@@ -135,17 +148,17 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
               disabled: () => isLoading.val,
               onclick: close,
             },
-            props.cancelText ?? "Cancelar",
+            props.cancelText ?? t(TEXTS.cancel.key, undefined, TEXTS.cancel.default),
           ),
           () =>
             isLoading.val
-              ? Spin("Procesando...")
+              ? Spin(t(TEXTS.processing.key, undefined, TEXTS.processing.default))
               : Button(
                   {
                     variant: getConfirmButtonVariant(),
                     onclick: handleConfirm,
                   },
-                  props.confirmText ?? "Confirmar",
+                  props.confirmText ?? t(TEXTS.confirm.key, undefined, TEXTS.confirm.default),
                 ),
         ),
       ),

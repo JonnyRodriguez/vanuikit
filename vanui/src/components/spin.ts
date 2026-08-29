@@ -1,7 +1,8 @@
 import van from "vanjs-core";
+import type { State } from "vanjs-core";
 
 /** Indicador de carga: spinner animado + mensaje. */
-export const Spin = (msg = "") => {
+export const Spin = (msg: string | State<string> = "") => {
   const { div } = van.tags;
 
   return div(

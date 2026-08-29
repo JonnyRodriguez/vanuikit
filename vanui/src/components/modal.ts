@@ -1,5 +1,15 @@
-import van, { type ValidChildDomValue } from "vanjs-core";
+import van, { type ValidChildDomValue, type State } from "vanjs-core";
 import { SecondaryButton } from "./button.js";
+import { t } from "../i18n.js";
+
+/**
+ * =========================================================================
+ * DEFINICIÓN LOCAL DE TEXTOS (TEXTS)
+ * =========================================================================
+ */
+export const TEXTS = {
+  close: { key: "modal.close", default: "Cerrar" },
+};
 
 /**
  * Contenido de una zona del modal: función que devuelve un hijo de VanJS
@@ -101,7 +111,7 @@ export const ModalBase = (
 // Modal — compuesto: ModalBase + título, botón de cierre y footer
 // ---------------------------------------------------------------
 
-export const ModalTitle = (title: string) =>
+export const ModalTitle = (title: string | State<string>) =>
   van.tags.div({ class: "text-xl font-bold text-accent" }, title);
 
 export const ModalClose = (onClose: () => void) =>
@@ -110,14 +120,14 @@ export const ModalClose = (onClose: () => void) =>
       type: "button",
       class:
         "text-2xl text-muted hover:text-foreground-soft bg-transparent border-none cursor-pointer p-0",
-      "aria-label": "Cerrar",
+      "aria-label": t(TEXTS.close.key, undefined, TEXTS.close.default),
       onclick: onClose,
     },
     "×",
   );
 
 export const ModalHeaderWithTitleAndClose = (
-  title: string,
+  title: string | State<string>,
   onClose: () => void,
 ) =>
   van.tags.div(
@@ -128,7 +138,7 @@ export const ModalHeaderWithTitleAndClose = (
 
 export const ModalFooterWithCloseButton = (
   onClose: () => void,
-  text = "Cerrar",
+  text: string | State<string> = t(TEXTS.close.key, undefined, TEXTS.close.default),
 ) =>
   van.tags.div(
     { class: "pt-3 flex justify-end gap-2" },

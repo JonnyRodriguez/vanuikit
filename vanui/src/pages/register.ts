@@ -1,102 +1,68 @@
 /**
  * Referencia — pantalla de registro de la librería (Form, Field, Button, Spin).
  *
- * Misma convención que LoginForm: los textos se declaran en un único array de
- * descriptores (`TEXTS`). Con `i18n` presente se resuelven desde el diccionario
- * (claves `auth.*` y `register.*`), con `t()` reactivo para etiquetas/
-  * placeholders/botón y `raw()` para validación/spinner. Sin `i18n`, usa los
- * defaults en inglés (más universal). Extender = añadir una línea a `TEXTS`.
+ * Los campos (TextField, EmailField, PasswordField) vienen con baterías incluidas e i18n global.
  */
 import van from "vanjs-core";
 import { Form } from "../components/form.js";
-import { Field } from "../components/field.js";
+import { TextField, EmailField, PasswordField } from "../components/field.js";
 import { Button } from "../components/button.js";
 import { Spin } from "../components/spin.js";
-import { Required, Email, MinLength, Match } from "../validators.js";
-import { makeFormTexts } from "../i18n.js";
-import type { I18nInstance } from "../i18n.js";
+import { Match } from "../validators.js";
+import { t } from "../i18n.js";
 
-export type AuthResult = { error: string } | {};
+export type AuthResult = { error: string } | { ok?: boolean } | {};
 
-const TEXTS = [
-  { name: "nameLabel", key: "register.nameLabel", default: "Name" },
-  { name: "namePlaceholder", key: "register.namePlaceholder", default: "Your name" },
-  { name: "emailLabel", key: "auth.emailLabel", default: "Email" },
-  { name: "emailPlaceholder", key: "auth.emailPlaceholder", default: "you@example.com" },
-  { name: "passwordLabel", key: "auth.passwordLabel", default: "Password" },
-  { name: "confirmLabel", key: "auth.confirmLabel", default: "Confirm password" },
-  { name: "submit", key: "register.submit", default: "Create Account" },
-  { name: "loading", key: "register.loading", default: "Creating account...", raw: true },
-  { name: "nameRequired", key: "register.nameRequired", default: "Please enter your name", raw: true },
-  { name: "emailRequired", key: "auth.emailRequired", default: "Please enter your email", raw: true },
-  { name: "emailInvalid", key: "auth.emailInvalid", default: "Invalid email address", raw: true },
-  { name: "passwordRequired", key: "auth.passwordRequired", default: "Please enter your password", raw: true },
-  { name: "passwordMin", key: "auth.passwordMin", default: "Must be at least {min} characters", raw: true, params: { min: 6 } },
-  { name: "confirmRequired", key: "auth.confirmRequired", default: "Please confirm your password", raw: true },
-  { name: "passwordMismatch", key: "auth.passwordMismatch", default: "Passwords do not match", raw: true },
-] as const;
+/**
+ * =========================================================================
+ * DEFINICIÓN LOCAL DE TEXTOS (TEXTS)
+ * =========================================================================
+ */
+export const TEXTS = {
+  submit: { key: "register.submit", default: "Crear cuenta" },
+  loading: { key: "register.loading", default: "Creando cuenta..." },
+  confirm: {
+    label: { key: "field.confirm.label", default: "Confirmar contraseña" },
+    placeholder: { key: "field.confirm.placeholder", default: "••••••••" },
+    required: { key: "field.confirm.required", default: "Confirma tu contraseña" },
+    mismatch: { key: "field.confirm.mismatch", default: "Las contraseñas no coinciden" },
+  },
+};
 
 /** Lo que RegisterForm necesita de su orquestador. */
 export interface RegisterInfo {
   handleRegister: (data: Record<string, unknown>) => Promise<AuthResult>;
-  i18n?: I18nInstance;
 }
 
 /**
- * Formulario de registro. `info` implementa info.handleRegister(data), que
- * devuelve {} si se creó la cuenta o { error } si falló.
- * Cada campo trae su validación: requerido, email (formato), contraseña
- * (mínimo) y confirmar (Match contra password).
+ * Formulario de registro limpio.
+ * Los campos ya traen sus etiquetas, placeholders y validaciones por defecto.
  */
 export const RegisterForm = (info: RegisterInfo) => {
   const { div, p } = van.tags;
-  const texts = makeFormTexts(TEXTS, info.i18n);
 
   const msg = van.state<Element | null>(null);
   const formError = van.state("");
 
   const form = Form(async (data) => {
     formError.val = "";
-    msg.val = Spin(texts.loading);
+    msg.val = Spin(t(TEXTS.loading.key, undefined, TEXTS.loading.default));
     const result = await info.handleRegister(data);
-    if ("error" in result) {
-      formError.val = result.error;
+    if ("error" in result && result.error) {
+      formError.val = result.error as string;
       msg.val = null;
     }
   });
 
-  const name = Field({
-    label: texts.nameLabel,
-    name: "name",
-    inputType: "text",
-    placeholder: texts.namePlaceholder,
-  });
-  name.addValidator(Required(texts.nameRequired));
-
-  const email = Field({
-    label: texts.emailLabel,
-    name: "email",
-    inputType: "email",
-    placeholder: texts.emailPlaceholder,
-  });
-  email.addValidator(Required(texts.emailRequired));
-  email.addValidator(Email(texts.emailInvalid));
-
-  const password = Field({
-    label: texts.passwordLabel,
-    name: "password",
-    inputType: "password",
-  });
-  password.addValidator(Required(texts.passwordRequired));
-  password.addValidator(MinLength(6, texts.passwordMin));
-
-  const confirm = Field({
-    label: texts.confirmLabel,
+  const name = TextField({ name: "name" });
+  const email = EmailField();
+  const password = PasswordField();
+  const confirm = PasswordField({
     name: "confirm",
-    inputType: "password",
-  });
-  confirm.addValidator(Required(texts.confirmRequired));
-  confirm.addValidator(Match("password", texts.passwordMismatch));
+    label: t(TEXTS.confirm.label.key, undefined, TEXTS.confirm.label.default),
+    placeholder: t(TEXTS.confirm.placeholder.key, undefined, TEXTS.confirm.placeholder.default),
+    requiredMsg: t(TEXTS.confirm.required.key, undefined, TEXTS.confirm.required.default),
+  }).addValidator(Match("password", t(TEXTS.confirm.mismatch.key, undefined, TEXTS.confirm.mismatch.default)));
 
   form.add(name, email, password, confirm);
 
@@ -109,7 +75,9 @@ export const RegisterForm = (info: RegisterInfo) => {
     form.dom(
       div(
         { class: "pt-2" },
-        () => (msg.val && msg.val) || Button({ type: "submit" }, texts.submit),
+        () =>
+          (msg.val && msg.val) ||
+          Button({ type: "submit" }, t(TEXTS.submit.key, undefined, TEXTS.submit.default)),
       ),
     ),
   );

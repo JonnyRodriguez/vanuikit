@@ -1,4 +1,4 @@
-import { createI18n } from "vanui";
+import { i18n } from "vanui";
 
 export const locales = {
   es: {
@@ -37,6 +37,29 @@ export const locales = {
       modals: "Modales",
       spinners: "Indicadores de Carga",
       themeSection: "Gestión de Tema e Idioma",
+    },
+    field: {
+      email: {
+        label: "Correo electrónico",
+        placeholder: "tucorreo@ejemplo.com",
+        required: "Ingresa tu correo electrónico",
+        invalid: "Correo electrónico inválido",
+      },
+      password: {
+        label: "Contraseña",
+        placeholder: "••••••••",
+        required: "Ingresa tu contraseña",
+        min: "La contraseña debe tener al menos {min} caracteres",
+      },
+      confirm: {
+        label: "Confirmar contraseña",
+        required: "Confirma la contraseña",
+      },
+      name: {
+        label: "Nombre completo",
+        placeholder: "Juan Pérez",
+        required: "Ingresa tu nombre",
+      },
     },
     auth: {
       emailLabel: "Correo electrónico",
@@ -109,16 +132,22 @@ export const locales = {
       spinners: "Loading Spinners",
       themeSection: "Theme & Locale Management",
     },
-    auth: {
-      emailLabel: "Email",
-      emailPlaceholder: "you@example.com",
-      emailRequired: "Please enter your email",
-      emailInvalid: "Invalid email address",
-      passwordLabel: "Password",
-      passwordRequired: "Please enter your password",
-      confirmLabel: "Confirm password",
-      confirmRequired: "Please confirm your password",
-      passwordMin: "Minimum {min} characters",
+    field: {
+      email: {
+        label: "Email",
+        placeholder: "you@example.com",
+        required: "Please enter your email",
+        invalid: "Invalid email address"
+      },
+      password: {
+        label: "Password",
+        required: "Please enter your password",
+        min: "Minimum {min} characters"
+      },
+      confirm: {
+        label: "Confirm password",
+        required: "Please confirm your password",
+      },
       passwordMismatch: "Passwords do not match",
     },
     login: {
@@ -216,7 +245,7 @@ export const locales = {
   },
 };
 
-export const i18n = createI18n({
-  defaultLocale: "en",
-  locales,
-});
+// Se registran las traducciones de la app en el singleton global de i18n
+i18n.addTranslations(locales);
+
+export { i18n };

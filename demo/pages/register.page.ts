@@ -14,6 +14,14 @@ export type RegisterPageProps = {
   router: Router;
 };
 
+export const TEXTS = {
+  title: { key: "register.title", default: "Crear una cuenta" },
+  subtitle: { key: "register.subtitle", default: "Ingresa tus datos para comenzar a operar" },
+  haveAccount: { key: "register.haveAccount", default: "¿Ya tienes cuenta?" },
+  loginLink: { key: "register.loginLink", default: "Inicia sesión" },
+  errGeneric: { key: "register.errGeneric", default: "Error al registrarse. Intenta nuevamente." },
+};
+
 export const RegisterPage = ({ router }: RegisterPageProps) => {
   const { div, h1, p, a } = van.tags;
 
@@ -36,21 +44,20 @@ export const RegisterPage = ({ router }: RegisterPageProps) => {
 
   return div(
     { class: "max-w-md mx-auto my-8 p-6 bg-background rounded-xl border border-border shadow-sm" },
-    h1({ class: "text-2xl font-bold text-foreground text-center mb-1" }, i18n.t("register.title")),
-    p({ class: "text-sm text-foreground-soft text-center mb-6" }, i18n.t("register.subtitle")),
+    h1({ class: "text-2xl font-bold text-foreground text-center mb-1" }, i18n.t(TEXTS.title.key, undefined, TEXTS.title.default)),
+    p({ class: "text-sm text-foreground-soft text-center mb-6" }, i18n.t(TEXTS.subtitle.key, undefined, TEXTS.subtitle.default)),
     RegisterForm({
       handleRegister: async (data) => {
         const result = await registerMutation.mutate(data as RegisterInput);
         if (!result) {
-          return { error: i18n.raw("register.errGeneric") };
+          return { error: i18n.raw(TEXTS.errGeneric.key, undefined, TEXTS.errGeneric.default) };
         }
         return {};
       },
-      i18n,
     }),
     div(
       { class: "mt-6 text-center text-xs text-foreground-soft border-t border-border pt-4" },
-      () => div({}, i18n.t("register.haveAccount"), " ",
+      () => div({}, i18n.t(TEXTS.haveAccount.key, undefined, TEXTS.haveAccount.default), " ",
         a(
           {
             href: "/login",
@@ -60,7 +67,7 @@ export const RegisterPage = ({ router }: RegisterPageProps) => {
               router.navigate("/login");
             },
           },
-          i18n.t("register.loginLink"),
+          i18n.t(TEXTS.loginLink.key, undefined, TEXTS.loginLink.default),
         ),
       ),
     ),

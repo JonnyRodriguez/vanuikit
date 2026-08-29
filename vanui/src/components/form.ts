@@ -27,9 +27,13 @@ export const Form = (handler: FormHandler): Form => {
       new FormData(formEl).entries(),
     ) as Record<string, unknown>;
 
-    const valid = fields.every((f) =>
-      f.validate(String(data[f.name] ?? ""), data),
-    );
+    let valid = true;
+    for (const f of fields) {
+      const fieldValid = f.validate(data);
+      if (!fieldValid) {
+        valid = false;
+      }
+    }
     if (!valid) return;
 
     await handler(data);

@@ -1,125 +1,179 @@
-import van, {
-  type ChildDom,
-  type State,
-  type PropValueOrDerived,
-} from "vanjs-core";
-import { cx } from "../util.js";
-import { type Validator, Required, Email, MinLength } from "../validators.js";
+import van from "vanjs-core";
+import type { State } from "vanjs-core";
+import type { Validator } from "../validators.js";
+import { Required, Email, MinLength } from "../validators.js";
+import { i18n, t } from "../i18n.js";
 
-const FORM_CONTROL_CLASSES =
-  "text-base w-full p-2.5 border border-border rounded-md bg-background text-foreground" +
-  " focus:outline-none focus:ring-2 focus:ring-focus focus:border-focus" +
-  " transition duration-150 ease-in-out";
-
-/** Texto de un control: string estático o State reactivo (para i18n). */
 export type FieldText = string | State<string>;
 
-/** Props passthrough de un control: atributos HTML válidos de VanJS. */
-type FieldProps = { class?: string } & Record<string, PropValueOrDerived>;
-
-/** Controles de formulario básicos. Todos fusionan props.class con sus clases. */
-export const Input = (props: FieldProps = {}) => {
-  const { class: extra, ...rest } = props;
-  return van.tags.input({ ...rest, class: cx(FORM_CONTROL_CLASSES, extra) });
+/**
+ * =========================================================================
+ * DEFINICIÓN LOCAL DE TEXTOS (TEXTS)
+ * Estructura limpia para desarrollo directo sin i18n, preparada para
+ * extracción automatizada de traducciones cuando sea necesario.
+ * =========================================================================
+ */
+export const TEXTS = {
+  email: {
+    label: { key: "field.email.label", default: "Correo electrónico" },
+    placeholder: { key: "field.email.placeholder", default: "tucorreo@ejemplo.com" },
+    required: { key: "field.email.required", default: "Ingresa tu correo electrónico" },
+    invalid: { key: "field.email.invalid", default: "Correo electrónico inválido" },
+  },
+  password: {
+    label: { key: "field.password.label", default: "Contraseña" },
+    placeholder: { key: "field.password.placeholder", default: "••••••••" },
+    required: { key: "field.password.required", default: "Ingresa tu contraseña" },
+    min: { key: "field.password.min", default: "La contraseña debe tener al menos {min} caracteres" },
+  },
+  name: {
+    label: { key: "field.name.label", default: "Nombre completo" },
+    placeholder: { key: "field.name.placeholder", default: "Juan Pérez" },
+    required: { key: "field.name.required", default: "Ingresa tu nombre" },
+  },
 };
 
-export const Select = (props: FieldProps = {}, ...children: ChildDom[]) => {
-  const { class: extra, ...rest } = props;
-  return van.tags.select(
-    { ...rest, class: cx(FORM_CONTROL_CLASSES, extra) },
-    ...children,
-  );
-};
-
-export const Textarea = (props: FieldProps = {}) => {
-  const { class: extra, ...rest } = props;
-  return van.tags.textarea({ ...rest, class: cx(FORM_CONTROL_CLASSES, extra) });
-};
-
-const LABEL_CLASSES = "block mb-1 text-sm font-medium text-foreground-soft";
-
-export const Label = (props: FieldProps = {}, ...children: ChildDom[]) => {
-  const { class: extra, ...rest } = props;
-  return van.tags.label(
-    { ...rest, class: cx(LABEL_CLASSES, extra) },
-    ...children,
-  );
-};
-
-// ---------------------------------------------------------------
-// Field — unidad: label + control + validación + error.
-// Fábricas (mismo esquema que Button/Modal/Spin): el Field base
-// recibe una config; los campos tipados lo envuelven y pre-registran
-// sus validadores. Se amplía con addValidator sin perder los del tipo.
-// ---------------------------------------------------------------
-
-export type Field = {
-  readonly name: string;
-  /** Estado reactivo del error: lo puebla validate(), lo lee dom(). */
-  readonly error: State<string>;
-  /** Amplía la validación sin perder las del tipo (patrón proxy). */
-  addValidator(v: Validator): Field;
-  /** Corre los validadores; deja el primer error en el estado. */
-  validate(value: string, data?: Record<string, unknown>): boolean;
-  /** La unidad completa: label + control + error (y hint si hay). */
-  dom(): ChildDom;
-};
-
-/** Config del Field base. `control` reemplaza el input (p. ej. un select). */
-export type FieldConfig = {
+export interface FieldOptions {
   label: FieldText;
   name: string;
   inputType?: string;
   placeholder?: FieldText;
   hint?: FieldText;
-  control?: () => ChildDom;
-};
+  disabled?: boolean | State<boolean>;
+}
 
-/** Field base — fábrica. Los campos tipados lo envuelven con validadores. */
+export interface Field {
+  readonly name: string;
+  readonly value: State<string>;
+  readonly error: State<string>;
+  readonly isTouched: State<boolean>;
+  readonly isValid: State<boolean>;
+  readonly isInvalid: State<boolean>;
+  readonly stateClass: State<string>;
+  addValidator(validator: Validator): Field;
+  validate(valueOrData?: string | Record<string, unknown>, data?: Record<string, unknown>): boolean;
+  dom(): HTMLElement;
+  setError(msg: string): void;
+  clearError(): void;
+}
+
 export const Field = (
-  { label, name, inputType = "text", placeholder, hint, control }: FieldConfig,
-  validators: Validator[] = [],
+  options: FieldOptions,
+  initialValidators: Validator[] = [],
 ): Field => {
+  const { div, label, input, p } = van.tags;
+  const value = van.state("");
   const error = van.state("");
+  const isTouched = van.state(false);
+  const validators = [...initialValidators];
+
+  const isValid = van.derive(() => !error.val && value.val.length > 0);
+  const isInvalid = van.derive(() => isTouched.val && !!error.val);
+  const stateClass = van.derive(() =>
+    isTouched.val
+      ? isInvalid.val
+        ? "field-invalid"
+        : "field-valid"
+      : "field-pristine",
+  );
+
+  const validate = (
+    valueOrData?: string | Record<string, unknown>,
+    data?: Record<string, unknown>,
+  ): boolean => {
+    isTouched.val = true;
+    let valToTest = value.val;
+    let contextData = data;
+
+    if (typeof valueOrData === "string") {
+      valToTest = valueOrData;
+      value.val = valueOrData;
+    } else if (valueOrData && typeof valueOrData === "object") {
+      contextData = valueOrData;
+      if (valueOrData[options.name] !== undefined) {
+        valToTest = String(valueOrData[options.name]);
+        value.val = valToTest;
+      }
+    }
+
+    for (const v of validators) {
+      const err = v.validate(valToTest, contextData);
+      if (err) {
+        error.val = err;
+        return false;
+      }
+    }
+    error.val = "";
+    return true;
+  };
 
   const field: Field = {
-    name,
+    name: options.name,
+    value,
     error,
-    addValidator(v) {
-      validators.push(v);
+    isTouched,
+    isValid,
+    isInvalid,
+    stateClass,
+    addValidator(validator: Validator) {
+      validators.push(validator);
       return field;
     },
-    validate(value, data) {
-      for (const v of validators) {
-        const err = v.validate(value, data);
-        if (err) {
-          error.val = err;
-          return false;
-        }
-      }
+    validate,
+    setError(msg: string) {
+      error.val = msg;
+      isTouched.val = true;
+    },
+    clearError() {
       error.val = "";
-      return true;
     },
     dom() {
-      const { div } = van.tags;
-      return div(
-        { class: "mb-4" },
-        Label({}, label),
-        control
-          ? control()
-          : Input({
-              name,
-              type: inputType,
-              ...(placeholder ? { placeholder } : {}),
-              required: true,
-            }),
+      const inputClass = van.derive(
         () =>
-          error.val
-            ? div({ class: "text-destructive text-sm mt-1" }, error.val)
-            : "",
-        ...(hint
-          ? [() => div({ class: "text-muted text-sm mt-1" }, hint)]
-          : []),
+          `w-full px-3 py-2 border rounded-md text-sm transition-colors focus:outline-none focus:ring-2 ${
+            isInvalid.val
+              ? "border-destructive focus:ring-destructive/30"
+              : "border-border focus:ring-accent/30 focus:border-accent"
+          }`,
+      );
+
+      const errorText = van.derive(() => (isInvalid.val || (isTouched.val && !!error.val)) ? error.val : "");
+
+      return div(
+        { class: () => `field flex flex-col gap-1 text-sm font-sans ${stateClass.val}` },
+        label(
+          { class: "font-medium text-foreground", for: options.name },
+          options.label,
+        ),
+        input({
+          id: options.name,
+          name: options.name,
+          type: options.inputType ?? "text",
+          class: inputClass,
+          value: () => value.val,
+          placeholder: options.placeholder ?? "",
+          disabled: options.disabled ?? false,
+          oninput: (e: Event) => {
+            value.val = (e.target as HTMLInputElement).value;
+            if (isTouched.val) validate();
+          },
+          onblur: () => {
+            isTouched.val = true;
+            validate();
+          },
+        }),
+        p(
+          {
+            class: () =>
+              errorText.val
+                ? "field-error text-xs text-destructive mt-0.5"
+                : "hidden",
+          },
+          () => errorText.val,
+        ),
+        options.hint
+          ? p({ class: "field-hint text-xs text-foreground-soft mt-0.5" }, options.hint)
+          : null,
       );
     },
   };
@@ -127,42 +181,132 @@ export const Field = (
   return field;
 };
 
-/** Campo requerido de texto libre. */
-export const TextField = (
-  label: string,
-  name: string,
+export interface TextFieldOptions {
+  label?: FieldText;
+  name?: string;
+  placeholder?: FieldText;
+  hint?: FieldText;
+  required?: boolean;
+  requiredMsg?: FieldText;
+}
+
+export interface EmailFieldOptions {
+  label?: FieldText;
+  name?: string;
+  placeholder?: FieldText;
+  hint?: FieldText;
+  requiredMsg?: FieldText;
+  invalidMsg?: FieldText;
+}
+
+export interface PasswordFieldOptions {
+  label?: FieldText;
+  name?: string;
+  placeholder?: FieldText;
+  hint?: FieldText;
+  min?: number;
+  requiredMsg?: FieldText;
+  minMsg?: FieldText;
+}
+
+/** Campo requerido de texto libre. Baterías incluidas con i18n global. */
+export function TextField(options?: TextFieldOptions): Field;
+export function TextField(label?: string, name?: string, placeholder?: string): Field;
+export function TextField(
+  optionsOrLabel: string | TextFieldOptions = "text",
+  name = "text",
   placeholder?: string,
-): Field =>
-  Field(
-    { label, name, inputType: "text", placeholder },
-    [Required("Ingresa tu " + label.toLowerCase())],
-  );
+): Field {
+  if (typeof optionsOrLabel === "string") {
+    return Field(
+      { label: optionsOrLabel, name, inputType: "text", placeholder },
+      [Required(t(TEXTS.name.required.key, undefined, TEXTS.name.required.default))],
+    );
+  }
+  const {
+    label = t(TEXTS.name.label.key, undefined, TEXTS.name.label.default),
+    name: fieldName = "name",
+    placeholder: ph = t(TEXTS.name.placeholder.key, undefined, TEXTS.name.placeholder.default),
+    hint,
+    required = true,
+    requiredMsg = t(TEXTS.name.required.key, undefined, TEXTS.name.required.default),
+  } = optionsOrLabel;
+  const validators: Validator[] = [];
+  if (required) {
+    validators.push(Required(requiredMsg));
+  }
+  return Field({ label, name: fieldName, inputType: "text", placeholder: ph || undefined, hint }, validators);
+}
 
-/** Campo de correo: requerido + formato. */
-export const EmailField = (
-  label = "Correo electrónico",
+/** Campo de correo: requerido + formato. Baterías incluidas con i18n global. */
+export function EmailField(options?: EmailFieldOptions): Field;
+export function EmailField(label?: string, name?: string, placeholder?: string): Field;
+export function EmailField(
+  optionsOrLabel: string | EmailFieldOptions = {},
   name = "email",
-  placeholder = "tucorreo@ejemplo.com",
-): Field =>
-  Field(
-    { label, name, inputType: "email", placeholder },
-    [
-      Required("Ingresa tu correo electrónico"),
-      Email("Correo electrónico inválido"),
-    ],
-  );
+  placeholder?: string,
+): Field {
+  if (typeof optionsOrLabel === "string") {
+    return Field(
+      { label: optionsOrLabel, name, inputType: "email", placeholder: placeholder ?? TEXTS.email.placeholder.default },
+      [
+        Required(t(TEXTS.email.required.key, undefined, TEXTS.email.required.default)),
+        Email(t(TEXTS.email.invalid.key, undefined, TEXTS.email.invalid.default)),
+      ],
+    );
+  }
+  const {
+    label = t(TEXTS.email.label.key, undefined, TEXTS.email.label.default),
+    name: fieldName = "email",
+    placeholder: ph = t(TEXTS.email.placeholder.key, undefined, TEXTS.email.placeholder.default),
+    hint,
+    requiredMsg = t(TEXTS.email.required.key, undefined, TEXTS.email.required.default),
+    invalidMsg = t(TEXTS.email.invalid.key, undefined, TEXTS.email.invalid.default),
+  } = optionsOrLabel;
 
-/** Campo de contraseña: requerido + largo mínimo. */
-export const PasswordField = (
-  label = "Contraseña",
-  name = "password",
-  placeholder = "••••••••",
-  min = 6,
-): Field =>
-  Field(
-    { label, name, inputType: "password", placeholder },
+  return Field(
+    { label, name: fieldName, inputType: "email", placeholder: ph || undefined, hint },
     [
-      Required("Ingresa tu contraseña"),
-      MinLength(min, `Mínimo ${min} caracteres`),
+      Required(requiredMsg),
+      Email(invalidMsg),
     ],
   );
+}
+
+/** Campo de contraseña: requerido + largo mínimo. Baterías incluidas con i18n global. */
+export function PasswordField(options?: PasswordFieldOptions): Field;
+export function PasswordField(label?: string, name?: string, placeholder?: string, min?: number): Field;
+export function PasswordField(
+  optionsOrLabel: string | PasswordFieldOptions = {},
+  name = "password",
+  placeholder?: string,
+  min = 6,
+): Field {
+  if (typeof optionsOrLabel === "string") {
+    const minLength = min ?? 6;
+    return Field(
+      { label: optionsOrLabel, name, inputType: "password", placeholder: placeholder ?? TEXTS.password.placeholder.default },
+      [
+        Required(t(TEXTS.password.required.key, undefined, TEXTS.password.required.default)),
+        MinLength(minLength, t(TEXTS.password.min.key, { min: minLength }, TEXTS.password.min.default)),
+      ],
+    );
+  }
+  const {
+    label = t(TEXTS.password.label.key, undefined, TEXTS.password.label.default),
+    name: fieldName = "password",
+    placeholder: ph = t(TEXTS.password.placeholder.key, undefined, TEXTS.password.placeholder.default),
+    hint,
+    min: minLength = 6,
+    requiredMsg = t(TEXTS.password.required.key, undefined, TEXTS.password.required.default),
+    minMsg = t(TEXTS.password.min.key, { min: minLength }, TEXTS.password.min.default),
+  } = optionsOrLabel;
+
+  return Field(
+    { label, name: fieldName, inputType: "password", placeholder: ph || undefined, hint },
+    [
+      Required(requiredMsg),
+      MinLength(minLength, minMsg),
+    ],
+  );
+}

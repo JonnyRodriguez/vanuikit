@@ -8,7 +8,7 @@ export { van };
 
 // Componentes Básicos
 export { Button, PrimaryButton, SecondaryButton, type ButtonVariant, type ButtonSize } from "./components/button.js";
-export { Field, Input, Select, Textarea } from "./components/field.js";
+export { Field, TextField, EmailField, PasswordField } from "./components/field.js";
 export { Form } from "./components/form.js";
 export { Modal, ModalBase, type ModalContent, type ModalZone, type ModalProps } from "./components/modal.js";
 export { Spin } from "./components/spin.js";
@@ -90,6 +90,9 @@ export {
 // Internacionalización (i18n)
 export {
   createI18n,
+  i18n,
+  t,
+  raw,
   type I18nOptions,
   type I18nInstance,
 } from "./i18n.js";

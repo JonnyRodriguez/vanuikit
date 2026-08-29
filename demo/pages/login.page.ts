@@ -14,6 +14,14 @@ export type LoginPageProps = {
   router: Router;
 };
 
+export const TEXTS = {
+  title: { key: "login.title", default: "Iniciar sesión" },
+  subtitle: { key: "login.subtitle", default: "Ingresa a tu cuenta para gestionar tus ***REMOVED***s" },
+  noAccount: { key: "login.noAccount", default: "¿No tienes una cuenta?" },
+  signupLink: { key: "login.signupLink", default: "Regístrate aquí" },
+  errGeneric: { key: "login.errGeneric", default: "Error al iniciar sesión. Revisa tus credenciales." },
+};
+
 export const LoginPage = ({ router }: LoginPageProps) => {
   const { div, h1, p, a } = van.tags;
 
@@ -39,21 +47,20 @@ export const LoginPage = ({ router }: LoginPageProps) => {
 
   return div(
     { class: "max-w-md mx-auto my-8 p-6 bg-background rounded-xl border border-border shadow-sm" },
-    h1({ class: "text-2xl font-bold text-foreground text-center mb-1" }, i18n.t("login.title")),
-    p({ class: "text-sm text-foreground-soft text-center mb-6" }, i18n.t("login.subtitle")),
+    h1({ class: "text-2xl font-bold text-foreground text-center mb-1" }, i18n.t(TEXTS.title.key, undefined, TEXTS.title.default)),
+    p({ class: "text-sm text-foreground-soft text-center mb-6" }, i18n.t(TEXTS.subtitle.key, undefined, TEXTS.subtitle.default)),
     LoginForm({
       handleLogin: async (data) => {
         const result = await loginMutation.mutate(data as LoginInput);
         if (!result) {
-          return { error: i18n.raw("login.errGeneric") };
+          return { error: i18n.raw(TEXTS.errGeneric.key, undefined, TEXTS.errGeneric.default) };
         }
         return {};
       },
-      i18n,
     }),
     div(
       { class: "mt-6 text-center text-xs text-foreground-soft border-t border-border pt-4" },
-      () => div({}, i18n.t("login.noAccount"), " ",
+      () => div({}, i18n.t(TEXTS.noAccount.key, undefined, TEXTS.noAccount.default), " ",
         a(
           {
             href: "/register",
@@ -63,7 +70,7 @@ export const LoginPage = ({ router }: LoginPageProps) => {
               router.navigate("/register");
             },
           },
-          i18n.t("login.signupLink"),
+          i18n.t(TEXTS.signupLink.key, undefined, TEXTS.signupLink.default),
         ),
       ),
     ),

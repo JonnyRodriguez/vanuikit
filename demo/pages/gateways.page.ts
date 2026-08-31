@@ -17,6 +17,33 @@ export interface GatewaysPageProps {
   router?: Router;
 }
 
+export const TEXTS = {
+  title: { key: "gateways.title", default: "Métodos de Pago y Recarga" },
+  loading: { key: "gateways.loading", default: "Cargando pasarelas..." },
+  loadingParams: { key: "gateways.loadingParams", default: "Cargando parámetros..." },
+  restrictedTitle: { key: "gateways.restrictedTitle", default: "Acceso Restringido" },
+  restrictedMsg: { key: "gateways.restrictedMsg", default: "Debes iniciar sesión para acceder a las pasarelas de pago y recargas." },
+  errorTitle: { key: "gateways.errorTitle", default: "Error al cargar datos" },
+  goToLogin: { key: "gateways.goToLogin", default: "Ir al Login" },
+  retry: { key: "gateways.retry", default: "Reintentar" },
+  rechargeWith: { key: "gateways.rechargeWith", default: "Recargar con {name}" },
+  amountLabel: { key: "gateways.amountLabel", default: "Monto a recargar ({tipo})" },
+  minMaxHelp: { key: "gateways.minMaxHelp", default: "Mínimo: {min} {tipo} · Máximo: {max} {tipo}" },
+  rechargeBtn: { key: "gateways.rechargeBtn", default: "Recargar" },
+  generating: { key: "gateways.generating", default: "Generando..." },
+  processing: { key: "gateways.processing", default: "Procesando recarga..." },
+  qrTitle: { key: "gateways.qrTitle", default: "Código QR" },
+  qrClickText: { key: "gateways.qrClickText", default: "Haz clic aquí para abrir la plataforma" },
+  qrScanText: { key: "gateways.qrScanText", default: "o escanea el código QR con tu app móvil" },
+  qrNoticeText: { key: "gateways.qrNoticeText", default: "Tu saldo se actualizará automáticamente." },
+  invalidAmount: { key: "gateways.invalidAmount", default: "Ingresa un monto válido" },
+  minAmountErr: { key: "gateways.minAmountErr", default: "El monto debe ser superior a {min} {tipo}" },
+  maxAmountErr: { key: "gateways.maxAmountErr", default: "El monto debe ser inferior a {max} {tipo}" },
+  urlGenErr: { key: "gateways.urlGenErr", default: "No se pudo generar la URL de recarga" },
+  qrGenErr: { key: "gateways.qrGenErr", default: "No se pudo generar el código QR" },
+  processErr: { key: "gateways.processErr", default: "Error al procesar la recarga" },
+};
+
 export const GatewaysPage = ({ router }: GatewaysPageProps = {}) => {
   const { div, h1, p, form, input, button, img, span, hr } = van.tags;
 
@@ -44,24 +71,24 @@ export const GatewaysPage = ({ router }: GatewaysPageProps = {}) => {
       onSuccess: async (result) => {
         const url = result.data?.url;
         if (!url) {
-          validationError.val = "No se pudo generar la URL de recarga";
+          validationError.val = i18n.raw(TEXTS.urlGenErr.key, undefined, TEXTS.urlGenErr.default);
           return;
         }
 
         const qrResult = await qr.generate(url, activeGateway.val?.img);
         if ("error" in qrResult) {
-          validationError.val = "No se pudo generar el código QR";
+          validationError.val = i18n.raw(TEXTS.qrGenErr.key, undefined, TEXTS.qrGenErr.default);
           return;
         }
 
         modal.set({
-          title: "Código QR",
+          title: i18n.t(TEXTS.qrTitle.key, undefined, TEXTS.qrTitle.default),
           body: () => qrBody(qrResult.qr, url),
           footer: null,
         });
       },
       onError: (err) => {
-        validationError.val = err.message || "Error al procesar la recarga";
+        validationError.val = err.message || i18n.raw(TEXTS.processErr.key, undefined, TEXTS.processErr.default);
       },
     },
   );
@@ -72,7 +99,7 @@ export const GatewaysPage = ({ router }: GatewaysPageProps = {}) => {
     rechargeMutation.reset();
     modal.set(
       {
-        title: `Recargar con ${gateway.id}`,
+        title: i18n.t(TEXTS.rechargeWith.key, { name: gateway.name || gateway.id }, `Recargar con ${gateway.name || gateway.id}`),
         body: () => amountBody(),
         footer: null,
       },
@@ -90,15 +117,23 @@ export const GatewaysPage = ({ router }: GatewaysPageProps = {}) => {
 
     const numAmount = parseFloat(amount);
     if (Number.isNaN(numAmount)) {
-      validationError.val = "Ingresa un monto válido";
+      validationError.val = i18n.raw(TEXTS.invalidAmount.key, undefined, TEXTS.invalidAmount.default);
       return;
     }
     if (numAmount < parseFloat(params.monto_min_recarga)) {
-      validationError.val = `El monto debe ser superior a ${params.monto_min_recarga} ${params.tipo}`;
+      validationError.val = i18n.raw(
+        TEXTS.minAmountErr.key,
+        { min: params.monto_min_recarga, tipo: params.tipo },
+        `El monto debe ser superior a ${params.monto_min_recarga} ${params.tipo}`,
+      );
       return;
     }
     if (numAmount > parseFloat(params.monto_max_recarga)) {
-      validationError.val = `El monto debe ser inferior a ${params.monto_max_recarga} ${params.tipo}`;
+      validationError.val = i18n.raw(
+        TEXTS.maxAmountErr.key,
+        { max: params.monto_max_recarga, tipo: params.tipo },
+        `El monto debe ser inferior a ${params.monto_max_recarga} ${params.tipo}`,
+      );
       return;
     }
 
@@ -112,7 +147,7 @@ export const GatewaysPage = ({ router }: GatewaysPageProps = {}) => {
   /** Cuerpo del modal de monto */
   const amountBody = () => {
     const params = paramsQuery.data.val;
-    if (!params) return div("Cargando parámetros...");
+    if (!params) return div(i18n.t(TEXTS.loadingParams.key, undefined, TEXTS.loadingParams.default));
 
     return div(
       {},
@@ -139,9 +174,7 @@ export const GatewaysPage = ({ router }: GatewaysPageProps = {}) => {
         { onsubmit: handleSubmit, class: "space-y-4" },
         div(
           { class: "mb-1 text-sm font-medium text-foreground" },
-          "Monto a recargar (",
-          params.tipo,
-          ")",
+          i18n.t(TEXTS.amountLabel.key, { tipo: params.tipo }, `Monto a recargar (${params.tipo})`),
         ),
         input({
           type: "number",
@@ -156,7 +189,11 @@ export const GatewaysPage = ({ router }: GatewaysPageProps = {}) => {
         }),
         p(
           { class: "text-xs text-muted" },
-          `Mínimo: ${params.monto_min_recarga} ${params.tipo} · Máximo: ${params.monto_max_recarga} ${params.tipo}`,
+          i18n.t(
+            TEXTS.minMaxHelp.key,
+            { min: params.monto_min_recarga, max: params.monto_max_recarga, tipo: params.tipo },
+            `Mínimo: ${params.monto_min_recarga} ${params.tipo} · Máximo: ${params.monto_max_recarga} ${params.tipo}`,
+          ),
         ),
         div(
           { class: "pt-2" },
@@ -168,8 +205,8 @@ export const GatewaysPage = ({ router }: GatewaysPageProps = {}) => {
             rechargeMutation.loading.val
               ? div(
                   { class: "flex items-center gap-2 text-sm text-foreground justify-center py-2" },
-                  Spin("Generando..."),
-                  "Procesando recarga",
+                  Spin(i18n.t(TEXTS.generating.key, undefined, TEXTS.generating.default)),
+                  i18n.t(TEXTS.processing.key, undefined, TEXTS.processing.default),
                 )
               : button(
                   {
@@ -177,7 +214,7 @@ export const GatewaysPage = ({ router }: GatewaysPageProps = {}) => {
                     class:
                       "w-full py-2 px-4 font-medium text-white bg-primary rounded-lg hover:bg-primary-hover transition cursor-pointer",
                   },
-                  "Recargar",
+                  i18n.t(TEXTS.rechargeBtn.key, undefined, TEXTS.rechargeBtn.default),
                 ),
         ),
       ),
@@ -199,16 +236,16 @@ export const GatewaysPage = ({ router }: GatewaysPageProps = {}) => {
         },
         span(
           { class: "text-xl font-bold text-accent flex items-center justify-center" },
-          "Haz clic aquí para abrir la plataforma",
+          i18n.t(TEXTS.qrClickText.key, undefined, TEXTS.qrClickText.default),
         ),
         div(
           { class: "text-muted text-sm italic mt-2 text-center" },
-          "o escanea el código QR con tu app móvil",
+          i18n.t(TEXTS.qrScanText.key, undefined, TEXTS.qrScanText.default),
         ),
-        img({ class: "mx-auto mt-3", src: qrData, alt: "Código QR para recargar" }),
+        img({ class: "mx-auto mt-3", src: qrData, alt: "Código QR" }),
         div(
           { class: "text-muted text-sm italic mt-2 text-center" },
-          "Tu saldo se actualizará automáticamente.",
+          i18n.t(TEXTS.qrNoticeText.key, undefined, TEXTS.qrNoticeText.default),
         ),
       ),
     );
@@ -219,7 +256,7 @@ export const GatewaysPage = ({ router }: GatewaysPageProps = {}) => {
       if (gatewaysQuery.loading.val || paramsQuery.loading.val) {
         return div(
           { class: "p-8 text-center flex items-center justify-center" },
-          Spin("Cargando pasarelas..."),
+          Spin(i18n.t(TEXTS.loading.key, undefined, TEXTS.loading.default)),
         );
       }
 
@@ -231,8 +268,18 @@ export const GatewaysPage = ({ router }: GatewaysPageProps = {}) => {
 
         return div(
           { class: "text-center p-8 border border-border rounded-xl bg-surface max-w-md mx-auto my-6" },
-          p({ class: "font-semibold mb-2 text-lg text-foreground" }, isUnauthorized ? "Acceso Restringido" : "Error al cargar datos"),
-          p({ class: "text-sm text-muted mb-6" }, isUnauthorized ? "Debes iniciar sesión para acceder a las pasarelas de pago y recargas." : errMsg),
+          p(
+            { class: "font-semibold mb-2 text-lg text-foreground" },
+            isUnauthorized
+              ? i18n.t(TEXTS.restrictedTitle.key, undefined, TEXTS.restrictedTitle.default)
+              : i18n.t(TEXTS.errorTitle.key, undefined, TEXTS.errorTitle.default),
+          ),
+          p(
+            { class: "text-sm text-muted mb-6" },
+            isUnauthorized
+              ? i18n.t(TEXTS.restrictedMsg.key, undefined, TEXTS.restrictedMsg.default)
+              : errMsg,
+          ),
           div(
             { class: "flex gap-3 justify-center" },
             isUnauthorized && router
@@ -241,7 +288,7 @@ export const GatewaysPage = ({ router }: GatewaysPageProps = {}) => {
                     class: "px-5 py-2.5 bg-primary text-white font-medium rounded-lg text-sm cursor-pointer hover:bg-primary-hover transition",
                     onclick: () => router.navigate("/login?redirect=/gateways"),
                   },
-                  "Ir al Login",
+                  i18n.t(TEXTS.goToLogin.key, undefined, TEXTS.goToLogin.default),
                 )
               : button(
                   {
@@ -251,7 +298,7 @@ export const GatewaysPage = ({ router }: GatewaysPageProps = {}) => {
                       paramsQuery.refetch();
                     },
                   },
-                  "Reintentar",
+                  i18n.t(TEXTS.retry.key, undefined, TEXTS.retry.default),
                 ),
           ),
         );
@@ -260,7 +307,7 @@ export const GatewaysPage = ({ router }: GatewaysPageProps = {}) => {
       const gateways = gatewaysQuery.data.val || [];
       return div(
         {},
-        h1({ class: "text-2xl font-bold text-center mb-6" }, i18n.t("gateways.title")),
+        h1({ class: "text-2xl font-bold text-center mb-6" }, i18n.t(TEXTS.title.key, undefined, TEXTS.title.default)),
         div(
           { class: "flex justify-center" },
           GatewaysList(gateways, openAmountModal),

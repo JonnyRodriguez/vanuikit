@@ -145,7 +145,7 @@ export const ModalFooterWithCloseButton = (
     SecondaryButton({ onclick: onClose }, text),
   );
 
-export type ModalProps = ModalContent & { title?: string };
+export type ModalProps = ModalContent & { title?: string | State<string> };
 
 /**
  * Modal cómodo — construido sobre ModalBase: ya trae header con título +
@@ -163,7 +163,7 @@ export const Modal = (
   initialContent: ModalProps | null = null,
   initialVisible = false,
 ) => {
-  const title = van.state<string | undefined>(undefined);
+  const title = van.state<string | State<string> | undefined>(undefined);
   const header = () =>
     ModalHeaderWithTitleAndClose(title.val ?? "", () => modal.close());
   const footer = () => ModalFooterWithCloseButton(() => modal.close());
@@ -173,7 +173,7 @@ export const Modal = (
     initialVisible,
   );
 
-  const setTitle = (newTitle: string) => (title.val = newTitle);
+  const setTitle = (newTitle: string | State<string>) => (title.val = newTitle);
 
   // Igual que ModalBase.set pero sin mutar el objeto del llamador:
   // completa el footer por defecto en una copia.

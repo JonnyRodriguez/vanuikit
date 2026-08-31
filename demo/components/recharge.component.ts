@@ -8,12 +8,28 @@ import {
   Field,
   PrimaryButton,
   Spin,
+  t,
+  i18n,
   type Validator,
   type ModalContent,
   type ModalProps,
 } from "vanui";
 import { ***REMOVED***Item } from "./***REMOVED***-list.component.js";
 import type { ***REMOVED***, ***REMOVED***Params } from "../shared/***REMOVED***.schema.js";
+
+export const TEXTS = {
+  amountLabel: { key: "***REMOVED***.amountLabel", default: "Monto a ***REMOVED***r ({tipo})" },
+  minMaxHelp: { key: "***REMOVED***.minMaxHelp", default: "Mínimo: {min} {tipo} · Máximo: {max} {tipo}" },
+  ***REMOVED***Btn: { key: "***REMOVED***.***REMOVED***Btn", default: "***REMOVED***r" },
+  generating: { key: "***REMOVED***.generating", default: "Generando ***REMOVED***..." },
+  ***REMOVED***With: { key: "***REMOVED***.***REMOVED***With", default: "***REMOVED***r con {name}" },
+  qrClickText: { key: "***REMOVED***.qrClickText", default: "Haz clic aquí para abrir la plataforma" },
+  qrScanText: { key: "***REMOVED***.qrScanText", default: "o escanea el código QR con tu app móvil" },
+  qrNoticeText: { key: "***REMOVED***.qrNoticeText", default: "Tu saldo se actualizará automáticamente." },
+  invalidAmount: { key: "***REMOVED***.invalidAmount", default: "Ingresa un monto válido" },
+  minAmountErr: { key: "***REMOVED***.minAmountErr", default: "El monto debe ser superior a {min} {tipo}" },
+  maxAmountErr: { key: "***REMOVED***.maxAmountErr", default: "El monto debe ser inferior a {max} {tipo}" },
+};
 
 export type ***REMOVED***Result = { error: string } | {};
 
@@ -30,9 +46,21 @@ const Between = (
 ): Validator => ({
   validate: (value) => {
     const num = parseFloat(value);
-    if (!value || Number.isNaN(num)) return "Ingresa un monto válido";
-    if (num < min) return "El monto debe ser superior a " + min + " " + tipo;
-    if (num > max) return "El monto debe ser inferior a " + max + " " + tipo;
+    if (!value || Number.isNaN(num)) return i18n.raw(TEXTS.invalidAmount.key, undefined, TEXTS.invalidAmount.default);
+    if (num < min) {
+      return i18n.raw(
+        TEXTS.minAmountErr.key,
+        { min, tipo },
+        `El monto debe ser superior a ${min} ${tipo}`,
+      );
+    }
+    if (num > max) {
+      return i18n.raw(
+        TEXTS.maxAmountErr.key,
+        { max, tipo },
+        `El monto debe ser inferior a ${max} ${tipo}`,
+      );
+    }
     return null;
   },
 });
@@ -47,7 +75,7 @@ export const ***REMOVED***Amount = (info: ***REMOVED***Info) => {
   const ***REMOVED*** = info.***REMOVED***;
 
   const amount = Field({
-    label: "Monto a ***REMOVED***r (" + params.tipo + ")",
+    label: t(TEXTS.amountLabel.key, { tipo: params.tipo }, `Monto a ***REMOVED***r (${params.tipo})`),
     name: "amount",
     inputType: "number",
   });
@@ -61,7 +89,7 @@ export const ***REMOVED***Amount = (info: ***REMOVED***Info) => {
 
   const form = Form(async (data) => {
     formError.val = "";
-    msg.val = Spin("Generando ***REMOVED***...");
+    msg.val = Spin(t(TEXTS.generating.key, undefined, TEXTS.generating.default));
     data.***REMOVED*** = ***REMOVED***;
     const result = await info.handle***REMOVED***Amount(data);
     if ("error" in result) {
@@ -79,18 +107,20 @@ export const ***REMOVED***Amount = (info: ***REMOVED***Info) => {
       form.dom(
         div(
           { class: "text-muted text-sm mt-2" },
-          "Mínimo: " +
-            params.monto_min_***REMOVED*** +
-            " " +
-            params.tipo +
-            ", Máximo: " +
-            params.monto_max_***REMOVED*** +
-            " " +
-            params.tipo,
+          t(
+            TEXTS.minMaxHelp.key,
+            { min: params.monto_min_***REMOVED***, max: params.monto_max_***REMOVED***, tipo: params.tipo },
+            `Mínimo: ${params.monto_min_***REMOVED***} ${params.tipo} · Máximo: ${params.monto_max_***REMOVED***} ${params.tipo}`,
+          ),
         ),
         div(
           { class: "pt-4" },
-          () => (msg.val && msg.val) || PrimaryButton({ type: "submit" }, "***REMOVED***r"),
+          () =>
+            (msg.val && msg.val) ||
+            PrimaryButton(
+              { type: "submit" },
+              t(TEXTS.***REMOVED***Btn.key, undefined, TEXTS.***REMOVED***Btn.default),
+            ),
         ),
       ),
       () =>
@@ -102,7 +132,11 @@ export const ***REMOVED***Amount = (info: ***REMOVED***Info) => {
 };
 
 export const ***REMOVED***AmountModal = (info: ***REMOVED***Info): ModalProps => ({
-  title: "***REMOVED***r con " + info.***REMOVED***.id,
+  title: t(
+    TEXTS.***REMOVED***With.key,
+    { name: info.***REMOVED***.name || info.***REMOVED***.id },
+    `***REMOVED***r con ${info.***REMOVED***.name || info.***REMOVED***.id}`,
+  ),
   body: () => ***REMOVED***Amount(info),
 });
 
@@ -122,20 +156,20 @@ export const ***REMOVED***Qr = (qr: string, url: string) => {
       },
       span(
         { class: "text-xl font-bold text-accent flex items-center" },
-        "Haz clic aquí para abrir la plataforma",
+        t(TEXTS.qrClickText.key, undefined, TEXTS.qrClickText.default),
       ),
       div(
         { class: "text-muted text-sm italic" },
-        "o escanea el código QR con tu app móvil",
+        t(TEXTS.qrScanText.key, undefined, TEXTS.qrScanText.default),
       ),
       img({
         class: "mx-auto",
         src: qr,
-        alt: "Código QR para ***REMOVED***r",
+        alt: "Código QR",
       }),
       div(
         { class: "text-muted text-sm italic" },
-        "Tu saldo se actualizará automáticamente.",
+        t(TEXTS.qrNoticeText.key, undefined, TEXTS.qrNoticeText.default),
       ),
     ),
   );

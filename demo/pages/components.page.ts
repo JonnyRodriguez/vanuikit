@@ -32,6 +32,24 @@ export type ComponentsPageProps = {
   router?: Router;
 };
 
+export const TEXTS = {
+  title: { key: "components.title", default: "Catálogo de Componentes" },
+  subtitle: { key: "components.subtitle", default: "Componentes interactivos construidos con VanJS y VanUI" },
+  themeSection: { key: "components.themeSection", default: "Gestión de Tema e Idioma" },
+  themeDesc: { key: "components.themeDesc", default: "Gestión de estado global sin overhead: alternancia instantánea y sincronización automática." },
+  tabs: { key: "components.tabs", default: "Pestañas (Tabs)" },
+  tabsDesc: { key: "components.tabsDesc", default: "Organiza contenido denso con soporte para flechas de teclado (←/→, Home, End), badges y múltiples variantes." },
+  dropdowns: { key: "components.dropdowns", default: "Select y Dropdowns Accesibles" },
+  dropdownsDesc: { key: "components.dropdownsDesc", default: "Selectores personalizados con navegación completa por teclado, búsqueda integrada y menús de acciones contextuales." },
+  confirmDialogs: { key: "components.confirmDialogs", default: "Diálogos de Confirmación (ConfirmDialog)" },
+  confirmDesc: { key: "components.confirmDesc", default: "Abstracción sobre Modal para confirmaciones críticas con soporte para Promises, estados de carga y variantes." },
+  tables: { key: "components.tables", default: "Tablas y DataGrid" },
+  tablesDesc: { key: "components.tablesDesc", default: "Tabla de datos reactiva con ordenamiento bidireccional por columna, búsqueda instantánea, selección múltiple y paginación." },
+  badges: { key: "components.badges", default: "Etiquetas (Badges)" },
+  toasts: { key: "components.toasts", default: "Notificaciones (Toast)" },
+  modals: { key: "components.modals", default: "Modales" },
+};
+
 export function ComponentsPage(_props: ComponentsPageProps = {}) {
   const modal = ModalBase();
 
@@ -84,15 +102,15 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
     // Cabecera Principal
     div(
       { class: "border-b border-border pb-5" },
-      h1({ class: "text-3xl font-extrabold text-foreground" }, i18n.t("components.title")),
-      p({ class: "text-foreground-soft text-sm mt-1" }, i18n.t("components.subtitle")),
+      h1({ class: "text-3xl font-extrabold text-foreground" }, i18n.t(TEXTS.title.key, undefined, TEXTS.title.default)),
+      p({ class: "text-foreground-soft text-sm mt-1" }, i18n.t(TEXTS.subtitle.key, undefined, TEXTS.subtitle.default)),
     ),
 
     // 1. Theme & i18n Control Section
     section(
       { class: "space-y-4 p-5 rounded-2xl border border-border bg-secondary/10 shadow-sm" },
-      h2({ class: "text-lg font-bold text-foreground" }, i18n.t("components.themeSection")),
-      p({ class: "text-sm text-foreground-soft" }, "Gestión de estado global sin overhead: alternancia instantánea y sincronización automática."),
+      h2({ class: "text-lg font-bold text-foreground" }, i18n.t(TEXTS.themeSection.key, undefined, TEXTS.themeSection.default)),
+      p({ class: "text-sm text-foreground-soft" }, i18n.t(TEXTS.themeDesc.key, undefined, TEXTS.themeDesc.default)),
       div(
         { class: "flex flex-wrap items-center gap-3" },
         Button(
@@ -146,10 +164,10 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       { class: "space-y-4" },
       div(
         { class: "flex items-center justify-between" },
-        h2({ class: "text-xl font-bold text-foreground" }, i18n.t("components.tabs")),
+        h2({ class: "text-xl font-bold text-foreground" }, i18n.t(TEXTS.tabs.key, undefined, TEXTS.tabs.default)),
         Badge({ text: "Accesible ARIA", variant: "primary", size: "sm" }),
       ),
-      p({ class: "text-sm text-foreground-soft" }, "Organiza contenido denso con soporte para flechas de teclado (←/→, Home, End), badges y múltiples variantes."),
+      p({ class: "text-sm text-foreground-soft" }, i18n.t(TEXTS.tabsDesc.key, undefined, TEXTS.tabsDesc.default)),
       div(
         { class: "p-6 rounded-2xl border border-border bg-background shadow-sm space-y-6" },
         // Variante Underline
@@ -202,10 +220,10 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       { class: "space-y-4" },
       div(
         { class: "flex items-center justify-between" },
-        h2({ class: "text-xl font-bold text-foreground" }, i18n.t("components.dropdowns")),
+        h2({ class: "text-xl font-bold text-foreground" }, i18n.t(TEXTS.dropdowns.key, undefined, TEXTS.dropdowns.default)),
         Badge({ text: "Listbox + Menu", variant: "success", size: "sm" }),
       ),
-      p({ class: "text-sm text-foreground-soft" }, "Selectores personalizados con navegación completa por teclado, búsqueda integrada y menús de acciones contextuales."),
+      p({ class: "text-sm text-foreground-soft" }, i18n.t(TEXTS.dropdownsDesc.key, undefined, TEXTS.dropdownsDesc.default)),
       div(
         { class: "grid grid-cols-1 md:grid-cols-3 gap-6 p-6 rounded-2xl border border-border bg-background shadow-sm" },
         // Select con búsqueda
@@ -276,10 +294,10 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       { class: "space-y-4" },
       div(
         { class: "flex items-center justify-between" },
-        h2({ class: "text-xl font-bold text-foreground" }, i18n.t("components.confirmDialogs")),
+        h2({ class: "text-xl font-bold text-foreground" }, i18n.t(TEXTS.confirmDialogs.key, undefined, TEXTS.confirmDialogs.default)),
         Badge({ text: "Imperativo & Declarativo", variant: "warning", size: "sm" }),
       ),
-      p({ class: "text-sm text-foreground-soft" }, "Abstracción sobre Modal para confirmaciones críticas con soporte para Promises, estados de carga y variantes (danger, warning, primary)."),
+      p({ class: "text-sm text-foreground-soft" }, i18n.t(TEXTS.confirmDesc.key, undefined, TEXTS.confirmDesc.default)),
       div(
         { class: "flex flex-wrap items-center gap-4 p-6 rounded-2xl border border-border bg-background shadow-sm" },
         Button(
@@ -329,10 +347,10 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       { class: "space-y-4" },
       div(
         { class: "flex items-center justify-between" },
-        h2({ class: "text-xl font-bold text-foreground" }, i18n.t("components.tables")),
+        h2({ class: "text-xl font-bold text-foreground" }, i18n.t(TEXTS.tables.key, undefined, TEXTS.tables.default)),
         Badge({ text: "Búsqueda + Sort + Paginación", variant: "primary", size: "sm" }),
       ),
-      p({ class: "text-sm text-foreground-soft" }, "Tabla de datos reactiva con ordenamiento bidireccional por columna, búsqueda instantánea, selección múltiple y paginación."),
+      p({ class: "text-sm text-foreground-soft" }, i18n.t(TEXTS.tablesDesc.key, undefined, TEXTS.tablesDesc.default)),
       DataGrid({
         columns,
         data: sampleUsers,
@@ -352,7 +370,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
     // 6. Badges & Toasts
     section(
       { class: "space-y-4" },
-      h2({ class: "text-xl font-bold text-foreground" }, i18n.t("components.badges")),
+      h2({ class: "text-xl font-bold text-foreground" }, i18n.t(TEXTS.badges.key, undefined, TEXTS.badges.default)),
       div(
         { class: "flex flex-wrap items-center gap-3 p-6 rounded-2xl border border-border bg-background shadow-sm" },
         Badge({ text: "Primary", variant: "primary" }),
@@ -368,7 +386,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
     // 7. Notificaciones Toast
     section(
       { class: "space-y-4" },
-      h2({ class: "text-xl font-bold text-foreground" }, i18n.t("components.toasts")),
+      h2({ class: "text-xl font-bold text-foreground" }, i18n.t(TEXTS.toasts.key, undefined, TEXTS.toasts.default)),
       div(
         { class: "flex flex-wrap gap-3 p-6 rounded-2xl border border-border bg-background shadow-sm" },
         Button(
@@ -405,7 +423,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
     // 8. Modal Clásico & Spinner
     section(
       { class: "space-y-4" },
-      h2({ class: "text-xl font-bold text-foreground" }, i18n.t("components.modals")),
+      h2({ class: "text-xl font-bold text-foreground" }, i18n.t(TEXTS.modals.key, undefined, TEXTS.modals.default)),
       div(
         { class: "flex items-center gap-4 p-6 rounded-2xl border border-border bg-background shadow-sm" },
         Button(

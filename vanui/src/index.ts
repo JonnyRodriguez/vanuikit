@@ -44,6 +44,19 @@ export {
   type ConfirmVariant,
 } from "./components/confirm-dialog.js";
 export { toast, type ToastType, type ToastOptions, type ToastItem } from "./components/toast.js";
+export {
+  ThemeToggle,
+  type ThemeToggleProps,
+} from "./components/theme-toggle.js";
+export {
+  LocaleSelector,
+  type LocaleSelectorProps,
+  type LocaleOption,
+} from "./components/locale-selector.js";
+export {
+  UserBadge,
+  type UserBadgeProps,
+} from "./components/user-badge.js";
 
 // Pantallas / Formularios preconstruidos
 export { LoginForm } from "./pages/login.js";

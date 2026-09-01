@@ -12,6 +12,8 @@ import {
   toast,
   ModalBase,
   Spin,
+  ThemeToggle,
+  LocaleSelector,
   type TableColumn,
   type Router,
 } from "vanui";
@@ -106,55 +108,34 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       p({ class: "text-foreground-soft text-sm mt-1" }, i18n.t(TEXTS.subtitle.key, undefined, TEXTS.subtitle.default)),
     ),
 
-    // 1. Theme & i18n Control Section
+    // 1. Theme & i18n Control Section (Componentes Embebidos de VanUI)
     section(
-      { class: "space-y-4 p-5 rounded-2xl border border-border bg-secondary/10 shadow-sm" },
-      h2({ class: "text-lg font-bold text-foreground" }, i18n.t(TEXTS.themeSection.key, undefined, TEXTS.themeSection.default)),
+      { class: "space-y-5 p-6 rounded-2xl border border-border bg-secondary/10 shadow-sm" },
+      div(
+        { class: "flex items-center justify-between" },
+        h2({ class: "text-lg font-bold text-foreground" }, i18n.t(TEXTS.themeSection.key, undefined, TEXTS.themeSection.default)),
+        Badge({ text: "Embebidos en VanUI", variant: "primary", size: "sm" }),
+      ),
       p({ class: "text-sm text-foreground-soft" }, i18n.t(TEXTS.themeDesc.key, undefined, TEXTS.themeDesc.default)),
       div(
-        { class: "flex flex-wrap items-center gap-3" },
-        Button(
-          {
-            variant: "secondary",
-            onclick: () => theme.setMode("light"),
-          },
-          "☀️ Modo Claro",
+        { class: "grid grid-cols-1 md:grid-cols-2 gap-4 pt-2" },
+        div(
+          { class: "p-4 rounded-xl bg-card border border-border/80 space-y-3" },
+          h3({ class: "text-xs font-semibold text-muted-foreground uppercase tracking-wider" }, "ThemeToggle (Botón y Segmentado)"),
+          div(
+            { class: "flex flex-wrap items-center gap-3" },
+            ThemeToggle({ theme, i18n, showLabel: true }),
+            ThemeToggle({ theme, i18n, variant: "segmented" }),
+          ),
         ),
-        Button(
-          {
-            variant: "secondary",
-            onclick: () => theme.setMode("dark"),
-          },
-          "🌙 Modo Oscuro",
-        ),
-        Button(
-          {
-            variant: "secondary",
-            onclick: () => theme.setMode("system"),
-          },
-          "💻 Seguir Sistema",
-        ),
-        span({ class: "text-border font-bold mx-1" }, "|"),
-        Button(
-          {
-            variant: "primary",
-            onclick: () => i18n.setLocale("es"),
-          },
-          "🇪🇸 Español",
-        ),
-        Button(
-          {
-            variant: "primary",
-            onclick: () => i18n.setLocale("en"),
-          },
-          "🇺🇸 English",
-        ),
-        Button(
-          {
-            variant: "primary",
-            onclick: () => i18n.setLocale("fr"),
-          },
-          "🇫🇷 Français",
+        div(
+          { class: "p-4 rounded-xl bg-card border border-border/80 space-y-3" },
+          h3({ class: "text-xs font-semibold text-muted-foreground uppercase tracking-wider" }, "LocaleSelector (Select y Botones)"),
+          div(
+            { class: "flex flex-wrap items-center gap-3" },
+            LocaleSelector({ i18n }),
+            LocaleSelector({ i18n, variant: "buttons" }),
+          ),
         ),
       ),
     ),

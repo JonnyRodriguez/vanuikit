@@ -26,6 +26,7 @@ import type { Guard } from "./router.js";
 export type AuthUser = {
   id: string | number;
   email: string;
+  name?: string;
   [key: string]: unknown;
 };
 

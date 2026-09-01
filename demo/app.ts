@@ -16,6 +16,9 @@ import {
   SidebarGroup,
   SidebarItem,
   HeaderBar,
+  ThemeToggle,
+  LocaleSelector,
+  UserBadge,
   navigate,
 } from "vanui";
 import { LoginPage } from "./pages/login.page.js";
@@ -24,6 +27,22 @@ import { ***REMOVED***Page } from "./pages/***REMOVED***.page.js";
 import { ComponentsPage } from "./pages/components.page.js";
 import { i18n } from "./shared/i18n.config.js";
 import { theme } from "./shared/theme.config.js";
+
+/** Contrato de llaves de i18n para la navegación y títulos de la aplicación */
+export const TEXTS = {
+  nav: {
+    ***REMOVED***: "nav.***REMOVED***",
+    components: "nav.components",
+    login: "nav.login",
+    register: "nav.register",
+  },
+  titles: {
+    ***REMOVED***: "***REMOVED***.title",
+    components: "components.title",
+    login: "login.title",
+    register: "register.title",
+  },
+} as const;
 
 // Estado de sesión
 export const authState = createAuth({
@@ -100,33 +119,15 @@ export function App() {
     router.resolve();
   });
 
-  const { div, span, a, button, select, option } = van.tags;
+  const { span, a, button } = van.tags;
   const sidebarOpen = van.state(false);
-
-  const cycleTheme = () => {
-    if (theme.mode.val === "system") theme.setMode("dark");
-    else if (theme.mode.val === "dark") theme.setMode("light");
-    else theme.setMode("system");
-  };
-
-  const themeIcon = van.derive(() => {
-    if (theme.mode.val === "system") return "💻 Auto";
-    return theme.mode.val === "dark" ? "🌙 Dark" : "☀️ Light";
-  });
-
-  const localeOptions = i18n.locales
-    ? Object.keys(i18n.locales).map((code) => ({
-        code,
-        label: i18n.locales[code]?.lang?.[code] ?? code,
-      }))
-    : [];
 
   const getPageTitle = van.derive(() => {
     const p = router.path.val;
-    if (p.startsWith("/***REMOVED***")) return i18n.t("***REMOVED***.title", undefined, "***REMOVED***s de Transaction").val;
-    if (p.startsWith("/components")) return i18n.t("components.title", undefined, "Catálogo de Componentes").val;
-    if (p.startsWith("/login")) return i18n.t("nav.login", undefined, "Iniciar Sesión").val;
-    if (p.startsWith("/register")) return "Crear Cuenta";
+    if (p.startsWith("/***REMOVED***")) return i18n.t(TEXTS.titles.***REMOVED***, undefined, "***REMOVED***s de Transaction").val;
+    if (p.startsWith("/components")) return i18n.t(TEXTS.titles.components, undefined, "Catálogo de Componentes").val;
+    if (p.startsWith("/login")) return i18n.t(TEXTS.titles.login, undefined, "Iniciar Sesión").val;
+    if (p.startsWith("/register")) return i18n.t(TEXTS.titles.register, undefined, "Crear Cuenta").val;
     return "Dashboard";
   });
 
@@ -160,7 +161,7 @@ export function App() {
           { title: "Plataforma" },
           SidebarItem({
             href: "/***REMOVED***",
-            label: i18n.t("nav.***REMOVED***"),
+            label: i18n.t(TEXTS.nav.***REMOVED***),
             icon: "💳",
             current: router.path,
             onclick: (e) => {
@@ -171,9 +172,9 @@ export function App() {
           }),
           SidebarItem({
             href: "/components",
-            label: i18n.t("nav.components"),
+            label: i18n.t(TEXTS.nav.components),
             icon: "🧩",
-            badge: "14",
+            badge: "17",
             badgeVariant: "secondary",
             current: router.path,
             onclick: (e) => {
@@ -189,7 +190,7 @@ export function App() {
                 { title: "Cuenta" },
                 SidebarItem({
                   href: "/login",
-                  label: i18n.t("nav.login"),
+                  label: i18n.t(TEXTS.nav.login),
                   icon: "🔑",
                   current: router.path,
                   onclick: (e) => {
@@ -200,7 +201,7 @@ export function App() {
                 }),
                 SidebarItem({
                   href: "/register",
-                  label: "Registro",
+                  label: i18n.t(TEXTS.nav.register, undefined, "Registro"),
                   icon: "📝",
                   current: router.path,
                   onclick: (e) => {
@@ -212,39 +213,12 @@ export function App() {
               )
             : null,
       ],
-      footer: () =>
-        authState.user.val
-          ? div(
-              { class: "flex flex-col gap-2.5 p-3 rounded-xl bg-secondary/40 border border-border/50" },
-              div(
-                { class: "flex items-center gap-2.5 min-w-0" },
-                div(
-                  {
-                    class:
-                      "w-8 h-8 rounded-full bg-primary text-primary-foreground font-bold text-xs flex items-center justify-center shrink-0",
-                  },
-                  authState.user.val.email.slice(0, 2).toUpperCase(),
-                ),
-                div(
-                  { class: "flex flex-col min-w-0 flex-1" },
-                  span({ class: "text-xs font-semibold text-foreground truncate" }, authState.user.val.email),
-                  span({ class: "text-[10px] text-muted-foreground" }, "Sesión activa"),
-                ),
-              ),
-              button(
-                {
-                  type: "button",
-                  class:
-                    "w-full text-xs font-medium py-1.5 px-2 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 transition cursor-pointer text-center",
-                  onclick: async () => {
-                    await authState.logout();
-                    navigate("/login");
-                  },
-                },
-                "🚪 " + i18n.t("nav.logout"),
-              ),
-            )
-          : null,
+      // Pie de barra lateral usando componente embebido de usuario
+      footer: UserBadge({
+        auth: authState,
+        i18n,
+        onLogout: () => navigate("/login"),
+      }),
     }),
     header: HeaderBar({
       leading: button(
@@ -261,31 +235,11 @@ export function App() {
       ),
       title: getPageTitle,
       actions: [
-        // Selector de Idioma
-        select(
-          {
-            class:
-              "text-xs px-2.5 py-1.5 rounded-lg border border-border bg-card text-foreground font-medium cursor-pointer transition-colors shadow-xs outline-none",
-            "aria-label": "Idioma / Language",
-            onchange: (e: Event) => i18n.setLocale((e.target as HTMLSelectElement).value),
-            value: () => i18n.currentLocale.val,
-          },
-          localeOptions.map(({ code, label }) =>
-            option({ value: code, selected: () => i18n.currentLocale.val === code }, label),
-          ),
-        ),
+        // Selector de Idioma embebido de VanUI
+        LocaleSelector({ i18n }),
 
-        // Selector de Tema
-        button(
-          {
-            type: "button",
-            class:
-              "text-xs px-2.5 py-1.5 rounded-lg border border-border bg-card hover:bg-secondary text-foreground font-medium cursor-pointer transition-colors shadow-xs",
-            title: "Alternar tema (Claro / Oscuro / Sistema)",
-            onclick: cycleTheme,
-          },
-          themeIcon,
-        ),
+        // Selector de Tema embebido de VanUI
+        ThemeToggle({ theme, i18n }),
       ],
     }),
     content: router.start(),

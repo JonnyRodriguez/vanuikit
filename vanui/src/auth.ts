@@ -54,18 +54,27 @@ export type AuthState = {
 export function createAuth(api: AuthApi): AuthState {
   const user = van.state<AuthUser | null>(null);
   const status = van.state<AuthStatus>("idle");
+  let inFlightBoot: Promise<AuthUser | null> | null = null;
 
   const boot = async () => {
-    status.val = "checking";
-    try {
-      const res = await api.me();
-      user.val = res.user;
-      status.val = res.user ? "authenticated" : "unauthenticated";
-      return res.user;
-    } catch {
-      status.val = "unauthenticated";
-      return null;
+    if (inFlightBoot) {
+      return inFlightBoot;
     }
+    status.val = "checking";
+    inFlightBoot = (async () => {
+      try {
+        const res = await api.me();
+        user.val = res.user;
+        status.val = res.user ? "authenticated" : "unauthenticated";
+        return res.user;
+      } catch {
+        status.val = "unauthenticated";
+        return null;
+      } finally {
+        inFlightBoot = null;
+      }
+    })();
+    return inFlightBoot;
   };
 
   const login = async (email: string, password: string) => {
@@ -93,10 +102,18 @@ export function createAuth(api: AuthApi): AuthState {
 /**
  * Guard para rutas privadas: usado como `beforeEnter`.
  * Si no hay sesión redirige a `redirect` (por defecto `/login`).
+ * Si la verificación de sesión está en curso o pendiente, espera el boot.
  */
 export function requireAuth(
-  auth: Pick<AuthState, "user">,
+  auth: Pick<AuthState, "user"> & { status?: State<AuthStatus>; boot?: () => Promise<any> },
   redirect: string = "/login",
 ): Guard {
-  return () => (auth.user.val ? true : redirect);
+  return async () => {
+    if (auth.status && (auth.status.val === "idle" || auth.status.val === "checking")) {
+      if (typeof auth.boot === "function") {
+        await auth.boot();
+      }
+    }
+    return auth.user.val ? true : redirect;
+  };
 }

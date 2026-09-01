@@ -55,4 +55,13 @@ describe("createAuth", () => {
     await auth.login("a@b.com", "x");
     expect(await guard(ctx)).toBe(true);
   });
+
+  test("requireAuth espera a boot si la sesión está idle en navegación directa", async () => {
+    const auth = createAuth({ ...api, me: async () => ({ user: { id: "2", email: "direct@access.com" } }) });
+    const guard = requireAuth(auth, "/login");
+
+    // Guard ejecuta boot automáticamente y permite el acceso si había sesión activa
+    expect(await guard(ctx)).toBe(true);
+    expect(auth.user.val).toEqual({ id: "2", email: "direct@access.com" });
+  });
 });

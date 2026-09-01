@@ -1,5 +1,5 @@
 import { describe, test, expect } from "bun:test";
-import { van, Router, createAuth, requireAuth } from "../src/index.js";
+import { van, Router, createRouter, navigate, createAuth, requireAuth } from "../src/index.js";
 
 const { div } = van.tags;
 
@@ -102,5 +102,20 @@ describe("Router", () => {
     await router.navigate("/blocked");
     expect(host.textContent).toContain("home");
     expect(host.textContent).not.toContain("never-shown");
+  });
+
+  test("helper global navigate() usa el router activo", async () => {
+    const router = createRouter();
+    router
+      .add("/page-a", () => div("page-a"))
+      .add("/page-b", () => div("page-b"));
+
+    const host = mount(router);
+
+    await navigate("/page-a");
+    expect(host.textContent).toContain("page-a");
+
+    await navigate("/page-b");
+    expect(host.textContent).toContain("page-b");
   });
 });

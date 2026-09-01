@@ -5,7 +5,7 @@
  * Utiliza createQuery y createMutation de vanui y componentes modulares.
  * Si la petición es rechazada por falta de sesión (401), permite redirigir al login.
  */
-import { van, Modal, Spin, createQuery, createMutation, type Router } from "vanui";
+import { van, Modal, Spin, createQuery, createMutation, navigate } from "vanui";
 import { GatewaysList } from "../components/gateways-list.component.js";
 import { QRGenerator } from "../components/qr-generator.component.js";
 import type { Gateway, RechargeParams, RechargeResponse } from "../shared/payment.schema.js";
@@ -13,9 +13,7 @@ import { i18n } from "../shared/i18n.config.js";
 
 const RECHARGE_ENDPOINT = "/api/payment/recharge";
 
-export interface GatewaysPageProps {
-  router?: Router;
-}
+export interface GatewaysPageProps {}
 
 export const TEXTS = {
   title: { key: "gateways.title", default: "Métodos de Pago y Recarga" },
@@ -44,7 +42,7 @@ export const TEXTS = {
   processErr: { key: "gateways.processErr", default: "Error al procesar la recarga" },
 };
 
-export const GatewaysPage = ({ router }: GatewaysPageProps = {}) => {
+export const GatewaysPage = (_props: GatewaysPageProps = {}) => {
   const { div, h1, p, form, input, button, img, span, hr } = van.tags;
 
   // Carga reactiva de datos protegidos por sesión
@@ -282,11 +280,11 @@ export const GatewaysPage = ({ router }: GatewaysPageProps = {}) => {
           ),
           div(
             { class: "flex gap-3 justify-center" },
-            isUnauthorized && router
+            isUnauthorized
               ? button(
                   {
                     class: "px-5 py-2.5 bg-primary text-white font-medium rounded-lg text-sm cursor-pointer hover:bg-primary-hover transition",
-                    onclick: () => router.navigate("/login?redirect=/gateways"),
+                    onclick: () => navigate("/login?redirect=/gateways"),
                   },
                   i18n.t(TEXTS.goToLogin.key, undefined, TEXTS.goToLogin.default),
                 )

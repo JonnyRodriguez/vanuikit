@@ -5,14 +5,10 @@
  * Utiliza createMutation de vanui para enviar el formulario a /api/auth/register
  * de forma reactiva y limpia.
  */
-import { van, RegisterForm, createMutation, type Router } from "vanui";
+import { van, RegisterForm, createMutation, navigate } from "vanui";
 import type { RegisterInput, AuthResponse } from "../shared/auth.schema.js";
 import { authState } from "../app.js";
 import { i18n } from "../shared/i18n.config.js";
-
-export type RegisterPageProps = {
-  router: Router;
-};
 
 export const TEXTS = {
   title: { key: "register.title", default: "Crear una cuenta" },
@@ -22,7 +18,7 @@ export const TEXTS = {
   errGeneric: { key: "register.errGeneric", default: "Error al registrarse. Intenta nuevamente." },
 };
 
-export const RegisterPage = ({ router }: RegisterPageProps) => {
+export const RegisterPage = () => {
   const { div, h1, p, a } = van.tags;
 
   const registerMutation = createMutation<{ status: string; data: AuthResponse }, RegisterInput>(
@@ -37,7 +33,7 @@ export const RegisterPage = ({ router }: RegisterPageProps) => {
             } catch {}
           }
         }
-        router.navigate("/gateways");
+        navigate("/gateways");
       },
     },
   );
@@ -64,7 +60,7 @@ export const RegisterPage = ({ router }: RegisterPageProps) => {
             class: "text-accent hover:underline font-medium cursor-pointer",
             onclick: (e: MouseEvent) => {
               e.preventDefault();
-              router.navigate("/login");
+              navigate("/login");
             },
           },
           i18n.t(TEXTS.loginLink.key, undefined, TEXTS.loginLink.default),

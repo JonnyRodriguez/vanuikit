@@ -464,5 +464,39 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       ),
       modal.dom(),
     ),
+
+    // 9. Dashboard Layout & Sidebars (VanUI AppShell)
+    section(
+      { class: "space-y-4" },
+      h2({ class: "text-xl font-bold text-foreground" }, "Layouts & Dashboard Shell"),
+      p(
+        { class: "text-sm text-foreground-soft" },
+        "Estructura adaptable Mobile-First con Drawer deslizable en pantallas táctiles y Sidebar estática en escritorio.",
+      ),
+      div(
+        { class: "p-6 rounded-2xl border border-border bg-card shadow-xs space-y-4" },
+        div(
+          { class: "grid grid-cols-1 sm:grid-cols-3 gap-4" },
+          div(
+            { class: "p-4 rounded-xl bg-background border border-border/80 space-y-2" },
+            span({ class: "text-xl" }, "📱"),
+            h3({ class: "font-semibold text-sm text-foreground" }, "Mobile-First Drawer"),
+            p({ class: "text-xs text-muted-foreground" }, "Backdrop oscurecido con desenfoque, cierre automático al seleccionar enlace y botón hamburguesa accesible."),
+          ),
+          div(
+            { class: "p-4 rounded-xl bg-background border border-border/80 space-y-2" },
+            span({ class: "text-xl" }, "🖥️"),
+            h3({ class: "font-semibold text-sm text-foreground" }, "Desktop Sidebar"),
+            p({ class: "text-xs text-muted-foreground" }, "Panel lateral persistente con soporte para grupos de navegación, íconos, badges reactivos y pie de página de usuario."),
+          ),
+          div(
+            { class: "p-4 rounded-xl bg-background border border-border/80 space-y-2" },
+            span({ class: "text-xl" }, "🧭"),
+            h3({ class: "font-semibold text-sm text-foreground" }, "HeaderBar & Router Sync"),
+            p({ class: "text-xs text-muted-foreground" }, "Sincronización automática de títulos y enlaces activos (aria-current) con el router singleton de la app."),
+          ),
+        ),
+      ),
+    ),
   );
 }

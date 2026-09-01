@@ -18,6 +18,18 @@ export { Badge, type BadgeProps, type BadgeVariant, type BadgeSize } from "./com
 export { Table, DataGrid, type TableProps, type TableColumn } from "./components/table.js";
 export { Tabs, type TabItem, type TabsProps } from "./components/tabs.js";
 export {
+  AppShell,
+  Sidebar,
+  SidebarItem,
+  SidebarGroup,
+  HeaderBar,
+  type AppShellProps,
+  type SidebarProps,
+  type SidebarItemProps,
+  type SidebarGroupProps,
+  type HeaderBarProps,
+} from "./components/layout.js";
+export {
   SelectDropdown,
   DropdownMenu,
   type SelectOption,
@@ -50,6 +62,10 @@ export {
 // Enrutador SPA
 export {
   Router,
+  createRouter,
+  navigate,
+  getActiveRouter,
+  setActiveRouter,
   type RouteParams,
   type RouteContext,
   type Guard,

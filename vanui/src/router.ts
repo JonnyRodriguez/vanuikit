@@ -93,6 +93,13 @@ export class Router {
   /** Ruta actual (reactiva) — el Nav la lee para resaltar el link activo. */
   path = van.state<string>("/");
 
+  constructor() {
+    // Si no hay un router activo principal, nos registramos como el activo por defecto
+    if (!activeRouter) {
+      activeRouter = this;
+    }
+  }
+
   /** Registra una ruta. `path` acepta segmentos `:param`. */
   add(path: string, factory: RouteFactory, options: RouteOptions = {}) {
     this.routes.push({ path, ...compile(path), factory, ...options });
@@ -172,6 +179,8 @@ export class Router {
    * y resuelve la ruta inicial. Devuelve un binding para montar con `van.add`.
    */
   start() {
+    activeRouter = this;
+
     window.addEventListener("popstate", () => this.resolve());
 
     document.addEventListener("click", (e) => {
@@ -189,4 +198,34 @@ export class Router {
     this.resolve();
     return () => this.current.val;
   }
+}
+
+/** Instancia activa del router principal para navegación global */
+let activeRouter: Router | null = null;
+
+export function setActiveRouter(router: Router | null) {
+  activeRouter = router;
+}
+
+export function getActiveRouter(): Router | null {
+  return activeRouter;
+}
+
+/**
+ * Función global de navegación.
+ * Utiliza el router activo actual para navegar sin necesidad de inyectar dependencias.
+ */
+export async function navigate(path: string) {
+  if (activeRouter) {
+    await activeRouter.navigate(path);
+  } else {
+    window.history.pushState({}, "", path);
+  }
+}
+
+/** Factory para crear una instancia de Router */
+export function createRouter(): Router {
+  const router = new Router();
+  activeRouter = router;
+  return router;
 }

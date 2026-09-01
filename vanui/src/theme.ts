@@ -1,4 +1,4 @@
-import van from "vanjs-core";
+import van, { type State } from "vanjs-core";
 
 export type ThemeMode = "light" | "dark" | "system";
 
@@ -9,8 +9,8 @@ export interface ThemeOptions {
 }
 
 export interface ThemeInstance {
-  mode: import("vanjs-core").State<ThemeMode>;
-  isDark: import("vanjs-core").State<boolean>;
+  mode: State<ThemeMode>;
+  isDark: State<boolean>;
   setMode: (mode: ThemeMode) => void;
   toggle: () => void;
 }

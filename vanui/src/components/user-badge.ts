@@ -1,4 +1,4 @@
-import van from "vanjs-core";
+import van, { type State } from "vanjs-core";
 import type { AuthState, AuthUser } from "../auth.js";
 import { i18n as defaultI18n, type I18nInstance } from "../i18n.js";
 import { cx } from "../util.js";
@@ -6,12 +6,12 @@ import { cx } from "../util.js";
 export interface UserBadgeProps {
   /** Estado de autenticación reactivo de VanUI o usuario directo */
   auth?: AuthState;
-  user?: import("vanjs-core").State<AuthUser | null> | AuthUser | null;
+  user?: State<AuthUser | null> | AuthUser | null;
   i18n?: I18nInstance;
   /** Callback opcional al hacer clic en cerrar sesión */
   onLogout?: () => void | Promise<void>;
   /** Subtítulo o estado secundario (por defecto reactivo a "Sesión activa") */
-  statusText?: string | import("vanjs-core").State<string>;
+  statusText?: string | State<string>;
   /** Mostrar u ocultar el botón de logout */
   showLogout?: boolean;
   /** Clases CSS adicionales para el contenedor */

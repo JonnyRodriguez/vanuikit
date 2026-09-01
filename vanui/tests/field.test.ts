@@ -1,5 +1,5 @@
 import { describe, test, expect } from "bun:test";
-import { TextField, EmailField, PasswordField } from "../src/components/field.js";
+import { Field, TextField, EmailField, PasswordField } from "../src/components/field.js";
 import { Form } from "../src/components/form.js";
 import { Required, MinLength, Match } from "../src/validators.js";
 
@@ -66,7 +66,6 @@ describe("Proxy: addValidator sin perder los del tipo", () => {
   });
 
   test("campo base construido desde cero", () => {
-    const { Field } = require("../src/components/field.js") as typeof import("../src/components/field.js");
     const monto = Field({ label: "Monto", name: "monto", inputType: "number" });
     monto.addValidator(Required("Ingresa un monto"));
     expect(monto.validate("")).toBe(false);

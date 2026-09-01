@@ -1,15 +1,15 @@
-import van from "vanjs-core";
+import van, { type State } from "vanjs-core";
 import { cx } from "../util.js";
 import { Badge } from "./badge.js";
 
 export type SidebarItemProps = {
   href?: string;
-  label: string | import("vanjs-core").State<string> | (() => string | Node);
+  label: string | State<string> | (() => string | Node);
   icon?: string | Node | (() => Node);
-  badge?: string | number | import("vanjs-core").State<string | number> | Node;
+  badge?: string | number | State<string | number> | Node;
   badgeVariant?: "primary" | "secondary" | "success" | "warning" | "danger" | "neutral";
-  active?: boolean | import("vanjs-core").State<boolean> | (() => boolean);
-  current?: string | import("vanjs-core").State<string>;
+  active?: boolean | State<boolean> | (() => boolean);
+  current?: string | State<string>;
   onclick?: (e: MouseEvent) => void;
   class?: string;
 };
@@ -80,7 +80,7 @@ export function SidebarItem(props: SidebarItemProps) {
 }
 
 export type SidebarGroupProps = {
-  title?: string | import("vanjs-core").State<string> | (() => string);
+  title?: string | State<string> | (() => string);
   class?: string;
 };
 
@@ -104,7 +104,7 @@ export type SidebarProps = {
   header?: Node | string | (() => Node);
   content?: Node | (Node | HTMLElement | (() => Node | null | undefined) | null | undefined)[] | (() => Node);
   footer?: Node | string | (() => Node);
-  isOpen?: import("vanjs-core").State<boolean>;
+  isOpen?: State<boolean>;
   onClose?: () => void;
   class?: string;
 };
@@ -158,7 +158,7 @@ export function Sidebar(props: SidebarProps) {
 
 export type HeaderBarProps = {
   leading?: Node | (() => Node | null | undefined);
-  title?: string | import("vanjs-core").State<string> | Node | (() => Node | string);
+  title?: string | State<string> | Node | (() => Node | string);
   actions?: any;
   class?: string;
 };
@@ -207,7 +207,7 @@ export type AppShellProps = {
   header?: Node | (() => Node | null | undefined);
   content: Node | (() => Node | null | undefined);
   footer?: Node | (() => Node | null | undefined);
-  sidebarOpen?: import("vanjs-core").State<boolean>;
+  sidebarOpen?: State<boolean>;
   class?: string;
 };
 

@@ -118,10 +118,14 @@ export class Router {
     return this;
   }
 
-  /** Navega a `path` (pushState) y resuelve. Devuelve la resolución (para tests). */
-  async navigate(path: string) {
+  /** Navega a `path` (pushState o replaceState) y resuelve. Devuelve la resolución (para tests). */
+  async navigate(path: string, options?: { replace?: boolean }) {
     if (path === (window.location.pathname || "/")) return;
-    window.history.pushState({}, "", path);
+    if (options?.replace) {
+      window.history.replaceState({}, "", path);
+    } else {
+      window.history.pushState({}, "", path);
+    }
     await this.doResolve();
   }
 
@@ -215,11 +219,15 @@ export function getActiveRouter(): Router | null {
  * Función global de navegación.
  * Utiliza el router activo actual para navegar sin necesidad de inyectar dependencias.
  */
-export async function navigate(path: string) {
+export async function navigate(path: string, options?: { replace?: boolean }) {
   if (activeRouter) {
-    await activeRouter.navigate(path);
+    await activeRouter.navigate(path, options);
   } else {
-    window.history.pushState({}, "", path);
+    if (options?.replace) {
+      window.history.replaceState({}, "", path);
+    } else {
+      window.history.pushState({}, "", path);
+    }
   }
 }
 

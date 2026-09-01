@@ -13,7 +13,7 @@ export { Form } from "./components/form.js";
 export { Modal, ModalBase, type ModalContent, type ModalZone, type ModalProps } from "./components/modal.js";
 export { Spin } from "./components/spin.js";
 export { SpinModal } from "./components/spin-modal.js";
-export { Nav, type NavLink } from "./components/nav.js";
+export { Nav, Link, type NavLink, type LinkProps, type LinkVariant } from "./components/nav.js";
 export { Badge, type BadgeProps, type BadgeVariant, type BadgeSize } from "./components/badge.js";
 export { Table, DataGrid, type TableProps, type TableColumn } from "./components/table.js";
 export { Tabs, type TabItem, type TabsProps } from "./components/tabs.js";

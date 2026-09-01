@@ -1,5 +1,64 @@
-import van, { type State } from "vanjs-core";
+import van, { type State, type ChildDom } from "vanjs-core";
+import { navigate } from "../router.js";
 import { cx } from "../util.js";
+
+export type LinkVariant = "default" | "muted" | "accent" | "button";
+
+export interface LinkProps {
+  href: string;
+  class?: string;
+  variant?: LinkVariant;
+  replace?: boolean;
+  external?: boolean;
+  target?: string;
+  rel?: string;
+  onclick?: (e: MouseEvent) => void;
+  [key: string]: any;
+}
+
+const linkVariantClasses: Record<LinkVariant, string> = {
+  default: "text-foreground hover:underline font-medium",
+  muted: "text-foreground-soft hover:text-foreground hover:underline",
+  accent: "text-accent hover:underline font-medium cursor-pointer",
+  button: "inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg bg-accent text-white hover:bg-accent/90 transition-colors",
+};
+
+/**
+ * Link — Componente embebido para navegación declarativa en SPA.
+ *
+ * Previene la recarga de página automáticamente al hacer clic (a menos que sea externo,
+ * tenga modificadores como Ctrl/Cmd o target="_blank"), ejecuta `navigate(href)`
+ * y aplica estilos consistentes según la variante.
+ */
+export function Link(props: LinkProps, ...children: ChildDom[]): HTMLAnchorElement {
+  const { a } = van.tags;
+  const {
+    href,
+    class: customClass = "",
+    variant = "accent",
+    replace = false,
+    external = false,
+    onclick,
+    ...rest
+  } = props;
+
+  const isExternal = external || href.startsWith("http://") || href.startsWith("https://") || href.startsWith("//");
+
+  return a(
+    {
+      href,
+      class: cx(linkVariantClasses[variant] || linkVariantClasses.accent, customClass),
+      onclick: (e: MouseEvent) => {
+        if (onclick) onclick(e);
+        if (e.defaultPrevented || isExternal || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || props.target) return;
+        e.preventDefault();
+        navigate(href, { replace });
+      },
+      ...rest,
+    },
+    ...children,
+  );
+}
 
 export type NavLink = {
   href: string;

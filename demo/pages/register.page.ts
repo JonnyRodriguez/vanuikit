@@ -2,11 +2,10 @@
 /**
  * RegisterPage — Vista de registro de usuario de la SPA.
  *
- * Utiliza createMutation de vanui para enviar el formulario a /api/auth/register
- * de forma reactiva y limpia.
+ * Utiliza el componente embebido RegisterForm y delega la creación de cuenta
+ * y persistencia completamente en authState.
  */
-import { van, RegisterForm, createMutation, navigate } from "vanui";
-import type { RegisterInput, AuthResponse } from "../shared/auth.schema.js";
+import { van, RegisterForm, Link, navigate } from "vanui";
 import { authState } from "../app.js";
 import { i18n } from "../shared/i18n.config.js";
 
@@ -19,24 +18,7 @@ export const TEXTS = {
 };
 
 export const RegisterPage = () => {
-  const { div, h1, p, a } = van.tags;
-
-  const registerMutation = createMutation<{ status: string; data: AuthResponse }, RegisterInput>(
-    "/api/auth/register",
-    {
-      onSuccess: (res) => {
-        if (res.data?.user) {
-          authState.user.val = res.data.user;
-          if (res.data.token) {
-            try {
-              localStorage.setItem("session_token", res.data.token);
-            } catch {}
-          }
-        }
-        navigate("/gateways");
-      },
-    },
-  );
+  const { div, h1, p } = van.tags;
 
   return div(
     { class: "max-w-md mx-auto my-8 p-6 bg-background rounded-xl border border-border shadow-sm" },
@@ -44,28 +26,20 @@ export const RegisterPage = () => {
     p({ class: "text-sm text-foreground-soft text-center mb-6" }, i18n.t(TEXTS.subtitle.key, undefined, TEXTS.subtitle.default)),
     RegisterForm({
       handleRegister: async (data) => {
-        const result = await registerMutation.mutate(data as RegisterInput);
-        if (!result) {
-          return { error: i18n.raw(TEXTS.errGeneric.key, undefined, TEXTS.errGeneric.default) };
+        try {
+          await authState.register(data);
+          navigate("/gateways");
+          return {};
+        } catch (err: any) {
+          return { error: err.message || i18n.raw(TEXTS.errGeneric.key, undefined, TEXTS.errGeneric.default) };
         }
-        return {};
       },
     }),
     div(
       { class: "mt-6 text-center text-xs text-foreground-soft border-t border-border pt-4" },
-      () => div({}, i18n.t(TEXTS.haveAccount.key, undefined, TEXTS.haveAccount.default), " ",
-        a(
-          {
-            href: "/login",
-            class: "text-accent hover:underline font-medium cursor-pointer",
-            onclick: (e: MouseEvent) => {
-              e.preventDefault();
-              navigate("/login");
-            },
-          },
-          i18n.t(TEXTS.loginLink.key, undefined, TEXTS.loginLink.default),
-        ),
-      ),
+      i18n.t(TEXTS.haveAccount.key, undefined, TEXTS.haveAccount.default),
+      " ",
+      Link({ href: "/login" }, i18n.t(TEXTS.loginLink.key, undefined, TEXTS.loginLink.default)),
     ),
   );
 };

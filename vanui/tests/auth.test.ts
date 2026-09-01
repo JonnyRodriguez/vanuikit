@@ -46,6 +46,32 @@ describe("createAuth", () => {
     expect(auth.isAuthenticated()).toBe(false);
   });
 
+  test("login y register encapsulan token y setSession", async () => {
+    localStorage.clear();
+
+    const auth = createAuth({
+      ...api,
+      login: async () => ({ user: { id: "1", email: "user@test.com" }, token: "jwt_123" }),
+      register: async (d) => ({ user: { id: "2", email: d.email as string }, token: "jwt_456" }),
+    });
+
+    await auth.login("user@test.com", "pass");
+    expect(auth.user.val).toEqual({ id: "1", email: "user@test.com" });
+    expect(auth.token.val).toBe("jwt_123");
+    expect(auth.getToken()).toBe("jwt_123");
+    expect(localStorage.getItem("session_token")).toBe("jwt_123");
+
+    await auth.register({ email: "reg@test.com", password: "pass" });
+    expect(auth.user.val?.email).toBe("reg@test.com");
+    expect(auth.token.val).toBe("jwt_456");
+    expect(localStorage.getItem("session_token")).toBe("jwt_456");
+
+    await auth.logout();
+    expect(auth.user.val).toBeNull();
+    expect(auth.token.val).toBeNull();
+    expect(localStorage.getItem("session_token")).toBeNull();
+  });
+
   test("requireAuth redirige si no hay sesión y deja pasar si la hay", async () => {
     const auth = createAuth(api);
     const guard = requireAuth(auth, "/login");

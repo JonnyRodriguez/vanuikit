@@ -29,10 +29,22 @@ import { theme } from "./shared/theme.config.js";
 export const authState = createAuth({
   me: async () => {
     try {
-      const res = await fetch("/api/auth/me", { credentials: "include" });
-      if (!res.ok) return { user: null };
+      const headers: Record<string, string> = { Accept: "application/json" };
+      let token: string | null = null;
+      if (typeof localStorage !== "undefined") {
+        token = localStorage.getItem("session_token");
+        if (token) headers["Authorization"] = `Bearer ${token}`;
+      }
+      const res = await fetch("/api/auth/me", { credentials: "include", headers });
+      if (!res.ok) {
+        if (typeof localStorage !== "undefined") {
+          localStorage.removeItem("session_token");
+        }
+        return { user: null };
+      }
       const data = await res.json();
-      return { user: data.user || null };
+      const user = data.data?.user || data.user || null;
+      return { user };
     } catch {
       return { user: null };
     }
@@ -40,7 +52,7 @@ export const authState = createAuth({
   login: async (email, password) => {
     const res = await fetch("/api/auth/login", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
       credentials: "include",
       body: JSON.stringify({ email, password }),
     });
@@ -49,12 +61,25 @@ export const authState = createAuth({
       throw new Error(err.error || "Error al iniciar sesión");
     }
     const data = await res.json();
-    return { user: data.user };
+    const user = data.data?.user || data.user;
+    const token = data.data?.token || data.token;
+    if (token && typeof localStorage !== "undefined") {
+      localStorage.setItem("session_token", token);
+    }
+    return { user };
   },
   logout: async () => {
     try {
-      await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
+      const headers: Record<string, string> = {};
+      if (typeof localStorage !== "undefined") {
+        const token = localStorage.getItem("session_token");
+        if (token) headers["Authorization"] = `Bearer ${token}`;
+      }
+      await fetch("/api/auth/logout", { method: "POST", credentials: "include", headers });
     } catch {}
+    if (typeof localStorage !== "undefined") {
+      localStorage.removeItem("session_token");
+    }
   },
 });
 

@@ -28,35 +28,44 @@ Este documento establece las reglas fundamentales de diseño, arquitectura y con
 Todo texto visible para el usuario (etiquetas de botones, títulos de páginas, placeholders de campos, mensajes de error, opciones de navegación) debe estar estructurado en diccionarios de traducción y referenciado a través del sistema de `i18n`.
 
 ### Contrato de Diseño `TEXTS`
-En archivos principales u orquestadores (`app.ts`, páginas o módulos), definir un objeto constante `TEXTS` que sirva como mapa tipado de navegación de llaves:
+En todas las páginas, módulos o en `app.ts`, definir un objeto constante `TEXTS` que encapsule tanto la **llave de traducción** (`key`) como el **texto por defecto / fallback** (`default`), eliminando completamente los strings mágicos del código:
 
 ```typescript
 export const TEXTS = {
   nav: {
-    gateways: "nav.gateways",
-    components: "nav.components",
-    login: "nav.login",
-    register: "nav.register",
+    gateways: { key: "nav.gateways", default: "Pasarelas" },
+    components: { key: "nav.components", default: "Componentes" },
+    login: { key: "nav.login", default: "Iniciar sesión" },
+    register: { key: "nav.register", default: "Crear cuenta" },
   },
   titles: {
-    gateways: "gateways.title",
-    components: "components.title",
-    login: "login.title",
-    register: "register.title",
+    gateways: { key: "gateways.title", default: "Pasarelas de Pago" },
+    components: { key: "components.title", default: "Catálogo de Componentes" },
+    login: { key: "login.title", default: "Iniciar sesión" },
+    register: { key: "register.title", default: "Crear una cuenta" },
   },
 } as const;
 ```
 
-### Derivación Reactiva
-- Para enlazar textos en el DOM de VanJS, usar siempre `i18n.t(key, params, fallback)` o la función de derivación `van.derive(() => ...)` para que la interfaz se actualice de forma instantánea al cambiar el idioma sin recargar la página.
-- Ejemplo:
+### Consumo y Derivación Reactiva
+- **Enlace directo en el DOM (Reactivo)**: Pasar el estado devuelto por `i18n.t(TEXTS.item.key, undefined, TEXTS.item.default)`. Al cambiar `i18n.currentLocale`, el texto en pantalla muta automáticamente.
   ```typescript
   SidebarItem({
     href: "/gateways",
-    label: i18n.t(TEXTS.nav.gateways, undefined, "Pasarelas"),
+    label: i18n.t(TEXTS.nav.gateways.key, undefined, TEXTS.nav.gateways.default),
     icon: "💳",
     current: router.path,
   })
+  ```
+- **Dentro de derivaciones computadas (`van.derive`) o funciones**: Usar `i18n.raw(TEXTS.item.key, undefined, TEXTS.item.default)` para obtener el string resuelto sin tener que extraer `.val` manualmente. Como `van.derive` escucha automáticamente cualquier acceso a estados de VanJS (como `i18n.currentLocale`), la función se recalcula reactivamente al cambiar de idioma.
+  ```typescript
+  const getPageTitle = van.derive(() => {
+    const p = router.path.val;
+    if (p.startsWith("/gateways")) {
+      return i18n.raw(TEXTS.titles.gateways.key, undefined, TEXTS.titles.gateways.default);
+    }
+    return "Dashboard";
+  });
   ```
 
 ---

@@ -31,16 +31,21 @@ import { theme } from "./shared/theme.config.js";
 /** Contrato de llaves de i18n para la navegación y títulos de la aplicación */
 export const TEXTS = {
   nav: {
-    gateways: "nav.gateways",
-    components: "nav.components",
-    login: "nav.login",
-    register: "nav.register",
+    gateways: { key: "nav.gateways", default: "Pasarelas" },
+    components: { key: "nav.components", default: "Componentes" },
+    login: { key: "nav.login", default: "Iniciar sesión" },
+    register: { key: "nav.register", default: "Crear cuenta" },
   },
   titles: {
-    gateways: "gateways.title",
-    components: "components.title",
-    login: "login.title",
-    register: "register.title",
+    gateways: { key: "gateways.title", default: "Pasarelas de Pago" },
+    components: { key: "components.title", default: "Catálogo de Componentes" },
+    login: { key: "login.title", default: "Iniciar sesión" },
+    register: { key: "register.title", default: "Crear una cuenta" },
+    dashboard: { key: "nav.dashboard", default: "Dashboard" },
+  },
+  groups: {
+    platform: { key: "nav.platform", default: "Plataforma" },
+    account: { key: "nav.account", default: "Cuenta" },
   },
 } as const;
 
@@ -124,11 +129,11 @@ export function App() {
 
   const getPageTitle = van.derive(() => {
     const p = router.path.val;
-    if (p.startsWith("/gateways")) return i18n.t(TEXTS.titles.gateways, undefined, "Pasarelas de Pago").val;
-    if (p.startsWith("/components")) return i18n.t(TEXTS.titles.components, undefined, "Catálogo de Componentes").val;
-    if (p.startsWith("/login")) return i18n.t(TEXTS.titles.login, undefined, "Iniciar Sesión").val;
-    if (p.startsWith("/register")) return i18n.t(TEXTS.titles.register, undefined, "Crear Cuenta").val;
-    return "Dashboard";
+    if (p.startsWith("/gateways")) return i18n.raw(TEXTS.titles.gateways.key, undefined, TEXTS.titles.gateways.default);
+    if (p.startsWith("/components")) return i18n.raw(TEXTS.titles.components.key, undefined, TEXTS.titles.components.default);
+    if (p.startsWith("/login")) return i18n.raw(TEXTS.titles.login.key, undefined, TEXTS.titles.login.default);
+    if (p.startsWith("/register")) return i18n.raw(TEXTS.titles.register.key, undefined, TEXTS.titles.register.default);
+    return i18n.raw(TEXTS.titles.dashboard.key, undefined, TEXTS.titles.dashboard.default);
   });
 
   return AppShell({
@@ -158,10 +163,10 @@ export function App() {
       ),
       content: [
         SidebarGroup(
-          { title: "Plataforma" },
+          { title: i18n.t(TEXTS.groups.platform.key, undefined, TEXTS.groups.platform.default) },
           SidebarItem({
             href: "/gateways",
-            label: i18n.t(TEXTS.nav.gateways),
+            label: i18n.t(TEXTS.nav.gateways.key, undefined, TEXTS.nav.gateways.default),
             icon: "💳",
             current: router.path,
             onclick: (e) => {
@@ -172,7 +177,7 @@ export function App() {
           }),
           SidebarItem({
             href: "/components",
-            label: i18n.t(TEXTS.nav.components),
+            label: i18n.t(TEXTS.nav.components.key, undefined, TEXTS.nav.components.default),
             icon: "🧩",
             badge: "17",
             badgeVariant: "secondary",
@@ -187,10 +192,10 @@ export function App() {
         () =>
           !authState.user.val
             ? SidebarGroup(
-                { title: "Cuenta" },
+                { title: i18n.t(TEXTS.groups.account.key, undefined, TEXTS.groups.account.default) },
                 SidebarItem({
                   href: "/login",
-                  label: i18n.t(TEXTS.nav.login),
+                  label: i18n.t(TEXTS.nav.login.key, undefined, TEXTS.nav.login.default),
                   icon: "🔑",
                   current: router.path,
                   onclick: (e) => {
@@ -201,7 +206,7 @@ export function App() {
                 }),
                 SidebarItem({
                   href: "/register",
-                  label: i18n.t(TEXTS.nav.register, undefined, "Registro"),
+                  label: i18n.t(TEXTS.nav.register.key, undefined, TEXTS.nav.register.default),
                   icon: "📝",
                   current: router.path,
                   onclick: (e) => {

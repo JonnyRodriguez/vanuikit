@@ -54,23 +54,18 @@ export const authState = createAuth({
   me: async () => {
     try {
       const headers: Record<string, string> = { Accept: "application/json" };
-      let token: string | null = null;
-      if (typeof localStorage !== "undefined") {
-        token = localStorage.getItem("session_token");
-        if (token) headers["Authorization"] = `Bearer ${token}`;
-      }
+      const token = typeof localStorage !== "undefined" ? localStorage.getItem("session_token") : null;
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+
       const res = await fetch("/api/auth/me", { credentials: "include", headers });
-      if (!res.ok) {
-        if (typeof localStorage !== "undefined") {
-          localStorage.removeItem("session_token");
-        }
-        return { user: null };
-      }
+      if (!res.ok) return { user: null, token: null };
       const data = await res.json();
-      const user = data.data?.user || data.user || null;
-      return { user };
+      return {
+        user: data.data?.user || data.user || null,
+        token: data.data?.token || data.token || token,
+      };
     } catch {
-      return { user: null };
+      return { user: null, token: null };
     }
   },
   login: async (email, password) => {
@@ -85,25 +80,35 @@ export const authState = createAuth({
       throw new Error(err.error || "Error al iniciar sesión");
     }
     const data = await res.json();
-    const user = data.data?.user || data.user;
-    const token = data.data?.token || data.token;
-    if (token && typeof localStorage !== "undefined") {
-      localStorage.setItem("session_token", token);
+    return {
+      user: data.data?.user || data.user,
+      token: data.data?.token || data.token,
+    };
+  },
+  register: async (registerData) => {
+    const res = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      credentials: "include",
+      body: JSON.stringify(registerData),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || "Error al registrarse");
     }
-    return { user };
+    const data = await res.json();
+    return {
+      user: data.data?.user || data.user,
+      token: data.data?.token || data.token,
+    };
   },
   logout: async () => {
     try {
       const headers: Record<string, string> = {};
-      if (typeof localStorage !== "undefined") {
-        const token = localStorage.getItem("session_token");
-        if (token) headers["Authorization"] = `Bearer ${token}`;
-      }
+      const token = typeof localStorage !== "undefined" ? localStorage.getItem("session_token") : null;
+      if (token) headers["Authorization"] = `Bearer ${token}`;
       await fetch("/api/auth/logout", { method: "POST", credentials: "include", headers });
     } catch {}
-    if (typeof localStorage !== "undefined") {
-      localStorage.removeItem("session_token");
-    }
   },
 });
 

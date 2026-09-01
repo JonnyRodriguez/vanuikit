@@ -8,9 +8,15 @@
 import { van } from "vanui";
 import { App } from "./app.js";
 
-document.addEventListener("DOMContentLoaded", () => {
+const mount = () => {
   const root = document.getElementById("app");
   if (root) {
     van.add(root, App());
   }
-});
+};
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", mount);
+} else {
+  mount();
+}

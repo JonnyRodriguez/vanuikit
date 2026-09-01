@@ -4,14 +4,26 @@
  * Configura:
  * - Rutas con guards de autenticación (`requireAuth`)
  * - Estado de autenticación (`createAuth`)
- * - Vista principal montada con Router
+ * - Layout Dashboard / AppShell responsive con Sidebar, HeaderBar y soporte Mobile-First
  */
-import { van, createAuth, requireAuth, Router } from "vanui";
-import { Header } from "./components/header.component.js";
+import {
+  van,
+  createAuth,
+  requireAuth,
+  createRouter,
+  AppShell,
+  Sidebar,
+  SidebarGroup,
+  SidebarItem,
+  HeaderBar,
+  navigate,
+} from "vanui";
 import { LoginPage } from "./pages/login.page.js";
 import { RegisterPage } from "./pages/register.page.js";
 import { ***REMOVED***Page } from "./pages/***REMOVED***.page.js";
 import { ComponentsPage } from "./pages/components.page.js";
+import { i18n } from "./shared/i18n.config.js";
+import { theme } from "./shared/theme.config.js";
 
 // Estado de sesión
 export const authState = createAuth({
@@ -46,26 +58,212 @@ export const authState = createAuth({
   },
 });
 
+// Router Singleton de la aplicación
+export const router = createRouter();
+
+router
+  .add("/login", () => LoginPage())
+  .add("/register", () => RegisterPage())
+  .add("/***REMOVED***", () => ***REMOVED***Page(), {
+    beforeEnter: requireAuth(authState, "/login"),
+  })
+  .add("/components", () => ComponentsPage())
+  .redirect("/", "/***REMOVED***");
+
 export function App() {
-  const router = new Router();
-
-  router
-    .add("/login", () => LoginPage({ router }))
-    .add("/register", () => RegisterPage({ router }))
-    .add("/***REMOVED***", () => ***REMOVED***Page({ router }), {
-      beforeEnter: requireAuth(authState, "/login"),
-    })
-    .add("/components", () => ComponentsPage({ router }))
-    .redirect("/", "/***REMOVED***");
-
   void authState.boot().then(() => {
     router.resolve();
   });
 
-  const { div } = van.tags;
-  return div(
-    { class: "min-h-screen bg-background text-foreground flex flex-col font-sans" },
-    () => Header(router.path.val),
-    div({ class: "flex-1 max-w-5xl w-full mx-auto px-4 py-4" }, router.start()),
-  );
+  const { div, span, a, button, select, option } = van.tags;
+  const sidebarOpen = van.state(false);
+
+  const cycleTheme = () => {
+    if (theme.mode.val === "system") theme.setMode("dark");
+    else if (theme.mode.val === "dark") theme.setMode("light");
+    else theme.setMode("system");
+  };
+
+  const themeIcon = van.derive(() => {
+    if (theme.mode.val === "system") return "💻 Auto";
+    return theme.mode.val === "dark" ? "🌙 Dark" : "☀️ Light";
+  });
+
+  const localeOptions = i18n.locales
+    ? Object.keys(i18n.locales).map((code) => ({
+        code,
+        label: i18n.locales[code]?.lang?.[code] ?? code,
+      }))
+    : [];
+
+  const getPageTitle = van.derive(() => {
+    const p = router.path.val;
+    if (p.startsWith("/***REMOVED***")) return i18n.t("***REMOVED***.title", undefined, "***REMOVED***s de Transaction").val;
+    if (p.startsWith("/components")) return i18n.t("components.title", undefined, "Catálogo de Componentes").val;
+    if (p.startsWith("/login")) return i18n.t("nav.login", undefined, "Iniciar Sesión").val;
+    if (p.startsWith("/register")) return "Crear Cuenta";
+    return "Dashboard";
+  });
+
+  return AppShell({
+    sidebarOpen,
+    sidebar: Sidebar({
+      onClose: () => {
+        sidebarOpen.val = false;
+      },
+      header: a(
+        {
+          href: "/***REMOVED***",
+          class: "flex items-center gap-2.5 font-bold text-foreground tracking-tight text-lg no-underline",
+          onclick: (e: MouseEvent) => {
+            e.preventDefault();
+            sidebarOpen.val = false;
+            navigate("/***REMOVED***");
+          },
+        },
+        span({ class: "text-primary font-black text-xl" }, "VanUI"),
+        span(
+          {
+            class:
+              "text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20",
+          },
+          "Dashboard",
+        ),
+      ),
+      content: [
+        SidebarGroup(
+          { title: "Plataforma" },
+          SidebarItem({
+            href: "/***REMOVED***",
+            label: i18n.t("nav.***REMOVED***"),
+            icon: "💳",
+            current: router.path,
+            onclick: (e) => {
+              e.preventDefault();
+              sidebarOpen.val = false;
+              navigate("/***REMOVED***");
+            },
+          }),
+          SidebarItem({
+            href: "/components",
+            label: i18n.t("nav.components"),
+            icon: "🧩",
+            badge: "14",
+            badgeVariant: "secondary",
+            current: router.path,
+            onclick: (e) => {
+              e.preventDefault();
+              sidebarOpen.val = false;
+              navigate("/components");
+            },
+          }),
+        ),
+        () =>
+          !authState.user.val
+            ? SidebarGroup(
+                { title: "Cuenta" },
+                SidebarItem({
+                  href: "/login",
+                  label: i18n.t("nav.login"),
+                  icon: "🔑",
+                  current: router.path,
+                  onclick: (e) => {
+                    e.preventDefault();
+                    sidebarOpen.val = false;
+                    navigate("/login");
+                  },
+                }),
+                SidebarItem({
+                  href: "/register",
+                  label: "Registro",
+                  icon: "📝",
+                  current: router.path,
+                  onclick: (e) => {
+                    e.preventDefault();
+                    sidebarOpen.val = false;
+                    navigate("/register");
+                  },
+                }),
+              )
+            : null,
+      ],
+      footer: () =>
+        authState.user.val
+          ? div(
+              { class: "flex flex-col gap-2.5 p-3 rounded-xl bg-secondary/40 border border-border/50" },
+              div(
+                { class: "flex items-center gap-2.5 min-w-0" },
+                div(
+                  {
+                    class:
+                      "w-8 h-8 rounded-full bg-primary text-primary-foreground font-bold text-xs flex items-center justify-center shrink-0",
+                  },
+                  authState.user.val.email.slice(0, 2).toUpperCase(),
+                ),
+                div(
+                  { class: "flex flex-col min-w-0 flex-1" },
+                  span({ class: "text-xs font-semibold text-foreground truncate" }, authState.user.val.email),
+                  span({ class: "text-[10px] text-muted-foreground" }, "Sesión activa"),
+                ),
+              ),
+              button(
+                {
+                  type: "button",
+                  class:
+                    "w-full text-xs font-medium py-1.5 px-2 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 transition cursor-pointer text-center",
+                  onclick: async () => {
+                    await authState.logout();
+                    navigate("/login");
+                  },
+                },
+                "🚪 " + i18n.t("nav.logout"),
+              ),
+            )
+          : null,
+    }),
+    header: HeaderBar({
+      leading: button(
+        {
+          type: "button",
+          class:
+            "lg:hidden p-2 rounded-lg text-foreground hover:bg-secondary border border-border cursor-pointer text-base flex items-center justify-center",
+          "aria-label": "Abrir menú",
+          onclick: () => {
+            sidebarOpen.val = !sidebarOpen.val;
+          },
+        },
+        "☰",
+      ),
+      title: getPageTitle,
+      actions: [
+        // Selector de Idioma
+        select(
+          {
+            class:
+              "text-xs px-2.5 py-1.5 rounded-lg border border-border bg-card text-foreground font-medium cursor-pointer transition-colors shadow-xs outline-none",
+            "aria-label": "Idioma / Language",
+            onchange: (e: Event) => i18n.setLocale((e.target as HTMLSelectElement).value),
+            value: () => i18n.currentLocale.val,
+          },
+          localeOptions.map(({ code, label }) =>
+            option({ value: code, selected: () => i18n.currentLocale.val === code }, label),
+          ),
+        ),
+
+        // Selector de Tema
+        button(
+          {
+            type: "button",
+            class:
+              "text-xs px-2.5 py-1.5 rounded-lg border border-border bg-card hover:bg-secondary text-foreground font-medium cursor-pointer transition-colors shadow-xs",
+            title: "Alternar tema (Claro / Oscuro / Sistema)",
+            onclick: cycleTheme,
+          },
+          themeIcon,
+        ),
+      ],
+    }),
+    content: router.start(),
+  });
 }
+

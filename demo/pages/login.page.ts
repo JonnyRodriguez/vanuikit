@@ -5,14 +5,10 @@
  * Utiliza createMutation de vanui para enviar las credenciales a /api/auth/login
  * de forma reactiva y limpia.
  */
-import { van, LoginForm, createMutation, type Router } from "vanui";
+import { van, LoginForm, createMutation, navigate } from "vanui";
 import type { LoginInput, AuthResponse } from "../shared/auth.schema.js";
 import { authState } from "../app.js";
 import { i18n } from "../shared/i18n.config.js";
-
-export type LoginPageProps = {
-  router: Router;
-};
 
 export const TEXTS = {
   title: { key: "login.title", default: "Iniciar sesión" },
@@ -22,7 +18,7 @@ export const TEXTS = {
   errGeneric: { key: "login.errGeneric", default: "Error al iniciar sesión. Revisa tus credenciales." },
 };
 
-export const LoginPage = ({ router }: LoginPageProps) => {
+export const LoginPage = () => {
   const { div, h1, p, a } = van.tags;
 
   const loginMutation = createMutation<{ status: string; data: AuthResponse }, LoginInput>(
@@ -40,7 +36,7 @@ export const LoginPage = ({ router }: LoginPageProps) => {
         // Redirigir inmediatamente a /***REMOVED***
         const urlParams = new URLSearchParams(window.location.search);
         const redirectTo = urlParams.get("redirect") || "/***REMOVED***";
-        router.navigate(redirectTo);
+        navigate(redirectTo);
       },
     },
   );
@@ -67,7 +63,7 @@ export const LoginPage = ({ router }: LoginPageProps) => {
             class: "text-accent hover:underline font-medium cursor-pointer",
             onclick: (e: MouseEvent) => {
               e.preventDefault();
-              router.navigate("/register");
+              navigate("/register");
             },
           },
           i18n.t(TEXTS.signupLink.key, undefined, TEXTS.signupLink.default),

@@ -1,14 +1,14 @@
-import van from "vanjs-core";
+import van, { type State } from "vanjs-core";
 import { cx } from "../util.js";
 
 export type NavLink = {
   href: string;
-  label: string | import("vanjs-core").State<string> | (() => string | Node);
+  label: string | State<string> | (() => string | Node);
 };
 
 type NavProps = {
-  /** Ruta del link actual; recibe la clase activa y aria-current. */
-  current: string;
+  /** Ruta del link actual (string o State reactivo); recibe la clase activa y aria-current. */
+  current: string | State<string>;
   class?: string;
 };
 
@@ -22,6 +22,8 @@ export const Nav = (links: NavLink[], props: NavProps) => {
   const { current, class: extra } = props;
   const { nav, a } = van.tags;
 
+  const isState = typeof current === "object" && current !== null && "val" in current;
+
   return nav(
     {
       class: cx(
@@ -31,18 +33,29 @@ export const Nav = (links: NavLink[], props: NavProps) => {
       "aria-label": "Principal",
     },
     links.map((link) => {
-      const isCurrent = link.href === current;
-      return a(
+      const getIsCurrent = () => (isState ? (current as State<string>).val : current) === link.href;
+
+      const linkEl = a(
         {
           href: link.href,
-          class: cx(
-            "text-accent no-underline text-[0.9rem] hover:underline transition-colors",
-            isCurrent && "font-bold",
-          ),
-          ...(isCurrent ? { "aria-current": "page" } : {}),
+          class: () =>
+            cx(
+              "text-accent no-underline text-[0.9rem] hover:underline transition-colors",
+              getIsCurrent() && "font-bold",
+            ),
         },
         link.label,
       );
+
+      van.derive(() => {
+        if (getIsCurrent()) {
+          linkEl.setAttribute("aria-current", "page");
+        } else {
+          linkEl.removeAttribute("aria-current");
+        }
+      });
+
+      return linkEl;
     }),
   );
 };

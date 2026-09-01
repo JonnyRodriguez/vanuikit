@@ -1,220 +1,98 @@
-import van, { type State, type ChildDom } from "vanjs-core";
-import { Button } from "./button.js";
-import { Spin } from "./spin.js";
+import van, { type State, type ValidChildDomValue } from "vanjs-core";
+import { Modal } from "./modal.js";
+import { PrimaryButton, SecondaryButton, Button } from "./button.js";
 import { t } from "../i18n.js";
 
-const { div, h3, p, span } = van.tags;
+const { div, p, span } = van.tags;
 
-export type ConfirmVariant = "primary" | "danger" | "warning";
-
-/**
- * =========================================================================
- * DEFINICIÓN LOCAL DE TEXTOS (TEXTS)
- * =========================================================================
- */
 export const TEXTS = {
   title: { key: "dialog.confirmTitle", default: "Confirmar acción" },
   cancel: { key: "dialog.cancel", default: "Cancelar" },
   confirm: { key: "dialog.confirm", default: "Confirmar" },
-  processing: { key: "dialog.processing", default: "Procesando..." },
 };
 
+export type ConfirmVariant = "primary" | "danger" | "warning";
+
 export interface ConfirmDialogProps {
-  id?: string;
   title?: string | State<string>;
-  message: string | ChildDom | (() => ChildDom);
+  message: string | ValidChildDomValue | (() => ValidChildDomValue);
   confirmText?: string | State<string>;
   cancelText?: string | State<string>;
   variant?: ConfirmVariant;
-  icon?: ChildDom;
-  onConfirm?: () => void | Promise<void>;
+  icon?: ValidChildDomValue;
+  onConfirm?: () => void;
   onCancel?: () => void;
-  isOpen?: State<boolean>;
 }
 
-/**
- * Componente ConfirmDialog declarativo.
- */
 export function ConfirmDialog(props: ConfirmDialogProps) {
-  const isVisible = props.isOpen ?? van.state(false);
-  const isLoading = van.state(false);
   const variant = props.variant ?? "primary";
 
-  const close = () => {
-    if (isLoading.val) return;
-    isVisible.val = false;
-    props.onCancel?.();
+  const confirmBtn = () => {
+    const text = props.confirmText ?? t(TEXTS.confirm.key, undefined, TEXTS.confirm.default);
+    const onclick = () => {
+      modal.close();
+      props.onConfirm?.();
+    };
+    if (variant === "danger") return Button({ variant: "destructive", onclick }, text);
+    return PrimaryButton({ onclick }, text);
   };
 
-  const handleConfirm = async () => {
-    if (props.onConfirm) {
-      try {
-        isLoading.val = true;
-        await props.onConfirm();
-      } finally {
-        isLoading.val = false;
-        isVisible.val = false;
-      }
-    } else {
-      isVisible.val = false;
-    }
-  };
-
-  const getVariantIcon = () => {
-    if (props.icon) return props.icon;
-    switch (variant) {
-      case "danger":
-        return span(
-          {
-            class:
-              "w-10 h-10 rounded-full bg-destructive/15 text-destructive flex items-center justify-center text-lg font-bold shrink-0",
-          },
-          "⚠️",
-        );
-      case "warning":
-        return span(
-          {
-            class:
-              "w-10 h-10 rounded-full bg-yellow-500/15 text-yellow-500 flex items-center justify-center text-lg font-bold shrink-0",
-          },
-          "🔔",
-        );
-      case "primary":
-      default:
-        return span(
-          {
-            class:
-              "w-10 h-10 rounded-full bg-primary/15 text-primary flex items-center justify-center text-lg font-bold shrink-0",
-          },
-          "❓",
-        );
-    }
-  };
-
-  const getConfirmButtonVariant = () => {
-    switch (variant) {
-      case "danger":
-        return "destructive";
-      case "primary":
-      default:
-        return "primary";
-    }
-  };
-
-  const render = () =>
+  const body = () =>
     div(
-      {
-        id: props.id,
-        class: () =>
-          isVisible.val
-            ? "fixed inset-0 flex items-center justify-center bg-overlay z-50 p-4 transition-all duration-200"
-            : "hidden",
-        role: "alertdialog",
-        "aria-modal": "true",
-        onclick: (e: MouseEvent) => e.target === e.currentTarget && close(),
-      },
+      { class: "flex items-start gap-3.5 py-1" },
+      props.icon ??
+        span(
+          { class: "text-xl shrink-0" },
+          variant === "danger" ? "⚠️" : variant === "warning" ? "🔔" : "❓",
+        ),
       div(
-        {
-          class:
-            "bg-background rounded-2xl border border-border shadow-2xl p-6 w-full max-w-md animate-in fade-in zoom-in-95 duration-150",
-          onclick: (e: MouseEvent) => e.stopPropagation(),
-        },
-        // Header con Icono + Título
-        div(
-          { class: "flex items-start gap-3.5" },
-          getVariantIcon(),
-          div(
-            { class: "flex-1" },
-            h3(
-              { class: "text-lg font-bold text-foreground m-0" },
-              props.title ?? t(TEXTS.title.key, undefined, TEXTS.title.default),
-            ),
-            div(
-              { class: "text-sm text-foreground-soft mt-1 leading-relaxed" },
-              typeof props.message === "function"
-                ? (props.message as () => ChildDom)()
-                : typeof props.message === "string"
-                ? p({ class: "m-0" }, props.message)
-                : props.message,
-            ),
-          ),
-        ),
-        // Acciones / Footer
-        div(
-          { class: "mt-6 flex items-center justify-end gap-2.5 pt-2" },
-          Button(
-            {
-              variant: "secondary",
-              disabled: () => isLoading.val,
-              onclick: close,
-            },
-            props.cancelText ?? t(TEXTS.cancel.key, undefined, TEXTS.cancel.default),
-          ),
-          () =>
-            isLoading.val
-              ? Spin(t(TEXTS.processing.key, undefined, TEXTS.processing.default))
-              : Button(
-                  {
-                    variant: getConfirmButtonVariant(),
-                    onclick: handleConfirm,
-                  },
-                  props.confirmText ?? t(TEXTS.confirm.key, undefined, TEXTS.confirm.default),
-                ),
-        ),
+        { class: "flex-1 text-sm text-foreground-soft leading-relaxed" },
+        typeof props.message === "function"
+          ? props.message()
+          : typeof props.message === "string"
+            ? p({ class: "m-0" }, props.message)
+            : props.message,
       ),
     );
 
-  return {
-    open: () => (isVisible.val = true),
-    close,
-    isVisible,
-    dom: render,
-  };
+  const footer = () =>
+    div(
+      { class: "pt-4 flex items-center justify-end gap-2.5" },
+      SecondaryButton(
+        {
+          onclick: () => {
+            modal.close();
+            props.onCancel?.();
+          },
+        },
+        props.cancelText ?? t(TEXTS.cancel.key, undefined, TEXTS.cancel.default),
+      ),
+      confirmBtn(),
+    );
+
+  const modal = Modal({
+    title: props.title ?? t(TEXTS.title.key, undefined, TEXTS.title.default),
+    body,
+    footer,
+  });
+
+  return modal;
 }
 
-/**
- * Función imperativa confirmDialog: lanza una ventana de confirmación y retorna una Promise<boolean>.
- *
- *   const confirmed = await confirmDialog({
- *     title: "¿Eliminar registro?",
- *     message: "Esta acción no se puede deshacer.",
- *     variant: "danger",
- *     confirmText: "Eliminar",
- *   });
- */
-export function confirmDialog(options: {
-  title?: string;
-  message: string | ChildDom;
-  confirmText?: string;
-  cancelText?: string;
-  variant?: ConfirmVariant;
-  icon?: ChildDom;
-}): Promise<boolean> {
+export function confirmDialog(options: ConfirmDialogProps): Promise<boolean> {
   return new Promise((resolve) => {
-    const isVisible = van.state(true);
-
     const dialog = ConfirmDialog({
       ...options,
-      isOpen: isVisible,
       onConfirm: () => {
+        options.onConfirm?.();
         resolve(true);
       },
       onCancel: () => {
+        options.onCancel?.();
         resolve(false);
       },
     });
-
-    const el = dialog.dom();
-    document.body.appendChild(el);
-
-    // Limpieza al cerrar
-    const observer = () => {
-      if (!isVisible.val) {
-        setTimeout(() => {
-          if (el.parentNode) el.parentNode.removeChild(el);
-        }, 200);
-      }
-    };
-    van.derive(observer);
+    dialog.mount();
+    dialog.open();
   });
 }

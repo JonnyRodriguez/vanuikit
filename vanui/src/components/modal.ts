@@ -78,12 +78,12 @@ export const ModalBase = (
             : "hidden",
         role: "dialog",
         "aria-modal": "true",
-        onclick: (e) => e.target === e.currentTarget && close(),
+        onclick: (e: MouseEvent) => e.target === e.currentTarget && close(),
       },
       div(
         {
           class: "bg-background rounded-lg shadow-xl p-6 w-full max-w-md",
-          onclick: (e) => e.stopPropagation(),
+          onclick: (e: MouseEvent) => e.stopPropagation(),
         },
         () => (header.val ? header.val() : div()),
         () => (body.val ? body.val() : div()),
@@ -163,20 +163,26 @@ export const Modal = (
   initialContent: ModalProps | null = null,
   initialVisible = false,
 ) => {
-  const title = van.state<string | State<string> | undefined>(undefined);
+  const title = van.state<string | State<string> | undefined>(
+    initialContent?.title,
+  );
   const header = () =>
     ModalHeaderWithTitleAndClose(title.val ?? "", () => modal.close());
   const footer = () => ModalFooterWithCloseButton(() => modal.close());
 
   const modal = ModalBase(
-    { header, footer, ...initialContent },
+    {
+      header: initialContent?.header ?? header,
+      footer: initialContent?.footer !== undefined ? initialContent.footer : footer,
+      body: initialContent?.body,
+    },
     initialVisible,
   );
 
   const setTitle = (newTitle: string | State<string>) => (title.val = newTitle);
 
   // Igual que ModalBase.set pero sin mutar el objeto del llamador:
-  // completa el footer por defecto en una copia.
+  // completa el footer por defecto en una copia si no se definió.
   const set = (input: ModalProps, show = false) => {
     const next: ModalContent = { ...input };
     if (!("footer" in next)) next.footer = footer;

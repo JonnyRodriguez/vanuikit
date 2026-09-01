@@ -29,7 +29,10 @@ describe("ConfirmDialog", () => {
     expect(dom.textContent).toContain("Eliminar elemento");
     expect(dom.textContent).toContain("¿Estás seguro?");
 
-    const confirmBtn = dom.querySelectorAll("button")[1] as HTMLButtonElement;
+    const buttons = Array.from(dom.querySelectorAll("button"));
+    // Buscamos el botón de confirmar
+    const confirmBtn = buttons.find((b) => b.textContent?.includes("Confirmar")) as HTMLButtonElement;
+    expect(confirmBtn).toBeDefined();
     confirmBtn.click();
     await tick();
 
@@ -48,7 +51,9 @@ describe("ConfirmDialog", () => {
     const overlay = document.body.lastElementChild as HTMLElement;
     expect(overlay.textContent).toContain("¿Continuar?");
 
-    const confirmBtn = overlay.querySelectorAll("button")[1] as HTMLButtonElement;
+    const buttons = Array.from(overlay.querySelectorAll("button"));
+    const confirmBtn = buttons.find((b) => b.textContent?.includes("Sí, continuar")) as HTMLButtonElement;
+    expect(confirmBtn).toBeDefined();
     confirmBtn.click();
 
     const result = await promise;

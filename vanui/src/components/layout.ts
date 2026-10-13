@@ -157,8 +157,9 @@ export function Sidebar(props: SidebarProps) {
 
   const railClass = () =>
     collapsed.val
-      ? // Modo rail: ocultar textos (header, títulos, labels, badges) y centrar iconos.
-        "[&_.vui-sb-header]:hidden [&_.vui-sb-group-title]:hidden [&_.vui-sb-label]:hidden [&_.vui-sb-badge]:hidden [&_.vui-sb-item]:justify-center [&_.vui-sb-item]:px-2"
+      ? // Modo rail SOLO desktop (lg:): en mobile el drawer siempre se abre
+        // expandido, sin importar el estado de colapso de desktop.
+        "lg:[&_.vui-sb-header]:hidden lg:[&_.vui-sb-group-title]:hidden lg:[&_.vui-sb-label]:hidden lg:[&_.vui-sb-badge]:hidden lg:[&_.vui-sb-item]:justify-center lg:[&_.vui-sb-item]:px-2"
       : "";
 
   // Botón de colapso (solo desktop: en mobile manda el drawer con backdrop).
@@ -187,8 +188,8 @@ export function Sidebar(props: SidebarProps) {
     {
       class: van.derive(() =>
         cx(
-          "h-full flex flex-col justify-between bg-card border-r border-border text-foreground select-none transition-[width] duration-200",
-          collapsed.val ? "w-20 px-3 py-4" : "w-64 p-4",
+          "h-full flex flex-col justify-between bg-card border-r border-border text-foreground select-none w-64 p-4 transition-[width] duration-200",
+          collapsed.val && "lg:w-20 lg:px-3",
           railClass(),
           props.class,
         ),
@@ -238,7 +239,7 @@ export function Sidebar(props: SidebarProps) {
             class: () =>
               cx(
                 "pt-4 border-t border-border/60 mt-auto",
-                collapsed.val && "flex justify-center overflow-hidden",
+                collapsed.val && "lg:flex lg:justify-center lg:overflow-hidden",
               ),
           },
           props.footer,
@@ -309,6 +310,17 @@ export function AppShell(props: AppShellProps) {
   const closeSidebar = () => {
     isOpen.val = false;
   };
+
+  // Al cruzar a desktop el drawer pierde sentido (la barra queda fija):
+  // cerrarlo, para no arrastrar un estado abierto que no se ve pero sí
+  // afecta a consumidores que derivan del isOpen (p. ej. footers compactos).
+  if (typeof window !== "undefined" && typeof window.matchMedia === "function") {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const onDesktop = (e: MediaQueryListEvent) => {
+      if (e.matches) isOpen.val = false;
+    };
+    mq.addEventListener("change", onDesktop);
+  }
 
   return div(
     {

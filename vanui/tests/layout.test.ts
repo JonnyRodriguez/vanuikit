@@ -137,9 +137,10 @@ describe("Sidebar colapsable (modo rail desktop)", () => {
     toggle.click();
     await tick();
 
-    expect(aside.className).toContain("w-20");
+    // El rail solo aplica en desktop (lg:): en mobile el drawer queda expandido
+    expect(aside.className).toContain("lg:w-20");
     expect(toggle.getAttribute("aria-expanded")).toBe("false");
-    expect(aside.className).toContain('[&_.vui-sb-label]:hidden');
+    expect(aside.className).toContain('lg:[&_.vui-sb-label]:hidden');
     expect(localStorage.getItem(key)).toBe("1");
 
     // Una nueva instancia con la misma clave arranca colapsada (persistencia)
@@ -151,7 +152,7 @@ describe("Sidebar colapsable (modo rail desktop)", () => {
       Sidebar({ content: SidebarItem({ href: "/b", label: "B" }), collapsible: true, storageKey: key }),
     );
     const aside2 = host2.querySelector("aside") as HTMLElement;
-    expect(aside2.className).toContain("w-20");
+    expect(aside2.className).toContain("lg:w-20");
     expect(
       (host2.querySelector("button[aria-expanded]") as HTMLButtonElement).getAttribute("aria-expanded"),
     ).toBe("false");

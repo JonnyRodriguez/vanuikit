@@ -133,6 +133,8 @@ export function App() {
 
   const { span, a, button } = van.tags;
   const sidebarOpen = van.state(false);
+  // Estado controlado del colapso desktop de la Sidebar (rail de iconos).
+  const sidebarCollapsed = van.state(false);
 
   const getPageTitle = van.derive(() => {
     const p = router.path.val;
@@ -149,6 +151,9 @@ export function App() {
       onClose: () => {
         sidebarOpen.val = false;
       },
+      collapsible: true,
+      collapsed: sidebarCollapsed,
+      storageKey: "vanui-demo-sidebar-collapsed",
       header: a(
         {
           href: "/***REMOVED***",
@@ -226,9 +231,11 @@ export function App() {
             : null,
       ],
       // Pie de barra lateral usando componente embebido de usuario
+      // (compact en modo rail: solo avatar + logout)
       footer: UserBadge({
         auth: authState,
         i18n,
+        compact: sidebarCollapsed,
         onLogout: () => navigate("/login"),
       }),
     }),

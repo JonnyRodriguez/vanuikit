@@ -46,7 +46,9 @@ app.get("/health", (c) => {
 app.use(
   "/*",
   serveStatic({
-    root: path.relative(process.cwd(), demoDir),
+    // root es relativo al cwd; `|| "."` cubre el caso cwd === demoDir, donde
+    // path.relative devuelve "" y join("", "/dist/x") produciría /dist/x absoluto.
+    root: path.relative(process.cwd(), demoDir) || ".",
   }),
 );
 

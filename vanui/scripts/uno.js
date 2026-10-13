@@ -57,6 +57,32 @@ const VUI_THEME = `
 --vui-shadow-xl:0 20px 25px -5px rgb(0 0 0 / .1),0 8px 10px -6px rgb(0 0 0 / .1);
 --vui-shadow-2xl:0 25px 50px -12px rgb(0 0 0 / .25);
 }
+
+:root.dark, [data-theme="dark"]{
+--vui-primary:#22c55e;
+--vui-primary-hover:#16a34a;
+--vui-primary-active:#15803d;
+--vui-primary-fg:#ffffff;
+--vui-primary-shadow:rgb(34 197 94 / .3);
+--vui-secondary:#374151;
+--vui-secondary-hover:#4b5563;
+--vui-secondary-active:#6b7280;
+--vui-secondary-fg:#f9fafb;
+--vui-accent:#3b82f6;
+--vui-accent-hover:#60a5fa;
+--vui-focus:#60a5fa;
+--vui-background:#1f2937;
+--vui-foreground:#f9fafb;
+--vui-foreground-soft:#e5e7eb;
+--vui-muted:#9ca3af;
+--vui-border:#374151;
+--vui-overlay:rgb(0 0 0 / .75);
+--vui-destructive:#ef4444;
+--vui-shadow-sm:0 1px 2px 0 rgb(0 0 0 / .3);
+--vui-shadow-lg:0 10px 15px -3px rgb(0 0 0 / .5),0 4px 6px -4px rgb(0 0 0 / .5);
+--vui-shadow-xl:0 20px 25px -5px rgb(0 0 0 / .5),0 8px 10px -6px rgb(0 0 0 / .5);
+--vui-shadow-2xl:0 25px 50px -12px rgb(0 0 0 / .7);
+}
 `.trim();
 
 /** Mapea las clases de color/radio/sombra a las variables del tema. */

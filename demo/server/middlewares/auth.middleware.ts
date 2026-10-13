@@ -3,7 +3,7 @@ import {
   createAuthMiddleware,
   getSessionFromHonoContext,
   type HonoAuthVariables,
-} from "../../../vanui/src/server/index.js";
+} from "vanui/server";
 import { SessionRepository } from "../repositories/session.repository.js";
 import type { AuthUser } from "../../shared/auth.schema.js";
 

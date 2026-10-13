@@ -14,6 +14,8 @@ export interface UserBadgeProps {
   statusText?: string | State<string>;
   /** Mostrar u ocultar el botón de logout */
   showLogout?: boolean;
+  /** Modo compacto para sidebars colapsadas: solo avatar + logout (title con el nombre) */
+  compact?: boolean | State<boolean>;
   /** Clases CSS adicionales para el contenedor */
   class?: string;
 }
@@ -72,6 +74,40 @@ export function UserBadge(props: UserBadgeProps) {
 
     const initials = getInitials(currentUser);
     const displayName = (typeof currentUser.name === "string" && currentUser.name) ? currentUser.name : currentUser.email;
+    const isCompact =
+      typeof props.compact === "object" && props.compact !== null && "val" in props.compact
+        ? props.compact.val
+        : Boolean(props.compact);
+
+    // Modo compacto (rail de Sidebar colapsada): avatar centrado + logout icónico.
+    if (isCompact) {
+      const logoutLabel = i18n.raw("nav.logout", undefined, "Cerrar sesión");
+      return div(
+        { class: cx("flex flex-col items-center gap-2", props.class) },
+        div(
+          {
+            class:
+              "w-9 h-9 rounded-full bg-primary text-primary-fg font-bold text-xs flex items-center justify-center shrink-0 shadow-2xs select-none",
+            title: displayName,
+            "aria-label": displayName,
+          },
+          initials,
+        ),
+        showLogout
+          ? button(
+              {
+                type: "button",
+                class:
+                  "w-8 h-8 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 active:bg-destructive/30 transition cursor-pointer flex items-center justify-center text-sm select-none",
+                "aria-label": logoutLabel,
+                title: logoutLabel,
+                onclick: handleLogout,
+              },
+              "🚪",
+            )
+          : null,
+      );
+    }
 
     return div(
       {
@@ -97,7 +133,9 @@ export function UserBadge(props: UserBadgeProps) {
           ),
           span(
             { class: "text-[10px] text-muted-foreground truncate" },
-            props.statusText ? props.statusText : "Sesión activa",
+            props.statusText
+              ? props.statusText
+              : i18n.raw("user.sessionActive", undefined, "Sesión activa"),
           ),
         ),
       ),

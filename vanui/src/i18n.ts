@@ -59,6 +59,14 @@ export const defaultLocales: Record<string, Record<string, any>> = {
     nav: {
       logout: "Cerrar sesión",
     },
+    sidebar: {
+      collapse: "Colapsar barra lateral",
+      expand: "Expandir barra lateral",
+      close: "Cerrar menú",
+    },
+    user: {
+      sessionActive: "Sesión activa",
+    },
     theme: {
       light: "Claro",
       dark: "Oscuro",
@@ -143,6 +151,14 @@ export const defaultLocales: Record<string, Record<string, any>> = {
     },
     nav: {
       logout: "Sign out",
+    },
+    sidebar: {
+      collapse: "Collapse sidebar",
+      expand: "Expand sidebar",
+      close: "Close menu",
+    },
+    user: {
+      sessionActive: "Active session",
     },
     theme: {
       light: "Light",

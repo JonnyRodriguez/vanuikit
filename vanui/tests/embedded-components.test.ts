@@ -134,7 +134,7 @@ describe("Embedded Core Components", () => {
 
       expect(document.body.textContent).toContain("AS");
       expect(document.body.textContent).toContain("Alice Smith");
-      expect(document.body.textContent).toContain("Sesión activa");
+      expect(document.body.textContent).toContain("Active session");
 
       const logoutBtn = document.body.querySelector("button");
       expect(logoutBtn).toBeTruthy();
@@ -142,6 +142,40 @@ describe("Embedded Core Components", () => {
       logoutBtn?.click();
       await nextTick();
       expect(loggedOut).toBe(true);
+    });
+
+    test("modo compact: solo avatar + logout icónico, reactivo al state", async () => {
+      const auth = createAuth({
+        me: async () => ({ user: null }),
+        login: async () => ({ user: { id: "1", email: "alice@example.com", name: "Alice Smith" } }),
+        logout: async () => {},
+      });
+
+      const compact = van.state(false);
+      // Conectar al documento: van descarta bindings de árboles detached
+      const host = document.createElement("div");
+      document.body.appendChild(host);
+      van.add(host, UserBadge({ auth, compact, onLogout: () => {} }));
+
+      await auth.login("alice@example.com", "secret");
+      await nextTick();
+
+      // Expandido: tarjeta con nombre y estado
+      expect(host.textContent).toContain("Alice Smith");
+
+      compact.val = true;
+      await nextTick();
+
+      // Compacto: avatar con iniciales + logout con nombre accesible; sin nombre visible
+      expect(host.textContent).not.toContain("Alice Smith");
+      expect(host.textContent).toContain("AS");
+      const logoutBtn = host.querySelector("button") as HTMLButtonElement;
+      expect(logoutBtn).toBeTruthy();
+      expect(logoutBtn.getAttribute("aria-label")).toBe("Sign out");
+      expect(logoutBtn.getAttribute("title")).toBe("Sign out");
+      const avatar = host.querySelector("[title='Alice Smith']");
+      expect(avatar).not.toBeNull();
+      host.remove();
     });
   });
 });

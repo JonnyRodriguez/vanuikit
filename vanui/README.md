@@ -171,6 +171,29 @@ Botones con variante y tamaño (defaults: `primary`, `md`):
     Button({ variant: "secondary", size: "sm" }, "Cancelar");
     Button({ variant: "primary", size: "lg", type: "submit" }, "Guardar");
 
+## Shell (AppShell + Sidebar)
+
+`AppShell` arma el dashboard responsivo: drawer deslizante con backdrop en
+mobile y, en desktop, sidebar **anclada al viewport** (`sticky top-0 h-dvh`)
+con scroll interno de navegación — el `footer` (perfil/logout) queda siempre
+visible aunque la página sea larga.
+
+`Sidebar` es colapsable en desktop (rail de iconos):
+
+    const collapsed = van.state(false);
+    Sidebar({
+      header: ...,
+      content: [SidebarGroup(...), ...],
+      footer: UserBadge({ auth, compact: collapsed }),  // modo avatar en el rail
+      collapsible: true,        // muestra el botón «/» (solo desktop)
+      collapsed,                // controlado; sin él, estado interno
+      storageKey: "mi-sidebar", // persiste en localStorage (también controlado)
+    });
+
+En modo rail se ocultan labels, títulos de grupo, badges y el header; los
+ítems conservan su `aria-label`. `SidebarItem`, `SidebarGroup`,
+`HeaderBar` y `UserBadge` (con `compact`) completan la familia.
+
 ## Tema (createTheme)
 
 Gestor reactivo de tema (Claro / Oscuro / Sistema) sin dependencias:

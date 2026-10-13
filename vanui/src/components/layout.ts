@@ -1,6 +1,14 @@
 import van, { type State } from "vanjs-core";
+import { t } from "../i18n.js";
 import { cx } from "../util.js";
 import { Badge } from "./badge.js";
+
+/** Contrato de llaves de i18n del componente */
+export const TEXTS = {
+  collapse: { key: "sidebar.collapse", default: "Colapsar barra lateral" },
+  expand: { key: "sidebar.expand", default: "Expandir barra lateral" },
+  close: { key: "sidebar.close", default: "Cerrar menú" },
+} as const;
 
 export type SidebarItemProps = {
   href?: string;
@@ -42,14 +50,17 @@ export function SidebarItem(props: SidebarItemProps) {
 
   const renderBadge = () => {
     if (props.badge === undefined || props.badge === null) return null;
-    if (typeof props.badge === "string" || typeof props.badge === "number") {
-      return Badge({ text: props.badge, variant: (props.badgeVariant as any) ?? "primary", size: "sm" });
-    }
-    if (typeof props.badge === "object" && "val" in props.badge) {
-      return () => Badge({ text: (props.badge as any)?.val, variant: (props.badgeVariant as any) ?? "primary", size: "sm" });
-    }
-    return props.badge as Node;
+    const badgeNode =
+      typeof props.badge === "string" || typeof props.badge === "number"
+        ? Badge({ text: props.badge, variant: (props.badgeVariant as any) ?? "primary", size: "sm" })
+        : typeof props.badge === "object" && "val" in props.badge
+          ? () => Badge({ text: (props.badge as any)?.val, variant: (props.badgeVariant as any) ?? "primary", size: "sm" })
+          : props.badge;
+    // Wrapper con ganancia semántica: el modo rail de Sidebar la oculta.
+    return van.tags.span({ class: "vui-sb-badge shrink-0" }, badgeNode as Node);
   };
+
+  const labelText = typeof props.label === "string" ? props.label : null;
 
   return () => {
     const isActive = isCurrentActive();
@@ -58,8 +69,10 @@ export function SidebarItem(props: SidebarItemProps) {
         // Van no acepta `undefined` como valor de prop: con el setter del DOM
         // terminaría como attr `href="undefined"`. Omitir la clave por rama.
         ...(props.href ? { href: props.href } : { type: "button" }),
+        // Nombre accesible estable aunque el modo rail oculte el texto visible.
+        ...(labelText ? { "aria-label": labelText } : {}),
         class: cx(
-          "w-full flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all no-underline cursor-pointer select-none text-left border border-transparent",
+          "vui-sb-item w-full flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all no-underline cursor-pointer select-none text-left border border-transparent",
           isActive
             ? "bg-primary text-primary-fg font-semibold shadow-xs"
             : "text-muted-foreground hover:text-foreground hover:bg-secondary/60",
@@ -73,7 +86,7 @@ export function SidebarItem(props: SidebarItemProps) {
       div(
         { class: "flex items-center gap-3 min-w-0" },
         renderIcon(),
-        span({ class: "truncate" }, props.label),
+        span({ class: "vui-sb-label truncate" }, props.label),
       ),
       renderBadge(),
     );
@@ -92,7 +105,7 @@ export function SidebarGroup(props: SidebarGroupProps, ...children: (Node | (() 
     props.title
       ? h3(
           {
-            class: "px-3.5 pb-1 text-xs font-bold text-muted-foreground/70 uppercase tracking-wider select-none",
+            class: "vui-sb-group-title px-3.5 pb-1 text-xs font-bold text-muted-foreground/70 uppercase tracking-wider select-none",
           },
           props.title,
         )
@@ -107,39 +120,109 @@ export type SidebarProps = {
   footer?: Node | string | (() => Node);
   isOpen?: State<boolean>;
   onClose?: () => void;
+  /** Muestra el botón de colapso en desktop (ancho completo ↔ rail de iconos). */
+  collapsible?: boolean;
+  /** Estado controlado del colapso. Si se omite y `collapsible`, se gestiona internamente. */
+  collapsed?: State<boolean>;
+  /** Clave de localStorage para persistir el colapso no controlado (por defecto "vanui-sidebar-collapsed"). */
+  storageKey?: string;
   class?: string;
 };
 
 export function Sidebar(props: SidebarProps) {
-  const { aside, div, button } = van.tags;
+  const { aside, div, button, span } = van.tags;
+
+  let collapsed: State<boolean>;
+  if (props.collapsed) {
+    collapsed = props.collapsed;
+    // Controlado con storageKey: el storage inicializa al montar y refleja
+    // cada cambio (el consumidor sigue siendo dueño del estado).
+    if (props.storageKey && typeof localStorage !== "undefined") {
+      const saved = localStorage.getItem(props.storageKey);
+      if (saved != null) collapsed.val = saved === "1";
+      van.derive(() => {
+        localStorage.setItem(props.storageKey!, collapsed.val ? "1" : "0");
+      });
+    }
+  } else {
+    const storageKey = props.storageKey ?? "vanui-sidebar-collapsed";
+    const saved = typeof localStorage !== "undefined" ? localStorage.getItem(storageKey) : null;
+    collapsed = van.state(saved === "1");
+    van.derive(() => {
+      if (typeof localStorage !== "undefined") {
+        localStorage.setItem(storageKey, collapsed.val ? "1" : "0");
+      }
+    });
+  }
+
+  const railClass = () =>
+    collapsed.val
+      ? // Modo rail: ocultar textos (header, títulos, labels, badges) y centrar iconos.
+        "[&_.vui-sb-header]:hidden [&_.vui-sb-group-title]:hidden [&_.vui-sb-label]:hidden [&_.vui-sb-badge]:hidden [&_.vui-sb-item]:justify-center [&_.vui-sb-item]:px-2"
+      : "";
+
+  // Botón de colapso (solo desktop: en mobile manda el drawer con backdrop).
+  const collapseToggle = props.collapsible
+    ? button(
+        {
+          type: "button",
+          class:
+            "hidden lg:inline-flex items-center justify-center w-7 h-7 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary cursor-pointer transition-colors shrink-0",
+          "aria-label": () => {
+            // Leer collapsed.val aquí dentro: si la clave se elige fuera, el
+            // derive de t() no depende del estado y el label no se actualiza.
+            const label = collapsed.val ? TEXTS.expand : TEXTS.collapse;
+            return t(label.key, undefined, label.default).val;
+          },
+          "aria-expanded": () => (collapsed.val ? "false" : "true"),
+          onclick: () => {
+            collapsed.val = !collapsed.val;
+          },
+        },
+        () => span({ class: "text-sm leading-none select-none", "aria-hidden": "true" }, collapsed.val ? "»" : "«"),
+      )
+    : null;
 
   return aside(
     {
-      class: cx(
-        "flex flex-col justify-between h-full bg-card border-r border-border w-64 p-4 text-foreground select-none transition-colors",
-        props.class,
+      class: van.derive(() =>
+        cx(
+          "h-full flex flex-col justify-between bg-card border-r border-border text-foreground select-none transition-[width] duration-200",
+          collapsed.val ? "w-20 px-3 py-4" : "w-64 p-4",
+          railClass(),
+          props.class,
+        ),
       ),
       "aria-label": "Sidebar",
     },
-    // Top section: header + navigation
+    // Sección superior: header + navegación (scroll interno, el footer queda fijo).
     div(
       { class: "flex flex-col gap-4 overflow-y-auto flex-1 pr-1" },
-      props.header
+      props.header || props.onClose || collapseToggle
         ? div(
-            { class: "flex items-center justify-between gap-2 pb-3 border-b border-border/60" },
-            props.header,
+            {
+              class: () =>
+                cx(
+                  "flex items-center gap-2 pb-3 border-b border-border/60",
+                  props.header ? "justify-between" : "justify-center",
+                ),
+            },
+            props.header
+              ? div({ class: () => cx("vui-sb-header min-w-0 flex-1", collapsed.val && "hidden") }, props.header)
+              : null,
             props.onClose
               ? button(
                   {
                     type: "button",
                     class:
                       "lg:hidden p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary text-base cursor-pointer",
-                    "aria-label": "Cerrar menú",
+                    "aria-label": t(TEXTS.close.key, undefined, TEXTS.close.default).val,
                     onclick: props.onClose,
                   },
                   "✕",
                 )
               : null,
+            collapseToggle,
           )
         : null,
       div(
@@ -147,10 +230,17 @@ export function Sidebar(props: SidebarProps) {
         props.content,
       ),
     ),
-    // Bottom section: footer / user profile
+    // Sección inferior: footer / perfil de usuario (siempre visible: el nav
+    // scrollea internamente, la barra completa queda anclada al viewport).
     props.footer
       ? div(
-          { class: "pt-4 border-t border-border/60 mt-auto" },
+          {
+            class: () =>
+              cx(
+                "pt-4 border-t border-border/60 mt-auto",
+                collapsed.val && "flex justify-center overflow-hidden",
+              ),
+          },
           props.footer,
         )
       : null,
@@ -223,7 +313,10 @@ export function AppShell(props: AppShellProps) {
   return div(
     {
       class: cx(
-        "min-h-screen flex bg-background text-foreground transition-colors overflow-x-hidden relative",
+        // Sin overflow-x-hidden en la raíz: un ancestro con overflow != visible
+        // rompe el position:sticky del sidebar en desktop (el drawer mobile es
+        // fixed, no genera overflow del documento, no hace falta).
+        "min-h-screen flex bg-background text-foreground transition-colors relative",
         props.class,
       ),
     },
@@ -239,12 +332,15 @@ export function AppShell(props: AppShellProps) {
       "aria-hidden": van.derive(() => (isOpen.val ? "false" : "true")),
     }),
 
-    // Sidebar Container (Smooth slide-in drawer on mobile, static aside on desktop lg:)
+    // Sidebar Container (Smooth slide-in drawer on mobile, viewport-anchored
+    // sticky aside on desktop lg: — h-dvh para que header/contenido/footer
+    // vivan en la altura de la ventana y el footer (logout) nunca se vaya
+    // al fondo del documento en páginas largas).
     div(
       {
         class: van.derive(() =>
           cx(
-            "app-shell-sidebar fixed inset-y-0 left-0 z-50 transform lg:static lg:transform-none transition-transform duration-200 ease-in-out",
+            "app-shell-sidebar fixed inset-y-0 left-0 z-50 transform lg:sticky lg:top-0 lg:h-dvh lg:transform-none transition-transform duration-200 ease-in-out",
             isOpen.val ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
           ),
         ),

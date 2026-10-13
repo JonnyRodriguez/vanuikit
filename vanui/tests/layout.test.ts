@@ -10,6 +10,10 @@ import {
 
 const { div, span, button } = van.tags;
 
+// van 1.6 difiere la actualización del DOM a un microtask (updateDoms): los
+// clicks en tests deben esperar un tick antes de asertar el DOM.
+const tick = () => new Promise((resolve) => setTimeout(resolve, 0));
+
 describe("Layout & Dashboard Components", () => {
   test("SidebarItem > renderiza link o botón con label, icono y badge", () => {
     const item = SidebarItem({
@@ -90,5 +94,88 @@ describe("Layout & Dashboard Components", () => {
     const aside = host.querySelector(".app-shell-sidebar") as HTMLElement;
     expect(backdrop).not.toBeNull();
     expect(aside).not.toBeNull();
+  });
+});
+
+describe("Sidebar colapsable (modo rail desktop)", () => {
+  test("sin collapsible no renderiza el botón de colapso", () => {
+    const host = document.createElement("div");
+    van.add(
+      host,
+      Sidebar({ header: div("Logo"), content: SidebarItem({ href: "/a", label: "A" }) }),
+    );
+
+    expect(host.querySelector("aside button[aria-expanded]")).toBeNull();
+  });
+
+  test("colapso no controlado: alterna rail, oculta labels y persiste en localStorage", async () => {
+    localStorage.clear();
+    const key = "test-sidebar-key";
+    // Conectar al documento: van descarta bindings de árboles detached (keepConnected)
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+    van.add(
+      host,
+      Sidebar({
+        header: div("Logo"),
+        content: SidebarItem({ href: "/a", label: "Artículos", icon: "📦" }),
+        collapsible: true,
+        storageKey: key,
+      }),
+    );
+
+    const aside = host.querySelector("aside") as HTMLElement;
+    const toggle = aside.querySelector("button[aria-expanded]") as HTMLButtonElement;
+    expect(toggle).not.toBeNull();
+    expect(aside.className).toContain("w-64");
+    expect(toggle.getAttribute("aria-expanded")).toBe("true");
+    // Nombre accesible del ítem intacto aunque el label se oculte en rail
+    const item = aside.querySelector(".vui-sb-item") as HTMLElement;
+    expect(item.getAttribute("aria-label")).toBe("Artículos");
+    expect(aside.querySelector(".vui-sb-label")).not.toBeNull();
+
+    toggle.click();
+    await tick();
+
+    expect(aside.className).toContain("w-20");
+    expect(toggle.getAttribute("aria-expanded")).toBe("false");
+    expect(aside.className).toContain('[&_.vui-sb-label]:hidden');
+    expect(localStorage.getItem(key)).toBe("1");
+
+    // Una nueva instancia con la misma clave arranca colapsada (persistencia)
+    host.remove();
+    const host2 = document.createElement("div");
+    document.body.appendChild(host2);
+    van.add(
+      host2,
+      Sidebar({ content: SidebarItem({ href: "/b", label: "B" }), collapsible: true, storageKey: key }),
+    );
+    const aside2 = host2.querySelector("aside") as HTMLElement;
+    expect(aside2.className).toContain("w-20");
+    expect(
+      (host2.querySelector("button[aria-expanded]") as HTMLButtonElement).getAttribute("aria-expanded"),
+    ).toBe("false");
+    host2.remove();
+  });
+
+  test("colapso controlado: el state externo manda y el toggle lo actualiza", async () => {
+    const collapsed = van.state(false);
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+    van.add(
+      host,
+      Sidebar({ content: SidebarItem({ href: "/c", label: "C" }), collapsible: true, collapsed }),
+    );
+
+    const toggle = host.querySelector("button[aria-expanded]") as HTMLButtonElement;
+    toggle.click();
+    await tick();
+    expect(collapsed.val).toBe(true);
+    expect(toggle.getAttribute("aria-expanded")).toBe("false");
+
+    collapsed.val = false;
+    await tick();
+    expect(toggle.getAttribute("aria-expanded")).toBe("true");
+    host.remove();
   });
 });

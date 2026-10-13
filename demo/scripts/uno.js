@@ -24,28 +24,36 @@ const demoDir = path.resolve(__dirname, "..");
 const OUT_UNO = path.join(demoDir, "dist/uno.css");
 const OUT_VANUI = path.join(demoDir, "dist/vanui.css");
 
+/** Envuelve un color (var --vui-*) en color-mix con el placeholder %alpha:
+ *  así los modificadores de opacidad (bg-secondary/60, text-muted-foreground/70)
+ *  resuelven de verdad en vez de descartarse en silencio. Debe espejar el THEME
+ *  de vanui/scripts/uno.js. */
+const cm = (v) => `color-mix(in srgb, ${v} calc(%alpha * 100%), transparent)`;
+
 /** Mapea las clases de color/radio/sombra a las variables del tema --vui-* (definidas por vanui/styles.css). */
 const THEME = {
   colors: {
-    primary: "var(--vui-primary)",
-    "primary-hover": "var(--vui-primary-hover)",
-    "primary-active": "var(--vui-primary-active)",
-    "primary-fg": "var(--vui-primary-fg)",
-    "primary-shadow": "var(--vui-primary-shadow)",
-    secondary: "var(--vui-secondary)",
-    "secondary-hover": "var(--vui-secondary-hover)",
-    "secondary-active": "var(--vui-secondary-active)",
-    "secondary-fg": "var(--vui-secondary-fg)",
-    accent: "var(--vui-accent)",
-    "accent-hover": "var(--vui-accent-hover)",
-    focus: "var(--vui-focus)",
-    background: "var(--vui-background)",
-    foreground: "var(--vui-foreground)",
-    "foreground-soft": "var(--vui-foreground-soft)",
-    muted: "var(--vui-muted)",
-    border: "var(--vui-border)",
-    overlay: "var(--vui-overlay)",
-    destructive: "var(--vui-destructive)",
+    primary: cm("var(--vui-primary)"),
+    "primary-hover": cm("var(--vui-primary-hover)"),
+    "primary-active": cm("var(--vui-primary-active)"),
+    "primary-fg": cm("var(--vui-primary-fg)"),
+    secondary: cm("var(--vui-secondary)"),
+    "secondary-hover": cm("var(--vui-secondary-hover)"),
+    "secondary-active": cm("var(--vui-secondary-active)"),
+    "secondary-fg": cm("var(--vui-secondary-fg)"),
+    accent: cm("var(--vui-accent)"),
+    "accent-hover": cm("var(--vui-accent-hover)"),
+    focus: cm("var(--vui-focus)"),
+    background: cm("var(--vui-background)"),
+    card: cm("var(--vui-card)"),
+    surface: cm("var(--vui-card)"),
+    foreground: cm("var(--vui-foreground)"),
+    "foreground-soft": cm("var(--vui-foreground-soft)"),
+    muted: cm("var(--vui-muted)"),
+    "muted-foreground": cm("var(--vui-muted)"),
+    border: cm("var(--vui-border)"),
+    overlay: cm("var(--vui-overlay)"),
+    destructive: cm("var(--vui-destructive)"),
   },
   borderRadius: {
     md: "var(--vui-radius-md)",
@@ -58,6 +66,8 @@ const THEME = {
     lg: "var(--vui-shadow-lg)",
     xl: "var(--vui-shadow-xl)",
     "2xl": "var(--vui-shadow-2xl)",
+    // Brillo del botón primario (button.ts: shadow-primary-shadow)
+    "primary-shadow": "var(--un-shadow-inset) 0 4px 14px 0 var(--vui-primary-shadow)",
   },
 };
 

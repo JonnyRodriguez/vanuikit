@@ -49,6 +49,8 @@ app.use(
     // root es relativo al cwd; `|| "."` cubre el caso cwd === demoDir, donde
     // path.relative devuelve "" y join("", "/dist/x") produciría /dist/x absoluto.
     root: path.relative(process.cwd(), demoDir) || ".",
+    // Sirve .br/.gz precomprimidos en build según Accept-Encoding.
+    precompressed: true,
   }),
 );
 

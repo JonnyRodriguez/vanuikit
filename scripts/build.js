@@ -1,34 +1,23 @@
 import { execSync } from "node:child_process";
-import fs from "node:fs";
 
-function run(cmd, label) {
+function run(cmd, label, cwd) {
   console.log(`==> ${label}`);
-  execSync(cmd, { stdio: "inherit" });
+  execSync(cmd, { stdio: "inherit", cwd });
 }
 
-// Asegurar enlace simbólico de vanui en node_modules para resolución limpia
-if (!fs.existsSync("./node_modules/vanui")) {
-  fs.symlinkSync("../vanui", "./node_modules/vanui", "junction");
-}
+// La raíz es un workspace (vanui + demo): node_modules se enlaza con bun/npm
+// install y cada paquete tiene su propio pipeline. Esto solo orquesta el orden.
 
-// [1/4] Typecheck con tsc
-run("tsc --noEmit", "[1/4] Typecheck con tsc...");
+// [1/4] Typecheck de la librería
+run("npm run typecheck", "[1/4] Typecheck vanui...", "vanui");
 
-// [2/4] Bundling vanui/dist/index.js
-run(
-  "bun build vanui/src/index.ts --outfile=vanui/dist/index.js --target=browser --external=vanjs-core",
-  "[2/4] Bundling vanui/dist/index.js...",
-);
+// [2/4] Build de la librería: css + bundles (cliente y server) + tipos .d.ts
+run("npm run build", "[2/4] Build vanui (css, bundles, tipos)...", "vanui");
 
-// [3/4] Bundle del cliente de la demo (SPA)
-run(
-  "bun build demo/main.ts --outfile=demo/dist/main.js --target=browser",
-  "[3/4] Bundling demo/dist/main.js...",
-);
+// [3/4] Typecheck de la demo (resuelve vanui desde node_modules, como un consumidor real)
+run("npm run typecheck", "[3/4] Typecheck demo...", "demo");
 
-// [4/4] Generar estilos CSS con UnoCSS (demo/dist/uno.css, demo/dist/vanui.css)
-run("node demo/scripts/uno.js", "[4/4] Generando estilos CSS con UnoCSS...");
+// [4/4] Build de la demo: bundle del cliente + estilos
+run("npm run build", "[4/4] Build demo (bundle, estilos)...", "demo");
 
 console.log("✅ Build completado exitosamente.");
-
-

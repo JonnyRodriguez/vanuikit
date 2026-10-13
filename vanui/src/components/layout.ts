@@ -61,7 +61,7 @@ export function SidebarItem(props: SidebarItemProps) {
         class: cx(
           "w-full flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all no-underline cursor-pointer select-none text-left border border-transparent",
           isActive
-            ? "bg-primary text-primary-foreground font-semibold shadow-xs"
+            ? "bg-primary text-primary-fg font-semibold shadow-xs"
             : "text-muted-foreground hover:text-foreground hover:bg-secondary/60",
           props.class,
         ),

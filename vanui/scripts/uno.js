@@ -16,13 +16,21 @@
 /** Reset mínimo (reemplaza el preflight que el preset trae por defecto y
  *  que el `preflights` propio del generador elimina). Sin `border-style:
  *  solid` los bordes con ancho (border-t-2, border-border…) se computan a
- *  0px y no se pintan — p. ej. el anillo del Spin quedaba invisible. */
+ *  0px y no se pintan — p. ej. el anillo del Spin quedaba invisible. El
+ *  reset de <button> evita el gris nativo del navegador (#efefef) en botones
+ *  sin clase de fondo propia, que en modo oscuro destapa un botón claro. */
 const RESET = `
 *, *::before, *::after {
   box-sizing: border-box;
   border-width: 0;
   border-style: solid;
   border-color: currentColor;
+}
+button {
+  appearance: none;
+  background-color: transparent;
+  background-image: none;
+  font: inherit;
 }
 `.trim();
 
@@ -48,6 +56,7 @@ const VUI_THEME = `
 --vui-border:#d1d5db;
 --vui-overlay:rgb(0 0 0 / .5);
 --vui-destructive:#dc2626;
+--vui-card:#ffffff;
 --vui-radius-md:0.375rem;
 --vui-radius-lg:0.5rem;
 --vui-radius-2xl:1rem;
@@ -78,6 +87,7 @@ const VUI_THEME = `
 --vui-border:#374151;
 --vui-overlay:rgb(0 0 0 / .75);
 --vui-destructive:#ef4444;
+--vui-card:color-mix(in srgb, #ffffff 5%, var(--vui-background));
 --vui-shadow-sm:0 1px 2px 0 rgb(0 0 0 / .3);
 --vui-shadow-lg:0 10px 15px -3px rgb(0 0 0 / .5),0 4px 6px -4px rgb(0 0 0 / .5);
 --vui-shadow-xl:0 20px 25px -5px rgb(0 0 0 / .5),0 8px 10px -6px rgb(0 0 0 / .5);
@@ -85,28 +95,35 @@ const VUI_THEME = `
 }
 `.trim();
 
+/** Envuelve un color (var --vui-*) en color-mix con el placeholder %alpha:
+ *  así los modificadores de opacidad (bg-secondary/60, text-muted-foreground/70)
+ *  resuelven de verdad en vez de descartarse en silencio. */
+const cm = (v) => `color-mix(in srgb, ${v} calc(%alpha * 100%), transparent)`;
+
 /** Mapea las clases de color/radio/sombra a las variables del tema. */
 const THEME = {
   colors: {
-    primary: "var(--vui-primary)",
-    "primary-hover": "var(--vui-primary-hover)",
-    "primary-active": "var(--vui-primary-active)",
-    "primary-fg": "var(--vui-primary-fg)",
-    "primary-shadow": "var(--vui-primary-shadow)",
-    secondary: "var(--vui-secondary)",
-    "secondary-hover": "var(--vui-secondary-hover)",
-    "secondary-active": "var(--vui-secondary-active)",
-    "secondary-fg": "var(--vui-secondary-fg)",
-    accent: "var(--vui-accent)",
-    "accent-hover": "var(--vui-accent-hover)",
-    focus: "var(--vui-focus)",
-    background: "var(--vui-background)",
-    foreground: "var(--vui-foreground)",
-    "foreground-soft": "var(--vui-foreground-soft)",
-    muted: "var(--vui-muted)",
-    border: "var(--vui-border)",
-    overlay: "var(--vui-overlay)",
-    destructive: "var(--vui-destructive)",
+    primary: cm("var(--vui-primary)"),
+    "primary-hover": cm("var(--vui-primary-hover)"),
+    "primary-active": cm("var(--vui-primary-active)"),
+    "primary-fg": cm("var(--vui-primary-fg)"),
+    secondary: cm("var(--vui-secondary)"),
+    "secondary-hover": cm("var(--vui-secondary-hover)"),
+    "secondary-active": cm("var(--vui-secondary-active)"),
+    "secondary-fg": cm("var(--vui-secondary-fg)"),
+    accent: cm("var(--vui-accent)"),
+    "accent-hover": cm("var(--vui-accent-hover)"),
+    focus: cm("var(--vui-focus)"),
+    background: cm("var(--vui-background)"),
+    card: cm("var(--vui-card)"),
+    surface: cm("var(--vui-card)"),
+    foreground: cm("var(--vui-foreground)"),
+    "foreground-soft": cm("var(--vui-foreground-soft)"),
+    muted: cm("var(--vui-muted)"),
+    "muted-foreground": cm("var(--vui-muted)"),
+    border: cm("var(--vui-border)"),
+    overlay: cm("var(--vui-overlay)"),
+    destructive: cm("var(--vui-destructive)"),
   },
   borderRadius: {
     md: "var(--vui-radius-md)",
@@ -119,6 +136,8 @@ const THEME = {
     lg: "var(--vui-shadow-lg)",
     xl: "var(--vui-shadow-xl)",
     "2xl": "var(--vui-shadow-2xl)",
+    // Brillo del botón primario (button.ts: shadow-primary-shadow)
+    "primary-shadow": "var(--un-shadow-inset) 0 4px 14px 0 var(--vui-primary-shadow)",
   },
 };
 

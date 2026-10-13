@@ -85,7 +85,7 @@ export function UserBadge(props: UserBadgeProps) {
         div(
           {
             class:
-              "w-8 h-8 rounded-full bg-primary text-primary-foreground font-bold text-xs flex items-center justify-center shrink-0 shadow-2xs select-none",
+              "w-8 h-8 rounded-full bg-primary text-primary-fg font-bold text-xs flex items-center justify-center shrink-0 shadow-2xs select-none",
           },
           initials,
         ),

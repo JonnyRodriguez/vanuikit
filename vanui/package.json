@@ -21,6 +21,7 @@
   "files": [
     "dist"
   ],
+  "sideEffects": false,
   "scripts": {
     "build": "npm run css && npm run bundle && npm run bundle:server && npm run types",
     "bundle": "esbuild src/index.ts --outdir=dist --bundle --format=esm --external:vanjs-core",

@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "npm run build:client",
-    "build:client": "esbuild main.ts --bundle --outdir=dist --format=esm && npm run uno",
+    "build:client": "esbuild main.ts --bundle --outdir=dist --format=esm --minify --sourcemap=external && npm run uno",
     "uno": "node scripts/uno.js",
     "dev": "npm run build:client && tsx server/index.ts",
     "start": "tsx server/index.ts",

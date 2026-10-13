@@ -230,12 +230,13 @@ export function App() {
               )
             : null,
       ],
-      // Pie de barra lateral usando componente embebido de usuario
-      // (compact en modo rail: solo avatar + logout)
+      // Pie de barra lateral usando componente embebido de usuario.
+      // Compacto SOLO en el rail desktop: si el drawer mobile está abierto
+      // (sidebarOpen), la tarjeta se muestra completa con labels.
       footer: UserBadge({
         auth: authState,
         i18n,
-        compact: sidebarCollapsed,
+        compact: van.derive(() => sidebarCollapsed.val && !sidebarOpen.val),
         onLogout: () => navigate("/login"),
       }),
     }),

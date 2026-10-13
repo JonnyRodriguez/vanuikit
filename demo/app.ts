@@ -49,20 +49,25 @@ export const TEXTS = {
   },
 } as const;
 
+// Header Authorization con el token que gestiona createAuth (persistencia centralizada).
+const authHeaders = (): Record<string, string> => {
+  const token = authState.getToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
 // Estado de sesión
 export const authState = createAuth({
   me: async () => {
     try {
-      const headers: Record<string, string> = { Accept: "application/json" };
-      const token = typeof localStorage !== "undefined" ? localStorage.getItem("session_token") : null;
-      if (token) headers["Authorization"] = `Bearer ${token}`;
-
-      const res = await fetch("/api/auth/me", { credentials: "include", headers });
+      const res = await fetch("/api/auth/me", {
+        credentials: "include",
+        headers: { Accept: "application/json", ...authHeaders() },
+      });
       if (!res.ok) return { user: null, token: null };
       const data = await res.json();
       return {
         user: data.data?.user || data.user || null,
-        token: data.data?.token || data.token || token,
+        token: data.data?.token || data.token || authState.getToken(),
       };
     } catch {
       return { user: null, token: null };
@@ -104,10 +109,7 @@ export const authState = createAuth({
   },
   logout: async () => {
     try {
-      const headers: Record<string, string> = {};
-      const token = typeof localStorage !== "undefined" ? localStorage.getItem("session_token") : null;
-      if (token) headers["Authorization"] = `Bearer ${token}`;
-      await fetch("/api/auth/logout", { method: "POST", credentials: "include", headers });
+      await fetch("/api/auth/logout", { method: "POST", credentials: "include", headers: authHeaders() });
     } catch {}
   },
 });

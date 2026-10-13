@@ -181,28 +181,44 @@ export class Router {
   /**
    * Instala listeners (popstate + intercepción de clicks en `<a>` internos)
    * y resuelve la ruta inicial. Devuelve un binding para montar con `van.add`.
+   *
+   * Los listeners son globales y únicos: delegan al router activo, así que
+   * llamar `start()` en varias instancias (HMR, tests) no acumula handlers
+   * que compitan por la misma navegación.
    */
   start() {
     activeRouter = this;
 
-    window.addEventListener("popstate", () => this.resolve());
+    if (!popstateHandler) {
+      popstateHandler = () => activeRouter?.resolve();
+      window.addEventListener("popstate", popstateHandler);
+    }
 
-    document.addEventListener("click", (e) => {
-      const target = (e.target as HTMLElement).closest("a");
-      if (
-        target &&
-        target.origin === window.location.origin &&
-        !target.hasAttribute("data-native")
-      ) {
-        e.preventDefault();
-        void this.navigate(target.pathname);
-      }
-    });
+    if (!clickHandler) {
+      clickHandler = (e) => {
+        const target = (e.target as HTMLElement).closest("a");
+        if (
+          target &&
+          target.origin === window.location.origin &&
+          !target.hasAttribute("data-native")
+        ) {
+          e.preventDefault();
+          void activeRouter?.navigate(target.pathname);
+        }
+      };
+      document.addEventListener("click", clickHandler);
+    }
 
     this.resolve();
     return () => this.current.val;
   }
 }
+
+/** Listener popstate compartido por todos los `start()` (delega al router activo). */
+let popstateHandler: (() => void) | null = null;
+
+/** Listener de click compartido por todos los `start()` (delega al router activo). */
+let clickHandler: ((e: MouseEvent) => void) | null = null;
 
 /** Instancia activa del router principal para navegación global */
 let activeRouter: Router | null = null;

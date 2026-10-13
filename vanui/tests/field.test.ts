@@ -21,7 +21,7 @@ describe("EmailField — unidad tipada", () => {
   test("rechaza vacío y formato inválido, acepta válido", () => {
     const email = EmailField();
     expect(email.validate("")).toBe(false);
-    expect(email.error.val).toContain("correo");
+    expect(email.error.val).toContain("email");
     expect(email.validate("mal-formato")).toBe(false);
     expect(email.validate("a@b.co")).toBe(true);
     expect(email.error.val).toBe("");
@@ -57,7 +57,7 @@ describe("Proxy: addValidator sin perder los del tipo", () => {
     email.addValidator(MinLength(20, "Muy corto"));
     // formato inválido -> error del tipo (el extra no corre primero)
     expect(email.validate("abc")).toBe(false);
-    expect(email.error.val).toBe("Correo electrónico inválido");
+    expect(email.error.val).toBe("Invalid email address");
     // formato válido pero corto -> error extra
     expect(email.validate("a@b.co")).toBe(false);
     expect(email.error.val).toBe("Muy corto");
@@ -87,7 +87,7 @@ describe("Form — itera las verificaciones por defecto", () => {
     await submit(el);
 
     expect(called).toBe(false);
-    expect(el.textContent).toContain("Correo electrónico inválido");
+    expect(el.textContent).toContain("Invalid email address");
   });
 
   test("llama onSubmit con los datos cuando todo pasa", async () => {

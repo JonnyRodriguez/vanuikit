@@ -1,6 +1,12 @@
 import van, { type State, type ChildDom } from "vanjs-core";
+import { t } from "../i18n.js";
 
 const { div, button, span, input, ul, li, hr } = van.tags;
+
+/** Contrato de llaves de i18n del componente */
+export const TEXTS = {
+  empty: { key: "dropdown.empty", default: "No se encontraron resultados" },
+} as const;
 
 // ---------------------------------------------------------------------
 // 1. SelectDropdown (Selector personalizado y accesible)
@@ -232,7 +238,7 @@ export function SelectDropdown<T = string | number>(props: SelectDropdownProps<T
           filtered.length === 0
             ? li(
                 { class: "px-3 py-4 text-xs text-center text-muted italic" },
-                "No se encontraron resultados",
+                t(TEXTS.empty.key, undefined, TEXTS.empty.default),
               )
             : filtered.map((opt, idx) => {
                 const isSelected = selectedValue.val === opt.value;
@@ -242,7 +248,7 @@ export function SelectDropdown<T = string | number>(props: SelectDropdownProps<T
                   {
                     role: "option",
                     "aria-selected": isSelected ? "true" : "false",
-                    "aria-disabled": opt.disabled ? "true" : undefined,
+                    ...(opt.disabled ? { "aria-disabled": "true" } : {}),
                     class: `flex items-center justify-between gap-2 px-3 py-2 text-sm cursor-pointer transition-colors ${
                       opt.disabled
                         ? "opacity-40 cursor-not-allowed"
@@ -381,7 +387,7 @@ export function DropdownMenu(props: DropdownMenuProps) {
             {
               type: "button",
               role: "menuitem",
-              disabled: item.disabled,
+              ...(item.disabled ? { disabled: true } : {}),
               class: `w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-left transition-colors border-none bg-transparent ${
                 item.disabled
                   ? "opacity-40 cursor-not-allowed"

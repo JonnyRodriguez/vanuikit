@@ -31,6 +31,58 @@ export interface I18nInstance<T extends Record<string, any> = Record<string, any
 /** Diccionario global por defecto para VanUI */
 export const defaultLocales: Record<string, Record<string, any>> = {
   es: {
+    field: {
+      email: {
+        label: "Correo electrónico",
+        placeholder: "tucorreo@ejemplo.com",
+        required: "Ingresa tu correo electrónico",
+        invalid: "Correo electrónico inválido",
+      },
+      password: {
+        label: "Contraseña",
+        placeholder: "••••••••",
+        required: "Ingresa tu contraseña",
+        min: "La contraseña debe tener al menos {min} caracteres",
+      },
+      confirm: {
+        label: "Confirmar contraseña",
+        placeholder: "••••••••",
+        required: "Confirma tu contraseña",
+        mismatch: "Las contraseñas no coinciden",
+      },
+      name: {
+        label: "Nombre completo",
+        placeholder: "Juan Pérez",
+        required: "Ingresa tu nombre",
+      },
+    },
+    nav: {
+      logout: "Cerrar sesión",
+    },
+    theme: {
+      light: "Claro",
+      dark: "Oscuro",
+      system: "Sistema",
+    },
+    dialog: {
+      confirmTitle: "Confirmar acción",
+      cancel: "Cancelar",
+      confirm: "Confirmar",
+    },
+    modal: {
+      close: "Cerrar",
+    },
+    dropdown: {
+      empty: "No se encontraron resultados",
+    },
+    table: {
+      searchPlaceholder: "Buscar en la tabla...",
+      emptyText: "No hay datos disponibles",
+      selectedCount: "{count} seleccionados",
+      showing: "Mostrando {start} - {end} de {total}",
+      prev: "← Anterior",
+      next: "Siguiente →",
+    },
     auth: {
       email: "Correo electrónico",
       emailLabel: "Correo electrónico",
@@ -64,6 +116,58 @@ export const defaultLocales: Record<string, Record<string, any>> = {
     },
   },
   en: {
+    field: {
+      email: {
+        label: "Email",
+        placeholder: "you@example.com",
+        required: "Please enter your email",
+        invalid: "Invalid email address",
+      },
+      password: {
+        label: "Password",
+        placeholder: "••••••••",
+        required: "Please enter your password",
+        min: "Password must be at least {min} characters",
+      },
+      confirm: {
+        label: "Confirm password",
+        placeholder: "••••••••",
+        required: "Please confirm your password",
+        mismatch: "Passwords do not match",
+      },
+      name: {
+        label: "Full name",
+        placeholder: "John Doe",
+        required: "Please enter your name",
+      },
+    },
+    nav: {
+      logout: "Sign out",
+    },
+    theme: {
+      light: "Light",
+      dark: "Dark",
+      system: "System",
+    },
+    dialog: {
+      confirmTitle: "Confirm action",
+      cancel: "Cancel",
+      confirm: "Confirm",
+    },
+    modal: {
+      close: "Close",
+    },
+    dropdown: {
+      empty: "No results found",
+    },
+    table: {
+      searchPlaceholder: "Search the table...",
+      emptyText: "No data available",
+      selectedCount: "{count} selected",
+      showing: "Showing {start} - {end} of {total}",
+      prev: "← Previous",
+      next: "Next →",
+    },
     auth: {
       email: "Email address",
       emailLabel: "Email",
@@ -143,7 +247,7 @@ function deepMerge(target: Record<string, any>, source: Record<string, any>) {
  * Gestor reactivo y ultraligero de internacionalización (i18n) para VanJS.
  */
 export function createI18n<T extends Record<string, any> = Record<string, any>>(
-  options: I18nOptions<T> = { defaultLocale: "es", locales: defaultLocales as any }
+  options: I18nOptions<T> = { defaultLocale: "en", locales: defaultLocales as any }
 ): I18nInstance<T> {
   const storageKey = options.storageKey ?? "vanui-locale";
   const defaultLocale = options.defaultLocale;
@@ -159,6 +263,9 @@ export function createI18n<T extends Record<string, any> = Record<string, any>>(
   };
 
   const currentLocale = van.state<string>(getSavedLocale());
+  // Incrementa en cada addTranslations: t()/raw() lo leen para re-resolver
+  // textos ya renderizados (asignar el mismo locale no dispara a VanJS).
+  const revision = van.state(0);
 
   const getText = (
     key: string,
@@ -179,8 +286,15 @@ export function createI18n<T extends Record<string, any> = Record<string, any>>(
 
   const addTranslations = (newTranslations: Record<string, Record<string, any>>) => {
     deepMerge(localesData, newTranslations);
-    const curr = currentLocale.val;
-    currentLocale.val = curr;
+    // Un locale guardado en localStorage que no existía al crear la instancia
+    // (la app lo registra después) puede ser válido ahora: re-aplicarlo.
+    if (typeof window !== "undefined" && window.localStorage) {
+      const saved = window.localStorage.getItem(storageKey);
+      if (saved && saved !== currentLocale.val && localesData[saved]) {
+        currentLocale.val = saved;
+      }
+    }
+    revision.val++;
   };
 
   const setLocale = (locale: string) => {
@@ -204,12 +318,13 @@ export function createI18n<T extends Record<string, any> = Record<string, any>>(
 
   const t = (key: string, params?: Record<string, string | number>, defaultVal?: string) => {
     return van.derive(() => {
-      const _ = currentLocale.val;
+      void revision.val;
       return getText(key, params, defaultVal, currentLocale.val);
     });
   };
 
   const raw = (key: string, params?: Record<string, string | number>, defaultVal?: string) => {
+    void revision.val;
     return getText(key, params, defaultVal, currentLocale.val);
   };
 
@@ -226,7 +341,7 @@ export function createI18n<T extends Record<string, any> = Record<string, any>>(
 
 /** Singleton global de i18n */
 export const i18n = createI18n({
-  defaultLocale: "es",
+  defaultLocale: "en",
   locales: defaultLocales,
 });
 

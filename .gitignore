@@ -7,3 +7,6 @@ demo/dist/
 
 # Logs
 *.log
+
+# Herramientas locales
+.atl/

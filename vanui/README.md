@@ -194,16 +194,19 @@ Aplica automáticamente la clase `.dark` y `data-theme="dark"` al elemento `<htm
 
 ## Internacionalización (createI18n)
 
-Sistema reactivo ultraligero de traducción e interpolación:
+Sistema reactivo ultraligero de traducción e interpolación. El idioma por
+defecto es **inglés**; los diccionarios incluidos (`field`, `dialog`, `table`,
+`modal`, `dropdown`, `theme`, `nav`, `auth`, `login`, `register`) cubren los
+textos de los componentes embebidos:
 
 ```ts
 import { createI18n } from "vanui";
 
 const i18n = createI18n({
-  defaultLocale: "es",
+  defaultLocale: "en",
   locales: {
-    es: { greeting: "Hola {name}", buttons: { save: "Guardar" } },
     en: { greeting: "Hello {name}", buttons: { save: "Save" } },
+    es: { greeting: "Hola {name}", buttons: { save: "Guardar" } },
   },
 });
 
@@ -211,9 +214,21 @@ const i18n = createI18n({
 div(i18n.t("buttons.save"));
 div(i18n.t("greeting", { name: "Carlos" }));
 
-// Cambiar idioma:
-i18n.setLocale("en");
+// Cambiar idioma (persiste en localStorage y sincroniza <html lang>):
+i18n.setLocale("es");
 ```
+
+`addTranslations` es **reactivo**: los textos ya renderizados se re-resuelven
+al registrar diccionarios nuevos (útil para lazy loading por módulo):
+
+```ts
+i18n.addTranslations({
+  fr: { greeting: "Bonjour {name}", buttons: { save: "Enregistrer" } },
+});
+```
+
+Si el locale guardado en localStorage no existía al crear la instancia (porque
+la app lo registra después), se re-aplica automáticamente al registrarlo.
 
 ## CSS
 

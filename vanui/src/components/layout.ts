@@ -55,8 +55,9 @@ export function SidebarItem(props: SidebarItemProps) {
     const isActive = isCurrentActive();
     return tag(
       {
-        href: props.href,
-        type: props.href ? undefined : "button",
+        // Van no acepta `undefined` como valor de prop: con el setter del DOM
+        // terminaría como attr `href="undefined"`. Omitir la clave por rama.
+        ...(props.href ? { href: props.href } : { type: "button" }),
         class: cx(
           "w-full flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all no-underline cursor-pointer select-none text-left border border-transparent",
           isActive
@@ -64,7 +65,7 @@ export function SidebarItem(props: SidebarItemProps) {
             : "text-muted-foreground hover:text-foreground hover:bg-secondary/60",
           props.class,
         ),
-        "aria-current": isActive ? "page" : undefined,
+        ...(isActive ? { "aria-current": "page" } : {}),
         onclick: (e: MouseEvent) => {
           if (props.onclick) props.onclick(e);
         },

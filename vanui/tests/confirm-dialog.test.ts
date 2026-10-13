@@ -31,7 +31,7 @@ describe("ConfirmDialog", () => {
 
     const buttons = Array.from(dom.querySelectorAll("button"));
     // Buscamos el botón de confirmar
-    const confirmBtn = buttons.find((b) => b.textContent?.includes("Confirmar")) as HTMLButtonElement;
+    const confirmBtn = buttons.find((b) => b.textContent?.includes("Confirm")) as HTMLButtonElement;
     expect(confirmBtn).toBeDefined();
     confirmBtn.click();
     await tick();

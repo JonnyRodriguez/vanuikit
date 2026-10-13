@@ -36,7 +36,7 @@ describe("ModalBase", () => {
     modal.set({ footer: null, body: "solo cuerpo" }, true);
     await tick();
     const overlay = document.body.lastElementChild as HTMLElement;
-    expect(overlay.textContent).not.toContain("Cerrar");
+    expect(overlay.textContent).not.toContain("Close");
   });
 });
 
@@ -49,9 +49,9 @@ describe("Modal", () => {
     const overlay = document.body.lastElementChild as HTMLElement;
     expect(overlay.textContent).toContain("Editar");
     expect(overlay.textContent).toContain("contenido");
-    expect(overlay.textContent).toContain("Cerrar");
+    expect(overlay.textContent).toContain("Close");
 
-    const closeBtn = overlay.querySelector('[aria-label="Cerrar"]') as HTMLElement;
+    const closeBtn = overlay.querySelector('[aria-label="Close"]') as HTMLElement;
     closeBtn.click();
     expect(modal.isVisible.val).toBe(false);
   });

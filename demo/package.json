@@ -7,8 +7,8 @@
   "scripts": {
     "clean": "node -e \"import('node:fs').then(fs => fs.rmSync('dist', { recursive: true, force: true }))\"",
     "build": "npm run build:client",
-    "build:client": "npm run clean && esbuild main.ts --bundle --outdir=dist --format=esm --splitting && npm run uno",
-    "build:min": "npm run clean && esbuild main.ts --bundle --outdir=dist --format=esm --splitting --minify --sourcemap=external && npm run uno && node scripts/compress.js",
+    "build:client": "npm run clean && esbuild main.ts --bundle --outdir=dist --format=esm --splitting --metafile=dist/meta.json && node scripts/check-single-vanjs.js && npm run uno",
+    "build:min": "npm run clean && esbuild main.ts --bundle --outdir=dist --format=esm --splitting --minify --sourcemap=external --metafile=dist/meta.json && node scripts/check-single-vanjs.js && npm run uno && node scripts/compress.js",
     "uno": "node scripts/uno.js",
     "dev": "npm run build:client && tsx server/index.ts",
     "start": "tsx server/index.ts",

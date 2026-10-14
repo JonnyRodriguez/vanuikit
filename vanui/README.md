@@ -134,6 +134,13 @@ Requiere un runtime que importe los archivos (tsx/bun o rutas .js).
 `vanjs-core` es una **peerDependency**: la librería NO la empaca. El bundle
 publicado (`dist/index.js`) solo la importa, así que es el consumidor quien
 provee la única copia — garantizando que no existan dos instancias de VanJS.
+
+**Regla de instancia única:** dos copias de `vanjs-core` son dos sistemas de
+estado que no se hablan (la reactividad se rompe en silencio). El consumidor
+la **declara** en su `package.json` (así fija la versión y satisface el peer)
+pero **nunca la importa directo**: toma `van` desde `vanui`
+(`import { van } from "vanui"`). El build de la demo lo verifica y falla si
+el bundle contiene más de una copia.
 En demos/monorepos que consumen `vanui` por path local (`file:../vanui`),
 declara `vanjs-core` también en tu app (es el "host" de la peer).
 

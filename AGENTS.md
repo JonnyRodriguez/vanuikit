@@ -107,6 +107,13 @@ export const TEXTS = {
 
 ---
 
-## 5. Pruebas y Calidad de Código
+## 5. Instancia Única de VanJS
+- Dos copias de `vanjs-core` = dos sistemas de estado que no se hablan: la reactividad se rompe en silencio.
+- Los consumidores la **declaran** en su `package.json` (satisface la peerDep y fija la versión) pero **nunca la importan directo**: toman `van` desde `vanui` (`import { van } from "vanui"`).
+- El build de la demo verifica el metafile de esbuild (`check-single-vanjs.js`) y **falla** si el bundle contiene más de una copia.
+
+---
+
+## 6. Pruebas y Calidad de Código
 - Todo componente nuevo debe contar con tests unitarios en `vanui/tests/` ejecutables con `bun test`.
 - Mantener la suite de tests 100% en verde antes de dar por finalizada cualquier tarea.

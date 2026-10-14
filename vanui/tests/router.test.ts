@@ -119,3 +119,73 @@ describe("Router", () => {
     expect(host.textContent).toContain("page-b");
   });
 });
+describe("Router deny-by-default", () => {
+  test("el guard global protege las rutas no públicas y respeta publicRoutes", async () => {
+    const visited: string[] = [];
+    const router = new Router({
+      guard: (ctx) => {
+        visited.push(ctx.to);
+        return "/login";
+      },
+      publicRoutes: ["/login", "/docs/*"],
+    });
+    router
+      .add("/login", () => div("login-page"))
+      .add("/dashboard", () => div("dashboard-page"))
+      .add("/docs/guide", () => div("docs-page"))
+      .add("/admin", () => div("admin-page"));
+
+    const host = mount(router);
+
+    // Pública declarada: el guard ni se entera
+    await router.navigate("/login");
+    expect(host.textContent).toContain("login-page");
+    expect(visited).toEqual([]);
+
+    // Protegida por defecto (no declara nada): el guard redirige a /login
+    await router.navigate("/dashboard");
+    expect(visited).toEqual(["/dashboard"]);
+    expect(host.textContent).toContain("login-page");
+    expect(host.textContent).not.toContain("dashboard-page");
+
+    // Wildcard de cola: /docs/* cubre /docs/guide
+    await router.navigate("/docs/guide");
+    expect(host.textContent).toContain("docs-page");
+    expect(visited).toEqual(["/dashboard"]);
+
+    // Sin wildcard que la cubra: también protegida
+    await router.navigate("/admin");
+    expect(visited).toEqual(["/dashboard", "/admin"]);
+    expect(host.textContent).toContain("login-page");
+  });
+
+  test("el guard global corre ANTES del beforeEnter explícito de la ruta", async () => {
+    const order: string[] = [];
+    const router = new Router({
+      guard: () => {
+        order.push("global");
+      },
+      publicRoutes: ["/login"],
+    });
+    router.add("/admin", () => div("admin"), {
+      beforeEnter: () => {
+        order.push("route");
+      },
+    });
+
+    const host = mount(router);
+
+    await router.navigate("/admin");
+    expect(order).toEqual(["global", "route"]);
+    expect(host.textContent).toContain("admin");
+  });
+
+  test("sin guard en options el comportamiento es el de siempre", async () => {
+    const router = new Router();
+    router.add("/open", () => div("open"));
+    const host = mount(router);
+
+    await router.navigate("/open");
+    expect(host.textContent).toContain("open");
+  });
+});

@@ -9,7 +9,8 @@ import { serveStatic } from "@hono/node-server/serve-static";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { loadRoutes } from "./router.loader.js";
+import { loadRoutes } from "vanui/server";
+import { requireAuth } from "./middlewares/auth.middleware.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -28,9 +29,17 @@ app.use(
   }),
 );
 
-// --- Carga dinámica de rutas desde server/routes/ ---
+// --- Carga dinámica de rutas desde server/routes/ (desde la librería) ---
+// Deny-by-default: con `auth`, TODA ruta queda protegida salvo las que
+// exporten `meta = { public: true }` (hoy solo auth.route.ts).
 const routesDir = path.join(__dirname, "routes");
-const routesApp = await loadRoutes(routesDir);
+const routesApp = await loadRoutes(routesDir, {
+  auth: requireAuth(),
+  onLoad: (i) =>
+    console.log(
+      `[RouterLoader] ${i.path} <- ${i.file}${i.protected ? "" : " (pública)"}`,
+    ),
+});
 app.route("/", routesApp);
 
 // --- Health check ---

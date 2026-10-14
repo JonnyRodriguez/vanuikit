@@ -108,6 +108,25 @@ Internamente expone `router.current` (estado reactivo de la vista) y
       beforeEnter: requireAuth(auth, "/login"),         // guard en la ruta
     });
 
+**Deny-by-default en ambos lados.** Tanto el `Router` como `loadRoutes`
+pueden tomar un guard y aplicarlo a TODO, dejándolo solo a lo declarado
+público — el error del programador ya no puede ser exponer una ruta:
+
+    // Cliente: declara lo público; lo demás pide sesión
+    const router = createRouter({
+      guard: requireAuth(auth, "/login"),
+      publicRoutes: ["/login", "/register", "/docs/*"],
+    });
+
+    // Server: cada archivo *.route.ts queda protegido salvo el que exporte
+    //   export const meta = { public: true };
+    app.route("/", await loadRoutes("./routes", { auth: requireAuth() }));
+
+`loadRoutes` (en `vanui/server`) escanea `*.route.ts|js` recursivamente y
+monta cada sub-app según la jerarquía de carpetas (`api/auth.route.ts` →
+`/api/auth`), con orden determinista y callback `onLoad` para logging.
+Requiere un runtime que importe los archivos (tsx/bun o rutas .js).
+
 ## Uso (consumidor)
 
     bun add vanui vanjs-core

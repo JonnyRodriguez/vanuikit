@@ -115,14 +115,18 @@ export const authState = createAuth({
 });
 
 // Router Singleton de la aplicación
-export const router = createRouter();
+// Deny-by-default: con `guard`, TODA ruta queda protegida salvo las de
+// publicRoutes. Agregar una página nueva = protegida sin escribir nada;
+// lo único que se declara es lo público (login, registro, vitrina).
+export const router = createRouter({
+  guard: requireAuth(authState, "/login"),
+  publicRoutes: ["/login", "/register", "/components"],
+});
 
 router
   .add("/login", () => LoginPage())
   .add("/register", () => RegisterPage())
-  .add("/gateways", () => GatewaysPage(), {
-    beforeEnter: requireAuth(authState, "/login"),
-  })
+  .add("/gateways", () => GatewaysPage())
   .add("/components", () => ComponentsPage())
   .redirect("/", "/gateways");
 

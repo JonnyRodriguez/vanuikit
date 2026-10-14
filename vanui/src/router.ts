@@ -54,6 +54,21 @@ export type RouteOptions = {
   afterEnter?: (ctx: RouteContext) => void;
 };
 
+/** Opciones del Router (política de acceso deny-by-default). */
+export type RouterOptions = {
+  /**
+   * Guard por defecto (p. ej. `requireAuth(auth, "/login")`). Si se pasa,
+   * TODA ruta queda protegida salvo las que matcheen `publicRoutes` — el
+   * programador declara lo público y nunca olvida lo protegido.
+   */
+  guard?: Guard;
+  /**
+   * Rutas públicas cuando hay `guard`: exactas (`"/login"`), con wildcard
+   * de cola (`"/docs/*"` cubre `/docs/` y lo que siga) o RegExp.
+   */
+  publicRoutes?: (string | RegExp)[];
+};
+
 /** Factory de componente: devuelve un nodo DOM reactivo (recibe el contexto). */
 export type RouteFactory = (ctx: RouteContext) => Node;
 
@@ -86,6 +101,8 @@ export class Router {
   private routes: CompiledRoute[] = [];
   private redirects = new Map<string, string>();
   private notFound: RouteFactory = () => div("404 - No encontrado");
+  private defaultGuard?: Guard;
+  private publicRoutes: (string | RegExp)[];
 
   /** Nodo reactivo de la vista actual — monta con `van.add(root, router.current)` o vía `start()`. */
   current = van.state<Node>(div("Cargando..."));
@@ -93,11 +110,22 @@ export class Router {
   /** Ruta actual (reactiva) — el Nav la lee para resaltar el link activo. */
   path = van.state<string>("/");
 
-  constructor() {
+  constructor(options: RouterOptions = {}) {
+    this.defaultGuard = options.guard;
+    this.publicRoutes = options.publicRoutes ?? [];
     // Si no hay un router activo principal, nos registramos como el activo por defecto
     if (!activeRouter) {
       activeRouter = this;
     }
+  }
+
+  /** ¿`pathname` es pública según `publicRoutes`? (exacto, wildcard "/x/*" o RegExp) */
+  private isPublic(pathname: string): boolean {
+    return this.publicRoutes.some((p) => {
+      if (p instanceof RegExp) return p.test(pathname);
+      if (p.endsWith("/*")) return pathname === p.slice(0, -2) || pathname.startsWith(p.slice(0, -1));
+      return p === pathname;
+    });
   }
 
   /** Registra una ruta. `path` acepta segmentos `:param`. */
@@ -161,8 +189,13 @@ export class Router {
         navigate: (p) => void this.navigate(p),
       };
 
-      if (route.beforeEnter) {
-        const verdict = await route.beforeEnter(ctx);
+      // Deny-by-default: guard global (si hay) para toda ruta no pública,
+      // y después el beforeEnter explícito de la ruta, en ese orden.
+      const guards: Guard[] = [];
+      if (this.defaultGuard && !this.isPublic(to)) guards.push(this.defaultGuard);
+      if (route.beforeEnter) guards.push(route.beforeEnter);
+      for (const guard of guards) {
+        const verdict = await guard(ctx);
         if (typeof verdict === "string" && verdict !== to) {
           await this.navigate(verdict);
           return;
@@ -248,8 +281,8 @@ export async function navigate(path: string, options?: { replace?: boolean }) {
 }
 
 /** Factory para crear una instancia de Router */
-export function createRouter(): Router {
-  const router = new Router();
+export function createRouter(options: RouterOptions = {}): Router {
+  const router = new Router(options);
   activeRouter = router;
   return router;
 }

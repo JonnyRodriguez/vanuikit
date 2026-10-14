@@ -136,3 +136,7 @@ authRoute.post("/logout", (c) => {
 });
 
 export default authRoute;
+
+// Deny-by-default: este archivo se declara PÚBLICO (login/register no pueden
+// pedir sesión). El refinamiento fino sigue vivo dentro: /me usa requireAuth().
+export const meta = { public: true };

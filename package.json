@@ -10,6 +10,7 @@
   ],
   "scripts": {
     "build": "node scripts/build.js",
+    "build:min": "npm run build --workspace vanui && npm run build:min --workspace demo",
     "dev": "npm run dev --workspace demo",
     "start": "npm run start --workspace demo",
     "test": "npm run test --workspace vanui",

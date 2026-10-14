@@ -100,6 +100,10 @@ export const TEXTS = {
    - `requireAuth(auth, redirectUrl)` espera automáticamente a que `auth.boot()` termine si el estado inicial está en proceso de verificación (`idle` o `checking`), evitando redirecciones falsas al ***REMOVED***r la página o acceder por URL directa.
 2. **Doble Persistencia de Token**:
    - Guardar el token de sesión en `localStorage` además de cookies (`credentials: "include"`) y enviarlo en el encabezado `Authorization: Bearer <token>` para garantizar compatibilidad total en iframes y entornos aislados.
+3. **Deny-by-Default (rutas protegidas por defecto)**:
+   - Cliente: `createRouter({ guard: requireAuth(auth, "/login"), publicRoutes: ["/login", ...] })`. Toda ruta nueva queda protegida sin escribir nada; **solo se declara lo público** (exacto, `"/docs/*"` o RegExp).
+   - Server: `loadRoutes(dir, { auth: requireAuth() })` protege cada `*.route.ts` salvo los que exporten `export const meta = { public: true };` (co-locada junto al sub-app, mismo criterio que los `TEXTS`).
+   - Prohibido proteger a mano rutas que ya cubre la política por defecto; el refinamiento interno (p. ej. un endpoint sensible dentro de un archivo público) sí usa `requireAuth()` puntual.
 
 ---
 

@@ -19,7 +19,7 @@
     "hono": "^4.13.2",
     "qrcode": "^1.5.4",
     "vanjs-core": "^1.6.0",
-    "vanui": "file:../vanui",
+    "vanui": "workspace:*",
     "zod": "^4.4.3"
   },
   "devDependencies": {

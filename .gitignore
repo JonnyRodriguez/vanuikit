@@ -10,3 +10,4 @@ demo/dist/
 
 # Herramientas locales
 .atl/
+.zcodeignore

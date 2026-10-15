@@ -169,7 +169,10 @@ export class Router {
 
     const redirectTo = this.redirects.get(to);
     if (redirectTo) {
-      await this.navigate(redirectTo);
+      // Un alias no es un destino: reemplaza su propia entrada del historial.
+      // Con push, "back" re-caería en el alias y rebotaría al target (el
+      // usuario no podría volver atrás de la navegación que lo trajo).
+      await this.navigate(redirectTo, { replace: true });
       return;
     }
 

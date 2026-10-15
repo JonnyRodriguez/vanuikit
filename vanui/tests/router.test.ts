@@ -188,4 +188,30 @@ describe("Router deny-by-default", () => {
     await router.navigate("/open");
     expect(host.textContent).toContain("open");
   });
+
+  test("redirect reemplaza su entrada del historial: back regresa al origen", async () => {
+    const router = new Router();
+    router
+      .redirect("/", "/gateways")
+      .add("/gateways", () => div("gateways-page"))
+      .add("/components", () => div("components-page"));
+    const host = mount(router);
+
+    await router.navigate("/components");
+    const lenAtComponents = history.length;
+
+    // Click en un enlace a "/" (alias): push de "/" y el redirect reemplaza
+    // esa entrada por "/gateways" — un solo push en total.
+    await router.navigate("/");
+    expect(router.path.val).toBe("/gateways");
+    expect(window.location.pathname).toBe("/gateways");
+    expect(history.length).toBe(lenAtComponents + 1);
+
+    // BACK: regresa a components (sin el fix, "/" rebotaba a /gateways).
+    history.back();
+    await new Promise((r) => setTimeout(r, 0));
+    await new Promise((r) => setTimeout(r, 0));
+    expect(router.path.val).toBe("/components");
+    expect(host.textContent).toContain("components-page");
+  });
 });

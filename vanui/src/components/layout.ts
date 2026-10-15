@@ -9,6 +9,7 @@ export const TEXTS = {
   collapse: { key: "sidebar.collapse", default: "Colapsar barra lateral" },
   expand: { key: "sidebar.expand", default: "Expandir barra lateral" },
   close: { key: "sidebar.close", default: "Cerrar menú" },
+  title: { key: "sidebar.title", default: "Sidebar" },
 } as const;
 
 export type SidebarItemProps = {
@@ -198,7 +199,7 @@ export function Sidebar(props: SidebarProps) {
           props.class,
         ),
       ),
-      "aria-label": "Sidebar",
+      "aria-label": t(TEXTS.title.key, undefined, TEXTS.title.default),
     },
     // Sección superior: header + navegación (scroll interno, el footer queda fijo).
     div(

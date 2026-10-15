@@ -8,7 +8,8 @@
     "logout": "Se déconnecter",
     "register": "Créer un compte",
     "ariaLabel": "Navigation principale",
-    "dashboard": "Tableau de bord"
+    "dashboard": "Tableau de bord",
+    "menuOpen": "Ouvrir le menu"
   },
   "theme": {
     "light": "Clair",
@@ -47,7 +48,8 @@
     "maxAmountErr": "Le montant doit être inférieur à {max} {tipo}",
     "urlGenErr": "Impossible de générer l'URL de recharge",
     "qrGenErr": "Impossible de générer le code QR",
-    "processErr": "Erreur lors du traitement de la recharge"
+    "processErr": "Erreur lors du traitement de la recharge",
+    "qrAlt": "Code QR"
   },
   "components": {
     "title": "Catalogue de Composants",
@@ -154,7 +156,16 @@
     "desktopSidebarTitle": "Barre latérale bureau",
     "desktopSidebarDesc": "Panneau latéral persistant avec groupes de navigation, icônes, badges réactifs et pied de page utilisateur.",
     "headerSyncTitle": "HeaderBar & Sync Routeur",
-    "headerSyncDesc": "Synchronisation automatique des titres et des liens actifs (aria-current) avec le routeur singleton de l'app."
+    "headerSyncDesc": "Synchronisation automatique des titres et des liens actifs (aria-current) avec le routeur singleton de l'app.",
+    "frameworkVanjs": "Ultra-léger (1.0kB)",
+    "frameworkReact": "Écosystème populaire",
+    "frameworkVue": "Framework progressif",
+    "frameworkSvelte": "Amélioré cybernétiquement",
+    "countryEs": "Espagne",
+    "countryUs": "États-Unis",
+    "countryFr": "France",
+    "countryMx": "Mexique",
+    "countryAr": "Argentine"
   },
   "auth": {},
   "login": {
@@ -219,7 +230,8 @@
   "sidebar": {
     "close": "Fermer le menu",
     "collapse": "Réduire la barre latérale",
-    "expand": "Développer la barre latérale"
+    "expand": "Développer la barre latérale",
+    "title": "Barre latérale"
   },
   "table": {
     "emptyText": "Aucune donnée disponible",
@@ -228,5 +240,9 @@
     "searchPlaceholder": "Rechercher dans le tableau...",
     "selectedCount": "{count} sélectionnés",
     "showing": "Affichage {start} - {end} sur {total}"
+  },
+  "router": {
+    "notFound": "404 - Introuvable",
+    "loading": "Chargement..."
   }
 }

@@ -25,6 +25,7 @@ export const TEXTS = {
   rechargeWith: { key: "gateways.rechargeWith", default: "Recargar con {name}" },
   qrClickText: { key: "gateways.qrClickText", default: "Haz clic aquí para abrir la plataforma" },
   qrScanText: { key: "gateways.qrScanText", default: "o escanea el código QR con tu app móvil" },
+  qrAlt: { key: "gateways.qrAlt", default: "Código QR" },
   qrNoticeText: { key: "gateways.qrNoticeText", default: "Tu saldo se actualizará automáticamente." },
   invalidAmount: { key: "gateways.invalidAmount", default: "Ingresa un monto válido" },
   minAmountErr: { key: "gateways.minAmountErr", default: "El monto debe ser superior a {min} {tipo}" },
@@ -165,7 +166,7 @@ export const RechargeQr = (qr: string, url: string) => {
       img({
         class: "mx-auto",
         src: qr,
-        alt: "Código QR",
+        alt: t(TEXTS.qrAlt.key, undefined, TEXTS.qrAlt.default),
       }),
       div(
         { class: "text-muted text-sm italic" },

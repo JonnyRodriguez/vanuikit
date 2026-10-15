@@ -61,9 +61,14 @@ export const defaultLocales: Record<string, Record<string, any>> = {
       ariaLabel: "Navegación principal",
     },
     sidebar: {
+      title: "Sidebar",
       collapse: "Colapsar barra lateral",
       expand: "Expandir barra lateral",
       close: "Cerrar menú",
+    },
+    router: {
+      notFound: "404 - No encontrado",
+      loading: "Cargando...",
     },
     user: {
       sessionActive: "Sesión activa",
@@ -163,9 +168,14 @@ export const defaultLocales: Record<string, Record<string, any>> = {
       ariaLabel: "Main navigation",
     },
     sidebar: {
+      title: "Sidebar",
       collapse: "Collapse sidebar",
       expand: "Expand sidebar",
       close: "Close menu",
+    },
+    router: {
+      notFound: "404 - Not found",
+      loading: "Loading...",
     },
     user: {
       sessionActive: "Active session",

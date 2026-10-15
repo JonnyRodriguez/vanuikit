@@ -16,7 +16,7 @@ export const TEXTS = {
 export interface SelectOption<T = string | number> {
   value: T;
   label: string | State<string>;
-  description?: string;
+  description?: string | State<string>;
   icon?: ChildDom;
   disabled?: boolean;
 }

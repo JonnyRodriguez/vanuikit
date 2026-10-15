@@ -21,6 +21,7 @@
  * es la ruta actual reactiva (para el Nav).
  */
 import van from "vanjs-core";
+import { t } from "./i18n.js";
 
 const { div } = van.tags;
 
@@ -97,15 +98,21 @@ function compile(path: string): { regex: RegExp; keys: string[] } {
   return { regex: new RegExp(`^${source}/?$`), keys };
 }
 
+/** Textos internos de las vistas por defecto del router. */
+export const TEXTS = {
+  notFound: { key: "router.notFound", default: "404 - No encontrado" },
+  loading: { key: "router.loading", default: "Cargando..." },
+} as const;
+
 export class Router {
   private routes: CompiledRoute[] = [];
   private redirects = new Map<string, string>();
-  private notFound: RouteFactory = () => div("404 - No encontrado");
+  private notFound: RouteFactory = () => div(t(TEXTS.notFound.key, undefined, TEXTS.notFound.default));
   private defaultGuard?: Guard;
   private publicRoutes: (string | RegExp)[];
 
   /** Nodo reactivo de la vista actual — monta con `van.add(root, router.current)` o vía `start()`. */
-  current = van.state<Node>(div("Cargando..."));
+  current = van.state<Node>(div(t(TEXTS.loading.key, undefined, TEXTS.loading.default)));
 
   /** Ruta actual (reactiva) — el Nav la lee para resaltar el link activo. */
   path = van.state<string>("/");

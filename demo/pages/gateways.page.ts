@@ -5,7 +5,7 @@
  * Utiliza createQuery y createMutation de vanui y componentes modulares.
  * Si la petición es rechazada por falta de sesión (401), permite redirigir al login.
  */
-import { van, Modal, Spin, createQuery, createMutation, navigate } from "vanui";
+import { van, Modal, Spin, createQuery, createMutation, navigate, t } from "vanui";
 import { GatewaysList } from "../components/gateways-list.component.js";
 import { QRGenerator } from "../components/qr-generator.component.js";
 import type { Gateway, RechargeParams, RechargeResponse } from "../shared/payment.schema.js";
@@ -33,6 +33,7 @@ export const TEXTS = {
   qrTitle: { key: "gateways.qrTitle", default: "Código QR" },
   qrClickText: { key: "gateways.qrClickText", default: "Haz clic aquí para abrir la plataforma" },
   qrScanText: { key: "gateways.qrScanText", default: "o escanea el código QR con tu app móvil" },
+  qrAlt: { key: "gateways.qrAlt", default: "Código QR" },
   qrNoticeText: { key: "gateways.qrNoticeText", default: "Tu saldo se actualizará automáticamente." },
   invalidAmount: { key: "gateways.invalidAmount", default: "Ingresa un monto válido" },
   minAmountErr: { key: "gateways.minAmountErr", default: "El monto debe ser superior a {min} {tipo}" },
@@ -240,7 +241,7 @@ export const GatewaysPage = (_props: GatewaysPageProps = {}) => {
           { class: "text-muted text-sm italic mt-2 text-center" },
           i18n.t(TEXTS.qrScanText.key, undefined, TEXTS.qrScanText.default),
         ),
-        img({ class: "mx-auto mt-3", src: qrData, alt: "Código QR" }),
+        img({ class: "mx-auto mt-3", src: qrData, alt: t(TEXTS.qrAlt.key, undefined, TEXTS.qrAlt.default) }),
         div(
           { class: "text-muted text-sm italic mt-2 text-center" },
           i18n.t(TEXTS.qrNoticeText.key, undefined, TEXTS.qrNoticeText.default),

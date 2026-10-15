@@ -4,7 +4,7 @@ import { t } from "../i18n.js";
 import { cx, isRouteActive } from "../util.js";
 import { VARIANT_CLASSES as BUTTON_VARIANTS, SIZE_CLASSES as BUTTON_SIZES } from "./button.js";
 
-export type LinkVariant = "default" | "muted" | "accent" | "button";
+export type LinkVariant = "default" | "muted" | "accent" | "button" | "none";
 
 export interface LinkProps {
   href: string;
@@ -32,6 +32,9 @@ const linkVariantClasses: Record<LinkVariant, string> = {
     BUTTON_VARIANTS.primary,
     BUTTON_SIZES.md,
   ),
+  // Sin clases base: para consumidores que aportan el estilo completo
+  // (p. ej. Nav con su estado activo) y siguen queriendo el plumbing de Link.
+  none: "",
 };
 
 /**
@@ -99,7 +102,7 @@ type NavProps = {
  * aporta el consumidor vía `class`.
  */
 export const Nav = (links: NavLink[], props: NavProps) => {
-  const { nav, a } = van.tags;
+  const { nav } = van.tags;
   const { current, ariaLabel, class: extra } = props;
 
   // Resuelto una sola vez: t() crea un derive nuevo por llamada, y este
@@ -120,18 +123,19 @@ export const Nav = (links: NavLink[], props: NavProps) => {
     links.map((link) =>
       // Re-render por link (mismo idioma que SidebarItem): clase activa y
       // aria-current se escriben de forma atómica, sin derivaciones que
-      // sobrevivan al desmonte del árbol.
+      // sobrevivan al desmonte del árbol. Los anchors son Link (variante
+      // "none" + estilo propio): mismo plumbing de navegación para todos.
       () => {
         const isActive = isRouteActive(getCurrent(), link.href);
-        return a(
+        return Link(
           {
             href: link.href,
+            variant: "none",
             class: cx(
               "text-accent no-underline text-[0.9rem] hover:underline transition-colors cursor-pointer",
               isActive && "font-bold",
             ),
             ...(isActive ? { "aria-current": "page" } : {}),
-            onclick: (e: MouseEvent) => spaClick(e, link.href),
           },
           link.label,
         );

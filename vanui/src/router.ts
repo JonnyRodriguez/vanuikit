@@ -228,10 +228,15 @@ export class Router {
     }
 
     if (!clickHandler) {
+      // Fallback para anclas que vanui no gestiona (sin Link/Nav): mismo
+      // contrato que spaClick — respeta preventDefault del elemento, los
+      // modificadores del usuario (Ctrl/Cmd abre en pestaña nueva) y target.
       clickHandler = (e) => {
+        if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
         const target = (e.target as HTMLElement).closest("a");
         if (
           target &&
+          !target.hasAttribute("target") &&
           target.origin === window.location.origin &&
           !target.hasAttribute("data-native")
         ) {
@@ -278,6 +283,35 @@ export async function navigate(path: string, options?: { replace?: boolean }) {
       window.history.pushState({}, "", path);
     }
   }
+}
+
+/**
+ * Interceptor de clicks para anclas SPA (Link/Nav/SidebarItem). El onclick del
+ * consumidor corre primero; se navega solo si nadie hizo preventDefault, el
+ * enlace es interno y el usuario no pidió manejarlo por su cuenta
+ * (modificadores Ctrl/Cmd/Shift/Alt o target propio).
+ */
+export function spaClick(
+  e: MouseEvent,
+  href: string,
+  options: { replace?: boolean; external?: boolean; target?: string } = {},
+): void {
+  if (
+    e.defaultPrevented ||
+    options.external ||
+    options.target ||
+    href.startsWith("http://") ||
+    href.startsWith("https://") ||
+    href.startsWith("//") ||
+    e.metaKey ||
+    e.ctrlKey ||
+    e.shiftKey ||
+    e.altKey
+  ) {
+    return;
+  }
+  e.preventDefault();
+  void navigate(href, { replace: options.replace });
 }
 
 /** Factory para crear una instancia de Router */

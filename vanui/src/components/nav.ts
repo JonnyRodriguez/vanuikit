@@ -1,6 +1,13 @@
 import van, { type State, type ChildDom } from "vanjs-core";
-import { navigate } from "../router.js";
-import { cx } from "../util.js";
+import { spaClick } from "../router.js";
+import { t } from "../i18n.js";
+import { cx, isRouteActive } from "../util.js";
+import { VARIANT_CLASSES as BUTTON_VARIANTS, SIZE_CLASSES as BUTTON_SIZES } from "./button.js";
+
+/** Textos internos del componente (cero strings quemados en el DOM). */
+const TEXTS = {
+  ariaLabel: { key: "nav.ariaLabel", default: "Navegación principal" },
+} as const;
 
 export type LinkVariant = "default" | "muted" | "accent" | "button";
 
@@ -8,10 +15,14 @@ export interface LinkProps {
   href: string;
   class?: string;
   variant?: LinkVariant;
+  /** Navega con history.replaceState en vez de pushState. */
   replace?: boolean;
+  /** Trata el enlace como externo aunque apunte a una ruta interna. */
   external?: boolean;
   target?: string;
   rel?: string;
+  title?: string;
+  download?: string;
   onclick?: (e: MouseEvent) => void;
   [key: string]: any;
 }
@@ -19,16 +30,20 @@ export interface LinkProps {
 const linkVariantClasses: Record<LinkVariant, string> = {
   default: "text-foreground hover:underline font-medium",
   muted: "text-foreground-soft hover:text-foreground hover:underline",
-  accent: "text-accent hover:underline font-medium cursor-pointer",
-  button: "inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg bg-accent text-white hover:bg-accent/90 transition-colors",
+  accent: "text-accent hover:text-accent-hover hover:underline font-medium cursor-pointer",
+  // Misma apariencia que Button (variante primary, tamaño md), sobre un <a>.
+  button: cx(
+    "inline-flex items-center justify-center rounded-md border border-transparent font-semibold transition duration-200 ease-in-out cursor-pointer",
+    BUTTON_VARIANTS.primary,
+    BUTTON_SIZES.md,
+  ),
 };
 
 /**
- * Link — Componente embebido para navegación declarativa en SPA.
- *
- * Previene la recarga de página automáticamente al hacer clic (a menos que sea externo,
- * tenga modificadores como Ctrl/Cmd o target="_blank"), ejecuta `navigate(href)`
- * y aplica estilos consistentes según la variante.
+ * Link — ancla con navegación SPA embebida: el click ejecuta `navigate(href)`
+ * en vez de recargar la página. Respeta la decisión del consumidor (un
+ * `preventDefault` en `onclick` cancela la navegación) y la del usuario
+ * (modificadores, `target` o enlace externo abren de forma nativa).
  */
 export function Link(props: LinkProps, ...children: ChildDom[]): HTMLAnchorElement {
   const { a } = van.tags;
@@ -38,21 +53,27 @@ export function Link(props: LinkProps, ...children: ChildDom[]): HTMLAnchorEleme
     variant = "accent",
     replace = false,
     external = false,
+    target,
+    rel,
+    title,
+    download,
     onclick,
     ...rest
   } = props;
 
-  const isExternal = external || href.startsWith("http://") || href.startsWith("https://") || href.startsWith("//");
-
   return a(
     {
       href,
-      class: cx(linkVariantClasses[variant] || linkVariantClasses.accent, customClass),
+      class: cx(linkVariantClasses[variant], customClass),
+      // Claves presentes solo con valor: van escribiría attrs "undefined".
+      ...(target ? { target } : {}),
+      // Los enlaces que abren pestaña nueva no delegan window.opener.
+      ...(target === "_blank" && !rel ? { rel: "noopener noreferrer" } : rel ? { rel } : {}),
+      ...(title ? { title } : {}),
+      ...(download ? { download } : {}),
       onclick: (e: MouseEvent) => {
         if (onclick) onclick(e);
-        if (e.defaultPrevented || isExternal || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || props.target) return;
-        e.preventDefault();
-        navigate(href, { replace });
+        spaClick(e, href, { replace, external, target });
       },
       ...rest,
     },
@@ -68,53 +89,58 @@ export type NavLink = {
 type NavProps = {
   /** Ruta del link actual (string o State reactivo); recibe la clase activa y aria-current. */
   current: string | State<string>;
+  /** Nombre accesible del menú; por defecto se resuelve con i18n ("Navegación principal"). */
+  ariaLabel?: string | State<string>;
   class?: string;
 };
 
 /**
- * Navegación de links. Los items los define el consumidor; `current` marca
- * el activo (clase destacada + aria-current="page" para accesibilidad).
- * Trae su formato completo (layout + links); el consumidor ajusta con
- * `class` extra si lo necesita.
+ * Nav — menú horizontal de links, contraparte en fila del Sidebar.
+ *
+ * Los items los define el consumidor; `current` marca el activo (coincidencia
+ * exacta o por subruta) con clase destacada y `aria-current="page"`. Los
+ * clicks navegan embebidos por el router de vanui, sin recargar la página.
+ * Solo estila el componente: el layout de página (centrado, márgenes) lo
+ * aporta el consumidor vía `class`.
  */
 export const Nav = (links: NavLink[], props: NavProps) => {
-  const { current, class: extra } = props;
   const { nav, a } = van.tags;
+  const { current, ariaLabel, class: extra } = props;
 
-  const isState = typeof current === "object" && current !== null && "val" in current;
+  // Resuelto una sola vez: t() crea un derive nuevo por llamada, y este
+  // binding reacciona al idioma sin registrar derivaciones en cada re-render.
+  const resolvedLabel = ariaLabel ?? t(TEXTS.ariaLabel.key, undefined, TEXTS.ariaLabel.default);
+
+  const getCurrent = () =>
+    typeof current === "object" && current !== null && "val" in current
+      ? (current as State<string>).val
+      : (current as string);
 
   return nav(
     {
-      class: cx(
-        "flex flex-wrap gap-4 max-w-180 mx-auto mt-4 px-5",
-        extra,
-      ),
-      "aria-label": "Principal",
+      class: cx("flex flex-wrap items-center gap-x-4 gap-y-1", extra),
+      "aria-label": () =>
+        typeof resolvedLabel === "object" && "val" in resolvedLabel ? resolvedLabel.val : resolvedLabel,
     },
-    links.map((link) => {
-      const getIsCurrent = () => (isState ? (current as State<string>).val : current) === link.href;
-
-      const linkEl = a(
-        {
-          href: link.href,
-          class: () =>
-            cx(
-              "text-accent no-underline text-[0.9rem] hover:underline transition-colors",
-              getIsCurrent() && "font-bold",
+    links.map((link) =>
+      // Re-render por link (mismo idioma que SidebarItem): clase activa y
+      // aria-current se escriben de forma atómica, sin derivaciones que
+      // sobrevivan al desmonte del árbol.
+      () => {
+        const isActive = isRouteActive(getCurrent(), link.href);
+        return a(
+          {
+            href: link.href,
+            class: cx(
+              "text-accent no-underline text-[0.9rem] hover:underline transition-colors cursor-pointer",
+              isActive && "font-bold",
             ),
-        },
-        link.label,
-      );
-
-      van.derive(() => {
-        if (getIsCurrent()) {
-          linkEl.setAttribute("aria-current", "page");
-        } else {
-          linkEl.removeAttribute("aria-current");
-        }
-      });
-
-      return linkEl;
-    }),
+            ...(isActive ? { "aria-current": "page" } : {}),
+            onclick: (e: MouseEvent) => spaClick(e, link.href),
+          },
+          link.label,
+        );
+      },
+    ),
   );
 };

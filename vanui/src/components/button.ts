@@ -4,8 +4,8 @@ import { cx } from "../util.js";
 const BASE_CLASSES =
   "font-semibold w-full rounded-md transition duration-200 ease-in-out cursor-pointer border border-transparent";
 
-/** Variantes de color del botón (tokens semánticos del tema). */
-const VARIANT_CLASSES = {
+/** Variantes de color del botón (tokens semánticos del tema). Exportado para reuso (p. ej. Link variante "button"). */
+export const VARIANT_CLASSES = {
   primary:
     "bg-primary text-primary-fg hover:bg-primary-hover active:bg-primary-active shadow-primary-shadow",
   secondary:
@@ -14,8 +14,8 @@ const VARIANT_CLASSES = {
     "bg-destructive text-white hover:opacity-90 active:opacity-80",
 } as const;
 
-/** Tamaños estándar (bootstrap/shadcn-like). */
-const SIZE_CLASSES = {
+/** Tamaños estándar (bootstrap/shadcn-like). Exportado para reuso (p. ej. Link variante "button"). */
+export const SIZE_CLASSES = {
   sm: "text-sm px-3 py-1.5",
   md: "text-base px-4 py-2",
   lg: "text-lg px-6 py-3",

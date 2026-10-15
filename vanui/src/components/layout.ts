@@ -1,6 +1,7 @@
 import van, { type State } from "vanjs-core";
 import { t } from "../i18n.js";
-import { cx } from "../util.js";
+import { spaClick } from "../router.js";
+import { cx, isRouteActive } from "../util.js";
 import { Badge } from "./badge.js";
 
 /** Contrato de llaves de i18n del componente */
@@ -32,7 +33,7 @@ export function SidebarItem(props: SidebarItemProps) {
     if (props.active && "val" in props.active) return props.active.val;
     if (props.href && props.current) {
       const cur = typeof props.current === "string" ? props.current : props.current.val;
-      return cur === props.href || cur.startsWith(props.href + "/");
+      return isRouteActive(cur, props.href);
     }
     return false;
   };
@@ -81,6 +82,9 @@ export function SidebarItem(props: SidebarItemProps) {
         ...(isActive ? { "aria-current": "page" } : {}),
         onclick: (e: MouseEvent) => {
           if (props.onclick) props.onclick(e);
+          // Navegación SPA embebida: el consumidor solo necesita su propio
+          // estado (p. ej. cerrar el drawer); el router lo maneja vanui.
+          if (props.href) spaClick(e, props.href);
         },
       },
       div(

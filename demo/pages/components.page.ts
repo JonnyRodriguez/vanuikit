@@ -145,36 +145,39 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
               id: "overview",
               label: i18n.t("components.tabOverview", "Resumen General"),
               badge: i18n.t("components.tabOverviewBadge", "Nuevo"),
-              content: div(
-                { class: "p-4 rounded-xl bg-secondary/10 text-sm text-foreground space-y-2" },
-                h3({ class: "font-bold text-foreground text-base" }, i18n.t("components.perfTitle", "📊 Panel de Rendimiento")),
-                p({ class: "text-foreground-soft leading-relaxed" }, i18n.t("components.perfBody", "VanUI permite renderizar vistas SPA reactivas con un bundle ultra liviano (~1.5kB de VanJS core) sin VDOM.")),
-              ),
+              content: () =>
+                div(
+                  { class: "p-4 rounded-xl bg-secondary/10 text-sm text-foreground space-y-2" },
+                  h3({ class: "font-bold text-foreground text-base" }, i18n.t("components.perfTitle", "📊 Panel de Rendimiento")),
+                  p({ class: "text-foreground-soft leading-relaxed" }, i18n.t("components.perfBody", "VanUI permite renderizar vistas SPA reactivas con un bundle ultra liviano (~1.5kB de VanJS core) sin VDOM.")),
+                ),
             },
             {
               id: "activity",
               label: i18n.t("components.tabActivity", "Actividad"),
               badge: 4,
-              content: div(
-                { class: "p-4 rounded-xl bg-secondary/10 text-sm text-foreground space-y-2" },
-                h3({ class: "font-bold text-foreground text-base" }, i18n.t("components.eventsTitle", "⚡ Registro de Eventos")),
-                p({ class: "text-foreground-soft" }, i18n.t("components.eventsBody", "Se registraron 4 operaciones exitosas en las últimas 24 horas.")),
-              ),
+              content: () =>
+                div(
+                  { class: "p-4 rounded-xl bg-secondary/10 text-sm text-foreground space-y-2" },
+                  h3({ class: "font-bold text-foreground text-base" }, i18n.t("components.eventsTitle", "⚡ Registro de Eventos")),
+                  p({ class: "text-foreground-soft" }, i18n.t("components.eventsBody", "Se registraron 4 operaciones exitosas en las últimas 24 horas.")),
+                ),
             },
             {
               id: "security",
               label: i18n.t("components.tabSecurity", "Seguridad"),
-              content: div(
-                { class: "p-4 rounded-xl bg-secondary/10 text-sm text-foreground space-y-2" },
-                h3({ class: "font-bold text-foreground text-base" }, i18n.t("components.securityTitle", "🔒 Autenticación y Cifrado")),
-                p({ class: "text-foreground-soft" }, i18n.t("components.securityBody", "Sesiones protegidas con guards síncronos y asíncronos en el enrutador SPA.")),
-              ),
+              content: () =>
+                div(
+                  { class: "p-4 rounded-xl bg-secondary/10 text-sm text-foreground space-y-2" },
+                  h3({ class: "font-bold text-foreground text-base" }, i18n.t("components.securityTitle", "🔒 Autenticación y Cifrado")),
+                  p({ class: "text-foreground-soft" }, i18n.t("components.securityBody", "Sesiones protegidas con guards síncronos y asíncronos en el enrutador SPA.")),
+                ),
             },
             {
               id: "disabled-tab",
               label: i18n.t("components.tabDisabled", "Deshabilitado"),
               disabled: true,
-              content: div(i18n.t("components.disabledContent", "No accesible")),
+              content: () => div(i18n.t("components.disabledContent", "No accesible")),
             },
           ],
         }),

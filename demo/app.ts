@@ -38,7 +38,7 @@ export const TEXTS = {
     register: { key: "nav.register", default: "Crear cuenta" },
   },
   titles: {
-    ***REMOVED***: { key: "***REMOVED***.title", default: "***REMOVED***s de Transaction" },
+    ***REMOVED***: { key: "***REMOVED***.title", default: "Métodos de Transaction y ***REMOVED***" },
     components: { key: "components.title", default: "Catálogo de Componentes" },
     login: { key: "login.title", default: "Iniciar sesión" },
     register: { key: "register.title", default: "Crear una cuenta" },

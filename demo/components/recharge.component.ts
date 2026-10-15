@@ -21,7 +21,7 @@ export const TEXTS = {
   amountLabel: { key: "***REMOVED***.amountLabel", default: "Monto a ***REMOVED***r ({tipo})" },
   minMaxHelp: { key: "***REMOVED***.minMaxHelp", default: "Mínimo: {min} {tipo} · Máximo: {max} {tipo}" },
   ***REMOVED***Btn: { key: "***REMOVED***.***REMOVED***Btn", default: "***REMOVED***r" },
-  generating: { key: "***REMOVED***.generating", default: "Generando ***REMOVED***..." },
+  generating: { key: "***REMOVED***.generating", default: "Generando..." },
   ***REMOVED***With: { key: "***REMOVED***.***REMOVED***With", default: "***REMOVED***r con {name}" },
   qrClickText: { key: "***REMOVED***.qrClickText", default: "Haz clic aquí para abrir la plataforma" },
   qrScanText: { key: "***REMOVED***.qrScanText", default: "o escanea el código QR con tu app móvil" },

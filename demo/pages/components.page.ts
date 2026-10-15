@@ -7,7 +7,6 @@ import {
   Tabs,
   SelectDropdown,
   DropdownMenu,
-  ConfirmDialog,
   confirmDialog,
   toast,
   ModalBase,

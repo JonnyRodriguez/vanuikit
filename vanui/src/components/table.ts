@@ -35,7 +35,7 @@ export interface TableProps<T = any> {
   emptyText?: string | State<string>;
   pageSize?: number;
   searchable?: boolean;
-  searchPlaceholder?: string;
+  searchPlaceholder?: string | State<string>;
   selectable?: boolean;
   selectedRows?: State<T[]>;
   onSelectionChange?: (selected: T[]) => void;

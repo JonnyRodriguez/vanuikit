@@ -6,6 +6,7 @@ const { div, button, span, input, ul, li, hr } = van.tags;
 /** Contrato de llaves de i18n del componente */
 export const TEXTS = {
   empty: { key: "dropdown.empty", default: "No se encontraron resultados" },
+  searchPlaceholder: { key: "dropdown.searchPlaceholder", default: "Buscar..." },
 } as const;
 
 // ---------------------------------------------------------------------
@@ -28,7 +29,7 @@ export interface SelectDropdownProps<T = string | number> {
   defaultValue?: T;
   placeholder?: string | State<string>;
   searchable?: boolean;
-  searchPlaceholder?: string;
+  searchPlaceholder?: string | State<string>;
   disabled?: boolean | State<boolean>;
   class?: string;
   onChange?: (value: T, option: SelectOption<T>) => void;
@@ -219,7 +220,7 @@ export function SelectDropdown<T = string | number>(props: SelectDropdownProps<T
               { class: "p-2 border-b border-border bg-secondary/10" },
               input({
                 type: "text",
-                placeholder: props.searchPlaceholder ?? "Buscar...",
+                placeholder: props.searchPlaceholder ?? t(TEXTS.searchPlaceholder.key, undefined, TEXTS.searchPlaceholder.default),
                 value: searchQuery.val,
                 class:
                   "w-full px-3 py-1.5 text-xs rounded-md border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-focus",

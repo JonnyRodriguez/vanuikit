@@ -55,6 +55,20 @@ export const defaultLocales: Record<string, Record<string, any>> = {
         placeholder: "Juan Pérez",
         required: "Ingresa tu nombre",
       },
+      message: {
+        label: "Mensaje",
+        placeholder: "Escribe aquí...",
+        required: "Escribe tu mensaje",
+      },
+    },
+    checkbox: {
+      required: "Debes marcar esta opción",
+    },
+    switch: {
+      required: "Debes activar esta opción",
+    },
+    radio: {
+      required: "Selecciona una opción",
     },
     nav: {
       logout: "Cerrar sesión",
@@ -162,6 +176,20 @@ export const defaultLocales: Record<string, Record<string, any>> = {
         placeholder: "John Doe",
         required: "Please enter your name",
       },
+      message: {
+        label: "Message",
+        placeholder: "Write here...",
+        required: "Please enter your message",
+      },
+    },
+    checkbox: {
+      required: "You must check this option",
+    },
+    switch: {
+      required: "You must turn this option on",
+    },
+    radio: {
+      required: "Please select an option",
     },
     nav: {
       logout: "Sign out",

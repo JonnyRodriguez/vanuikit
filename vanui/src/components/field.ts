@@ -40,6 +40,9 @@ export interface FieldOptions {
   placeholder?: FieldText;
   hint?: FieldText;
   disabled?: boolean | State<boolean>;
+  /** Renderiza un <textarea> en lugar de <input>. */
+  multiline?: boolean;
+  rows?: number;
 }
 
 export interface Field {
@@ -128,6 +131,7 @@ export const Field = (
       error.val = "";
     },
     dom() {
+      const { textarea } = van.tags;
       const inputClass = van.derive(
         () =>
           `w-full px-3 py-2 border rounded-md text-sm transition-colors focus:outline-none focus:ring-2 ${
@@ -139,29 +143,32 @@ export const Field = (
 
       const errorText = van.derive(() => (isInvalid.val || (isTouched.val && !!error.val)) ? error.val : "");
 
+      const controlProps = {
+        id: options.name,
+        name: options.name,
+        class: inputClass,
+        value: () => value.val,
+        placeholder: options.placeholder ?? "",
+        disabled: options.disabled ?? false,
+        oninput: (e: Event) => {
+          value.val = (e.target as HTMLInputElement).value;
+          if (isTouched.val) validate();
+        },
+        onblur: () => {
+          isTouched.val = true;
+          validate();
+        },
+      };
+
       return div(
         { class: () => `field flex flex-col gap-1 text-sm font-sans ${stateClass.val}` },
         label(
           { class: "font-medium text-foreground", for: options.name },
           options.label,
         ),
-        input({
-          id: options.name,
-          name: options.name,
-          type: options.inputType ?? "text",
-          class: inputClass,
-          value: () => value.val,
-          placeholder: options.placeholder ?? "",
-          disabled: options.disabled ?? false,
-          oninput: (e: Event) => {
-            value.val = (e.target as HTMLInputElement).value;
-            if (isTouched.val) validate();
-          },
-          onblur: () => {
-            isTouched.val = true;
-            validate();
-          },
-        }),
+        options.multiline
+          ? textarea({ ...controlProps, rows: options.rows ?? 4 })
+          : input({ ...controlProps, type: options.inputType ?? "text" }),
         p(
           {
             class: () =>
@@ -308,5 +315,33 @@ export function PasswordField(
       Required(requiredMsg),
       MinLength(minLength, minMsg),
     ],
+  );
+}
+
+export interface TextareaFieldOptions {
+  label?: FieldText;
+  name?: string;
+  placeholder?: FieldText;
+  hint?: FieldText;
+  required?: boolean;
+  requiredMsg?: FieldText;
+  rows?: number;
+}
+
+/** Campo de texto multilínea. Baterías incluidas con i18n global. */
+export function TextareaField(options: TextareaFieldOptions = {}): Field {
+  const {
+    label = t("field.message.label", "Mensaje"),
+    name: fieldName = "message",
+    placeholder: ph = t("field.message.placeholder", "Escribe aquí..."),
+    hint,
+    required = true,
+    requiredMsg = t("field.message.required", "Escribe tu mensaje"),
+    rows = 4,
+  } = options;
+  const validators: Validator[] = required ? [Required(requiredMsg)] : [];
+  return Field(
+    { label, name: fieldName, multiline: true, rows, placeholder: ph || undefined, hint },
+    validators,
   );
 }

@@ -8,7 +8,10 @@ export { van };
 
 // Componentes Básicos
 export { Button, PrimaryButton, SecondaryButton, type ButtonVariant, type ButtonSize } from "./components/button.js";
-export { Field, TextField, EmailField, PasswordField } from "./components/field.js";
+export { Field, TextField, EmailField, PasswordField, TextareaField, type TextareaFieldOptions } from "./components/field.js";
+export { Checkbox, type CheckboxOptions, type CheckboxField, type CheckSize, type ToggleText } from "./components/checkbox.js";
+export { Switch, type SwitchOptions, type SwitchField } from "./components/switch.js";
+export { RadioGroup, type RadioGroupOptions, type RadioGroupField, type RadioOption } from "./components/radio.js";
 export { Form } from "./components/form.js";
 export { Modal, ModalBase, type ModalContent, type ModalZone, type ModalProps } from "./components/modal.js";
 export { Spin } from "./components/spin.js";

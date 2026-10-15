@@ -163,16 +163,25 @@ export class Router {
     void this.doResolve();
   }
 
+  /**
+   * Navegación "de sistema" — LA única puerta para redirects. La ruta de
+   * origen nunca llegó a renderizarse (alias de `.redirect()`, verdict de
+   * un guard), así que REEMPLAZA su entrada del historial en vez de apilar:
+   * solo la navegación iniciada por el usuario (Link, spaClick, navigate)
+   * apila. Cualquier redirect futuro del router debe pasar por aquí — nunca
+   * llamar `navigate(target, { replace: true })` a mano.
+   */
+  private async systemRedirect(target: string): Promise<void> {
+    await this.navigate(target, { replace: true });
+  }
+
   /** Busca la ruta que matchea `pathname` y la renderiza (aplica guard/redirect/notFound). */
   private async doResolve(href?: string) {
     const to = href ?? (window.location.pathname || "/");
 
     const redirectTo = this.redirects.get(to);
     if (redirectTo) {
-      // Un alias no es un destino: reemplaza su propia entrada del historial.
-      // Con push, "back" re-caería en el alias y rebotaría al target (el
-      // usuario no podría volver atrás de la navegación que lo trajo).
-      await this.navigate(redirectTo, { replace: true });
+      await this.systemRedirect(redirectTo);
       return;
     }
 
@@ -201,10 +210,7 @@ export class Router {
       for (const guard of guards) {
         const verdict = await guard(ctx);
         if (typeof verdict === "string" && verdict !== to) {
-          // La ruta bloqueada nunca se renderizó: el redirect del guard
-          // reemplaza su entrada (con push, "back" re-caería en la ruta
-          // protegida y el guard rebotaría de nuevo — back roto).
-          await this.navigate(verdict, { replace: true });
+          await this.systemRedirect(verdict);
           return;
         }
         if (verdict === false) return;

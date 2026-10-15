@@ -70,6 +70,9 @@ export const defaultLocales: Record<string, Record<string, any>> = {
     radio: {
       required: "Selecciona una opción",
     },
+    alert: {
+      dismiss: "Cerrar aviso",
+    },
     nav: {
       logout: "Cerrar sesión",
       ariaLabel: "Navegación principal",
@@ -190,6 +193,9 @@ export const defaultLocales: Record<string, Record<string, any>> = {
     },
     radio: {
       required: "Please select an option",
+    },
+    alert: {
+      dismiss: "Dismiss alert",
     },
     nav: {
       logout: "Sign out",

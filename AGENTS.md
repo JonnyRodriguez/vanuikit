@@ -83,6 +83,7 @@ p(t("gateways.rechargeWith", "Recargar con {name}", { name: gateway.name }));
 | `SelectDropdown` / `DropdownMenu` | `vanui` | Selectores flotantes accesibles con listbox y menús de acciones contextuales. |
 | `ConfirmDialog` / `confirmDialog` | `vanui` | Modal de confirmación imperativo basado en Promises (`async/await`). |
 | `toast` | `vanui` | Notificaciones flotantes tipo snackbar con temporizador y tipos (éxito, error, info, advertencia). |
+| `Alert`, `Progress`, `Skeleton`, `EmptyState` | `vanui` | Feedback estático y estados de carga: avisos persistentes por variante (dismissible), barra de progreso accesible (determinada/indeterminada, reactiva), placeholders con shimmer y estado vacío con acción. |
 | `Field`, `TextField`, `EmailField`, `PasswordField`, `TextareaField` | `vanui` | Campos de formulario reactivos con validaciones en tiempo real y tipado. |
 | `Checkbox`, `Switch`, `RadioGroup` | `vanui` | Controles binarios y de elección excluyente, accesibles (Space, flechas, `role="switch"`/`radiogroup`), con `checked`/`value` como `State` bidireccional e integración nativa a `Form` (implementan el contrato `Field`). Usar `.dom()` al insertarlos como hijos. |
 | `Form` | `vanui` | Contenedor de formulario con validación automática y prevención de submits inválidos. |

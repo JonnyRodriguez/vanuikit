@@ -187,7 +187,28 @@
     "textareaLabel": "Message",
     "textareaPlaceholder": "Parlez-nous de votre projet...",
     "formSubmit": "Envoyer",
-    "formSent": "Formulaire envoyé avec succès !"
+    "formSent": "Formulaire envoyé avec succès !",
+    "feedbackSection": "États et feedback",
+    "feedbackDesc": "Avis persistants, barres de progression réactives, espaces de chargement et états vides.",
+    "alertCard": "Alert",
+    "alertInfoTitle": "Nouveautés",
+    "alertInfoBody": "La phase 2 de la feuille de route est disponible.",
+    "alertSuccessTitle": "Enregistré",
+    "alertSuccessBody": "Vos modifications ont été appliquées.",
+    "alertWarningBody": "Votre session expirera dans 5 minutes.",
+    "alertErrorTitle": "Erreur de connexion",
+    "alertErrorBody": "Synchronisation impossible ; réessayez quand vous voulez.",
+    "alertDismissed": "Avis ignoré",
+    "progressCard": "Progress",
+    "uploadLabel": "Téléversement des fichiers...",
+    "syncLabel": "Synchronisation des changements",
+    "less": "Moins",
+    "more": "Plus",
+    "skeletonCard": "Skeleton",
+    "emptyCard": "EmptyState",
+    "emptyTitle": "Aucun résultat",
+    "emptyDesc": "Essayez d'autres termes ou créez un nouvel enregistrement.",
+    "emptyAction": "Créer un enregistrement"
   },
   "auth": {},
   "login": {
@@ -283,5 +304,8 @@
   },
   "radio": {
     "required": "Veuillez sélectionner une option"
+  },
+  "alert": {
+    "dismiss": "Fermer l'avis"
   }
 }

@@ -18,6 +18,10 @@ import {
   Switch,
   RadioGroup,
   TextareaField,
+  Alert,
+  Progress,
+  Skeleton,
+  EmptyState,
   raw,
   type TableColumn,
   type Router,
@@ -60,6 +64,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
 
   // Controles de formulario (Fase 1 del roadmap)
   const demoTerms = van.state(false);
+  const demoProgress = van.state(65);
   const demoPlan = van.state("pro");
   const planSummary = van.derive(() => {
     const names: Record<string, string> = {
@@ -227,7 +232,87 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       ),
     ),
 
-    // 3. Tabs (Pestañas accesibles y reactivas)
+    // 3. Estados y Feedback (Alert / Progress / Skeleton / EmptyState)
+    section(
+      { class: "space-y-4" },
+      div(
+        { class: "flex items-center justify-between" },
+        h2({ class: "text-xl font-bold text-foreground" }, i18n.t("components.feedbackSection", "Estados y Feedback")),
+        Badge({ text: i18n.t("components.newBadge", "Nuevo"), variant: "success", size: "sm" }),
+      ),
+      p({ class: "text-sm text-foreground-soft" }, i18n.t("components.feedbackDesc", "Avisos persistentes, barras de progreso reactivas, placeholders de carga y estados vacíos.")),
+      div(
+        { class: "grid grid-cols-1 md:grid-cols-2 gap-4" },
+        // Alert
+        div(
+          { class: "p-4 rounded-xl bg-card border border-border/80 space-y-3" },
+          h3({ class: "text-xs font-semibold text-muted-foreground uppercase tracking-wider" }, i18n.t("components.alertCard", "Alert")),
+          Alert(
+            { variant: "info", title: i18n.t("components.alertInfoTitle", "Novedades") },
+            i18n.t("components.alertInfoBody", "La Fase 2 del roadmap ya está disponible."),
+          ),
+          Alert(
+            { variant: "success", title: i18n.t("components.alertSuccessTitle", "Guardado") },
+            i18n.t("components.alertSuccessBody", "Tus cambios quedaron aplicados."),
+          ),
+          Alert({ variant: "warning" }, i18n.t("components.alertWarningBody", "Tu sesión expirará en 5 minutos.")),
+          Alert(
+            {
+              variant: "error",
+              title: i18n.t("components.alertErrorTitle", "Error de conexión"),
+              dismissible: true,
+              onDismiss: () => toast.info(raw("components.alertDismissed", "Aviso descartado")),
+            },
+            i18n.t("components.alertErrorBody", "No pudimos sincronizar; reintenta cuando quieras."),
+          ),
+        ),
+        // Progress
+        div(
+          { class: "p-4 rounded-xl bg-card border border-border/80 space-y-4" },
+          h3({ class: "text-xs font-semibold text-muted-foreground uppercase tracking-wider" }, i18n.t("components.progressCard", "Progress")),
+          Progress({ value: demoProgress, label: i18n.t("components.uploadLabel", "Subiendo archivos...") }),
+          Progress({ indeterminate: true, label: i18n.t("components.syncLabel", "Sincronizando cambios") }),
+          div(
+            { class: "flex gap-2" },
+            Button(
+              { variant: "secondary", size: "sm", onclick: () => (demoProgress.val = Math.max(0, demoProgress.val - 10)) },
+              i18n.t("components.less", "Menos"),
+            ),
+            Button(
+              { variant: "secondary", size: "sm", onclick: () => (demoProgress.val = Math.min(100, demoProgress.val + 10)) },
+              i18n.t("components.more", "Más"),
+            ),
+          ),
+        ),
+        // Skeleton
+        div(
+          { class: "p-4 rounded-xl bg-card border border-border/80 space-y-4" },
+          h3({ class: "text-xs font-semibold text-muted-foreground uppercase tracking-wider" }, i18n.t("components.skeletonCard", "Skeleton")),
+          div(
+            { class: "flex items-start gap-3" },
+            Skeleton({ variant: "circle" }),
+            Skeleton({ lines: 3 }),
+          ),
+          Skeleton({ variant: "block" }),
+        ),
+        // EmptyState
+        div(
+          { class: "p-4 rounded-xl bg-card border border-border/80 space-y-3" },
+          h3({ class: "text-xs font-semibold text-muted-foreground uppercase tracking-wider" }, i18n.t("components.emptyCard", "EmptyState")),
+          EmptyState({
+            icon: "🔍",
+            title: i18n.t("components.emptyTitle", "Sin resultados"),
+            description: i18n.t("components.emptyDesc", "Prueba con otros términos o crea un nuevo registro."),
+            action: Button(
+              { variant: "secondary", size: "sm" },
+              i18n.t("components.emptyAction", "Crear registro"),
+            ),
+          }),
+        ),
+      ),
+    ),
+
+    // 4. Tabs (Pestañas accesibles y reactivas)
     section(
       { class: "space-y-4" },
       div(
@@ -286,7 +371,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       ),
     ),
 
-    // 4. Select / Dropdowns Accesibles
+    // 5. Select / Dropdowns Accesibles
     section(
       { class: "space-y-4" },
       div(
@@ -364,7 +449,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       ),
     ),
 
-    // 5. ConfirmDialog (Diálogos de confirmación)
+    // 6. ConfirmDialog (Diálogos de confirmación)
     section(
       { class: "space-y-4" },
       div(
@@ -417,7 +502,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       ),
     ),
 
-    // 6. DataGrid / Table con búsqueda, ordenamiento y selección
+    // 7. DataGrid / Table con búsqueda, ordenamiento y selección
     section(
       { class: "space-y-4" },
       div(
@@ -442,7 +527,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       }),
     ),
 
-    // 7. Badges & Toasts
+    // 8. Badges & Toasts
     section(
       { class: "space-y-4" },
       h2({ class: "text-xl font-bold text-foreground" }, i18n.t("components.badges", "Etiquetas (Badges)")),
@@ -458,7 +543,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       ),
     ),
 
-    // 8. Notificaciones Toast
+    // 9. Notificaciones Toast
     section(
       { class: "space-y-4" },
       h2({ class: "text-xl font-bold text-foreground" }, i18n.t("components.toasts", "Notificaciones (Toast)")),
@@ -495,7 +580,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       ),
     ),
 
-    // 9. Modal Clásico & Spinner
+    // 10. Modal Clásico & Spinner
     section(
       { class: "space-y-4" },
       h2({ class: "text-xl font-bold text-foreground" }, i18n.t("components.modals", "Modales")),
@@ -547,7 +632,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       modal.dom(),
     ),
 
-    // 10. Dashboard Layout & Sidebars (VanUI AppShell)
+    // 11. Dashboard Layout & Sidebars (VanUI AppShell)
     section(
       { class: "space-y-4" },
       h2({ class: "text-xl font-bold text-foreground" }, i18n.t("components.layoutsSection", "Layouts & Dashboard Shell")),

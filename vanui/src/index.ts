@@ -140,3 +140,13 @@ export {
   type I18nOptions,
   type I18nInstance,
 } from "./i18n.js";
+
+// Formateo locale-aware (fechas, números, moneda — la otra mitad del i18n)
+export {
+  createFmt,
+  fmt,
+  type DateInput,
+  type FmtCurrencyOptions,
+  type Fmt,
+  type RelativeUnit,
+} from "./fmt.js";

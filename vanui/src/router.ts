@@ -201,7 +201,10 @@ export class Router {
       for (const guard of guards) {
         const verdict = await guard(ctx);
         if (typeof verdict === "string" && verdict !== to) {
-          await this.navigate(verdict);
+          // La ruta bloqueada nunca se renderizó: el redirect del guard
+          // reemplaza su entrada (con push, "back" re-caería en la ruta
+          // protegida y el guard rebotaría de nuevo — back roto).
+          await this.navigate(verdict, { replace: true });
           return;
         }
         if (verdict === false) return;

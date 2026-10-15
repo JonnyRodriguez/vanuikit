@@ -214,4 +214,36 @@ describe("Router deny-by-default", () => {
     expect(router.path.val).toBe("/components");
     expect(host.textContent).toContain("components-page");
   });
+
+  test("redirect del guard también reemplaza: back regresa al origen sin rebotes", async () => {
+    // Escenario del breadcrumb con usuario NO autenticado: "/" → alias a
+    // /gateways (protegida) → el guard manda a /login. Ambos saltos deben
+    // reemplazar entrada para que back regrese a /components.
+    const router = new Router({
+      guard: () => "/login",
+      publicRoutes: ["/login", "/components"],
+    });
+    router
+      .redirect("/", "/gateways")
+      .add("/gateways", () => div("gateways-page"))
+      .add("/components", () => div("components-page"))
+      .add("/login", () => div("login-page"));
+    const host = mount(router);
+    // La sesión de historial se comparte entre tests: partir de /login
+    // garantiza que las dos navegaciones siguientes SÍ apilen.
+    await router.navigate("/login");
+    await router.navigate("/components");
+    const lenAtComponents = history.length;
+
+    await router.navigate("/"); // alias protegido: redirect + guard, 1 push total
+    expect(router.path.val).toBe("/login");
+    expect(window.location.pathname).toBe("/login");
+    expect(history.length).toBe(lenAtComponents + 1);
+
+    history.back();
+    await new Promise((r) => setTimeout(r, 0));
+    await new Promise((r) => setTimeout(r, 0));
+    expect(router.path.val).toBe("/components");
+    expect(host.textContent).toContain("components-page");
+  });
 });

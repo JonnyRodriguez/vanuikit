@@ -8,7 +8,14 @@ export interface TabItem {
   icon?: ChildDom;
   badge?: string | number | State<string | number>;
   disabled?: boolean;
-  content: ChildDom | (() => ChildDom);
+  /**
+   * Fábrica del contenido: se ejecuta en CADA activación de la pestaña.
+   *
+   * Es obligatorio que sea función (no un nodo pre-construido): los paneles
+   * inactivos están detached del DOM y van elimina sus bindings — un nodo
+   * pre-construido quedaría congelado en el idioma/estado del montaje.
+   */
+  content: () => ChildDom;
 }
 
 export interface TabsProps {
@@ -184,7 +191,7 @@ export function Tabs(props: TabsProps) {
               tabIndex: 0,
               class: "outline-none focus:ring-1 focus:ring-focus rounded-lg",
             },
-            typeof item.content === "function" ? (item.content as () => ChildDom)() : item.content,
+            item.content(),
           );
         };
       }),

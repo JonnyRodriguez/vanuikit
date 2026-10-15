@@ -8,8 +8,8 @@ describe("Tabs", () => {
   test("renderiza pestañas y muestra el contenido activo inicial", async () => {
     const el = Tabs({
       items: [
-        { id: "tab1", label: "General", content: van.tags.div("Contenido General") },
-        { id: "tab2", label: "Avanzado", content: van.tags.div("Contenido Avanzado") },
+        { id: "tab1", label: "General", content: () => van.tags.div("Contenido General") },
+        { id: "tab2", label: "Avanzado", content: () => van.tags.div("Contenido Avanzado") },
       ],
     });
 
@@ -49,8 +49,8 @@ describe("Tabs", () => {
     let changed = false;
     const el = Tabs({
       items: [
-        { id: "t1", label: "Pestaña 1", content: "Panel 1" },
-        { id: "t2", label: "Pestaña 2", disabled: true, content: "Panel 2" },
+        { id: "t1", label: "Pestaña 1", content: () => "Panel 1" },
+        { id: "t2", label: "Pestaña 2", disabled: true, content: () => "Panel 2" },
       ],
       onChange: () => (changed = true),
     });

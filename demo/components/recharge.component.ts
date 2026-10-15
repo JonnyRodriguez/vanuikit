@@ -17,21 +17,6 @@ import {
 import { ***REMOVED***Item } from "./***REMOVED***-list.component.js";
 import type { ***REMOVED***, ***REMOVED***Params } from "../shared/***REMOVED***.schema.js";
 
-export const TEXTS = {
-  amountLabel: { key: "***REMOVED***.amountLabel", default: "Monto a ***REMOVED***r ({tipo})" },
-  minMaxHelp: { key: "***REMOVED***.minMaxHelp", default: "Mínimo: {min} {tipo} · Máximo: {max} {tipo}" },
-  ***REMOVED***Btn: { key: "***REMOVED***.***REMOVED***Btn", default: "***REMOVED***r" },
-  generating: { key: "***REMOVED***.generating", default: "Generando..." },
-  ***REMOVED***With: { key: "***REMOVED***.***REMOVED***With", default: "***REMOVED***r con {name}" },
-  qrClickText: { key: "***REMOVED***.qrClickText", default: "Haz clic aquí para abrir la plataforma" },
-  qrScanText: { key: "***REMOVED***.qrScanText", default: "o escanea el código QR con tu app móvil" },
-  qrAlt: { key: "***REMOVED***.qrAlt", default: "Código QR" },
-  qrNoticeText: { key: "***REMOVED***.qrNoticeText", default: "Tu saldo se actualizará automáticamente." },
-  invalidAmount: { key: "***REMOVED***.invalidAmount", default: "Ingresa un monto válido" },
-  minAmountErr: { key: "***REMOVED***.minAmountErr", default: "El monto debe ser superior a {min} {tipo}" },
-  maxAmountErr: { key: "***REMOVED***.maxAmountErr", default: "El monto debe ser inferior a {max} {tipo}" },
-};
-
 export type ***REMOVED***Result = { error: string } | {};
 
 export interface ***REMOVED***Info {
@@ -47,20 +32,12 @@ const Between = (
 ): Validator => ({
   validate: (value) => {
     const num = parseFloat(value);
-    if (!value || Number.isNaN(num)) return i18n.raw(TEXTS.invalidAmount.key, undefined, TEXTS.invalidAmount.default);
+    if (!value || Number.isNaN(num)) return i18n.raw("***REMOVED***.invalidAmount", "Ingresa un monto válido");
     if (num < min) {
-      return i18n.raw(
-        TEXTS.minAmountErr.key,
-        { min, tipo },
-        `El monto debe ser superior a ${min} ${tipo}`,
-      );
+      return i18n.raw("***REMOVED***.minAmountErr", `El monto debe ser superior a ${min} ${tipo}`, { min, tipo });
     }
     if (num > max) {
-      return i18n.raw(
-        TEXTS.maxAmountErr.key,
-        { max, tipo },
-        `El monto debe ser inferior a ${max} ${tipo}`,
-      );
+      return i18n.raw("***REMOVED***.maxAmountErr", `El monto debe ser inferior a ${max} ${tipo}`, { max, tipo });
     }
     return null;
   },
@@ -76,7 +53,7 @@ export const ***REMOVED***Amount = (info: ***REMOVED***Info) => {
   const ***REMOVED*** = info.***REMOVED***;
 
   const amount = Field({
-    label: t(TEXTS.amountLabel.key, { tipo: params.tipo }, `Monto a ***REMOVED***r (${params.tipo})`),
+    label: t("***REMOVED***.amountLabel", `Monto a ***REMOVED***r (${params.tipo})`, { tipo: params.tipo }),
     name: "amount",
     inputType: "number",
   });
@@ -90,7 +67,7 @@ export const ***REMOVED***Amount = (info: ***REMOVED***Info) => {
 
   const form = Form(async (data) => {
     formError.val = "";
-    msg.val = Spin(t(TEXTS.generating.key, undefined, TEXTS.generating.default));
+    msg.val = Spin(t("***REMOVED***.generating", "Generando..."));
     data.***REMOVED*** = ***REMOVED***;
     const result = await info.handle***REMOVED***Amount(data);
     if ("error" in result) {
@@ -108,11 +85,7 @@ export const ***REMOVED***Amount = (info: ***REMOVED***Info) => {
       form.dom(
         div(
           { class: "text-muted text-sm mt-2" },
-          t(
-            TEXTS.minMaxHelp.key,
-            { min: params.monto_min_***REMOVED***, max: params.monto_max_***REMOVED***, tipo: params.tipo },
-            `Mínimo: ${params.monto_min_***REMOVED***} ${params.tipo} · Máximo: ${params.monto_max_***REMOVED***} ${params.tipo}`,
-          ),
+          t("***REMOVED***.minMaxHelp", `Mínimo: ${params.monto_min_***REMOVED***} ${params.tipo} · Máximo: ${params.monto_max_***REMOVED***} ${params.tipo}`, { min: params.monto_min_***REMOVED***, max: params.monto_max_***REMOVED***, tipo: params.tipo }),
         ),
         div(
           { class: "pt-4" },
@@ -120,7 +93,7 @@ export const ***REMOVED***Amount = (info: ***REMOVED***Info) => {
             (msg.val && msg.val) ||
             PrimaryButton(
               { type: "submit" },
-              t(TEXTS.***REMOVED***Btn.key, undefined, TEXTS.***REMOVED***Btn.default),
+              t("***REMOVED***.***REMOVED***Btn", "***REMOVED***r"),
             ),
         ),
       ),
@@ -133,11 +106,7 @@ export const ***REMOVED***Amount = (info: ***REMOVED***Info) => {
 };
 
 export const ***REMOVED***AmountModal = (info: ***REMOVED***Info): ModalProps => ({
-  title: t(
-    TEXTS.***REMOVED***With.key,
-    { name: info.***REMOVED***.name || info.***REMOVED***.id },
-    `***REMOVED***r con ${info.***REMOVED***.name || info.***REMOVED***.id}`,
-  ),
+  title: t("***REMOVED***.***REMOVED***With", `***REMOVED***r con ${info.***REMOVED***.name || info.***REMOVED***.id}`, { name: info.***REMOVED***.name || info.***REMOVED***.id }),
   body: () => ***REMOVED***Amount(info),
 });
 
@@ -157,20 +126,20 @@ export const ***REMOVED***Qr = (qr: string, url: string) => {
       },
       span(
         { class: "text-xl font-bold text-accent flex items-center" },
-        t(TEXTS.qrClickText.key, undefined, TEXTS.qrClickText.default),
+        t("***REMOVED***.qrClickText", "Haz clic aquí para abrir la plataforma"),
       ),
       div(
         { class: "text-muted text-sm italic" },
-        t(TEXTS.qrScanText.key, undefined, TEXTS.qrScanText.default),
+        t("***REMOVED***.qrScanText", "o escanea el código QR con tu app móvil"),
       ),
       img({
         class: "mx-auto",
         src: qr,
-        alt: t(TEXTS.qrAlt.key, undefined, TEXTS.qrAlt.default),
+        alt: t("***REMOVED***.qrAlt", "Código QR"),
       }),
       div(
         { class: "text-muted text-sm italic" },
-        t(TEXTS.qrNoticeText.key, undefined, TEXTS.qrNoticeText.default),
+        t("***REMOVED***.qrNoticeText", "Tu saldo se actualizará automáticamente."),
       ),
     ),
   );

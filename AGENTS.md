@@ -22,47 +22,44 @@ Este documento establece las reglas fundamentales de diseño, arquitectura y con
 
 ---
 
-## 2. Guía de Diseño de Internacionalización (i18n) y Contrato `TEXTS`
+## 2. Guía de Diseño de Internacionalización (i18n)
 
 ### Regla Mandatoria: Cero Strings Quemados (No Hardcoded Strings)
-Todo texto visible para el usuario (etiquetas de botones, títulos de páginas, placeholders de campos, mensajes de error, opciones de navegación) debe estar estructurado en diccionarios de traducción y referenciado a través del sistema de `i18n`.
+Todo texto visible para el usuario (etiquetas de botones, títulos de páginas, placeholders de campos, mensajes de error, opciones de navegación) se escribe con las funciones `t()`/`raw()` de vanui — **llave semántica + texto por defecto, inline, sin objetos TEXTS**.
 
-### Contrato de Diseño `TEXTS`
-En todas las páginas, módulos o en `app.ts`, definir un objeto constante `TEXTS` que encapsule tanto la **llave de traducción** (`key`) como el **texto por defecto / fallback** (`default`), eliminando completamente los strings mágicos del código:
+### Llamada Inline: `t(key, default, params?)`
+La llave es semántica y estable (`sección.propuesta`); el texto por defecto (español) vive junto al uso, y los parámetros van al final con placeholders `{nombre}`:
 
 ```typescript
-export const TEXTS = {
-  nav: {
-    ***REMOVED***: { key: "nav.***REMOVED***", default: "***REMOVED***s" },
-    components: { key: "nav.components", default: "Componentes" },
-    login: { key: "nav.login", default: "Iniciar sesión" },
-    register: { key: "nav.register", default: "Crear cuenta" },
-  },
-  titles: {
-    ***REMOVED***: { key: "***REMOVED***.title", default: "***REMOVED***s de Transaction" },
-    components: { key: "components.title", default: "Catálogo de Componentes" },
-    login: { key: "login.title", default: "Iniciar sesión" },
-    register: { key: "register.title", default: "Crear una cuenta" },
-  },
-} as const;
+import { t, raw } from "vanui";
+
+span(t("***REMOVED***.qrAlt", "Código QR"));
+Button({}, t("components.modal.openBtn", "Abrir Modal Básico"));
+toast.info(raw("***REMOVED***.saved", "Cambios guardados"));
+p(t("***REMOVED***.***REMOVED***With", "***REMOVED***r con {name}", { name: ***REMOVED***.name }));
 ```
 
+- **`t()` para slots reactivos** (hijos y props de componentes): retorna `State<string>` y el texto muta al cambiar `currentLocale`.
+- **`raw()` para consumo imperativo** (handlers, toasts, `confirmDialog`): resuelve al instante sin reactividad.
+- **Nunca llames `t()` dentro de funciones-hija o props-función de van** (`span(() => t(...).val)`): el derive creado dentro del binding se registra como *setter* del binding contenedor y van **omite suscribir el binding** — el texto queda congelado en el idioma del montaje. En esos casos usa `raw(...)` (lee `currentLocale` directo en el binding), o iza el `State` de `t()` fuera de la función.
+- La llave nunca se reescribe: puedes cambiar el default sin romper traducciones. Los diccionarios (`demo/shared/locales/*.json`) son gestionados por el tooling (`i18n:collect` / `i18n:check` / `i18n:scan` / `i18n:fix`).
+
 ### Consumo y Derivación Reactiva
-- **Enlace directo en el DOM (Reactivo)**: Pasar el estado devuelto por `i18n.t(TEXTS.item.key, undefined, TEXTS.item.default)`. Al cambiar `i18n.currentLocale`, el texto en pantalla muta automáticamente.
+- **Enlace directo en el DOM (Reactivo)**: pasar el `State` devuelto por `t()` como hijo o prop. Al cambiar `i18n.currentLocale`, el texto en pantalla muta automáticamente.
   ```typescript
   SidebarItem({
     href: "/***REMOVED***",
-    label: i18n.t(TEXTS.nav.***REMOVED***.key, undefined, TEXTS.nav.***REMOVED***.default),
+    label: t("nav.***REMOVED***", "***REMOVED***s"),
     icon: "💳",
     current: router.path,
   })
   ```
-- **Dentro de derivaciones computadas (`van.derive`) o funciones**: Usar `i18n.raw(TEXTS.item.key, undefined, TEXTS.item.default)` para obtener el string resuelto sin tener que extraer `.val` manualmente. Como `van.derive` escucha automáticamente cualquier acceso a estados de VanJS (como `i18n.currentLocale`), la función se recalcula reactivamente al cambiar de idioma.
+- **Dentro de derivaciones computadas (`van.derive`) o funciones**: usar `raw()` para obtener el string resuelto sin extraer `.val`. Como `van.derive` escucha automáticamente cualquier acceso a estados de VanJS (como `i18n.currentLocale`), la función se recalcula reactivamente al cambiar de idioma.
   ```typescript
   const getPageTitle = van.derive(() => {
     const p = router.path.val;
     if (p.startsWith("/***REMOVED***")) {
-      return i18n.raw(TEXTS.titles.***REMOVED***.key, undefined, TEXTS.titles.***REMOVED***.default);
+      return raw("***REMOVED***.title", "Métodos de Transaction y ***REMOVED***");
     }
     return "Dashboard";
   });
@@ -103,7 +100,7 @@ export const TEXTS = {
    - Guardar el token de sesión en `localStorage` además de cookies (`credentials: "include"`) y enviarlo en el encabezado `Authorization: Bearer <token>` para garantizar compatibilidad total en iframes y entornos aislados.
 3. **Deny-by-Default (rutas protegidas por defecto)**:
    - Cliente: `createRouter({ guard: requireAuth(auth, "/login"), publicRoutes: ["/login", ...] })`. Toda ruta nueva queda protegida sin escribir nada; **solo se declara lo público** (exacto, `"/docs/*"` o RegExp).
-   - Server: `loadRoutes(dir, { auth: requireAuth() })` protege cada `*.route.ts` salvo los que exporten `export const meta = { public: true };` (co-locada junto al sub-app, mismo criterio que los `TEXTS`).
+   - Server: `loadRoutes(dir, { auth: requireAuth() })` protege cada `*.route.ts` salvo los que exporten `export const meta = { public: true };` (co-locada junto al sub-app).
    - Prohibido proteger a mano rutas que ya cubre la política por defecto; el refinamiento interno (p. ej. un endpoint sensible dentro de un archivo público) sí usa `requireAuth()` puntual.
 
 ---

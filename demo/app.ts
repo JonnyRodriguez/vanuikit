@@ -29,28 +29,6 @@ import { ComponentsPage } from "./pages/components.page.js";
 import { i18n } from "./shared/i18n.config.js";
 import { theme } from "./shared/theme.config.js";
 
-/** Contrato de llaves de i18n para la navegación y títulos de la aplicación */
-export const TEXTS = {
-  nav: {
-    ***REMOVED***: { key: "nav.***REMOVED***", default: "***REMOVED***s" },
-    components: { key: "nav.components", default: "Componentes" },
-    login: { key: "nav.login", default: "Iniciar sesión" },
-    register: { key: "nav.register", default: "Crear cuenta" },
-  },
-  titles: {
-    ***REMOVED***: { key: "***REMOVED***.title", default: "Métodos de Transaction y ***REMOVED***" },
-    components: { key: "components.title", default: "Catálogo de Componentes" },
-    login: { key: "login.title", default: "Iniciar sesión" },
-    register: { key: "register.title", default: "Crear una cuenta" },
-    dashboard: { key: "nav.dashboard", default: "Dashboard" },
-  },
-  groups: {
-    platform: { key: "nav.platform", default: "Plataforma" },
-    account: { key: "nav.account", default: "Cuenta" },
-  },
-  menuOpen: { key: "nav.menuOpen", default: "Abrir menú" },
-} as const;
-
 // Header Authorization con el token que gestiona createAuth (persistencia centralizada).
 const authHeaders = (): Record<string, string> => {
   const token = authState.getToken();
@@ -144,11 +122,11 @@ export function App() {
 
   const getPageTitle = van.derive(() => {
     const p = router.path.val;
-    if (p.startsWith("/***REMOVED***")) return i18n.raw(TEXTS.titles.***REMOVED***.key, undefined, TEXTS.titles.***REMOVED***.default);
-    if (p.startsWith("/components")) return i18n.raw(TEXTS.titles.components.key, undefined, TEXTS.titles.components.default);
-    if (p.startsWith("/login")) return i18n.raw(TEXTS.titles.login.key, undefined, TEXTS.titles.login.default);
-    if (p.startsWith("/register")) return i18n.raw(TEXTS.titles.register.key, undefined, TEXTS.titles.register.default);
-    return i18n.raw(TEXTS.titles.dashboard.key, undefined, TEXTS.titles.dashboard.default);
+    if (p.startsWith("/***REMOVED***")) return i18n.raw("***REMOVED***.title", "Métodos de Transaction y ***REMOVED***");
+    if (p.startsWith("/components")) return i18n.raw("components.title", "Catálogo de Componentes");
+    if (p.startsWith("/login")) return i18n.raw("login.title", "Iniciar sesión");
+    if (p.startsWith("/register")) return i18n.raw("register.title", "Crear una cuenta");
+    return i18n.raw("nav.dashboard", "Dashboard");
   });
 
   return AppShell({
@@ -176,15 +154,15 @@ export function App() {
             class:
               "text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20",
           },
-          i18n.t(TEXTS.titles.dashboard.key, undefined, TEXTS.titles.dashboard.default),
+          i18n.t("nav.dashboard", "Dashboard"),
         ),
       ),
       content: [
         SidebarGroup(
-          { title: i18n.t(TEXTS.groups.platform.key, undefined, TEXTS.groups.platform.default) },
+          { title: i18n.t("nav.platform", "Plataforma") },
           SidebarItem({
             href: "/***REMOVED***",
-            label: i18n.t(TEXTS.nav.***REMOVED***.key, undefined, TEXTS.nav.***REMOVED***.default),
+            label: i18n.t("nav.***REMOVED***", "***REMOVED***s"),
             icon: "💳",
             current: router.path,
             onclick: () => {
@@ -193,7 +171,7 @@ export function App() {
           }),
           SidebarItem({
             href: "/components",
-            label: i18n.t(TEXTS.nav.components.key, undefined, TEXTS.nav.components.default),
+            label: i18n.t("nav.components", "Componentes"),
             icon: "🧩",
             badge: "17",
             badgeVariant: "secondary",
@@ -206,10 +184,10 @@ export function App() {
         () =>
           !authState.user.val
             ? SidebarGroup(
-                { title: i18n.t(TEXTS.groups.account.key, undefined, TEXTS.groups.account.default) },
+                { title: i18n.t("nav.account", "Cuenta") },
                 SidebarItem({
                   href: "/login",
-                  label: i18n.t(TEXTS.nav.login.key, undefined, TEXTS.nav.login.default),
+                  label: i18n.t("nav.login", "Iniciar sesión"),
                   icon: "🔑",
                   current: router.path,
                   onclick: () => {
@@ -218,7 +196,7 @@ export function App() {
                 }),
                 SidebarItem({
                   href: "/register",
-                  label: i18n.t(TEXTS.nav.register.key, undefined, TEXTS.nav.register.default),
+                  label: i18n.t("nav.register", "Crear cuenta"),
                   icon: "📝",
                   current: router.path,
                   onclick: () => {
@@ -244,7 +222,7 @@ export function App() {
           type: "button",
           class:
             "lg:hidden p-2 rounded-lg text-foreground hover:bg-secondary border border-border cursor-pointer text-base flex items-center justify-center",
-          "aria-label": i18n.t(TEXTS.menuOpen.key, undefined, TEXTS.menuOpen.default),
+          "aria-label": i18n.t("nav.menuOpen", "Abrir menú"),
           onclick: () => {
             sidebarOpen.val = !sidebarOpen.val;
           },

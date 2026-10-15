@@ -1,11 +1,11 @@
 /**
  * i18n-fix — codemod asistido que convierte strings de UI detectados por
- * `i18n-scan` en llamadas `t()`/`raw()` con su entrada de TEXTS.
+ * `i18n-scan` en llamadas `t()`/`raw()` inline con llave semántica.
  *
- * Por cada hallazgo ALTA en demo/**: propone una llave (editable), agrega la
- * entrada al TEXTS del archivo (lo crea si no existe), completa el import de
- * `t`/`raw` desde "vanui" y reemplaza el literal. Los templates interpolados
- * se convierten en parámetros `{ nombre }`. Al terminar ejecuta
+ * Por cada hallazgo ALTA en demo/**: propone una llave (editable), completa el
+ * import de `t`/`raw` desde "vanui" y reemplaza el literal por
+ * `t("llave", "texto")` (o `raw(...)` en contexto imperativo; los templates
+ * interpolados se convierten en parámetros `{ nombre }`). Al terminar ejecuta
  * `i18n:collect` para regenerar es.json; los huecos en/fr los reporta
  * `i18n:check`.
  *
@@ -26,77 +26,32 @@ const ROOT = path.resolve(import.meta.dir, "..");
 const YES = process.argv.includes("--yes");
 const DRY = process.argv.includes("--dry");
 
-type Accepted = { finding: Finding; key: string; propName: string };
+type Accepted = { finding: Finding; key: string };
 
-const camel = (lastSegment: string): string => {
-  const clean = lastSegment.replace(/[^$\w]/g, "");
-  return clean.charAt(0).toLowerCase() + clean.slice(1);
-};
-
-/** Nombre de la propiedad TEXTS a partir de la llave, sin colisiones. */
-const propNameFor = (key: string, taken: Set<string>): string => {
-  const segments = key.split(".");
-  let base = camel(segments[segments.length - 1]) || "text";
-  let name = base;
-  let n = 2;
-  while (taken.has(name)) name = `${base}${n++}`;
-  taken.add(name);
-  return name;
-};
-
-/** Llama del reemplazo: t/raw(TEXTS.x.key, [params], TEXTS.x.default). */
-function callText(mode: "t" | "raw", prop: string, finding: Finding): string {
+/** Llamada del reemplazo: t/raw("llave", "default" [, params]). */
+function callText(mode: "t" | "raw", key: string, finding: Finding): string {
   const params = finding.params;
-  if (params.length === 0) {
-    return `${mode}(TEXTS.${prop}.key, undefined, TEXTS.${prop}.default)`;
-  }
+  if (params.length === 0) return `${mode}(${JSON.stringify(key)}, ${JSON.stringify(finding.text)})`;
   const entries = params.map((p) =>
     p.name === p.valueText ? p.name : `${p.name}: ${p.valueText}`,
   );
-  return `${mode}(TEXTS.${prop}.key, { ${entries.join(", ")} }, TEXTS.${prop}.default)`;
+  return `${mode}(${JSON.stringify(key)}, ${JSON.stringify(finding.text)}, { ${entries.join(", ")} })`;
 }
 
-/** Declaración TEXTS existente en el archivo (o null). */
-function findTextsDeclaration(source: ts.SourceFile) {
-  for (const statement of source.statements) {
-    if (!ts.isVariableStatement(statement)) continue;
-    const decl = statement.declarationList.declarations[0];
-    if (decl && ts.isIdentifier(decl.name) && decl.name.text === "TEXTS" && decl.initializer && ts.isObjectLiteralExpression(decl.initializer)) {
-      return { node: decl, object: decl.initializer, statementEnd: statement.getEnd() };
-    }
-  }
-  return null;
-}
-
-function lastImportEnd(source: ts.SourceFile): number {
-  let end = 0;
-  for (const statement of source.statements) {
-    if (ts.isImportDeclaration(statement)) end = Math.max(end, statement.getEnd());
-  }
-  return end;
-}
-
-/** Aplica a un archivo todas las sustituciones aceptadas. */
 function applyToFile(relFile: string, accepted: Accepted[]): void {
   const abs = path.join(ROOT, relFile);
   const original = fs.readFileSync(abs, "utf8");
   const source = ts.createSourceFile(abs, original, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
 
-  type Edit = { start: number; end: number; text: string };
-  const edits: Edit[] = [];
+  const edits: Array<{ start: number; end: number; text: string }> = [];
   const needs = new Set<"t" | "raw">();
-  const takenProps = new Set<string>();
 
-  // Entradas nuevas para el TEXTS (o el que se cree).
-  const newEntries: Array<{ prop: string; key: string; finding: Finding }> = [];
-  for (const { finding, key, propName } of accepted) {
+  for (const { finding, key } of accepted) {
     needs.add(finding.mode);
-    takenProps.add(propName);
-    newEntries.push({ prop: propName, key, finding });
     edits.push({
       start: finding.start,
       end: finding.end,
-      text: callText(finding.mode, propName, finding),
+      text: callText(finding.mode, key, finding),
     });
   }
 
@@ -116,26 +71,11 @@ function applyToFile(relFile: string, accepted: Accepted[]): void {
     }
   } else {
     const names = [...needs].join(", ");
-    const at = lastImportEnd(source);
-    edits.push({ start: at, end: at, text: `\nimport { ${names} } from "vanui";` });
-  }
-
-  // TEXTS: insertar entradas en el objeto existente o crear la declaración.
-  const texts = findTextsDeclaration(source);
-  if (texts) {
-    const indentMatch = original.slice(texts.object.getStart(source) + 1).match(/\n([ \t]*)\w/);
-    const indent = indentMatch ? indentMatch[1] : "  ";
-    const block = newEntries
-      .map(({ prop, key, finding }) => `${indent}${prop}: { key: "${key}", default: ${JSON.stringify(finding.text)} },`)
-      .join("\n");
-    edits.push({ start: texts.object.getStart(source) + 1, end: texts.object.getStart(source) + 1, text: `\n${block}` });
-  } else {
-    const block =
-      `\n/** Contrato de llaves de i18n (entradas generadas por i18n:fix). */\n` +
-      `export const TEXTS = {\n` +
-      newEntries.map(({ prop, key, finding }) => `  ${prop}: { key: "${key}", default: ${JSON.stringify(finding.text)} },`).join("\n") +
-      `\n} as const;\n`;
-    edits.push({ start: lastImportEnd(source), end: lastImportEnd(source), text: `${block}` });
+    let lastImportEnd = 0;
+    for (const s of source.statements) {
+      if (ts.isImportDeclaration(s)) lastImportEnd = Math.max(lastImportEnd, s.getEnd());
+    }
+    edits.push({ start: lastImportEnd, end: lastImportEnd, text: `\nimport { ${names} } from "vanui";` });
   }
 
   // Aplicar de atrás hacia adelante para no invalidar posiciones.
@@ -188,35 +128,17 @@ for (const finding of findings) {
 
   if (!apply) continue;
   const list = plan.get(finding.file) ?? [];
-  list.push({ finding, key, propName: "" });
+  list.push({ finding, key });
   plan.set(finding.file, list);
 }
 
 if (quit) console.log("\nInterrumpido: los cambios ya aceptados se aplican igual.");
 
-// Resolver nombres de propiedad por archivo (evita colisiones).
-for (const [file, list] of plan) {
-  const existing = new Set<string>();
-  const abs = path.join(ROOT, file);
-  if (fs.existsSync(abs)) {
-    const source = ts.createSourceFile(abs, fs.readFileSync(abs, "utf8"), ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
-    const texts = findTextsDeclaration(source);
-    if (texts) {
-      for (const prop of texts.object.properties) {
-        if (ts.isPropertyAssignment(prop) && ts.isIdentifier(prop.name)) existing.add(prop.name.text);
-      }
-    }
-  }
-  for (const item of list) item.propName = propNameFor(item.key.split(".").pop() ?? "text", existing);
-}
-
-// Plan (dry) o escritura.
 let total = 0;
 for (const [file, list] of plan) {
   console.log(`\n${file}:`);
-  for (const { finding, key, propName } of list) {
-    console.log(`  ${propName}: { key: "${key}", default: "${finding.text}" }`);
-    console.log(`    → ${callText(finding.mode, propName, finding)}`);
+  for (const { finding, key } of list) {
+    console.log(`  ${key} → ${callText(finding.mode, key, finding)}`);
   }
   total += list.length;
   if (!DRY) applyToFile(file, list);

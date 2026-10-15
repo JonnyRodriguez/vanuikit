@@ -54,7 +54,60 @@ function collectEntries(file: string): Entry[] {
     ts.ScriptKind.TS,
   );
   const found: Entry[] = [];
+  const add = (key: string | undefined, fallback: string | undefined): void => {
+    if (key !== undefined && fallback !== undefined) {
+      found.push({ key, default: fallback, file: path.relative(ROOT, file) });
+    }
+  };
+  const calleePath = (expr: ts.Expression): string =>
+    ts.isIdentifier(expr) ? expr.text
+      : ts.isPropertyAccessExpression(expr) ? `${calleePath(expr.expression)}.${expr.name.text}`
+      : "";
+
   const visit = (node: ts.Node): void => {
+    // Norma actual: t("llave", "default" [, params]) y raw(...); también i18n.t/i18n.raw.
+    if (ts.isCallExpression(node)) {
+      const callee = calleePath(node.expression);
+      if (callee === "t" || callee === "raw" || callee === "i18n.t" || callee === "i18n.raw") {
+        const [key, fallback] = node.arguments;
+        if (key && ts.isStringLiteral(key)) {
+          if (!fallback) { add(key.text, undefined); return; }
+          if (ts.isStringLiteral(fallback) || ts.isNoSubstitutionTemplateLiteral(fallback)) {
+            add(key.text, fallback.text);
+          } else if (ts.isTemplateExpression(fallback)) {
+            // `Mínimo: {min} de {max}` — los placeholders salen de los alias del
+            // objeto de params cuando existen (min: params.monto_min_***REMOVED***),
+            // y si no, del nombre de la expresión.
+            const aliasByValue = new Map<string, string>();
+            const paramsObj = node.arguments[2];
+            if (paramsObj && ts.isObjectLiteralExpression(paramsObj)) {
+              for (const prop of paramsObj.properties) {
+                if (ts.isPropertyAssignment(prop) && ts.isIdentifier(prop.name)) {
+                  // Whitespace-insensitive: las expresiones multilínea del default
+                  // y del objeto de params pueden formatearse distinto.
+                  const norm = prop.initializer.getText(source).replace(/\s+/g, "");
+                  aliasByValue.set(norm, prop.name.text);
+                }
+              }
+            }
+            const paramName = (expr: ts.Expression): string => {
+              const alias = aliasByValue.get(expr.getText(source).replace(/\s+/g, ""));
+              if (alias) return alias;
+              if (ts.isIdentifier(expr)) return expr.text;
+              if (ts.isPropertyAccessExpression(expr)) return expr.name.text;
+              return "valor";
+            };
+            const parts = [fallback.head.text];
+            for (const span of fallback.templateSpans) {
+              parts.push(`{${paramName(span.expression)}}`, span.literal.text);
+            }
+            add(key.text, parts.join(""));
+          }
+        }
+      }
+    }
+
+    // Formato legado (contrato TEXTS): objetos con `key` y `default` literales.
     if (ts.isObjectLiteralExpression(node)) {
       let key: string | undefined;
       let fallback: string | undefined;
@@ -65,10 +118,9 @@ function collectEntries(file: string): Entry[] {
         if (name === "key") key = prop.initializer.text;
         if (name === "default") fallback = prop.initializer.text;
       }
-      if (key !== undefined && fallback !== undefined) {
-        found.push({ key, default: fallback, file: path.relative(ROOT, file) });
-      }
+      add(key, fallback);
     }
+
     ts.forEachChild(node, visit);
   };
   visit(source);

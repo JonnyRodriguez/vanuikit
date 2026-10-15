@@ -64,7 +64,6 @@
     "openModalBtn": "Abrir Modal Básico",
     "perfBody": "VanUI permite renderizar vistas SPA reactivas con un bundle ultra liviano (~1.5kB de VanJS core) sin VDOM.",
     "perfTitle": "📊 Panel de Rendimiento",
-    "proBadge": "Pro",
     "profileToast": "Navegando al perfil",
     "publishConfirm": "Publicar ahora",
     "publishMsg": "Los cambios se aplicarán inmediatamente a todos los usuarios en producción.",
@@ -243,5 +242,8 @@
     "system": "Sistema",
     "toggleLabel": "Alternar tema visual (Claro / Oscuro / Sistema)",
     "toggleTitle": "Alternar tema (Claro / Oscuro / Sistema)"
+  },
+  "user": {
+    "sessionActive": "Sesión activa"
   }
 }

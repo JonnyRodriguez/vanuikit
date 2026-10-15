@@ -5,12 +5,6 @@ import { t } from "../i18n.js";
 
 const { div, p, span } = van.tags;
 
-export const TEXTS = {
-  title: { key: "dialog.confirmTitle", default: "Confirmar acción" },
-  cancel: { key: "dialog.cancel", default: "Cancelar" },
-  confirm: { key: "dialog.confirm", default: "Confirmar" },
-};
-
 export type ConfirmVariant = "primary" | "danger" | "warning";
 
 export interface ConfirmDialogProps {
@@ -28,7 +22,7 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
   const variant = props.variant ?? "primary";
 
   const confirmBtn = () => {
-    const text = props.confirmText ?? t(TEXTS.confirm.key, undefined, TEXTS.confirm.default);
+    const text = props.confirmText ?? t("dialog.confirm", "Confirmar");
     const onclick = () => {
       modal.close();
       props.onConfirm?.();
@@ -65,13 +59,13 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
             props.onCancel?.();
           },
         },
-        props.cancelText ?? t(TEXTS.cancel.key, undefined, TEXTS.cancel.default),
+        props.cancelText ?? t("dialog.cancel", "Cancelar"),
       ),
       confirmBtn(),
     );
 
   const modal = Modal({
-    title: props.title ?? t(TEXTS.title.key, undefined, TEXTS.title.default),
+    title: props.title ?? t("dialog.confirmTitle", "Confirmar acción"),
     body,
     footer,
   });

@@ -3,11 +3,6 @@ import type { AuthState, AuthUser } from "../auth.js";
 import { i18n as defaultI18n, type I18nInstance } from "../i18n.js";
 import { cx } from "../util.js";
 
-/** Contrato de llaves de i18n del componente */
-export const TEXTS = {
-  logout: { key: "nav.logout", default: "Cerrar sesión" },
-} as const;
-
 export interface UserBadgeProps {
   /** Estado de autenticación reactivo de VanUI o usuario directo */
   auth?: AuthState;
@@ -86,7 +81,7 @@ export function UserBadge(props: UserBadgeProps) {
 
     // Modo compacto (rail de Sidebar colapsada): avatar centrado + logout icónico.
     if (isCompact) {
-      const logoutLabel = i18n.raw(TEXTS.logout.key, undefined, TEXTS.logout.default);
+      const logoutLabel = i18n.raw("nav.logout", "Cerrar sesión");
       return div(
         { class: cx("flex flex-col items-center gap-2", props.class) },
         div(
@@ -140,7 +135,7 @@ export function UserBadge(props: UserBadgeProps) {
             { class: "text-[10px] text-muted-foreground truncate" },
             props.statusText
               ? props.statusText
-              : i18n.raw("user.sessionActive", undefined, "Sesión activa"),
+              : i18n.raw("user.sessionActive", "Sesión activa"),
           ),
         ),
       ),
@@ -153,7 +148,7 @@ export function UserBadge(props: UserBadgeProps) {
               onclick: handleLogout,
             },
             "🚪 ",
-            i18n.t(TEXTS.logout.key, undefined, TEXTS.logout.default),
+            i18n.t("nav.logout", "Cerrar sesión"),
           )
         : null,
     );

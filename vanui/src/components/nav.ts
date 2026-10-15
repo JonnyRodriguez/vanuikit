@@ -4,11 +4,6 @@ import { t } from "../i18n.js";
 import { cx, isRouteActive } from "../util.js";
 import { VARIANT_CLASSES as BUTTON_VARIANTS, SIZE_CLASSES as BUTTON_SIZES } from "./button.js";
 
-/** Textos internos del componente (cero strings quemados en el DOM). */
-const TEXTS = {
-  ariaLabel: { key: "nav.ariaLabel", default: "Navegación principal" },
-} as const;
-
 export type LinkVariant = "default" | "muted" | "accent" | "button";
 
 export interface LinkProps {
@@ -109,7 +104,7 @@ export const Nav = (links: NavLink[], props: NavProps) => {
 
   // Resuelto una sola vez: t() crea un derive nuevo por llamada, y este
   // binding reacciona al idioma sin registrar derivaciones en cada re-render.
-  const resolvedLabel = ariaLabel ?? t(TEXTS.ariaLabel.key, undefined, TEXTS.ariaLabel.default);
+  const resolvedLabel = ariaLabel ?? t("nav.ariaLabel", "Navegación principal");
 
   const getCurrent = () =>
     typeof current === "object" && current !== null && "val" in current

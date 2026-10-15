@@ -33,155 +33,6 @@ export type ComponentsPageProps = {
   router?: Router;
 };
 
-/**
- * Contrato de llaves de i18n de la página (cero strings quemados).
- * Las llaves son planas ("components.*") para espejar los diccionarios de
- * `shared/i18n.config.ts`; el agrupado aquí es solo para legibilidad.
- */
-export const TEXTS = {
-  title: { key: "components.title", default: "Catálogo de Componentes" },
-  subtitle: { key: "components.subtitle", default: "Componentes interactivos construidos con VanJS y VanUI" },
-
-  theme: {
-    section: { key: "components.themeSection", default: "Gestión de Tema e Idioma" },
-    desc: { key: "components.themeDesc", default: "Gestión de estado global sin overhead: alternancia instantánea y sincronización automática." },
-    embeddedBadge: { key: "components.embeddedBadge", default: "Embebidos en VanUI" },
-    themeToggleDemo: { key: "components.themeToggleDemo", default: "ThemeToggle (Botón y Segmentado)" },
-    localeSelectorDemo: { key: "components.localeSelectorDemo", default: "LocaleSelector (Select y Botones)" },
-  },
-
-  tabs: {
-    section: { key: "components.tabs", default: "Pestañas (Tabs)" },
-    desc: { key: "components.tabsDesc", default: "Organiza contenido denso con soporte para flechas de teclado (←/→, Home, End), badges y múltiples variantes." },
-    accessibleBadge: { key: "components.accessibleBadge", default: "Accesible ARIA" },
-    overview: { key: "components.tabOverview", default: "Resumen General" },
-    overviewBadge: { key: "components.tabOverviewBadge", default: "Nuevo" },
-    perfTitle: { key: "components.perfTitle", default: "📊 Panel de Rendimiento" },
-    perfBody: { key: "components.perfBody", default: "VanUI permite renderizar vistas SPA reactivas con un bundle ultra liviano (~1.5kB de VanJS core) sin VDOM." },
-    activity: { key: "components.tabActivity", default: "Actividad" },
-    eventsTitle: { key: "components.eventsTitle", default: "⚡ Registro de Eventos" },
-    eventsBody: { key: "components.eventsBody", default: "Se registraron 4 operaciones exitosas en las últimas 24 horas." },
-    security: { key: "components.tabSecurity", default: "Seguridad" },
-    securityTitle: { key: "components.securityTitle", default: "🔒 Autenticación y Cifrado" },
-    securityBody: { key: "components.securityBody", default: "Sesiones protegidas con guards síncronos y asíncronos en el enrutador SPA." },
-    disabled: { key: "components.tabDisabled", default: "Deshabilitado" },
-    disabledContent: { key: "components.disabledContent", default: "No accesible" },
-  },
-
-  dropdowns: {
-    section: { key: "components.dropdowns", default: "Select y Dropdowns Accesibles" },
-    desc: { key: "components.dropdownsDesc", default: "Selectores personalizados con navegación completa por teclado, búsqueda integrada y menús de acciones contextuales." },
-    listboxBadge: { key: "components.listboxBadge", default: "Listbox + Menú" },
-    searchSelect: { key: "components.searchSelect", default: "Select con Búsqueda" },
-    searchPlaceholder: { key: "components.selectSearchPlaceholder", default: "Buscar framework..." },
-    currentValue: { key: "components.currentValue", default: "Valor actual: {val}" },
-    selectedToast: { key: "components.selectedToast", default: "Seleccionado: {val}" },
-    countrySelect: { key: "components.countrySelect", default: "Selector con Iconos" },
-    frameworkVanjs: { key: "components.frameworkVanjs", default: "Ultra lightweight (1.0kB)" },
-    frameworkReact: { key: "components.frameworkReact", default: "Popular ecosystem" },
-    frameworkVue: { key: "components.frameworkVue", default: "Progressive framework" },
-    frameworkSvelte: { key: "components.frameworkSvelte", default: "Cybernetically enhanced" },
-    countryEs: { key: "components.countryEs", default: "España" },
-    countryUs: { key: "components.countryUs", default: "Estados Unidos" },
-    countryFr: { key: "components.countryFr", default: "Francia" },
-    countryMx: { key: "components.countryMx", default: "México" },
-    countryAr: { key: "components.countryAr", default: "Argentina" },
-    countryToast: { key: "components.countryToast", default: "País seleccionado: {val}" },
-    actionsMenu: { key: "components.actionsMenu", default: "Menú de Acciones" },
-    actionsLabel: { key: "components.actionsLabel", default: "Acciones" },
-    accountHeader: { key: "components.accountHeader", default: "Opciones de cuenta" },
-    viewProfile: { key: "components.viewProfile", default: "Ver Perfil" },
-    profileToast: { key: "components.profileToast", default: "Navegando al perfil" },
-    settings: { key: "components.settings", default: "Configuración" },
-    settingsToast: { key: "components.settingsToast", default: "Abriendo configuración" },
-    proBadge: { key: "components.proBadge", default: "Pro" },
-    signOut: { key: "components.signOut", default: "Cerrar Sesión" },
-    signOutToast: { key: "components.signOutToast", default: "Sesión cerrada" },
-  },
-
-  confirm: {
-    section: { key: "components.confirmDialogs", default: "Diálogos de Confirmación (ConfirmDialog)" },
-    desc: { key: "components.confirmDesc", default: "Abstracción sobre Modal para confirmaciones críticas con soporte para Promises, estados de carga y variantes." },
-    imperativeBadge: { key: "components.imperativeBadge", default: "Imperativo & Declarativo" },
-    dangerBtn: { key: "components.dangerBtn", default: "🗑️ Diálogo Peligroso (Imperativo)" },
-    deleteTitle: { key: "components.deleteTitle", default: "¿Eliminar cuenta permanentemente?" },
-    deleteMsg: { key: "components.deleteMsg", default: "Esta acción borrará todos tus datos y transacciones asociadas sin posibilidad de recuperación." },
-    deleteConfirm: { key: "components.deleteConfirm", default: "Sí, eliminar cuenta" },
-    cancel: { key: "components.cancel", default: "Cancelar" },
-    deletedToast: { key: "components.deletedToast", default: "Cuenta eliminada satisfactoriamente" },
-    cancelledToast: { key: "components.cancelledToast", default: "Acción cancelada por el usuario" },
-    infoBtn: { key: "components.infoBtn", default: "🚀 Diálogo Informativo" },
-    publishTitle: { key: "components.publishTitle", default: "¿Publicar cambios?" },
-    publishMsg: { key: "components.publishMsg", default: "Los cambios se aplicarán inmediatamente a todos los usuarios en producción." },
-    publishConfirm: { key: "components.publishConfirm", default: "Publicar ahora" },
-    publishedToast: { key: "components.publishedToast", default: "Cambios publicados en producción" },
-  },
-
-  table: {
-    section: { key: "components.tables", default: "Tablas y DataGrid" },
-    desc: { key: "components.tablesDesc", default: "Tabla de datos reactiva con ordenamiento bidireccional por columna, búsqueda instantánea, selección múltiple y paginación." },
-    searchSortBadge: { key: "components.searchSortBadge", default: "Búsqueda + Sort + Paginación" },
-    colUser: { key: "components.colUser", default: "Usuario" },
-    colRole: { key: "components.colRole", default: "Rol" },
-    colStatus: { key: "components.colStatus", default: "Estado" },
-    colCreated: { key: "components.colCreated", default: "Fecha Alta" },
-    statusActive: { key: "components.statusActive", default: "Activo" },
-    statusPending: { key: "components.statusPending", default: "Pendiente" },
-    statusSuspended: { key: "components.statusSuspended", default: "Suspendido" },
-    searchPlaceholder: { key: "components.tableSearchPlaceholder", default: "Buscar por nombre o rol..." },
-    usersSelected: { key: "components.usersSelected", default: "{n} usuarios seleccionados" },
-  },
-
-  badges: {
-    section: { key: "components.badges", default: "Etiquetas (Badges)" },
-    primary: { key: "components.badgePrimary", default: "Primario" },
-    success: { key: "components.badgeSuccess", default: "Éxito" },
-    warning: { key: "components.badgeWarning", default: "Advertencia" },
-    danger: { key: "components.badgeDanger", default: "Peligro" },
-    secondary: { key: "components.badgeSecondary", default: "Secundario" },
-    outline: { key: "components.badgeOutline", default: "Contorno" },
-    large: { key: "components.badgeLarge", default: "Grande" },
-  },
-
-  toasts: {
-    section: { key: "components.toasts", default: "Notificaciones (Toast)" },
-    successBtn: { key: "components.toastSuccessBtn", default: "Éxito" },
-    successMsg: { key: "components.toastSuccessMsg", default: "Operación realizada con éxito" },
-    successTitle: { key: "components.toastSuccessTitle", default: "Completado" },
-    infoBtn: { key: "components.toastInfoBtn", default: "Información" },
-    infoMsg: { key: "components.toastInfoMsg", default: "Hay una nueva actualización disponible" },
-    infoTitle: { key: "components.toastInfoTitle", default: "Novedad" },
-    warningBtn: { key: "components.toastWarningBtn", default: "Advertencia" },
-    warningMsg: { key: "components.toastWarningMsg", default: "La sesión expirará en 5 minutos" },
-    warningTitle: { key: "components.toastWarningTitle", default: "Aviso" },
-    errorBtn: { key: "components.toastErrorBtn", default: "Error" },
-    errorMsg: { key: "components.toastErrorMsg", default: "No se pudo conectar con el servidor" },
-    errorTitle: { key: "components.toastErrorTitle", default: "Fallo" },
-  },
-
-  modal: {
-    section: { key: "components.modals", default: "Modales" },
-    openBtn: { key: "components.openModalBtn", default: "Abrir Modal Básico" },
-    title: { key: "components.modalTitle", default: "Modal Básico VanUI" },
-    body: { key: "components.modalBody", default: "Este modal es completamente reactivo y se monta/desmonta con estados nativos de VanJS." },
-    close: { key: "components.modalClose", default: "Cerrar" },
-    accept: { key: "components.modalAccept", default: "Aceptar" },
-    confirmedToast: { key: "components.modalConfirmedToast", default: "Acción confirmada desde el modal" },
-    spinMsg: { key: "components.spinMsg", default: "Indicador de carga..." },
-  },
-
-  layouts: {
-    section: { key: "components.layoutsSection", default: "Layouts & Dashboard Shell" },
-    desc: { key: "components.layoutsDesc", default: "Estructura adaptable Mobile-First con Drawer deslizable en pantallas táctiles y Sidebar estática en escritorio." },
-    mobileDrawerTitle: { key: "components.mobileDrawerTitle", default: "Mobile-First Drawer" },
-    mobileDrawerDesc: { key: "components.mobileDrawerDesc", default: "Backdrop oscurecido con desenfoque, cierre automático al seleccionar enlace y botón hamburguesa accesible." },
-    desktopSidebarTitle: { key: "components.desktopSidebarTitle", default: "Desktop Sidebar" },
-    desktopSidebarDesc: { key: "components.desktopSidebarDesc", default: "Panel lateral persistente con soporte para grupos de navegación, íconos, badges reactivos y pie de página de usuario." },
-    headerSyncTitle: { key: "components.headerSyncTitle", default: "HeaderBar & Router Sync" },
-    headerSyncDesc: { key: "components.headerSyncDesc", default: "Sincronización automática de títulos y enlaces activos (aria-current) con el router singleton de la app." },
-  },
-} as const;
-
 export function ComponentsPage(_props: ComponentsPageProps = {}) {
   const modal = ModalBase();
 
@@ -202,11 +53,11 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
   const selectedUsers = van.state<SampleUser[]>([]);
 
   const columns: TableColumn<SampleUser>[] = [
-    { key: "name", header: i18n.t(TEXTS.table.colUser.key, undefined, TEXTS.table.colUser.default), sortable: true },
-    { key: "role", header: i18n.t(TEXTS.table.colRole.key, undefined, TEXTS.table.colRole.default), sortable: true },
+    { key: "name", header: i18n.t("components.colUser", "Usuario"), sortable: true },
+    { key: "role", header: i18n.t("components.colRole", "Rol"), sortable: true },
     {
       key: "status",
-      header: i18n.t(TEXTS.table.colStatus.key, undefined, TEXTS.table.colStatus.default),
+      header: i18n.t("components.colStatus", "Estado"),
       sortable: true,
       render: (row) => {
         const variantMap: Record<SampleUser["status"], "success" | "warning" | "danger"> = {
@@ -215,9 +66,9 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
           suspended: "danger",
         };
         const textMap = {
-          active: i18n.t(TEXTS.table.statusActive.key, undefined, TEXTS.table.statusActive.default),
-          pending: i18n.t(TEXTS.table.statusPending.key, undefined, TEXTS.table.statusPending.default),
-          suspended: i18n.t(TEXTS.table.statusSuspended.key, undefined, TEXTS.table.statusSuspended.default),
+          active: i18n.t("components.statusActive", "Activo"),
+          pending: i18n.t("components.statusPending", "Pendiente"),
+          suspended: i18n.t("components.statusSuspended", "Suspendido"),
         };
         return Badge({
           variant: variantMap[row.status],
@@ -227,7 +78,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
         });
       },
     },
-    { key: "created", header: i18n.t(TEXTS.table.colCreated.key, undefined, TEXTS.table.colCreated.default), sortable: true, align: "right" },
+    { key: "created", header: i18n.t("components.colCreated", "Fecha Alta"), sortable: true, align: "right" },
   ];
 
   return div(
@@ -238,8 +89,8 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
     // Cabecera Principal
     div(
       { class: "border-b border-border pb-5" },
-      h1({ class: "text-3xl font-extrabold text-foreground" }, i18n.t(TEXTS.title.key, undefined, TEXTS.title.default)),
-      p({ class: "text-foreground-soft text-sm mt-1" }, i18n.t(TEXTS.subtitle.key, undefined, TEXTS.subtitle.default)),
+      h1({ class: "text-3xl font-extrabold text-foreground" }, i18n.t("components.title", "Catálogo de Componentes")),
+      p({ class: "text-foreground-soft text-sm mt-1" }, i18n.t("components.subtitle", "Componentes interactivos construidos con VanJS y VanUI")),
     ),
 
     // 1. Theme & i18n Control Section (Componentes Embebidos de VanUI)
@@ -247,15 +98,15 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       { class: "space-y-5 p-6 rounded-2xl border border-border bg-secondary/10 shadow-sm" },
       div(
         { class: "flex items-center justify-between" },
-        h2({ class: "text-lg font-bold text-foreground" }, i18n.t(TEXTS.theme.section.key, undefined, TEXTS.theme.section.default)),
-        Badge({ text: i18n.t(TEXTS.theme.embeddedBadge.key, undefined, TEXTS.theme.embeddedBadge.default), variant: "primary", size: "sm" }),
+        h2({ class: "text-lg font-bold text-foreground" }, i18n.t("components.themeSection", "Gestión de Tema e Idioma")),
+        Badge({ text: i18n.t("components.embeddedBadge", "Embebidos en VanUI"), variant: "primary", size: "sm" }),
       ),
-      p({ class: "text-sm text-foreground-soft" }, i18n.t(TEXTS.theme.desc.key, undefined, TEXTS.theme.desc.default)),
+      p({ class: "text-sm text-foreground-soft" }, i18n.t("components.themeDesc", "Gestión de estado global sin overhead: alternancia instantánea y sincronización automática.")),
       div(
         { class: "grid grid-cols-1 md:grid-cols-2 gap-4 pt-2" },
         div(
           { class: "p-4 rounded-xl bg-card border border-border/80 space-y-3" },
-          h3({ class: "text-xs font-semibold text-muted-foreground uppercase tracking-wider" }, i18n.t(TEXTS.theme.themeToggleDemo.key, undefined, TEXTS.theme.themeToggleDemo.default)),
+          h3({ class: "text-xs font-semibold text-muted-foreground uppercase tracking-wider" }, i18n.t("components.themeToggleDemo", "ThemeToggle (Botón y Segmentado)")),
           div(
             { class: "flex flex-wrap items-center gap-3" },
             ThemeToggle({ theme, i18n, showLabel: true }),
@@ -264,7 +115,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
         ),
         div(
           { class: "p-4 rounded-xl bg-card border border-border/80 space-y-3" },
-          h3({ class: "text-xs font-semibold text-muted-foreground uppercase tracking-wider" }, i18n.t(TEXTS.theme.localeSelectorDemo.key, undefined, TEXTS.theme.localeSelectorDemo.default)),
+          h3({ class: "text-xs font-semibold text-muted-foreground uppercase tracking-wider" }, i18n.t("components.localeSelectorDemo", "LocaleSelector (Select y Botones)")),
           div(
             { class: "flex flex-wrap items-center gap-3" },
             LocaleSelector({ i18n }),
@@ -279,10 +130,10 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       { class: "space-y-4" },
       div(
         { class: "flex items-center justify-between" },
-        h2({ class: "text-xl font-bold text-foreground" }, i18n.t(TEXTS.tabs.section.key, undefined, TEXTS.tabs.section.default)),
-        Badge({ text: i18n.t(TEXTS.tabs.accessibleBadge.key, undefined, TEXTS.tabs.accessibleBadge.default), variant: "primary", size: "sm" }),
+        h2({ class: "text-xl font-bold text-foreground" }, i18n.t("components.tabs", "Pestañas (Tabs)")),
+        Badge({ text: i18n.t("components.accessibleBadge", "Accesible ARIA"), variant: "primary", size: "sm" }),
       ),
-      p({ class: "text-sm text-foreground-soft" }, i18n.t(TEXTS.tabs.desc.key, undefined, TEXTS.tabs.desc.default)),
+      p({ class: "text-sm text-foreground-soft" }, i18n.t("components.tabsDesc", "Organiza contenido denso con soporte para flechas de teclado (←/→, Home, End), badges y múltiples variantes.")),
       div(
         { class: "p-6 rounded-2xl border border-border bg-background shadow-sm space-y-6" },
         // Variante Underline
@@ -292,38 +143,38 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
           items: [
             {
               id: "overview",
-              label: i18n.t(TEXTS.tabs.overview.key, undefined, TEXTS.tabs.overview.default),
-              badge: i18n.t(TEXTS.tabs.overviewBadge.key, undefined, TEXTS.tabs.overviewBadge.default),
+              label: i18n.t("components.tabOverview", "Resumen General"),
+              badge: i18n.t("components.tabOverviewBadge", "Nuevo"),
               content: div(
                 { class: "p-4 rounded-xl bg-secondary/10 text-sm text-foreground space-y-2" },
-                h3({ class: "font-bold text-foreground text-base" }, i18n.t(TEXTS.tabs.perfTitle.key, undefined, TEXTS.tabs.perfTitle.default)),
-                p({ class: "text-foreground-soft leading-relaxed" }, i18n.t(TEXTS.tabs.perfBody.key, undefined, TEXTS.tabs.perfBody.default)),
+                h3({ class: "font-bold text-foreground text-base" }, i18n.t("components.perfTitle", "📊 Panel de Rendimiento")),
+                p({ class: "text-foreground-soft leading-relaxed" }, i18n.t("components.perfBody", "VanUI permite renderizar vistas SPA reactivas con un bundle ultra liviano (~1.5kB de VanJS core) sin VDOM.")),
               ),
             },
             {
               id: "activity",
-              label: i18n.t(TEXTS.tabs.activity.key, undefined, TEXTS.tabs.activity.default),
+              label: i18n.t("components.tabActivity", "Actividad"),
               badge: 4,
               content: div(
                 { class: "p-4 rounded-xl bg-secondary/10 text-sm text-foreground space-y-2" },
-                h3({ class: "font-bold text-foreground text-base" }, i18n.t(TEXTS.tabs.eventsTitle.key, undefined, TEXTS.tabs.eventsTitle.default)),
-                p({ class: "text-foreground-soft" }, i18n.t(TEXTS.tabs.eventsBody.key, undefined, TEXTS.tabs.eventsBody.default)),
+                h3({ class: "font-bold text-foreground text-base" }, i18n.t("components.eventsTitle", "⚡ Registro de Eventos")),
+                p({ class: "text-foreground-soft" }, i18n.t("components.eventsBody", "Se registraron 4 operaciones exitosas en las últimas 24 horas.")),
               ),
             },
             {
               id: "security",
-              label: i18n.t(TEXTS.tabs.security.key, undefined, TEXTS.tabs.security.default),
+              label: i18n.t("components.tabSecurity", "Seguridad"),
               content: div(
                 { class: "p-4 rounded-xl bg-secondary/10 text-sm text-foreground space-y-2" },
-                h3({ class: "font-bold text-foreground text-base" }, i18n.t(TEXTS.tabs.securityTitle.key, undefined, TEXTS.tabs.securityTitle.default)),
-                p({ class: "text-foreground-soft" }, i18n.t(TEXTS.tabs.securityBody.key, undefined, TEXTS.tabs.securityBody.default)),
+                h3({ class: "font-bold text-foreground text-base" }, i18n.t("components.securityTitle", "🔒 Autenticación y Cifrado")),
+                p({ class: "text-foreground-soft" }, i18n.t("components.securityBody", "Sesiones protegidas con guards síncronos y asíncronos en el enrutador SPA.")),
               ),
             },
             {
               id: "disabled-tab",
-              label: i18n.t(TEXTS.tabs.disabled.key, undefined, TEXTS.tabs.disabled.default),
+              label: i18n.t("components.tabDisabled", "Deshabilitado"),
               disabled: true,
-              content: div(i18n.t(TEXTS.tabs.disabledContent.key, undefined, TEXTS.tabs.disabledContent.default)),
+              content: div(i18n.t("components.disabledContent", "No accesible")),
             },
           ],
         }),
@@ -335,72 +186,72 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       { class: "space-y-4" },
       div(
         { class: "flex items-center justify-between" },
-        h2({ class: "text-xl font-bold text-foreground" }, i18n.t(TEXTS.dropdowns.section.key, undefined, TEXTS.dropdowns.section.default)),
-        Badge({ text: i18n.t(TEXTS.dropdowns.listboxBadge.key, undefined, TEXTS.dropdowns.listboxBadge.default), variant: "success", size: "sm" }),
+        h2({ class: "text-xl font-bold text-foreground" }, i18n.t("components.dropdowns", "Select y Dropdowns Accesibles")),
+        Badge({ text: i18n.t("components.listboxBadge", "Listbox + Menú"), variant: "success", size: "sm" }),
       ),
-      p({ class: "text-sm text-foreground-soft" }, i18n.t(TEXTS.dropdowns.desc.key, undefined, TEXTS.dropdowns.desc.default)),
+      p({ class: "text-sm text-foreground-soft" }, i18n.t("components.dropdownsDesc", "Selectores personalizados con navegación completa por teclado, búsqueda integrada y menús de acciones contextuales.")),
       div(
         { class: "grid grid-cols-1 md:grid-cols-3 gap-6 p-6 rounded-2xl border border-border bg-background shadow-sm" },
         // Select con búsqueda
         div(
           { class: "space-y-2" },
-          span({ class: "text-xs font-semibold text-foreground-soft uppercase tracking-wider" }, i18n.t(TEXTS.dropdowns.searchSelect.key, undefined, TEXTS.dropdowns.searchSelect.default)),
+          span({ class: "text-xs font-semibold text-foreground-soft uppercase tracking-wider" }, i18n.t("components.searchSelect", "Select con Búsqueda")),
           SelectDropdown({
             id: "framework-select",
             searchable: true,
-            searchPlaceholder: i18n.t(TEXTS.dropdowns.searchPlaceholder.key, undefined, TEXTS.dropdowns.searchPlaceholder.default),
+            searchPlaceholder: i18n.t("components.selectSearchPlaceholder", "Buscar framework..."),
             value: selectedFramework,
             options: [
-              { value: "vanjs", label: "VanJS", description: i18n.t(TEXTS.dropdowns.frameworkVanjs.key, undefined, TEXTS.dropdowns.frameworkVanjs.default) },
-              { value: "react", label: "React", description: i18n.t(TEXTS.dropdowns.frameworkReact.key, undefined, TEXTS.dropdowns.frameworkReact.default) },
-              { value: "vue", label: "Vue", description: i18n.t(TEXTS.dropdowns.frameworkVue.key, undefined, TEXTS.dropdowns.frameworkVue.default) },
-              { value: "svelte", label: "Svelte", description: i18n.t(TEXTS.dropdowns.frameworkSvelte.key, undefined, TEXTS.dropdowns.frameworkSvelte.default) },
+              { value: "vanjs", label: "VanJS", description: i18n.t("components.frameworkVanjs", "Ultra lightweight (1.0kB)") },
+              { value: "react", label: "React", description: i18n.t("components.frameworkReact", "Popular ecosystem") },
+              { value: "vue", label: "Vue", description: i18n.t("components.frameworkVue", "Progressive framework") },
+              { value: "svelte", label: "Svelte", description: i18n.t("components.frameworkSvelte", "Cybernetically enhanced") },
             ],
-            onChange: (val) => toast.info(i18n.raw(TEXTS.dropdowns.selectedToast.key, { val }, TEXTS.dropdowns.selectedToast.default)),
+            onChange: (val) => toast.info(i18n.raw("components.selectedToast", "Seleccionado: {val}", { val })),
           }),
           p(
             { class: "text-xs text-muted" },
             // raw() lee currentLocale.val dentro del binding: reacciona al idioma y al valor.
-            () => i18n.raw(TEXTS.dropdowns.currentValue.key, { val: selectedFramework.val }, TEXTS.dropdowns.currentValue.default),
+            () => i18n.raw("components.currentValue", "Valor actual: {val}", { val: selectedFramework.val }),
           ),
         ),
 
         // Select de Países
         div(
           { class: "space-y-2" },
-          span({ class: "text-xs font-semibold text-foreground-soft uppercase tracking-wider" }, i18n.t(TEXTS.dropdowns.countrySelect.key, undefined, TEXTS.dropdowns.countrySelect.default)),
+          span({ class: "text-xs font-semibold text-foreground-soft uppercase tracking-wider" }, i18n.t("components.countrySelect", "Selector con Iconos")),
           SelectDropdown({
             id: "country-select",
             value: selectedCountry,
             options: [
-              { value: "es", label: i18n.t(TEXTS.dropdowns.countryEs.key, undefined, TEXTS.dropdowns.countryEs.default), icon: span("🇪🇸") },
-              { value: "us", label: i18n.t(TEXTS.dropdowns.countryUs.key, undefined, TEXTS.dropdowns.countryUs.default), icon: span("🇺🇸") },
-              { value: "fr", label: i18n.t(TEXTS.dropdowns.countryFr.key, undefined, TEXTS.dropdowns.countryFr.default), icon: span("🇫🇷") },
-              { value: "mx", label: i18n.t(TEXTS.dropdowns.countryMx.key, undefined, TEXTS.dropdowns.countryMx.default), icon: span("🇲🇽") },
-              { value: "ar", label: i18n.t(TEXTS.dropdowns.countryAr.key, undefined, TEXTS.dropdowns.countryAr.default), icon: span("🇦🇷") },
+              { value: "es", label: i18n.t("components.countryEs", "España"), icon: span("🇪🇸") },
+              { value: "us", label: i18n.t("components.countryUs", "Estados Unidos"), icon: span("🇺🇸") },
+              { value: "fr", label: i18n.t("components.countryFr", "Francia"), icon: span("🇫🇷") },
+              { value: "mx", label: i18n.t("components.countryMx", "México"), icon: span("🇲🇽") },
+              { value: "ar", label: i18n.t("components.countryAr", "Argentina"), icon: span("🇦🇷") },
             ],
-            onChange: (val) => toast.info(i18n.raw(TEXTS.dropdowns.countryToast.key, { val }, TEXTS.dropdowns.countryToast.default)),
+            onChange: (val) => toast.info(i18n.raw("components.countryToast", "País seleccionado: {val}", { val })),
           }),
         ),
 
         // DropdownMenu contextual
         div(
           { class: "space-y-2" },
-          span({ class: "text-xs font-semibold text-foreground-soft uppercase tracking-wider" }, i18n.t(TEXTS.dropdowns.actionsMenu.key, undefined, TEXTS.dropdowns.actionsMenu.default)),
+          span({ class: "text-xs font-semibold text-foreground-soft uppercase tracking-wider" }, i18n.t("components.actionsMenu", "Menú de Acciones")),
           div(
             { class: "pt-1" },
             DropdownMenu({
               trigger: (isOpen) =>
                 Button(
                   { variant: "secondary" },
-                  div({ class: "flex items-center gap-2" }, span(i18n.t(TEXTS.dropdowns.actionsLabel.key, undefined, TEXTS.dropdowns.actionsLabel.default)), span({ class: () => isOpen.val ? "rotate-180 transition-transform" : "transition-transform" }, "▾")),
+                  div({ class: "flex items-center gap-2" }, span(i18n.t("components.actionsLabel", "Acciones")), span({ class: () => isOpen.val ? "rotate-180 transition-transform" : "transition-transform" }, "▾")),
                 ),
               items: [
-                { type: "header", label: i18n.raw(TEXTS.dropdowns.accountHeader.key, undefined, TEXTS.dropdowns.accountHeader.default) },
-                { label: i18n.t(TEXTS.dropdowns.viewProfile.key, undefined, TEXTS.dropdowns.viewProfile.default), icon: span("👤"), onClick: () => toast.info(i18n.raw(TEXTS.dropdowns.profileToast.key, undefined, TEXTS.dropdowns.profileToast.default)) },
-                { label: i18n.t(TEXTS.dropdowns.settings.key, undefined, TEXTS.dropdowns.settings.default), icon: span("⚙️"), badge: "Pro", onClick: () => toast.info(i18n.raw(TEXTS.dropdowns.settingsToast.key, undefined, TEXTS.dropdowns.settingsToast.default)) },
+                { type: "header", label: i18n.raw("components.accountHeader", "Opciones de cuenta") },
+                { label: i18n.t("components.viewProfile", "Ver Perfil"), icon: span("👤"), onClick: () => toast.info(i18n.raw("components.profileToast", "Navegando al perfil")) },
+                { label: i18n.t("components.settings", "Configuración"), icon: span("⚙️"), badge: "Pro", onClick: () => toast.info(i18n.raw("components.settingsToast", "Abriendo configuración")) },
                 { type: "divider" },
-                { label: i18n.t(TEXTS.dropdowns.signOut.key, undefined, TEXTS.dropdowns.signOut.default), icon: span("🚪"), destructive: true, onClick: () => toast.warning(i18n.raw(TEXTS.dropdowns.signOutToast.key, undefined, TEXTS.dropdowns.signOutToast.default)) },
+                { label: i18n.t("components.signOut", "Cerrar Sesión"), icon: span("🚪"), destructive: true, onClick: () => toast.warning(i18n.raw("components.signOutToast", "Sesión cerrada")) },
               ],
             }),
           ),
@@ -413,10 +264,10 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       { class: "space-y-4" },
       div(
         { class: "flex items-center justify-between" },
-        h2({ class: "text-xl font-bold text-foreground" }, i18n.t(TEXTS.confirm.section.key, undefined, TEXTS.confirm.section.default)),
-        Badge({ text: i18n.t(TEXTS.confirm.imperativeBadge.key, undefined, TEXTS.confirm.imperativeBadge.default), variant: "warning", size: "sm" }),
+        h2({ class: "text-xl font-bold text-foreground" }, i18n.t("components.confirmDialogs", "Diálogos de Confirmación (ConfirmDialog)")),
+        Badge({ text: i18n.t("components.imperativeBadge", "Imperativo & Declarativo"), variant: "warning", size: "sm" }),
       ),
-      p({ class: "text-sm text-foreground-soft" }, i18n.t(TEXTS.confirm.desc.key, undefined, TEXTS.confirm.desc.default)),
+      p({ class: "text-sm text-foreground-soft" }, i18n.t("components.confirmDesc", "Abstracción sobre Modal para confirmaciones críticas con soporte para Promises, estados de carga y variantes.")),
       div(
         { class: "flex flex-wrap items-center gap-4 p-6 rounded-2xl border border-border bg-background shadow-sm" },
         Button(
@@ -424,39 +275,39 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
             variant: "destructive",
             onclick: async () => {
               const confirmed = await confirmDialog({
-                title: i18n.raw(TEXTS.confirm.deleteTitle.key, undefined, TEXTS.confirm.deleteTitle.default),
-                message: i18n.raw(TEXTS.confirm.deleteMsg.key, undefined, TEXTS.confirm.deleteMsg.default),
+                title: i18n.raw("components.deleteTitle", "¿Eliminar cuenta permanentemente?"),
+                message: i18n.raw("components.deleteMsg", "Esta acción borrará todos tus datos y transacciones asociadas sin posibilidad de recuperación."),
                 variant: "danger",
-                confirmText: i18n.raw(TEXTS.confirm.deleteConfirm.key, undefined, TEXTS.confirm.deleteConfirm.default),
-                cancelText: i18n.raw(TEXTS.confirm.cancel.key, undefined, TEXTS.confirm.cancel.default),
+                confirmText: i18n.raw("components.deleteConfirm", "Sí, eliminar cuenta"),
+                cancelText: i18n.raw("components.cancel", "Cancelar"),
               });
 
               if (confirmed) {
-                toast.error(i18n.raw(TEXTS.confirm.deletedToast.key, undefined, TEXTS.confirm.deletedToast.default));
+                toast.error(i18n.raw("components.deletedToast", "Cuenta eliminada satisfactoriamente"));
               } else {
-                toast.info(i18n.raw(TEXTS.confirm.cancelledToast.key, undefined, TEXTS.confirm.cancelledToast.default));
+                toast.info(i18n.raw("components.cancelledToast", "Acción cancelada por el usuario"));
               }
             },
           },
-          i18n.t(TEXTS.confirm.dangerBtn.key, undefined, TEXTS.confirm.dangerBtn.default),
+          i18n.t("components.dangerBtn", "🗑️ Diálogo Peligroso (Imperativo)"),
         ),
         Button(
           {
             variant: "secondary",
             onclick: async () => {
               const confirmed = await confirmDialog({
-                title: i18n.raw(TEXTS.confirm.publishTitle.key, undefined, TEXTS.confirm.publishTitle.default),
-                message: i18n.raw(TEXTS.confirm.publishMsg.key, undefined, TEXTS.confirm.publishMsg.default),
+                title: i18n.raw("components.publishTitle", "¿Publicar cambios?"),
+                message: i18n.raw("components.publishMsg", "Los cambios se aplicarán inmediatamente a todos los usuarios en producción."),
                 variant: "primary",
-                confirmText: i18n.raw(TEXTS.confirm.publishConfirm.key, undefined, TEXTS.confirm.publishConfirm.default),
+                confirmText: i18n.raw("components.publishConfirm", "Publicar ahora"),
               });
 
               if (confirmed) {
-                toast.success(i18n.raw(TEXTS.confirm.publishedToast.key, undefined, TEXTS.confirm.publishedToast.default));
+                toast.success(i18n.raw("components.publishedToast", "Cambios publicados en producción"));
               }
             },
           },
-          i18n.t(TEXTS.confirm.infoBtn.key, undefined, TEXTS.confirm.infoBtn.default),
+          i18n.t("components.infoBtn", "🚀 Diálogo Informativo"),
         ),
       ),
     ),
@@ -466,21 +317,21 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       { class: "space-y-4" },
       div(
         { class: "flex items-center justify-between" },
-        h2({ class: "text-xl font-bold text-foreground" }, i18n.t(TEXTS.table.section.key, undefined, TEXTS.table.section.default)),
-        Badge({ text: i18n.t(TEXTS.table.searchSortBadge.key, undefined, TEXTS.table.searchSortBadge.default), variant: "primary", size: "sm" }),
+        h2({ class: "text-xl font-bold text-foreground" }, i18n.t("components.tables", "Tablas y DataGrid")),
+        Badge({ text: i18n.t("components.searchSortBadge", "Búsqueda + Sort + Paginación"), variant: "primary", size: "sm" }),
       ),
-      p({ class: "text-sm text-foreground-soft" }, i18n.t(TEXTS.table.desc.key, undefined, TEXTS.table.desc.default)),
+      p({ class: "text-sm text-foreground-soft" }, i18n.t("components.tablesDesc", "Tabla de datos reactiva con ordenamiento bidireccional por columna, búsqueda instantánea, selección múltiple y paginación.")),
       DataGrid({
         columns,
         data: sampleUsers,
         pageSize: 4,
         searchable: true,
-        searchPlaceholder: i18n.t(TEXTS.table.searchPlaceholder.key, undefined, TEXTS.table.searchPlaceholder.default),
+        searchPlaceholder: i18n.t("components.tableSearchPlaceholder", "Buscar por nombre o rol..."),
         selectable: true,
         selectedRows: selectedUsers,
         onSelectionChange: (selected) => {
           if (selected.length > 0) {
-            toast.info(i18n.raw(TEXTS.table.usersSelected.key, { n: selected.length }, TEXTS.table.usersSelected.default), { durationMs: 1500 });
+            toast.info(i18n.raw("components.usersSelected", "{n} usuarios seleccionados", { n: selected.length }), { durationMs: 1500 });
           }
         },
       }),
@@ -489,52 +340,52 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
     // 6. Badges & Toasts
     section(
       { class: "space-y-4" },
-      h2({ class: "text-xl font-bold text-foreground" }, i18n.t(TEXTS.badges.section.key, undefined, TEXTS.badges.section.default)),
+      h2({ class: "text-xl font-bold text-foreground" }, i18n.t("components.badges", "Etiquetas (Badges)")),
       div(
         { class: "flex flex-wrap items-center gap-3 p-6 rounded-2xl border border-border bg-background shadow-sm" },
-        Badge({ text: i18n.t(TEXTS.badges.primary.key, undefined, TEXTS.badges.primary.default), variant: "primary" }),
-        Badge({ text: i18n.t(TEXTS.badges.success.key, undefined, TEXTS.badges.success.default), variant: "success", dot: true }),
-        Badge({ text: i18n.t(TEXTS.badges.warning.key, undefined, TEXTS.badges.warning.default), variant: "warning", dot: true }),
-        Badge({ text: i18n.t(TEXTS.badges.danger.key, undefined, TEXTS.badges.danger.default), variant: "danger", dot: true }),
-        Badge({ text: i18n.t(TEXTS.badges.secondary.key, undefined, TEXTS.badges.secondary.default), variant: "secondary" }),
-        Badge({ text: i18n.t(TEXTS.badges.outline.key, undefined, TEXTS.badges.outline.default), variant: "outline" }),
-        Badge({ text: i18n.t(TEXTS.badges.large.key, undefined, TEXTS.badges.large.default), variant: "primary", size: "lg" }),
+        Badge({ text: i18n.t("components.badgePrimary", "Primario"), variant: "primary" }),
+        Badge({ text: i18n.t("components.badgeSuccess", "Éxito"), variant: "success", dot: true }),
+        Badge({ text: i18n.t("components.badgeWarning", "Advertencia"), variant: "warning", dot: true }),
+        Badge({ text: i18n.t("components.badgeDanger", "Peligro"), variant: "danger", dot: true }),
+        Badge({ text: i18n.t("components.badgeSecondary", "Secundario"), variant: "secondary" }),
+        Badge({ text: i18n.t("components.badgeOutline", "Contorno"), variant: "outline" }),
+        Badge({ text: i18n.t("components.badgeLarge", "Grande"), variant: "primary", size: "lg" }),
       ),
     ),
 
     // 7. Notificaciones Toast
     section(
       { class: "space-y-4" },
-      h2({ class: "text-xl font-bold text-foreground" }, i18n.t(TEXTS.toasts.section.key, undefined, TEXTS.toasts.section.default)),
+      h2({ class: "text-xl font-bold text-foreground" }, i18n.t("components.toasts", "Notificaciones (Toast)")),
       div(
         { class: "flex flex-wrap gap-3 p-6 rounded-2xl border border-border bg-background shadow-sm" },
         Button(
           {
             variant: "primary",
-            onclick: () => toast.success(i18n.raw(TEXTS.toasts.successMsg.key, undefined, TEXTS.toasts.successMsg.default), { title: i18n.raw(TEXTS.toasts.successTitle.key, undefined, TEXTS.toasts.successTitle.default) }),
+            onclick: () => toast.success(i18n.raw("components.toastSuccessMsg", "Operación realizada con éxito"), { title: i18n.raw("components.toastSuccessTitle", "Completado") }),
           },
-          i18n.t(TEXTS.toasts.successBtn.key, undefined, TEXTS.toasts.successBtn.default),
+          i18n.t("components.toastSuccessBtn", "Éxito"),
         ),
         Button(
           {
             variant: "secondary",
-            onclick: () => toast.info(i18n.raw(TEXTS.toasts.infoMsg.key, undefined, TEXTS.toasts.infoMsg.default), { title: i18n.raw(TEXTS.toasts.infoTitle.key, undefined, TEXTS.toasts.infoTitle.default) }),
+            onclick: () => toast.info(i18n.raw("components.toastInfoMsg", "Hay una nueva actualización disponible"), { title: i18n.raw("components.toastInfoTitle", "Novedad") }),
           },
-          i18n.t(TEXTS.toasts.infoBtn.key, undefined, TEXTS.toasts.infoBtn.default),
+          i18n.t("components.toastInfoBtn", "Información"),
         ),
         Button(
           {
             variant: "secondary",
-            onclick: () => toast.warning(i18n.raw(TEXTS.toasts.warningMsg.key, undefined, TEXTS.toasts.warningMsg.default), { title: i18n.raw(TEXTS.toasts.warningTitle.key, undefined, TEXTS.toasts.warningTitle.default) }),
+            onclick: () => toast.warning(i18n.raw("components.toastWarningMsg", "La sesión expirará en 5 minutos"), { title: i18n.raw("components.toastWarningTitle", "Aviso") }),
           },
-          i18n.t(TEXTS.toasts.warningBtn.key, undefined, TEXTS.toasts.warningBtn.default),
+          i18n.t("components.toastWarningBtn", "Advertencia"),
         ),
         Button(
           {
             variant: "destructive",
-            onclick: () => toast.error(i18n.raw(TEXTS.toasts.errorMsg.key, undefined, TEXTS.toasts.errorMsg.default), { title: i18n.raw(TEXTS.toasts.errorTitle.key, undefined, TEXTS.toasts.errorTitle.default) }),
+            onclick: () => toast.error(i18n.raw("components.toastErrorMsg", "No se pudo conectar con el servidor"), { title: i18n.raw("components.toastErrorTitle", "Fallo") }),
           },
-          i18n.t(TEXTS.toasts.errorBtn.key, undefined, TEXTS.toasts.errorBtn.default),
+          i18n.t("components.toastErrorBtn", "Error"),
         ),
       ),
     ),
@@ -542,7 +393,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
     // 8. Modal Clásico & Spinner
     section(
       { class: "space-y-4" },
-      h2({ class: "text-xl font-bold text-foreground" }, i18n.t(TEXTS.modal.section.key, undefined, TEXTS.modal.section.default)),
+      h2({ class: "text-xl font-bold text-foreground" }, i18n.t("components.modals", "Modales")),
       div(
         { class: "p-6 rounded-2xl border border-border bg-background shadow-sm space-y-5" },
         div(
@@ -552,8 +403,8 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
               variant: "secondary",
               onclick: () => {
                 modal.set({
-                  header: () => div({ class: "text-lg font-bold" }, i18n.raw(TEXTS.modal.title.key, undefined, TEXTS.modal.title.default)),
-                  body: () => div({ class: "py-2 text-sm text-foreground-soft leading-relaxed" }, i18n.raw(TEXTS.modal.body.key, undefined, TEXTS.modal.body.default)),
+                  header: () => div({ class: "text-lg font-bold" }, i18n.raw("components.modalTitle", "Modal Básico VanUI")),
+                  body: () => div({ class: "py-2 text-sm text-foreground-soft leading-relaxed" }, i18n.raw("components.modalBody", "Este modal es completamente reactivo y se monta/desmonta con estados nativos de VanJS.")),
                   footer: () =>
                     div(
                       { class: "flex justify-end gap-2" },
@@ -562,30 +413,30 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
                           variant: "secondary",
                           onclick: () => modal.close(),
                         },
-                        i18n.raw(TEXTS.modal.close.key, undefined, TEXTS.modal.close.default),
+                        i18n.raw("components.modalClose", "Cerrar"),
                       ),
                       Button(
                         {
                           variant: "primary",
                           onclick: () => {
                             modal.close();
-                            toast.success(i18n.raw(TEXTS.modal.confirmedToast.key, undefined, TEXTS.modal.confirmedToast.default));
+                            toast.success(i18n.raw("components.modalConfirmedToast", "Acción confirmada desde el modal"));
                           },
                         },
-                        i18n.raw(TEXTS.modal.accept.key, undefined, TEXTS.modal.accept.default),
+                        i18n.raw("components.modalAccept", "Aceptar"),
                       ),
                     ),
                 });
                 modal.open();
               },
             },
-            i18n.t(TEXTS.modal.openBtn.key, undefined, TEXTS.modal.openBtn.default),
+            i18n.t("components.openModalBtn", "Abrir Modal Básico"),
           ),
         ),
         // Spin en su propia franja centrada: junto al botón se veía descolgado.
         div(
           { class: "flex justify-center rounded-xl border border-border/60 bg-secondary/10" },
-          Spin(i18n.t(TEXTS.modal.spinMsg.key, undefined, TEXTS.modal.spinMsg.default)),
+          Spin(i18n.t("components.spinMsg", "Indicador de carga...")),
         ),
       ),
       modal.dom(),
@@ -594,10 +445,10 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
     // 9. Dashboard Layout & Sidebars (VanUI AppShell)
     section(
       { class: "space-y-4" },
-      h2({ class: "text-xl font-bold text-foreground" }, i18n.t(TEXTS.layouts.section.key, undefined, TEXTS.layouts.section.default)),
+      h2({ class: "text-xl font-bold text-foreground" }, i18n.t("components.layoutsSection", "Layouts & Dashboard Shell")),
       p(
         { class: "text-sm text-foreground-soft" },
-        i18n.t(TEXTS.layouts.desc.key, undefined, TEXTS.layouts.desc.default),
+        i18n.t("components.layoutsDesc", "Estructura adaptable Mobile-First con Drawer deslizable en pantallas táctiles y Sidebar estática en escritorio."),
       ),
       div(
         { class: "p-6 rounded-2xl border border-border bg-card shadow-xs space-y-4" },
@@ -606,20 +457,20 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
           div(
             { class: "p-4 rounded-xl bg-background border border-border/80 space-y-2" },
             span({ class: "text-xl" }, "📱"),
-            h3({ class: "font-semibold text-sm text-foreground" }, i18n.t(TEXTS.layouts.mobileDrawerTitle.key, undefined, TEXTS.layouts.mobileDrawerTitle.default)),
-            p({ class: "text-xs text-muted-foreground" }, i18n.t(TEXTS.layouts.mobileDrawerDesc.key, undefined, TEXTS.layouts.mobileDrawerDesc.default)),
+            h3({ class: "font-semibold text-sm text-foreground" }, i18n.t("components.mobileDrawerTitle", "Mobile-First Drawer")),
+            p({ class: "text-xs text-muted-foreground" }, i18n.t("components.mobileDrawerDesc", "Backdrop oscurecido con desenfoque, cierre automático al seleccionar enlace y botón hamburguesa accesible.")),
           ),
           div(
             { class: "p-4 rounded-xl bg-background border border-border/80 space-y-2" },
             span({ class: "text-xl" }, "🖥️"),
-            h3({ class: "font-semibold text-sm text-foreground" }, i18n.t(TEXTS.layouts.desktopSidebarTitle.key, undefined, TEXTS.layouts.desktopSidebarTitle.default)),
-            p({ class: "text-xs text-muted-foreground" }, i18n.t(TEXTS.layouts.desktopSidebarDesc.key, undefined, TEXTS.layouts.desktopSidebarDesc.default)),
+            h3({ class: "font-semibold text-sm text-foreground" }, i18n.t("components.desktopSidebarTitle", "Desktop Sidebar")),
+            p({ class: "text-xs text-muted-foreground" }, i18n.t("components.desktopSidebarDesc", "Panel lateral persistente con soporte para grupos de navegación, íconos, badges reactivos y pie de página de usuario.")),
           ),
           div(
             { class: "p-4 rounded-xl bg-background border border-border/80 space-y-2" },
             span({ class: "text-xl" }, "🧭"),
-            h3({ class: "font-semibold text-sm text-foreground" }, i18n.t(TEXTS.layouts.headerSyncTitle.key, undefined, TEXTS.layouts.headerSyncTitle.default)),
-            p({ class: "text-xs text-muted-foreground" }, i18n.t(TEXTS.layouts.headerSyncDesc.key, undefined, TEXTS.layouts.headerSyncDesc.default)),
+            h3({ class: "font-semibold text-sm text-foreground" }, i18n.t("components.headerSyncTitle", "HeaderBar & Router Sync")),
+            p({ class: "text-xs text-muted-foreground" }, i18n.t("components.headerSyncDesc", "Sincronización automática de títulos y enlaces activos (aria-current) con el router singleton de la app.")),
           ),
         ),
       ),

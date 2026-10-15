@@ -1,5 +1,5 @@
 import van, { type State } from "vanjs-core";
-import { t } from "../i18n.js";
+import { t, raw } from "../i18n.js";
 import { spaClick } from "../router.js";
 import { cx, isRouteActive } from "../util.js";
 import { Badge } from "./badge.js";
@@ -178,7 +178,7 @@ export function Sidebar(props: SidebarProps) {
             // Leer collapsed.val aquí dentro: si la clave se elige fuera, el
             // derive de t() no depende del estado y el label no se actualiza.
             const label = collapsed.val ? TEXTS.expand : TEXTS.collapse;
-            return t(label.key, undefined, label.default).val;
+            return raw(label.key, label.default);
           },
           "aria-expanded": () => (collapsed.val ? "false" : "true"),
           onclick: () => {
@@ -199,7 +199,7 @@ export function Sidebar(props: SidebarProps) {
           props.class,
         ),
       ),
-      "aria-label": t(TEXTS.title.key, undefined, TEXTS.title.default),
+      "aria-label": t("sidebar.title", "Sidebar"),
     },
     // Sección superior: header + navegación (scroll interno, el footer queda fijo).
     div(
@@ -222,7 +222,7 @@ export function Sidebar(props: SidebarProps) {
                     type: "button",
                     class:
                       "lg:hidden p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary text-base cursor-pointer",
-                    "aria-label": t(TEXTS.close.key, undefined, TEXTS.close.default).val,
+                    "aria-label": t("sidebar.close", "Cerrar menú"),
                     onclick: props.onClose,
                   },
                   "✕",

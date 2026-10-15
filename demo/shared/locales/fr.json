@@ -97,7 +97,6 @@
     "profileToast": "Navigation vers le profil",
     "settings": "Paramètres",
     "settingsToast": "Ouverture des paramètres",
-    "proBadge": "Pro",
     "signOut": "Se déconnecter",
     "signOutToast": "Session fermée",
     "imperativeBadge": "Impératif & Déclaratif",
@@ -244,5 +243,8 @@
   "router": {
     "notFound": "404 - Introuvable",
     "loading": "Chargement..."
+  },
+  "user": {
+    "sessionActive": "Session active"
   }
 }

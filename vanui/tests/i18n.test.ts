@@ -26,7 +26,7 @@ describe("createI18n", () => {
   test("resuelve traducciones anidadas e interpolación", () => {
     const i18n = createI18n({ defaultLocale: "es", locales });
     expect(i18n.raw("common.save")).toBe("Guardar");
-    expect(i18n.raw("greeting", { name: "Mundo" })).toBe("Hola Mundo");
+    expect(i18n.raw("greeting", undefined, { name: "Mundo" })).toBe("Hola Mundo");
   });
 
   test("derivación reactiva con t() se actualiza al cambiar de idioma", async () => {
@@ -82,7 +82,7 @@ describe("i18n — singleton (defaults de la librería)", () => {
     expect(globalI18n.raw("dialog.confirmTitle")).toBe("Confirm action");
     expect(globalI18n.raw("theme.system")).toBe("System");
     expect(globalI18n.raw("nav.logout")).toBe("Sign out");
-    expect(globalI18n.raw("table.showing", { start: 1, end: 5, total: 20 })).toBe(
+    expect(globalI18n.raw("table.showing", undefined, { start: 1, end: 5, total: 20 })).toBe(
       "Showing 1 - 5 of 20",
     );
   });

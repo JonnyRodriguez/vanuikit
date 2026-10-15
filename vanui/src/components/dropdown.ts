@@ -3,12 +3,6 @@ import { t } from "../i18n.js";
 
 const { div, button, span, input, ul, li, hr } = van.tags;
 
-/** Contrato de llaves de i18n del componente */
-export const TEXTS = {
-  empty: { key: "dropdown.empty", default: "No se encontraron resultados" },
-  searchPlaceholder: { key: "dropdown.searchPlaceholder", default: "Buscar..." },
-} as const;
-
 // ---------------------------------------------------------------------
 // 1. SelectDropdown (Selector personalizado y accesible)
 // ---------------------------------------------------------------------
@@ -220,7 +214,7 @@ export function SelectDropdown<T = string | number>(props: SelectDropdownProps<T
               { class: "p-2 border-b border-border bg-secondary/10" },
               input({
                 type: "text",
-                placeholder: props.searchPlaceholder ?? t(TEXTS.searchPlaceholder.key, undefined, TEXTS.searchPlaceholder.default),
+                placeholder: props.searchPlaceholder ?? t("dropdown.searchPlaceholder", "Buscar..."),
                 value: searchQuery.val,
                 class:
                   "w-full px-3 py-1.5 text-xs rounded-md border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-focus",
@@ -239,7 +233,7 @@ export function SelectDropdown<T = string | number>(props: SelectDropdownProps<T
           filtered.length === 0
             ? li(
                 { class: "px-3 py-4 text-xs text-center text-muted italic" },
-                t(TEXTS.empty.key, undefined, TEXTS.empty.default),
+                t("dropdown.empty", "No se encontraron resultados"),
               )
             : filtered.map((opt, idx) => {
                 const isSelected = selectedValue.val === opt.value;

@@ -220,16 +220,16 @@ export function TextField(
   if (typeof optionsOrLabel === "string") {
     return Field(
       { label: optionsOrLabel, name, inputType: "text", placeholder },
-      [Required(t(TEXTS.name.required.key, undefined, TEXTS.name.required.default))],
+      [Required(t("field.name.required", "Ingresa tu nombre"))],
     );
   }
   const {
-    label = t(TEXTS.name.label.key, undefined, TEXTS.name.label.default),
+    label = t("field.name.label", "Nombre completo"),
     name: fieldName = "name",
-    placeholder: ph = t(TEXTS.name.placeholder.key, undefined, TEXTS.name.placeholder.default),
+    placeholder: ph = t("field.name.placeholder", "Juan Pérez"),
     hint,
     required = true,
-    requiredMsg = t(TEXTS.name.required.key, undefined, TEXTS.name.required.default),
+    requiredMsg = t("field.name.required", "Ingresa tu nombre"),
   } = optionsOrLabel;
   const validators: Validator[] = [];
   if (required) {
@@ -250,18 +250,18 @@ export function EmailField(
     return Field(
       { label: optionsOrLabel, name, inputType: "email", placeholder: placeholder ?? TEXTS.email.placeholder.default },
       [
-        Required(t(TEXTS.email.required.key, undefined, TEXTS.email.required.default)),
-        Email(t(TEXTS.email.invalid.key, undefined, TEXTS.email.invalid.default)),
+        Required(t("field.email.required", "Ingresa tu correo electrónico")),
+        Email(t("field.email.invalid", "Correo electrónico inválido")),
       ],
     );
   }
   const {
-    label = t(TEXTS.email.label.key, undefined, TEXTS.email.label.default),
+    label = t("field.email.label", "Correo electrónico"),
     name: fieldName = "email",
-    placeholder: ph = t(TEXTS.email.placeholder.key, undefined, TEXTS.email.placeholder.default),
+    placeholder: ph = t("field.email.placeholder", "tucorreo@ejemplo.com"),
     hint,
-    requiredMsg = t(TEXTS.email.required.key, undefined, TEXTS.email.required.default),
-    invalidMsg = t(TEXTS.email.invalid.key, undefined, TEXTS.email.invalid.default),
+    requiredMsg = t("field.email.required", "Ingresa tu correo electrónico"),
+    invalidMsg = t("field.email.invalid", "Correo electrónico inválido"),
   } = optionsOrLabel;
 
   return Field(
@@ -287,19 +287,19 @@ export function PasswordField(
     return Field(
       { label: optionsOrLabel, name, inputType: "password", placeholder: placeholder ?? TEXTS.password.placeholder.default },
       [
-        Required(t(TEXTS.password.required.key, undefined, TEXTS.password.required.default)),
-        MinLength(minLength, t(TEXTS.password.min.key, { min: minLength }, TEXTS.password.min.default)),
+        Required(t("field.password.required", "Ingresa tu contraseña")),
+        MinLength(minLength, t("field.password.min", "La contraseña debe tener al menos {min} caracteres", { min: minLength })),
       ],
     );
   }
   const {
-    label = t(TEXTS.password.label.key, undefined, TEXTS.password.label.default),
+    label = t("field.password.label", "Contraseña"),
     name: fieldName = "password",
-    placeholder: ph = t(TEXTS.password.placeholder.key, undefined, TEXTS.password.placeholder.default),
+    placeholder: ph = t("field.password.placeholder", "••••••••"),
     hint,
     min: minLength = 6,
-    requiredMsg = t(TEXTS.password.required.key, undefined, TEXTS.password.required.default),
-    minMsg = t(TEXTS.password.min.key, { min: minLength }, TEXTS.password.min.default),
+    requiredMsg = t("field.password.required", "Ingresa tu contraseña"),
+    minMsg = t("field.password.min", "La contraseña debe tener al menos {min} caracteres", { min: minLength }),
   } = optionsOrLabel;
 
   return Field(

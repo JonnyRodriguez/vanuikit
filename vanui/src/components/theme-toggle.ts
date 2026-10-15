@@ -66,7 +66,7 @@ export function ThemeToggle(props: ThemeToggleProps = {}) {
           props.class,
         ),
         role: "radiogroup",
-        "aria-label": i18n.t(TEXTS.selectLabel.key, undefined, TEXTS.selectLabel.default),
+        "aria-label": i18n.t("theme.selectLabel", "Seleccionar tema visual"),
       },
       modes.map(({ mode, icon, text }) => {
         const isActive = van.derive(() => theme.mode.val === mode);
@@ -85,7 +85,7 @@ export function ThemeToggle(props: ThemeToggleProps = {}) {
             onclick: () => theme.setMode(mode),
           },
           span({ class: "text-sm leading-none" }, icon),
-          showLabel ? span(i18n.t(text.key, undefined, text.default)) : null,
+          showLabel ? span(i18n.t(text.key, text.default)) : null,
         );
       }),
     );
@@ -108,10 +108,10 @@ export function ThemeToggle(props: ThemeToggleProps = {}) {
   };
 
   const getLabel = () => {
-    if (theme.mode.val === "system") return i18n.t(TEXTS.system.key, undefined, TEXTS.system.default);
+    if (theme.mode.val === "system") return i18n.t("theme.system", "Sistema");
     return theme.mode.val === "dark"
-      ? i18n.t(TEXTS.dark.key, undefined, TEXTS.dark.default)
-      : i18n.t(TEXTS.light.key, undefined, TEXTS.light.default);
+      ? i18n.t("theme.dark", "Oscuro")
+      : i18n.t("theme.light", "Claro");
   };
 
   return button(
@@ -121,8 +121,8 @@ export function ThemeToggle(props: ThemeToggleProps = {}) {
         "inline-flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-border bg-card hover:bg-secondary text-foreground text-xs font-medium cursor-pointer transition-colors shadow-xs select-none",
         props.class,
       ),
-      "aria-label": i18n.t(TEXTS.toggleLabel.key, undefined, TEXTS.toggleLabel.default),
-      title: i18n.t(TEXTS.toggleTitle.key, undefined, TEXTS.toggleTitle.default),
+      "aria-label": i18n.t("theme.toggleLabel", "Alternar tema visual (Claro / Oscuro / Sistema)"),
+      title: i18n.t("theme.toggleTitle", "Alternar tema (Claro / Oscuro / Sistema)"),
       onclick: cycle,
     },
     () => span({ class: "text-sm leading-none" }, getIcon()),

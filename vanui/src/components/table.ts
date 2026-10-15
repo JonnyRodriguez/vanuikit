@@ -1,21 +1,7 @@
 import van, { type State, type ChildDom } from "vanjs-core";
-import { t } from "../i18n.js";
+import { t, raw } from "../i18n.js";
 
 const { div, table, thead, tbody, tr, th, td, span, button, input } = van.tags;
-
-/**
- * =========================================================================
- * DEFINICIÓN LOCAL DE TEXTOS (TEXTS)
- * =========================================================================
- */
-export const TEXTS = {
-  searchPlaceholder: { key: "table.searchPlaceholder", default: "Buscar en la tabla..." },
-  emptyText: { key: "table.emptyText", default: "No hay datos disponibles" },
-  selectedCount: { key: "table.selectedCount", default: "{count} seleccionados" },
-  showing: { key: "table.showing", default: "Mostrando {start} - {end} de {total}" },
-  prev: { key: "table.prev", default: "← Anterior" },
-  next: { key: "table.next", default: "Siguiente →" },
-};
 
 export interface TableColumn<T = any> {
   key: string;
@@ -203,7 +189,7 @@ export function Table<T extends Record<string, any> = any>(props: TableProps<T>)
                   type: "text",
                   placeholder:
                     props.searchPlaceholder ??
-                    t(TEXTS.searchPlaceholder.key, undefined, TEXTS.searchPlaceholder.default),
+                    t("table.searchPlaceholder", "Buscar en la tabla..."),
                   value: searchQuery.val,
                   class:
                     "w-full pl-8 pr-3 py-1.5 text-xs rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-focus transition-all",
@@ -220,11 +206,7 @@ export function Table<T extends Record<string, any> = any>(props: TableProps<T>)
               props.selectable && selectedRows.val.length > 0
                 ? span(
                     { class: "text-xs text-primary font-semibold" },
-                    t(
-                      TEXTS.selectedCount.key,
-                      { count: selectedRows.val.length },
-                      `${selectedRows.val.length} seleccionados`,
-                    ),
+                    t("table.selectedCount", `${selectedRows.val.length} seleccionados`, { count: selectedRows.val.length }),
                   )
                 : null,
             )
@@ -310,7 +292,7 @@ export function Table<T extends Record<string, any> = any>(props: TableProps<T>)
                         colspan: props.columns.length + (props.selectable ? 1 : 0),
                         class: "px-4 py-8 text-center text-muted text-sm italic",
                       },
-                      props.emptyText ?? t(TEXTS.emptyText.key, undefined, TEXTS.emptyText.default),
+                      props.emptyText ?? t("table.emptyText", "No hay datos disponibles"),
                     ),
                   )
                 : displayRows.map((row, index) => {
@@ -368,18 +350,11 @@ export function Table<T extends Record<string, any> = any>(props: TableProps<T>)
               },
               span(
                 () =>
-                  t(
-                    TEXTS.showing.key,
-                    {
+                  raw("table.showing", "Mostrando {start} - {end} de {total}", {
                       start: (currentPage.val - 1) * pageSize + 1,
                       end: Math.min(currentPage.val * pageSize, totalItems),
                       total: totalItems,
-                    },
-                    `Mostrando ${(currentPage.val - 1) * pageSize + 1} - ${Math.min(
-                      currentPage.val * pageSize,
-                      totalItems,
-                    )} de ${totalItems}`,
-                  ).val,
+                    }),
               ),
               div(
                 { class: "flex items-center gap-1.5" },
@@ -391,7 +366,7 @@ export function Table<T extends Record<string, any> = any>(props: TableProps<T>)
                       "px-2.5 py-1 rounded-md border border-border bg-background hover:bg-secondary/20 disabled:opacity-40 disabled:pointer-events-none text-foreground transition-colors cursor-pointer",
                     onclick: () => (currentPage.val = Math.max(1, currentPage.val - 1)),
                   },
-                  t(TEXTS.prev.key, undefined, TEXTS.prev.default),
+                  t("table.prev", "← Anterior"),
                 ),
                 span(
                   { class: "px-2 font-medium text-foreground" },
@@ -406,7 +381,7 @@ export function Table<T extends Record<string, any> = any>(props: TableProps<T>)
                     onclick: () =>
                       (currentPage.val = Math.min(totalPages, currentPage.val + 1)),
                   },
-                  t(TEXTS.next.key, undefined, TEXTS.next.default),
+                  t("table.next", "Siguiente →"),
                 ),
               ),
             )

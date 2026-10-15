@@ -3,15 +3,6 @@ import { SecondaryButton } from "./button.js";
 import { t } from "../i18n.js";
 
 /**
- * =========================================================================
- * DEFINICIÓN LOCAL DE TEXTOS (TEXTS)
- * =========================================================================
- */
-export const TEXTS = {
-  close: { key: "modal.close", default: "Cerrar" },
-};
-
-/**
  * Contenido de una zona del modal: función que devuelve un hijo de VanJS
  * (se re-evalúa en cada render, sirve para contenido reactivo), o null
  * para ocultar la zona.
@@ -120,7 +111,7 @@ export const ModalClose = (onClose: () => void) =>
       type: "button",
       class:
         "text-2xl text-muted hover:text-foreground-soft bg-transparent border-none cursor-pointer p-0",
-      "aria-label": t(TEXTS.close.key, undefined, TEXTS.close.default),
+      "aria-label": t("modal.close", "Cerrar"),
       onclick: onClose,
     },
     "×",
@@ -138,7 +129,7 @@ export const ModalHeaderWithTitleAndClose = (
 
 export const ModalFooterWithCloseButton = (
   onClose: () => void,
-  text: string | State<string> = t(TEXTS.close.key, undefined, TEXTS.close.default),
+  text: string | State<string> = t("modal.close", "Cerrar"),
 ) =>
   van.tags.div(
     { class: "pt-3 flex justify-end gap-2" },

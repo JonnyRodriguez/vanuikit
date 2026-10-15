@@ -13,22 +13,6 @@ import { t } from "../i18n.js";
 
 export type AuthResult = { error: string } | { ok?: boolean } | {};
 
-/**
- * =========================================================================
- * DEFINICIÓN LOCAL DE TEXTOS (TEXTS)
- * =========================================================================
- */
-export const TEXTS = {
-  submit: { key: "register.submit", default: "Crear cuenta" },
-  loading: { key: "register.loading", default: "Creando cuenta..." },
-  confirm: {
-    label: { key: "field.confirm.label", default: "Confirmar contraseña" },
-    placeholder: { key: "field.confirm.placeholder", default: "••••••••" },
-    required: { key: "field.confirm.required", default: "Confirma tu contraseña" },
-    mismatch: { key: "field.confirm.mismatch", default: "Las contraseñas no coinciden" },
-  },
-};
-
 /** Lo que RegisterForm necesita de su orquestador. */
 export interface RegisterInfo {
   handleRegister: (data: Record<string, unknown>) => Promise<AuthResult>;
@@ -46,7 +30,7 @@ export const RegisterForm = (info: RegisterInfo) => {
 
   const form = Form(async (data) => {
     formError.val = "";
-    msg.val = Spin(t(TEXTS.loading.key, undefined, TEXTS.loading.default));
+    msg.val = Spin(t("register.loading", "Creando cuenta..."));
     const result = await info.handleRegister(data);
     if ("error" in result && result.error) {
       formError.val = result.error as string;
@@ -59,10 +43,10 @@ export const RegisterForm = (info: RegisterInfo) => {
   const password = PasswordField();
   const confirm = PasswordField({
     name: "confirm",
-    label: t(TEXTS.confirm.label.key, undefined, TEXTS.confirm.label.default),
-    placeholder: t(TEXTS.confirm.placeholder.key, undefined, TEXTS.confirm.placeholder.default),
-    requiredMsg: t(TEXTS.confirm.required.key, undefined, TEXTS.confirm.required.default),
-  }).addValidator(Match("password", t(TEXTS.confirm.mismatch.key, undefined, TEXTS.confirm.mismatch.default)));
+    label: t("field.confirm.label", "Confirmar contraseña"),
+    placeholder: t("field.confirm.placeholder", "••••••••"),
+    requiredMsg: t("field.confirm.required", "Confirma tu contraseña"),
+  }).addValidator(Match("password", t("field.confirm.mismatch", "Las contraseñas no coinciden")));
 
   form.add(name, email, password, confirm);
 
@@ -77,7 +61,7 @@ export const RegisterForm = (info: RegisterInfo) => {
         { class: "pt-2" },
         () =>
           (msg.val && msg.val) ||
-          Button({ type: "submit" }, t(TEXTS.submit.key, undefined, TEXTS.submit.default)),
+          Button({ type: "submit" }, t("register.submit", "Crear cuenta")),
       ),
     ),
   );

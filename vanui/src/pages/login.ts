@@ -14,16 +14,6 @@ import { t } from "../i18n.js";
 
 export type AuthResult = { error: string } | { ok?: boolean } | {};
 
-/**
- * =========================================================================
- * DEFINICIÓN LOCAL DE TEXTOS (TEXTS)
- * =========================================================================
- */
-export const TEXTS = {
-  submit: { key: "login.submit", default: "Iniciar sesión" },
-  loading: { key: "login.loading", default: "Iniciando sesión..." },
-};
-
 /** Lo que LoginForm necesita de su orquestador. */
 export interface LoginInfo {
   handleLogin: (data: Record<string, unknown>) => Promise<AuthResult>;
@@ -41,7 +31,7 @@ export const LoginForm = (info: LoginInfo) => {
 
   const form = Form(async (data) => {
     formError.val = "";
-    msg.val = Spin(t(TEXTS.loading.key, undefined, TEXTS.loading.default));
+    msg.val = Spin(t("login.loading", "Iniciando sesión..."));
     const result = await info.handleLogin(data);
     if ("error" in result && result.error) {
       formError.val = result.error as string;
@@ -63,7 +53,7 @@ export const LoginForm = (info: LoginInfo) => {
     form.dom(
       div(
         { class: "pt-2" },
-        () => (msg.val && msg.val) || Button({ type: "submit" }, t(TEXTS.submit.key, undefined, TEXTS.submit.default)),
+        () => (msg.val && msg.val) || Button({ type: "submit" }, t("login.submit", "Iniciar sesión")),
       ),
     ),
   );

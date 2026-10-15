@@ -15,34 +15,6 @@ const RECHARGE_ENDPOINT = "/api/payment/recharge";
 
 export interface GatewaysPageProps {}
 
-export const TEXTS = {
-  title: { key: "gateways.title", default: "Métodos de Pago y Recarga" },
-  loading: { key: "gateways.loading", default: "Cargando pasarelas..." },
-  loadingParams: { key: "gateways.loadingParams", default: "Cargando parámetros..." },
-  restrictedTitle: { key: "gateways.restrictedTitle", default: "Acceso Restringido" },
-  restrictedMsg: { key: "gateways.restrictedMsg", default: "Debes iniciar sesión para acceder a las pasarelas de pago y recargas." },
-  errorTitle: { key: "gateways.errorTitle", default: "Error al cargar datos" },
-  goToLogin: { key: "gateways.goToLogin", default: "Ir al Login" },
-  retry: { key: "gateways.retry", default: "Reintentar" },
-  rechargeWith: { key: "gateways.rechargeWith", default: "Recargar con {name}" },
-  amountLabel: { key: "gateways.amountLabel", default: "Monto a recargar ({tipo})" },
-  minMaxHelp: { key: "gateways.minMaxHelp", default: "Mínimo: {min} {tipo} · Máximo: {max} {tipo}" },
-  rechargeBtn: { key: "gateways.rechargeBtn", default: "Recargar" },
-  generating: { key: "gateways.generating", default: "Generando..." },
-  processing: { key: "gateways.processing", default: "Procesando recarga..." },
-  qrTitle: { key: "gateways.qrTitle", default: "Código QR" },
-  qrClickText: { key: "gateways.qrClickText", default: "Haz clic aquí para abrir la plataforma" },
-  qrScanText: { key: "gateways.qrScanText", default: "o escanea el código QR con tu app móvil" },
-  qrAlt: { key: "gateways.qrAlt", default: "Código QR" },
-  qrNoticeText: { key: "gateways.qrNoticeText", default: "Tu saldo se actualizará automáticamente." },
-  invalidAmount: { key: "gateways.invalidAmount", default: "Ingresa un monto válido" },
-  minAmountErr: { key: "gateways.minAmountErr", default: "El monto debe ser superior a {min} {tipo}" },
-  maxAmountErr: { key: "gateways.maxAmountErr", default: "El monto debe ser inferior a {max} {tipo}" },
-  urlGenErr: { key: "gateways.urlGenErr", default: "No se pudo generar la URL de recarga" },
-  qrGenErr: { key: "gateways.qrGenErr", default: "No se pudo generar el código QR" },
-  processErr: { key: "gateways.processErr", default: "Error al procesar la recarga" },
-};
-
 export const GatewaysPage = (_props: GatewaysPageProps = {}) => {
   const { div, h1, p, form, input, button, img, span, hr } = van.tags;
 
@@ -70,24 +42,24 @@ export const GatewaysPage = (_props: GatewaysPageProps = {}) => {
       onSuccess: async (result) => {
         const url = result.data?.url;
         if (!url) {
-          validationError.val = i18n.raw(TEXTS.urlGenErr.key, undefined, TEXTS.urlGenErr.default);
+          validationError.val = i18n.raw("gateways.urlGenErr", "No se pudo generar la URL de recarga");
           return;
         }
 
         const qrResult = await qr.generate(url, activeGateway.val?.img);
         if ("error" in qrResult) {
-          validationError.val = i18n.raw(TEXTS.qrGenErr.key, undefined, TEXTS.qrGenErr.default);
+          validationError.val = i18n.raw("gateways.qrGenErr", "No se pudo generar el código QR");
           return;
         }
 
         modal.set({
-          title: i18n.t(TEXTS.qrTitle.key, undefined, TEXTS.qrTitle.default),
+          title: i18n.t("gateways.qrTitle", "Código QR"),
           body: () => qrBody(qrResult.qr, url),
           footer: null,
         });
       },
       onError: (err) => {
-        validationError.val = err.message || i18n.raw(TEXTS.processErr.key, undefined, TEXTS.processErr.default);
+        validationError.val = err.message || i18n.raw("gateways.processErr", "Error al procesar la recarga");
       },
     },
   );
@@ -98,7 +70,7 @@ export const GatewaysPage = (_props: GatewaysPageProps = {}) => {
     rechargeMutation.reset();
     modal.set(
       {
-        title: i18n.t(TEXTS.rechargeWith.key, { name: gateway.name || gateway.id }, `Recargar con ${gateway.name || gateway.id}`),
+        title: i18n.t("gateways.rechargeWith", `Recargar con ${gateway.name || gateway.id}`, { name: gateway.name || gateway.id }),
         body: () => amountBody(),
         footer: null,
       },
@@ -116,23 +88,15 @@ export const GatewaysPage = (_props: GatewaysPageProps = {}) => {
 
     const numAmount = parseFloat(amount);
     if (Number.isNaN(numAmount)) {
-      validationError.val = i18n.raw(TEXTS.invalidAmount.key, undefined, TEXTS.invalidAmount.default);
+      validationError.val = i18n.raw("gateways.invalidAmount", "Ingresa un monto válido");
       return;
     }
     if (numAmount < parseFloat(params.monto_min_recarga)) {
-      validationError.val = i18n.raw(
-        TEXTS.minAmountErr.key,
-        { min: params.monto_min_recarga, tipo: params.tipo },
-        `El monto debe ser superior a ${params.monto_min_recarga} ${params.tipo}`,
-      );
+      validationError.val = i18n.raw("gateways.minAmountErr", `El monto debe ser superior a ${params.monto_min_recarga} ${params.tipo}`, { min: params.monto_min_recarga, tipo: params.tipo });
       return;
     }
     if (numAmount > parseFloat(params.monto_max_recarga)) {
-      validationError.val = i18n.raw(
-        TEXTS.maxAmountErr.key,
-        { max: params.monto_max_recarga, tipo: params.tipo },
-        `El monto debe ser inferior a ${params.monto_max_recarga} ${params.tipo}`,
-      );
+      validationError.val = i18n.raw("gateways.maxAmountErr", `El monto debe ser inferior a ${params.monto_max_recarga} ${params.tipo}`, { max: params.monto_max_recarga, tipo: params.tipo });
       return;
     }
 
@@ -146,7 +110,7 @@ export const GatewaysPage = (_props: GatewaysPageProps = {}) => {
   /** Cuerpo del modal de monto */
   const amountBody = () => {
     const params = paramsQuery.data.val;
-    if (!params) return div(i18n.t(TEXTS.loadingParams.key, undefined, TEXTS.loadingParams.default));
+    if (!params) return div(i18n.t("gateways.loadingParams", "Cargando parámetros..."));
 
     return div(
       {},
@@ -173,7 +137,7 @@ export const GatewaysPage = (_props: GatewaysPageProps = {}) => {
         { onsubmit: handleSubmit, class: "space-y-4" },
         div(
           { class: "mb-1 text-sm font-medium text-foreground" },
-          i18n.t(TEXTS.amountLabel.key, { tipo: params.tipo }, `Monto a recargar (${params.tipo})`),
+          i18n.t("gateways.amountLabel", `Monto a recargar (${params.tipo})`, { tipo: params.tipo }),
         ),
         input({
           type: "number",
@@ -188,11 +152,7 @@ export const GatewaysPage = (_props: GatewaysPageProps = {}) => {
         }),
         p(
           { class: "text-xs text-muted" },
-          i18n.t(
-            TEXTS.minMaxHelp.key,
-            { min: params.monto_min_recarga, max: params.monto_max_recarga, tipo: params.tipo },
-            `Mínimo: ${params.monto_min_recarga} ${params.tipo} · Máximo: ${params.monto_max_recarga} ${params.tipo}`,
-          ),
+          i18n.t("gateways.minMaxHelp", `Mínimo: ${params.monto_min_recarga} ${params.tipo} · Máximo: ${params.monto_max_recarga} ${params.tipo}`, { min: params.monto_min_recarga, max: params.monto_max_recarga, tipo: params.tipo }),
         ),
         div(
           { class: "pt-2" },
@@ -204,8 +164,8 @@ export const GatewaysPage = (_props: GatewaysPageProps = {}) => {
             rechargeMutation.loading.val
               ? div(
                   { class: "flex items-center gap-2 text-sm text-foreground justify-center py-2" },
-                  Spin(i18n.t(TEXTS.generating.key, undefined, TEXTS.generating.default)),
-                  i18n.t(TEXTS.processing.key, undefined, TEXTS.processing.default),
+                  Spin(i18n.t("gateways.generating", "Generando...")),
+                  i18n.t("gateways.processing", "Procesando recarga..."),
                 )
               : button(
                   {
@@ -213,7 +173,7 @@ export const GatewaysPage = (_props: GatewaysPageProps = {}) => {
                     class:
                       "w-full py-2 px-4 font-medium text-white bg-primary rounded-lg hover:bg-primary-hover transition cursor-pointer",
                   },
-                  i18n.t(TEXTS.rechargeBtn.key, undefined, TEXTS.rechargeBtn.default),
+                  i18n.t("gateways.rechargeBtn", "Recargar"),
                 ),
         ),
       ),
@@ -235,16 +195,16 @@ export const GatewaysPage = (_props: GatewaysPageProps = {}) => {
         },
         span(
           { class: "text-xl font-bold text-accent flex items-center justify-center" },
-          i18n.t(TEXTS.qrClickText.key, undefined, TEXTS.qrClickText.default),
+          i18n.t("gateways.qrClickText", "Haz clic aquí para abrir la plataforma"),
         ),
         div(
           { class: "text-muted text-sm italic mt-2 text-center" },
-          i18n.t(TEXTS.qrScanText.key, undefined, TEXTS.qrScanText.default),
+          i18n.t("gateways.qrScanText", "o escanea el código QR con tu app móvil"),
         ),
-        img({ class: "mx-auto mt-3", src: qrData, alt: t(TEXTS.qrAlt.key, undefined, TEXTS.qrAlt.default) }),
+        img({ class: "mx-auto mt-3", src: qrData, alt: t("gateways.qrAlt", "Código QR") }),
         div(
           { class: "text-muted text-sm italic mt-2 text-center" },
-          i18n.t(TEXTS.qrNoticeText.key, undefined, TEXTS.qrNoticeText.default),
+          i18n.t("gateways.qrNoticeText", "Tu saldo se actualizará automáticamente."),
         ),
       ),
     );
@@ -255,7 +215,7 @@ export const GatewaysPage = (_props: GatewaysPageProps = {}) => {
       if (gatewaysQuery.loading.val || paramsQuery.loading.val) {
         return div(
           { class: "p-8 text-center flex items-center justify-center" },
-          Spin(i18n.t(TEXTS.loading.key, undefined, TEXTS.loading.default)),
+          Spin(i18n.t("gateways.loading", "Cargando pasarelas...")),
         );
       }
 
@@ -270,13 +230,13 @@ export const GatewaysPage = (_props: GatewaysPageProps = {}) => {
           p(
             { class: "font-semibold mb-2 text-lg text-foreground" },
             isUnauthorized
-              ? i18n.t(TEXTS.restrictedTitle.key, undefined, TEXTS.restrictedTitle.default)
-              : i18n.t(TEXTS.errorTitle.key, undefined, TEXTS.errorTitle.default),
+              ? i18n.t("gateways.restrictedTitle", "Acceso Restringido")
+              : i18n.t("gateways.errorTitle", "Error al cargar datos"),
           ),
           p(
             { class: "text-sm text-muted mb-6" },
             isUnauthorized
-              ? i18n.t(TEXTS.restrictedMsg.key, undefined, TEXTS.restrictedMsg.default)
+              ? i18n.t("gateways.restrictedMsg", "Debes iniciar sesión para acceder a las pasarelas de pago y recargas.")
               : errMsg,
           ),
           div(
@@ -287,7 +247,7 @@ export const GatewaysPage = (_props: GatewaysPageProps = {}) => {
                     class: "px-5 py-2.5 bg-primary text-white font-medium rounded-lg text-sm cursor-pointer hover:bg-primary-hover transition",
                     onclick: () => navigate("/login?redirect=/gateways"),
                   },
-                  i18n.t(TEXTS.goToLogin.key, undefined, TEXTS.goToLogin.default),
+                  i18n.t("gateways.goToLogin", "Ir al Login"),
                 )
               : button(
                   {
@@ -297,7 +257,7 @@ export const GatewaysPage = (_props: GatewaysPageProps = {}) => {
                       paramsQuery.refetch();
                     },
                   },
-                  i18n.t(TEXTS.retry.key, undefined, TEXTS.retry.default),
+                  i18n.t("gateways.retry", "Reintentar"),
                 ),
           ),
         );
@@ -306,7 +266,7 @@ export const GatewaysPage = (_props: GatewaysPageProps = {}) => {
       const gateways = gatewaysQuery.data.val || [];
       return div(
         {},
-        h1({ class: "text-2xl font-bold text-center mb-6" }, i18n.t(TEXTS.title.key, undefined, TEXTS.title.default)),
+        h1({ class: "text-2xl font-bold text-center mb-6" }, i18n.t("gateways.title", "Métodos de Pago y Recarga")),
         div(
           { class: "flex justify-center" },
           GatewaysList(gateways, openAmountModal),

@@ -21,11 +21,11 @@ export interface I18nInstance<T extends Record<string, any> = Record<string, any
    * Retorna una derivación reactiva (State<string>) con el texto traducido.
    * Al insertarlo en el DOM de VanJS, se actualiza automáticamente cuando cambia el idioma.
    */
-  t: (key: string, params?: Record<string, string | number>, defaultVal?: string) => State<string>;
+  t: (key: string, defaultVal?: string, params?: Record<string, string | number>) => State<string>;
   /**
    * Retorna el texto traducido como string estático (no reactivo).
    */
-  raw: (key: string, params?: Record<string, string | number>, defaultVal?: string) => string;
+  raw: (key: string, defaultVal?: string, params?: Record<string, string | number>) => string;
 }
 
 /** Diccionario global por defecto para VanUI */
@@ -360,14 +360,14 @@ export function createI18n<T extends Record<string, any> = Record<string, any>>(
     document.documentElement.lang = currentLocale.val;
   }
 
-  const t = (key: string, params?: Record<string, string | number>, defaultVal?: string) => {
+  const t = (key: string, defaultVal?: string, params?: Record<string, string | number>) => {
     return van.derive(() => {
       void revision.val;
       return getText(key, params, defaultVal, currentLocale.val);
     });
   };
 
-  const raw = (key: string, params?: Record<string, string | number>, defaultVal?: string) => {
+  const raw = (key: string, defaultVal?: string, params?: Record<string, string | number>) => {
     void revision.val;
     return getText(key, params, defaultVal, currentLocale.val);
   };
@@ -390,9 +390,9 @@ export const i18n = createI18n({
 });
 
 /** Helper reactivo directo con el singleton */
-export const t = (key: string, params?: Record<string, string | number>, defaultVal?: string): State<string> =>
-  i18n.t(key, params, defaultVal);
+export const t = (key: string, defaultVal?: string, params?: Record<string, string | number>): State<string> =>
+  i18n.t(key, defaultVal, params);
 
 /** Helper raw directo con el singleton */
-export const raw = (key: string, params?: Record<string, string | number>, defaultVal?: string): string =>
-  i18n.raw(key, params, defaultVal);
+export const raw = (key: string, defaultVal?: string, params?: Record<string, string | number>): string =>
+  i18n.raw(key, defaultVal, params);

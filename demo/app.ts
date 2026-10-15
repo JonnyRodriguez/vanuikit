@@ -16,6 +16,7 @@ import {
   SidebarGroup,
   SidebarItem,
   HeaderBar,
+  Link,
   ThemeToggle,
   LocaleSelector,
   UserBadge,
@@ -135,7 +136,7 @@ export function App() {
     router.resolve();
   });
 
-  const { span, a, button } = van.tags;
+  const { span, button } = van.tags;
   const sidebarOpen = van.state(false);
   // Estado controlado del colapso desktop de la Sidebar (rail de iconos).
   const sidebarCollapsed = van.state(false);
@@ -158,14 +159,14 @@ export function App() {
       collapsible: true,
       collapsed: sidebarCollapsed,
       storageKey: "vanui-demo-sidebar-collapsed",
-      header: a(
+      // Link de vanui: navegación SPA embebida; la demo solo aporta su estado
+      // (cerrar el drawer mobile al tocar el logo).
+      header: Link(
         {
           href: "/***REMOVED***",
           class: "flex items-center gap-2.5 font-bold text-foreground tracking-tight text-lg no-underline",
-          onclick: (e: MouseEvent) => {
-            e.preventDefault();
+          onclick: () => {
             sidebarOpen.val = false;
-            navigate("/***REMOVED***");
           },
         },
         span({ class: "text-primary font-black text-xl" }, "VanUI"),
@@ -185,10 +186,8 @@ export function App() {
             label: i18n.t(TEXTS.nav.***REMOVED***.key, undefined, TEXTS.nav.***REMOVED***.default),
             icon: "💳",
             current: router.path,
-            onclick: (e) => {
-              e.preventDefault();
+            onclick: () => {
               sidebarOpen.val = false;
-              navigate("/***REMOVED***");
             },
           }),
           SidebarItem({
@@ -198,10 +197,8 @@ export function App() {
             badge: "17",
             badgeVariant: "secondary",
             current: router.path,
-            onclick: (e) => {
-              e.preventDefault();
+            onclick: () => {
               sidebarOpen.val = false;
-              navigate("/components");
             },
           }),
         ),
@@ -214,10 +211,8 @@ export function App() {
                   label: i18n.t(TEXTS.nav.login.key, undefined, TEXTS.nav.login.default),
                   icon: "🔑",
                   current: router.path,
-                  onclick: (e) => {
-                    e.preventDefault();
+                  onclick: () => {
                     sidebarOpen.val = false;
-                    navigate("/login");
                   },
                 }),
                 SidebarItem({
@@ -225,10 +220,8 @@ export function App() {
                   label: i18n.t(TEXTS.nav.register.key, undefined, TEXTS.nav.register.default),
                   icon: "📝",
                   current: router.path,
-                  onclick: (e) => {
-                    e.preventDefault();
+                  onclick: () => {
                     sidebarOpen.val = false;
-                    navigate("/register");
                   },
                 }),
               )

@@ -77,6 +77,7 @@ export const TEXTS = {
 | `AppShell` | `vanui` | Layout estructural responsive (Sidebar + HeaderBar + Main Content). |
 | `HeaderBar` | `vanui` | Barra superior con leading (hamburguesa móvil), título reactivo y zona de acciones. |
 | `Sidebar`, `SidebarGroup`, `SidebarItem` | `vanui` | Navegación lateral con soporte para badges, íconos y estados activos. |
+| `Link`, `Nav` | `vanui` | Navegación declarativa SPA: anclas sin ***REMOVED*** (`Link`, con variantes) y menú horizontal reactivo (`Nav`) con estado activo por subruta y `aria-current`; ambos respetan Ctrl/Cmd+click, `target` y enlaces externos. |
 | `ThemeToggle` | `vanui` | Botón o selector segmentado para alternar Claro / Oscuro / Sistema sincronizado con `<html>`. |
 | `LocaleSelector` | `vanui` | Selector o pastillas de idioma con autodetección de diccionarios y banderas. |
 | `UserBadge` | `vanui` | Tarjeta de usuario con avatar/iniciales, nombre, email, estado de sesión y botón de cierre. |

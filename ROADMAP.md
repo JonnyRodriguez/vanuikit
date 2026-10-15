@@ -48,15 +48,21 @@ recolectados (es/en/fr).
 **Criterio de cierre**: 12 tests nuevos (suite: 117 en verde), demo showcase "Estados y
 Feedback", locales recolectados (es/en/fr).
 
-## Fase 3 — Overlay fino
+## Fase 3 — Overlay fino ✅ *completada (2026-10-15)*
 
 Hoy se resuelve con `title` nativo o divs absolutos ad-hoc: de lo que más boilerplate suelto
 genera.
 
-- `Tooltip` — posiciones, delay, visible por focus (teclado), desactivado en touch.
-- `Popover` — panel flotante genérico, click-outside, Esc, anclaje al trigger.
-- `Drawer` / `Sheet` — paneles deslizantes por lado, backdrop, focus trap, bloqueo de scroll
-  (generaliza el patrón responsive del sidebar).
+- ✅ `Tooltip` — posiciones por CSS puro, delay, visible por focus (teclado), desactivado en
+  touch (`hover: none`).
+- ✅ `Popover` — panel flotante genérico: click alterna, click-outside y Esc cierran (con
+  retorno de foco), contenido como fábrica `content(close)` que se reconstruye por apertura.
+- ✅ `Drawer` / `Sheet` — paneles deslizantes por 4 lados, backdrop, focus trap (Tab no
+  escapa), bloqueo de scroll (generaliza el patrón responsive del sidebar).
+
+**Criterio de cierre**: 14 tests nuevos (suite: 131 en verde), demo showcase "Overlay fino",
+lint y build de integración en verde. Sin dependencias externas: posicionamiento por CSS
+(limitación documentada: un ancestro con `overflow: hidden` puede recortar el panel).
 
 ## Fase 4 — Escala y pulido
 

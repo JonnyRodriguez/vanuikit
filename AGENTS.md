@@ -104,11 +104,13 @@ const miFmt = createFmt(miI18n);              // instancia aislada (opcional)
 | `Form` | `vanui` | Contenedor de formulario con validación automática y prevención de submits inválidos. |
 | `Modal`, `ModalBase`, `SpinModal` | `vanui` | Diálogos modales accesibles con backdrop y bloqueo de scroll. |
 | `Tooltip`, `Popover`, `Drawer` | `vanui` | Overlay fino sin dependencias: tooltips por hover/focus (off en touch), paneles flotantes con click-outside/Esc y fábrica `content(close)`, drawers por 4 lados con backdrop, focus trap y bloqueo de scroll. |
-| `Combobox` | `vanui` | Select con búsqueda estilo WAI-ARIA (input filtra al teclear, ↑/↓/Home/End/Enter/Esc, `aria-activedescendant`), `value` bidireccional e integración a `Form` (`.dom()` como hijo). |
+| `Combobox` | `vanui` | Select con búsqueda estilo WAI-ARIA (input filtra al teclear, ↑/↓/Home/End/Enter/Esc, `aria-activedescendant`), `value` bidireccional e integración a `Form` (`.dom()` como hijo). Con `multiple: true`: chips removibles y `value: State<string[]>` (leer `field.value.val`: `FormData` colapsa repetidos). |
 | `Accordion` | `vanui` | Acordeón single/multiple con contenido como fábrica (se reconstruye en cada apertura) y semántica `aria-expanded`/`region`. |
 | `Avatar` | `vanui` | Iniciales con fallback automático desde `src` (comparte `getInitials` con UserBadge); 4 tamaños. |
 | `Breadcrumbs` | `vanui` | Ruta de navegación con anchors SPA y `aria-current="page"` en el último ítem. |
 | `Card` / `CardTitle` | `vanui` | Superficie base sin padding impuesto; `hoverable` para tarjetas clickeables. |
+| `Pagination` | `vanui` | Paginación numerada standalone con ellipsis (`pageSlots`), `page` bidireccional y `totalPages` reactivo. |
+| `Kbd` | `vanui` | Tecla estilizada semántica (`<kbd>`) para atajos y hints de teclado. |
 | `Spin` | `vanui` | Indicador de carga con spinner animado y mensaje opcional. |
 | `Badge` | `vanui` | Etiquetas de estado con múltiples variantes de color y tamaño. |
 | `Button`, `PrimaryButton`, `SecondaryButton` | `vanui` | Botones accesibles con soporte para tamaños, variantes y estados de carga. |
@@ -134,6 +136,14 @@ const miFmt = createFmt(miI18n);              // instancia aislada (opcional)
 - El build de la demo verifica el metafile de esbuild (`check-single-vanjs.js`) y **falla** si el bundle contiene más de una copia.
 
 ---
+
+### Depuración: `trace` y `expectReactive`
+
+- `trace(state, "nombre")` — loguea cada cambio del State y lo devuelve para encadenar
+  (solo desarrollo: agrega un listener permanente, no llamar dentro de bindings).
+- `await expectReactive({ render, act, contains })` — detector de bindings congelados para
+  suites: renderiza, muta, espera el microtask de van y lanza Error con pistas de los gotchas
+  (hijos-función null, árboles separados, `t()` dentro de bindings). Agnóstico del runner.
 
 ## 6. Pruebas y Calidad de Código
 - Todo componente nuevo debe contar con tests unitarios en `vanui/tests/` ejecutables con `bun test`.

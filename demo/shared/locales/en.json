@@ -264,7 +264,16 @@
     "fmtPriceLabel": "Price",
     "fmtTaxLabel": "VAT",
     "fmtUpdatedLabel": "Updated",
-    "fmtHint": "Switch the language above: the values reformat themselves."
+    "fmtHint": "Switch the language above: the values reformat themselves.",
+    "paginationCard": "Pagination & Kbd",
+    "pageOf": "Page {n} of {total}",
+    "kbdHint": "Shortcuts:",
+    "langsLabel": "Languages (multiple)",
+    "langsSelected": "Selected: {list}",
+    "langEs": "Spanish",
+    "langEn": "English",
+    "langFr": "French",
+    "langDe": "German"
   },
   "field": {
     "email": {
@@ -366,5 +375,13 @@
   },
   "breadcrumbs": {
     "ariaLabel": "Breadcrumb"
+  },
+  "pagination": {
+    "ariaLabel": "Pagination",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "combobox": {
+    "remove": "Remove {name}"
   }
 }

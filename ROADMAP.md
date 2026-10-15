@@ -98,12 +98,28 @@ reformateo en vivo al cambiar de idioma.
 ## 🎉 Roadmap original completado
 
 Las 5 fases están entregadas el mismo día (2026-10-15), con la suite siempre en verde:
-**21 componentes + fmt**, cero dependencias de runtime más allá de `vanjs-core`.
+**21 componentes + fmt**, cero dependencias de runtime más allá de `vanjs-core` (Ciclo 2 suma Pagination, Kbd, Combobox multiple y la capa debug).
 
 **Candidatos para un próximo ciclo** (sin fecha, embebidos cuando la demo los pida):
 `Pagination` standalone y `Kbd` (aplazados de Fase 4), `Combobox` multi-selección,
 capa de debug (`trace`/`expectReactive`), y re-evaluar `DatePicker` si aparece una página
 que lo necesite de verdad.
+
+---
+
+## Ciclo 2 ✅ *completado (2026-10-15)*
+
+Los candidatos del próximo ciclo, menos `DatePicker` (sigue sin página que lo pida):
+
+- ✅ `debug.ts` — `trace(state)` (log de cambios encadenable) y `expectReactive({ render, act,
+  contains })` (detector de bindings congelados/detached para suites de test, agnóstico del
+  runner; lanza Error con pistas de los gotchas).
+- ✅ `Kbd` — tecla estilizada semántica (`<kbd>`).
+- ✅ `Pagination` standalone — numerada con ellipsis (`pageSlots` exportada), `page`
+  bidireccional, `totalPages` reactivo; convive con la paginación simple del DataGrid.
+- ✅ `Combobox` `multiple` — chips removibles (click en × y Backspace con input vacío), el
+  panel no se cierra al seleccionar, toggle al re-elegir; `value: State<string[]>`. Limitación
+  documentada: `FormData` colapsa repetidos (leer `field.value.val`).
 
 ---
 

@@ -264,7 +264,16 @@
     "fmtPriceLabel": "Prix",
     "fmtTaxLabel": "TVA",
     "fmtUpdatedLabel": "Mis à jour",
-    "fmtHint": "Changez la langue ci-dessus : les valeurs se reformatent toutes seules."
+    "fmtHint": "Changez la langue ci-dessus : les valeurs se reformatent toutes seules.",
+    "paginationCard": "Pagination & Kbd",
+    "pageOf": "Page {n} sur {total}",
+    "kbdHint": "Raccourcis :",
+    "langsLabel": "Langues (multiple)",
+    "langsSelected": "Sélectionnés : {list}",
+    "langEs": "Espagnol",
+    "langEn": "Anglais",
+    "langFr": "Français",
+    "langDe": "Allemand"
   },
   "auth": {},
   "login": {
@@ -366,5 +375,13 @@
   },
   "breadcrumbs": {
     "ariaLabel": "Fil d'Ariane"
+  },
+  "pagination": {
+    "ariaLabel": "Pagination",
+    "previous": "Précédent",
+    "next": "Suivant"
+  },
+  "combobox": {
+    "remove": "Retirer {name}"
   }
 }

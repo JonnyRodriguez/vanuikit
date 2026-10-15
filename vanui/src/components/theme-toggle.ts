@@ -3,6 +3,16 @@ import { createTheme, type ThemeInstance, type ThemeMode } from "../theme.js";
 import { i18n as defaultI18n, type I18nInstance } from "../i18n.js";
 import { cx } from "../util.js";
 
+/** Contrato de llaves de i18n del componente */
+export const TEXTS = {
+  light: { key: "theme.light", default: "Claro" },
+  dark: { key: "theme.dark", default: "Oscuro" },
+  system: { key: "theme.system", default: "Sistema" },
+  selectLabel: { key: "theme.selectLabel", default: "Seleccionar tema visual" },
+  toggleLabel: { key: "theme.toggleLabel", default: "Alternar tema visual (Claro / Oscuro / Sistema)" },
+  toggleTitle: { key: "theme.toggleTitle", default: "Alternar tema (Claro / Oscuro / Sistema)" },
+} as const;
+
 // Instancia singleton por defecto para aplicaciones que no pasen una instancia personalizada
 let defaultThemeInstance: ThemeInstance | null = null;
 function getDefaultTheme(): ThemeInstance {
@@ -38,15 +48,15 @@ export function ThemeToggle(props: ThemeToggleProps = {}) {
   const includeSystem = props.includeSystem ?? true;
 
   if (variant === "segmented") {
-    const modes: { mode: ThemeMode; icon: string; labelKey: string }[] = includeSystem
+    const modes: { mode: ThemeMode; icon: string; text: { key: string; default: string } }[] = includeSystem
       ? [
-          { mode: "light", icon: "☀️", labelKey: "theme.light" },
-          { mode: "dark", icon: "🌙", labelKey: "theme.dark" },
-          { mode: "system", icon: "💻", labelKey: "theme.system" },
+          { mode: "light", icon: "☀️", text: TEXTS.light },
+          { mode: "dark", icon: "🌙", text: TEXTS.dark },
+          { mode: "system", icon: "💻", text: TEXTS.system },
         ]
       : [
-          { mode: "light", icon: "☀️", labelKey: "theme.light" },
-          { mode: "dark", icon: "🌙", labelKey: "theme.dark" },
+          { mode: "light", icon: "☀️", text: TEXTS.light },
+          { mode: "dark", icon: "🌙", text: TEXTS.dark },
         ];
 
     return div(
@@ -56,9 +66,9 @@ export function ThemeToggle(props: ThemeToggleProps = {}) {
           props.class,
         ),
         role: "radiogroup",
-        "aria-label": "Seleccionar tema visual",
+        "aria-label": i18n.t(TEXTS.selectLabel.key, undefined, TEXTS.selectLabel.default),
       },
-      modes.map(({ mode, icon, labelKey }) => {
+      modes.map(({ mode, icon, text }) => {
         const isActive = van.derive(() => theme.mode.val === mode);
         return button(
           {
@@ -75,7 +85,7 @@ export function ThemeToggle(props: ThemeToggleProps = {}) {
             onclick: () => theme.setMode(mode),
           },
           span({ class: "text-sm leading-none" }, icon),
-          showLabel ? span(i18n.t(labelKey, undefined, mode)) : null,
+          showLabel ? span(i18n.t(text.key, undefined, text.default)) : null,
         );
       }),
     );
@@ -98,10 +108,10 @@ export function ThemeToggle(props: ThemeToggleProps = {}) {
   };
 
   const getLabel = () => {
-    if (theme.mode.val === "system") return i18n.t("theme.system", undefined, "Sistema");
+    if (theme.mode.val === "system") return i18n.t(TEXTS.system.key, undefined, TEXTS.system.default);
     return theme.mode.val === "dark"
-      ? i18n.t("theme.dark", undefined, "Oscuro")
-      : i18n.t("theme.light", undefined, "Claro");
+      ? i18n.t(TEXTS.dark.key, undefined, TEXTS.dark.default)
+      : i18n.t(TEXTS.light.key, undefined, TEXTS.light.default);
   };
 
   return button(
@@ -111,8 +121,8 @@ export function ThemeToggle(props: ThemeToggleProps = {}) {
         "inline-flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-border bg-card hover:bg-secondary text-foreground text-xs font-medium cursor-pointer transition-colors shadow-xs select-none",
         props.class,
       ),
-      "aria-label": "Alternar tema visual (Claro / Oscuro / Sistema)",
-      title: "Alternar tema (Claro / Oscuro / Sistema)",
+      "aria-label": i18n.t(TEXTS.toggleLabel.key, undefined, TEXTS.toggleLabel.default),
+      title: i18n.t(TEXTS.toggleTitle.key, undefined, TEXTS.toggleTitle.default),
       onclick: cycle,
     },
     () => span({ class: "text-sm leading-none" }, getIcon()),

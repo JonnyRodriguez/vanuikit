@@ -38,7 +38,7 @@ export const TEXTS = {
     register: { key: "nav.register", default: "Crear cuenta" },
   },
   titles: {
-    gateways: { key: "gateways.title", default: "Pasarelas de Pago" },
+    gateways: { key: "gateways.title", default: "Métodos de Pago y Recarga" },
     components: { key: "components.title", default: "Catálogo de Componentes" },
     login: { key: "login.title", default: "Iniciar sesión" },
     register: { key: "register.title", default: "Crear una cuenta" },

@@ -21,7 +21,7 @@ export const TEXTS = {
   amountLabel: { key: "gateways.amountLabel", default: "Monto a recargar ({tipo})" },
   minMaxHelp: { key: "gateways.minMaxHelp", default: "Mínimo: {min} {tipo} · Máximo: {max} {tipo}" },
   rechargeBtn: { key: "gateways.rechargeBtn", default: "Recargar" },
-  generating: { key: "gateways.generating", default: "Generando recarga..." },
+  generating: { key: "gateways.generating", default: "Generando..." },
   rechargeWith: { key: "gateways.rechargeWith", default: "Recargar con {name}" },
   qrClickText: { key: "gateways.qrClickText", default: "Haz clic aquí para abrir la plataforma" },
   qrScanText: { key: "gateways.qrScanText", default: "o escanea el código QR con tu app móvil" },

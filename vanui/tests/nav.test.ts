@@ -90,7 +90,8 @@ describe("Nav", () => {
   test("aria-label por defecto vía i18n, overridable por prop", () => {
     const nav = Nav(LINKS, { current: "./index.html" });
     document.body.replaceChildren(nav);
-    expect(nav.getAttribute("aria-label")).toBe("Navegación principal");
+    // El singleton arranca en "en": resuelve del diccionario, no del default español.
+    expect(nav.getAttribute("aria-label")).toBe("Main navigation");
 
     const navCustom = Nav(LINKS, { current: "./index.html", ariaLabel: "Menú principal" });
     document.body.replaceChildren(navCustom);

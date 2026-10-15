@@ -58,6 +58,7 @@ export const defaultLocales: Record<string, Record<string, any>> = {
     },
     nav: {
       logout: "Cerrar sesión",
+      ariaLabel: "Navegación principal",
     },
     sidebar: {
       collapse: "Colapsar barra lateral",
@@ -71,6 +72,9 @@ export const defaultLocales: Record<string, Record<string, any>> = {
       light: "Claro",
       dark: "Oscuro",
       system: "Sistema",
+      selectLabel: "Seleccionar tema visual",
+      toggleLabel: "Alternar tema visual (Claro / Oscuro / Sistema)",
+      toggleTitle: "Alternar tema (Claro / Oscuro / Sistema)",
     },
     dialog: {
       confirmTitle: "Confirmar acción",
@@ -82,6 +86,11 @@ export const defaultLocales: Record<string, Record<string, any>> = {
     },
     dropdown: {
       empty: "No se encontraron resultados",
+      searchPlaceholder: "Buscar...",
+    },
+    locale: {
+      selectLabel: "Idioma / Language",
+      groupLabel: "Selector de idioma",
     },
     table: {
       searchPlaceholder: "Buscar en la tabla...",
@@ -151,6 +160,7 @@ export const defaultLocales: Record<string, Record<string, any>> = {
     },
     nav: {
       logout: "Sign out",
+      ariaLabel: "Main navigation",
     },
     sidebar: {
       collapse: "Collapse sidebar",
@@ -164,6 +174,9 @@ export const defaultLocales: Record<string, Record<string, any>> = {
       light: "Light",
       dark: "Dark",
       system: "System",
+      selectLabel: "Select visual theme",
+      toggleLabel: "Toggle visual theme (Light / Dark / System)",
+      toggleTitle: "Toggle theme (Light / Dark / System)",
     },
     dialog: {
       confirmTitle: "Confirm action",
@@ -175,6 +188,11 @@ export const defaultLocales: Record<string, Record<string, any>> = {
     },
     dropdown: {
       empty: "No results found",
+      searchPlaceholder: "Search...",
+    },
+    locale: {
+      selectLabel: "Language",
+      groupLabel: "Language selector",
     },
     table: {
       searchPlaceholder: "Search the table...",

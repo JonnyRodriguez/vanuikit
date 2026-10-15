@@ -2,6 +2,12 @@ import van from "vanjs-core";
 import { i18n as defaultI18n, type I18nInstance } from "../i18n.js";
 import { cx } from "../util.js";
 
+/** Contrato de llaves de i18n del componente. Los nombres de idioma usan la convención `lang.<code>` de los diccionarios. */
+export const TEXTS = {
+  selectLabel: { key: "locale.selectLabel", default: "Idioma / Language" },
+  groupLabel: { key: "locale.groupLabel", default: "Selector de idioma" },
+} as const;
+
 export interface LocaleOption {
   code: string;
   label: string;
@@ -64,7 +70,7 @@ export function LocaleSelector(props: LocaleSelectorProps = {}) {
           props.class,
         ),
         role: "group",
-        "aria-label": "Selector de idioma",
+        "aria-label": i18n.t(TEXTS.groupLabel.key, undefined, TEXTS.groupLabel.default),
       },
       optionsList.map(({ code, label, flag }) => {
         const isActive = van.derive(() => i18n.currentLocale.val === code);
@@ -94,7 +100,7 @@ export function LocaleSelector(props: LocaleSelectorProps = {}) {
         "text-xs px-2.5 py-1.5 rounded-lg border border-border bg-card text-foreground font-medium cursor-pointer transition-colors shadow-xs outline-none select-none hover:bg-secondary/50",
         props.class,
       ),
-      "aria-label": "Idioma / Language",
+      "aria-label": i18n.t(TEXTS.selectLabel.key, undefined, TEXTS.selectLabel.default),
       onchange: (e: Event) => i18n.setLocale((e.target as HTMLSelectElement).value),
       value: () => i18n.currentLocale.val,
     },

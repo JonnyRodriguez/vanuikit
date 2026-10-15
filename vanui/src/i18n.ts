@@ -73,6 +73,9 @@ export const defaultLocales: Record<string, Record<string, any>> = {
     alert: {
       dismiss: "Cerrar aviso",
     },
+    breadcrumbs: {
+      ariaLabel: "Ruta de navegación",
+    },
     nav: {
       logout: "Cerrar sesión",
       ariaLabel: "Navegación principal",
@@ -196,6 +199,9 @@ export const defaultLocales: Record<string, Record<string, any>> = {
     },
     alert: {
       dismiss: "Dismiss alert",
+    },
+    breadcrumbs: {
+      ariaLabel: "Breadcrumb",
     },
     nav: {
       logout: "Sign out",

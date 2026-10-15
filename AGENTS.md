@@ -89,6 +89,11 @@ p(t("gateways.rechargeWith", "Recargar con {name}", { name: gateway.name }));
 | `Form` | `vanui` | Contenedor de formulario con validación automática y prevención de submits inválidos. |
 | `Modal`, `ModalBase`, `SpinModal` | `vanui` | Diálogos modales accesibles con backdrop y bloqueo de scroll. |
 | `Tooltip`, `Popover`, `Drawer` | `vanui` | Overlay fino sin dependencias: tooltips por hover/focus (off en touch), paneles flotantes con click-outside/Esc y fábrica `content(close)`, drawers por 4 lados con backdrop, focus trap y bloqueo de scroll. |
+| `Combobox` | `vanui` | Select con búsqueda estilo WAI-ARIA (input filtra al teclear, ↑/↓/Home/End/Enter/Esc, `aria-activedescendant`), `value` bidireccional e integración a `Form` (`.dom()` como hijo). |
+| `Accordion` | `vanui` | Acordeón single/multiple con contenido como fábrica (se reconstruye en cada apertura) y semántica `aria-expanded`/`region`. |
+| `Avatar` | `vanui` | Iniciales con fallback automático desde `src` (comparte `getInitials` con UserBadge); 4 tamaños. |
+| `Breadcrumbs` | `vanui` | Ruta de navegación con anchors SPA y `aria-current="page"` en el último ítem. |
+| `Card` / `CardTitle` | `vanui` | Superficie base sin padding impuesto; `hoverable` para tarjetas clickeables. |
 | `Spin` | `vanui` | Indicador de carga con spinner animado y mensaje opcional. |
 | `Badge` | `vanui` | Etiquetas de estado con múltiples variantes de color y tamaño. |
 | `Button`, `PrimaryButton`, `SecondaryButton` | `vanui` | Botones accesibles con soporte para tamaños, variantes y estados de carga. |

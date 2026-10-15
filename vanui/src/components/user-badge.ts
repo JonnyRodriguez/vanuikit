@@ -2,6 +2,7 @@ import van, { type State } from "vanjs-core";
 import type { AuthState, AuthUser } from "../auth.js";
 import { i18n as defaultI18n, type I18nInstance } from "../i18n.js";
 import { cx } from "../util.js";
+import { Avatar, getInitials } from "./avatar.js";
 
 export interface UserBadgeProps {
   /** Estado de autenticación reactivo de VanUI o usuario directo */
@@ -42,20 +43,8 @@ export function UserBadge(props: UserBadgeProps) {
     return null;
   };
 
-  const getInitials = (u: AuthUser): string => {
-    const name = typeof u.name === "string" ? u.name : "";
-    if (name) {
-      const parts = name.trim().split(/\s+/);
-      if (parts.length >= 2) {
-        return (parts[0][0] + parts[1][0]).toUpperCase();
-      }
-      return parts[0].slice(0, 2).toUpperCase();
-    }
-    if (u.email) {
-      return u.email.slice(0, 2).toUpperCase();
-    }
-    return "U";
-  };
+  const initialsOf = (u: AuthUser): string =>
+    u.name ? getInitials(u.name, "U") : getInitials(u.email ?? "", "U");
 
   const handleLogout = async () => {
     if (props.auth) {
@@ -72,7 +61,7 @@ export function UserBadge(props: UserBadgeProps) {
       return div({ class: "hidden", "aria-hidden": "true" });
     }
 
-    const initials = getInitials(currentUser);
+    const initials = initialsOf(currentUser);
     const displayName = (typeof currentUser.name === "string" && currentUser.name) ? currentUser.name : currentUser.email;
     const isCompact =
       typeof props.compact === "object" && props.compact !== null && "val" in props.compact
@@ -84,15 +73,7 @@ export function UserBadge(props: UserBadgeProps) {
       const logoutLabel = i18n.raw("nav.logout", "Cerrar sesión");
       return div(
         { class: cx("flex flex-col items-center gap-2", props.class) },
-        div(
-          {
-            class:
-              "w-9 h-9 rounded-full bg-primary text-primary-fg font-bold text-xs flex items-center justify-center shrink-0 shadow-2xs select-none",
-            title: displayName,
-            "aria-label": displayName,
-          },
-          initials,
-        ),
+        Avatar({ name: displayName, size: "sm" }),
         showLogout
           ? button(
               {
@@ -118,13 +99,7 @@ export function UserBadge(props: UserBadgeProps) {
       },
       div(
         { class: "flex items-center gap-2.5 min-w-0" },
-        div(
-          {
-            class:
-              "w-8 h-8 rounded-full bg-primary text-primary-fg font-bold text-xs flex items-center justify-center shrink-0 shadow-2xs select-none",
-          },
-          initials,
-        ),
+        Avatar({ name: displayName, size: "xs" }),
         div(
           { class: "flex flex-col min-w-0 flex-1" },
           span(

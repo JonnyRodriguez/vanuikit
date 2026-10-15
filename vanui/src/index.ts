@@ -54,6 +54,11 @@ export { EmptyState, type EmptyStateOptions } from "./components/empty-state.js"
 export { Tooltip, type TooltipOptions, type TooltipPosition } from "./components/tooltip.js";
 export { Popover, type PopoverOptions, type PopoverPosition } from "./components/popover.js";
 export { Drawer, type DrawerOptions, type DrawerSide } from "./components/drawer.js";
+export { Avatar, getInitials, type AvatarOptions, type AvatarSize } from "./components/avatar.js";
+export { Breadcrumbs, type BreadcrumbsOptions, type BreadcrumbItem } from "./components/breadcrumbs.js";
+export { Card, CardTitle, type CardOptions, type CardTitleOptions } from "./components/card.js";
+export { Accordion, type AccordionOptions, type AccordionItem } from "./components/accordion.js";
+export { Combobox, type ComboboxOptions, type ComboboxOption, type ComboboxField } from "./components/combobox.js";
 export {
   ThemeToggle,
   type ThemeToggleProps,

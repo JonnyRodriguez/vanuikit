@@ -17,7 +17,8 @@
     "lint": "cd vanui && bun run typecheck && cd ../demo && bun run typecheck && cd .. && bun run i18n:check && bun run i18n:scan -- --check",
     "i18n:collect": "bun scripts/i18n-collect.ts",
     "i18n:check": "bun scripts/i18n-collect.ts --check",
-    "i18n:scan": "bun scripts/i18n-scan.ts"
+    "i18n:scan": "bun scripts/i18n-scan.ts",
+    "i18n:fix": "bun scripts/i18n-fix.ts"
   },
   "devDependencies": {
     "typescript": "^5.8.2"

@@ -31,6 +31,7 @@ import {
   CardTitle,
   Accordion,
   Combobox,
+  fmt,
   raw,
   type TableColumn,
   type Router,
@@ -76,6 +77,12 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
   const demoProgress = van.state(65);
   const demoDrawerRight = van.state(false);
   const demoCountry = van.state("");
+  // fmt: States creados UNA vez (sin memoización, igual que t())
+  const fmtDate = fmt.date(new Date(2026, 9, 15, 14, 30));
+  const fmtTime = fmt.time(new Date(2026, 9, 15, 14, 30));
+  const fmtPrice = fmt.currency(49.99, { minimumFractionDigits: 2 });
+  const fmtTax = fmt.percent(0.21);
+  const fmtUpdated = fmt.relative(-2, "hour");
   const countrySummary = van.derive(() => {
     const names: Record<string, string> = {
       ar: raw("components.countryAr", "Argentina"),
@@ -516,6 +523,25 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
           }).dom(),
           p({ class: "text-xs text-foreground-soft" }, countrySummary),
           p({ class: "text-xs text-muted-foreground" }, i18n.t("components.comboboxHint", "Teclea para filtrar; ↑/↓ navegan, Enter selecciona, Esc cierra.")),
+        ),
+        // fmt (formato locale-aware)
+        div(
+          { class: "p-4 rounded-xl bg-card border border-border/80 space-y-3" },
+          h3({ class: "text-xs font-semibold text-muted-foreground uppercase tracking-wider" }, i18n.t("components.fmtCard", "fmt (formato por idioma)")),
+          div(
+            { class: "grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-sm" },
+            span({ class: "text-foreground-soft" }, i18n.t("components.fmtDateLabel", "Fecha")),
+            span({ class: "text-foreground font-medium" }, fmtDate),
+            span({ class: "text-foreground-soft" }, i18n.t("components.fmtTimeLabel", "Hora")),
+            span({ class: "text-foreground font-medium" }, fmtTime),
+            span({ class: "text-foreground-soft" }, i18n.t("components.fmtPriceLabel", "Precio")),
+            span({ class: "text-foreground font-medium" }, fmtPrice),
+            span({ class: "text-foreground-soft" }, i18n.t("components.fmtTaxLabel", "IVA")),
+            span({ class: "text-foreground font-medium" }, fmtTax),
+            span({ class: "text-foreground-soft" }, i18n.t("components.fmtUpdatedLabel", "Actualizado")),
+            span({ class: "text-foreground font-medium" }, fmtUpdated),
+          ),
+          p({ class: "text-xs text-foreground-soft" }, i18n.t("components.fmtHint", "Cambia el idioma arriba: los valores se reformatean solos.")),
         ),
       ),
     ),

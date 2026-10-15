@@ -257,7 +257,14 @@
     "countryBo": "Bolivie",
     "countryCo": "Colombie",
     "countrySelected": "Pays sélectionné : {name}",
-    "comboboxHint": "Tapez pour filtrer ; ↑/↓ naviguent, Entrée sélectionne, Échap ferme."
+    "comboboxHint": "Tapez pour filtrer ; ↑/↓ naviguent, Entrée sélectionne, Échap ferme.",
+    "fmtCard": "fmt (formatage par langue)",
+    "fmtDateLabel": "Date",
+    "fmtTimeLabel": "Heure",
+    "fmtPriceLabel": "Prix",
+    "fmtTaxLabel": "TVA",
+    "fmtUpdatedLabel": "Mis à jour",
+    "fmtHint": "Changez la langue ci-dessus : les valeurs se reformatent toutes seules."
   },
   "auth": {},
   "login": {

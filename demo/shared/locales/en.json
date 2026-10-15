@@ -257,7 +257,14 @@
     "countryBo": "Bolivia",
     "countryCo": "Colombia",
     "countrySelected": "Selected country: {name}",
-    "comboboxHint": "Type to filter; ↑/↓ navigate, Enter selects, Esc closes."
+    "comboboxHint": "Type to filter; ↑/↓ navigate, Enter selects, Esc closes.",
+    "fmtCard": "fmt (locale-aware formatting)",
+    "fmtDateLabel": "Date",
+    "fmtTimeLabel": "Time",
+    "fmtPriceLabel": "Price",
+    "fmtTaxLabel": "VAT",
+    "fmtUpdatedLabel": "Updated",
+    "fmtHint": "Switch the language above: the values reformat themselves."
   },
   "field": {
     "email": {

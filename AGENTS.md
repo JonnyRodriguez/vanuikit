@@ -44,6 +44,21 @@ p(t("***REMOVED***.***REMOVED***With", "***REMOVED***r con {name}", { name: ***R
 - **Nunca llames `t()` dentro de funciones-hija o props-función de van** (`span(() => t(...).val)`): el derive creado dentro del binding se registra como *setter* del binding contenedor y van **omite suscribir el binding** — el texto queda congelado en el idioma del montaje. En esos casos usa `raw(...)` (lee `currentLocale` directo en el binding), o iza el `State` de `t()` fuera de la función.
 - La llave nunca se reescribe: puedes cambiar el default sin romper traducciones. Los diccionarios (`demo/shared/locales/*.json`) son gestionados por el tooling (`i18n:collect` / `i18n:check` / `i18n:scan` / `i18n:fix`).
 
+### Formato locale-aware: `fmt` (fechas, números, moneda)
+
+La otra mitad del i18n: mismos dos modos que `t()`/`raw()`, sobre `Intl.*` y atado a
+`currentLocale`. Los formateadores reactivos retornan `State<string>` (crear UNA vez fuera
+de bindings, igual que `t()`); `fmt.raw.*` resuelve al instante.
+
+```typescript
+import { fmt } from "vanui";
+
+span(fmt.date(order.createdAt));              // State, se reformatea al cambiar idioma
+span(fmt.currency(item.price, { currency: "EUR" }));
+toast.info(`Total: ${fmt.raw.currency(total)}`); // consumo imperativo
+const miFmt = createFmt(miI18n);              // instancia aislada (opcional)
+```
+
 ### Consumo y Derivación Reactiva
 - **Enlace directo en el DOM (Reactivo)**: pasar el `State` devuelto por `t()` como hijo o prop. Al cambiar `i18n.currentLocale`, el texto en pantalla muta automáticamente.
   ```typescript

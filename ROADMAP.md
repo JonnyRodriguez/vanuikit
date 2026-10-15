@@ -82,15 +82,28 @@ real en la demo).
 **Criterio de cierre**: 17 tests nuevos (suite: 148 en verde), demo showcase "Escala y pulido",
 locales recolectados (es/en/fr).
 
-## Fase 5 — `fmt`: la otra mitad del i18n
+## Fase 5 — `fmt`: la otra mitad del i18n ✅ *completada (2026-10-15)*
 
-Si la identidad de la librería es "internacionaliza cuando quieras", fechas/números/moneda son
-la mitad del i18n que aún se escribe hardcodeada.
+- ✅ `fmt.date/datetime/time/number/currency/percent/relative` sobre `Intl.*`, con el mismo
+  espíritu que `t()`: reactivos al cambiar `currentLocale` (hijos/props, crear una vez fuera
+  de los bindings) y `fmt.raw.*` para consumo imperativo estilo `raw()`.
+- ✅ `createFmt(i18n)` para instancias aisladas + singleton global `fmt` atado a `i18n`.
+- Valores aceptan `Date | number | ISO string`; fechas inválidas → `""` sin excepciones.
 
-- `fmt.date/datetime/number/currency/percent/relative` sobre `Intl.*`, con el mismo espíritu
-  que `t()`: default razonable inline y resolución atada a `currentLocale`.
-- Reactivos como `t()` cuando se usan como hijos/props; resolución inmediata estilo `raw()`
-  para consumo imperativo.
+**Criterio de cierre**: 12 tests nuevos (suite: 160 en verde), tarjeta de demo con
+reformateo en vivo al cambiar de idioma.
+
+---
+
+## 🎉 Roadmap original completado
+
+Las 5 fases están entregadas el mismo día (2026-10-15), con la suite siempre en verde:
+**21 componentes + fmt**, cero dependencias de runtime más allá de `vanjs-core`.
+
+**Candidatos para un próximo ciclo** (sin fecha, embebidos cuando la demo los pida):
+`Pagination` standalone y `Kbd` (aplazados de Fase 4), `Combobox` multi-selección,
+capa de debug (`trace`/`expectReactive`), y re-evaluar `DatePicker` si aparece una página
+que lo necesite de verdad.
 
 ---
 

@@ -36,14 +36,17 @@ reales necesitan ambos. Los nuevos controles se integran al ecosistema `Form`/va
 **Criterio de cierre**: 13 tests nuevos (suite: 105 en verde), demo showcase, locales
 recolectados (es/en/fr).
 
-## Fase 2 — Feedback estático y estados de carga
+## Fase 2 — Feedback estático y estados de carga ✅ *completada (2026-10-15)*
 
 `toast` y `Spin` cubren lo transitorio/indeterminado; falta lo persistente y lo determinado.
 
-- `Alert` / `Callout` — avisos estáticos (info/success/warning/error), icono, dismissible.
-- `Progress` — barra determinada/indeterminada con label y porcentaje.
-- `Skeleton` — placeholders de texto, bloque y avatar con shimmer.
-- `EmptyState` — icono + título + descripción + acción principal.
+- ✅ `Alert` / `Callout` — avisos estáticos (info/success/warning/error), icono, dismissible.
+- ✅ `Progress` — barra determinada/indeterminada con label y porcentaje.
+- ✅ `Skeleton` — placeholders de texto, bloque y avatar con shimmer.
+- ✅ `EmptyState` — icono + título + descripción + acción principal.
+
+**Criterio de cierre**: 12 tests nuevos (suite: 117 en verde), demo showcase "Estados y
+Feedback", locales recolectados (es/en/fr).
 
 ## Fase 3 — Overlay fino
 

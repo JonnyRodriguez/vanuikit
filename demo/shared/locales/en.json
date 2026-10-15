@@ -187,7 +187,28 @@
     "textareaLabel": "Message",
     "textareaPlaceholder": "Tell us more about your project...",
     "formSubmit": "Send",
-    "formSent": "Form submitted successfully!"
+    "formSent": "Form submitted successfully!",
+    "feedbackSection": "States & Feedback",
+    "feedbackDesc": "Persistent notices, reactive progress bars, loading placeholders and empty states.",
+    "alertCard": "Alert",
+    "alertInfoTitle": "What's new",
+    "alertInfoBody": "Roadmap phase 2 is now available.",
+    "alertSuccessTitle": "Saved",
+    "alertSuccessBody": "Your changes have been applied.",
+    "alertWarningBody": "Your session will expire in 5 minutes.",
+    "alertErrorTitle": "Connection error",
+    "alertErrorBody": "We couldn't sync; try again whenever you're ready.",
+    "alertDismissed": "Notice dismissed",
+    "progressCard": "Progress",
+    "uploadLabel": "Uploading files...",
+    "syncLabel": "Syncing changes",
+    "less": "Less",
+    "more": "More",
+    "skeletonCard": "Skeleton",
+    "emptyCard": "EmptyState",
+    "emptyTitle": "No results",
+    "emptyDesc": "Try different terms or create a new record.",
+    "emptyAction": "Create record"
   },
   "field": {
     "email": {
@@ -283,5 +304,8 @@
   },
   "radio": {
     "required": "Please select an option"
+  },
+  "alert": {
+    "dismiss": "Dismiss alert"
   }
 }

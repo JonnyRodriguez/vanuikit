@@ -59,6 +59,9 @@ export { Breadcrumbs, type BreadcrumbsOptions, type BreadcrumbItem } from "./com
 export { Card, CardTitle, type CardOptions, type CardTitleOptions } from "./components/card.js";
 export { Accordion, type AccordionOptions, type AccordionItem } from "./components/accordion.js";
 export { Combobox, type ComboboxOptions, type ComboboxOption, type ComboboxField } from "./components/combobox.js";
+export { Pagination, pageSlots, type PaginationOptions } from "./components/pagination.js";
+export { Kbd, type KbdOptions } from "./components/kbd.js";
+export { trace, expectReactive, type ExpectReactiveOptions } from "./debug.js";
 export {
   ThemeToggle,
   type ThemeToggleProps,

@@ -1,7 +1,7 @@
 import van, { type State } from "vanjs-core";
 import type { Validator, ValidatorMessage } from "../validators.js";
 import { Required } from "../validators.js";
-import { t } from "../i18n.js";
+import { raw, t } from "../i18n.js";
 import { cx } from "../util.js";
 import { asState, createControlField, readState, type ControlField } from "./checkable.js";
 import type { ToggleText } from "./checkbox.js";
@@ -15,8 +15,13 @@ export interface ComboboxOption {
 export interface ComboboxOptions {
   options: ComboboxOption[];
   name?: string;
-  /** Valor seleccionado; acepta State externo para enlace bidireccional. */
-  value?: string | State<string>;
+  /**
+   * Valor seleccionado; acepta State externo para enlace bidireccional.
+   * Con `multiple: true` debe ser `State<string[]>`.
+   */
+  value?: string | State<string> | State<string[]>;
+  /** Modo multi-selección: chips removibles; el panel no se cierra al elegir. */
+  multiple?: boolean;
   /** Placeholder del input (default: "Buscar..."). */
   placeholder?: ToggleText;
   disabled?: boolean | State<boolean>;
@@ -40,19 +45,28 @@ const labelOf = (opt: ComboboxOption): string =>
  * — ↑/↓ navegan, Home/End saltan, Enter selecciona, Esc cierra — con
  * `aria-activedescendant` sobre el listbox. Click fuera cierra. Con
  * `required`/`name` se integra a `Form` (contrato Field).
+ *
+ * Con `multiple: true` la selección se muestra como chips removibles (click
+ * en × o Backspace con el input vacío), elegir no cierra el panel y el
+ * `value` esperado es `State<string[]>`. Limitación de Form: `FormData`
+ * colapsa valores repetidos, así que en multiple usa `field.value.val` para
+ * leer la selección completa.
  */
 export const Combobox = (props: ComboboxOptions): ComboboxField => {
-  const { div, input, ul, li, p } = van.tags;
+  const { div, input, ul, li, p, span, button } = van.tags;
 
   const name = props.name ?? "combobox";
   const uid = `vanui-combobox-${nextId++}`;
   const listboxId = `${uid}-listbox`;
-  const selected = asState(props.value, "");
+  const multi = props.multiple === true;
+  const selected = asState(props.value as string | State<string> | undefined, "");
+  const selectedMulti = asState(props.value as State<string[]> | undefined, [] as string[]);
   const query = van.state("");
   const open = van.state(false);
   const focusedIdx = van.state(-1);
   const disabled = asState(props.disabled, false);
   let containerEl: HTMLElement | null = null;
+  let textInputEl: HTMLInputElement | null = null;
 
   const requiredMsg: ValidatorMessage =
     props.requiredMsg ?? t("radio.required", "Selecciona una opción");
@@ -62,8 +76,11 @@ export const Combobox = (props: ComboboxOptions): ComboboxField => {
     const opt = props.options.find((o) => o.value === selected.val);
     return opt ? labelOf(opt) : "";
   });
-  // Cerrado muestra la selección; abierto, lo que se está tecleando.
-  const display = van.derive(() => (open.val ? query.val : selectedLabel.val));
+  // Single: cerrado muestra la selección; abierto, lo que se teclea.
+  // Multi: la selección vive en los chips — el input siempre muestra el query.
+  const display = van.derive(() =>
+    multi ? query.val : open.val ? query.val : selectedLabel.val,
+  );
   const filtered = van.derive(() => {
     const q = query.val.trim().toLowerCase();
     return q
@@ -115,11 +132,26 @@ export const Combobox = (props: ComboboxOptions): ComboboxField => {
     }
   };
 
+  const removeMulti = (value: string) => {
+    selectedMulti.val = selectedMulti.val.filter((v) => v !== value);
+    if (field.isTouched.val) field.validate();
+  };
+
   const select = (opt: ComboboxOption) => {
     if (readState(opt.disabled, false)) return;
-    selected.val = opt.value;
-    setOpen(false);
     field.isTouched.val = true;
+    if (multi) {
+      // Elegir en multiple no cierra: se sigue filtrando/agregando.
+      if (selectedMulti.val.includes(opt.value)) {
+        removeMulti(opt.value);
+      } else {
+        selectedMulti.val = [...selectedMulti.val, opt.value];
+      }
+      query.val = "";
+    } else {
+      selected.val = opt.value;
+      setOpen(false);
+    }
     field.validate();
   };
 
@@ -163,6 +195,13 @@ export const Combobox = (props: ComboboxOptions): ComboboxField => {
           if (opt) select(opt);
         }
         break;
+      case "Backspace":
+        // Multi: Backspace con el input vacío quita el último chip.
+        if (multi && query.val === "" && selectedMulti.val.length) {
+          e.preventDefault();
+          removeMulti(selectedMulti.val[selectedMulti.val.length - 1]);
+        }
+        break;
       case "Escape":
         if (open.val) {
           e.preventDefault();
@@ -182,46 +221,105 @@ export const Combobox = (props: ComboboxOptions): ComboboxField => {
       field.isInvalid.val || (field.isTouched.val && !!field.error.val) ? field.error.val : "",
     );
 
+    const sharedInputAttrs = {
+      type: "text",
+      id: name,
+      role: "combobox",
+      "aria-autocomplete": "list",
+      "aria-expanded": () => (open.val ? "true" : "false"),
+      "aria-controls": listboxId,
+      "aria-activedescendant": () =>
+        open.val && focusedIdx.val >= 0 ? optId(focusedIdx.val) : "",
+      "aria-invalid": () => (field.isInvalid.val ? "true" : "false"),
+      autocomplete: "off",
+      value: () => display.val,
+      placeholder: props.placeholder ?? t("dropdown.searchPlaceholder", "Buscar..."),
+      disabled: () => disabled.val,
+      oninput: (e: Event) => {
+        query.val = (e.target as HTMLInputElement).value;
+        if (!open.val) setOpen(true);
+        focusedIdx.val = enabledIdxs.val[0] ?? -1;
+      },
+      onfocus: () => {
+        setOpen(true);
+        // Al abrir por foco sin foco previo de opción, la primera habilitada
+        // queda lista para Enter.
+        if (focusedIdx.val < 0) focusedIdx.val = enabledIdxs.val[0] ?? -1;
+      },
+      onkeydown: handleKeydown,
+    };
+
+    // El input visible muestra el LABEL (single) o filtra (multi); el valor
+    // real viaja en un hidden para que FormData reciba option.value.
+    const triggerArea = multi
+      ? div(
+          {
+            class: () =>
+              cx(
+                "flex w-full flex-wrap items-center gap-1.5 min-h-[2.625rem] px-2 py-1.5 border rounded-md text-sm transition-colors cursor-text",
+                field.isInvalid.val
+                  ? "border-destructive"
+                  : "border-border focus-within:ring-2 focus-within:ring-accent/30 focus-within:border-accent",
+                disabled.val ? "opacity-50 cursor-not-allowed" : "",
+              ),
+            onclick: () => textInputEl?.focus(),
+          },
+          // Ancla única para los chips (los hijos internos se regeneran).
+          () =>
+            div(
+              { class: "contents" },
+              ...selectedMulti.val.map((v) => {
+                const opt = props.options.find((o) => o.value === v);
+                const label = opt ? labelOf(opt) : v;
+                return span(
+                  {
+                    class:
+                      "flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary",
+                  },
+                  label,
+                  button(
+                    {
+                      type: "button",
+                      class: "cursor-pointer rounded-full hover:bg-primary/20 leading-none px-0.5",
+                      "aria-label": raw("combobox.remove", "Quitar {name}", { name: label }),
+                      onclick: (e: MouseEvent) => {
+                        e.stopPropagation();
+                        removeMulti(v);
+                      },
+                    },
+                    "×",
+                  ),
+                );
+              }),
+            ),
+          input({
+            ...sharedInputAttrs,
+            class:
+              "min-w-[6rem] flex-1 border-none bg-transparent px-1 py-0.5 text-sm focus:outline-none focus:ring-0",
+          }),
+        )
+      : input({
+          ...sharedInputAttrs,
+          class: () =>
+            cx(
+              "w-full px-3 py-2 border rounded-md text-sm transition-colors focus:outline-none focus:ring-2",
+              field.isInvalid.val
+                ? "border-destructive focus:ring-destructive/30"
+                : "border-border focus:ring-accent/30 focus:border-accent",
+              disabled.val ? "opacity-50 cursor-not-allowed" : "",
+            ),
+        });
+
     containerEl = div(
       { class: () => cx("field combobox relative flex flex-col gap-1", field.stateClass.val, props.class) },
-      // El input visible muestra el LABEL; el valor real viaja en un hidden
-      // para que FormData (Form) reciba option.value, no el texto.
-      input({ type: "hidden", name, value: () => selected.val }),
-      input({
-        type: "text",
-        id: name,
-        role: "combobox",
-        "aria-autocomplete": "list",
-        "aria-expanded": () => (open.val ? "true" : "false"),
-        "aria-controls": listboxId,
-        "aria-activedescendant": () =>
-          open.val && focusedIdx.val >= 0 ? optId(focusedIdx.val) : "",
-        "aria-invalid": () => (field.isInvalid.val ? "true" : "false"),
-        autocomplete: "off",
-        class: () =>
-          cx(
-            "w-full px-3 py-2 border rounded-md text-sm transition-colors focus:outline-none focus:ring-2",
-            field.isInvalid.val
-              ? "border-destructive focus:ring-destructive/30"
-              : "border-border focus:ring-accent/30 focus:border-accent",
-            disabled.val ? "opacity-50 cursor-not-allowed" : "",
-          ),
-        value: () => display.val,
-        placeholder: props.placeholder ?? t("dropdown.searchPlaceholder", "Buscar..."),
-        disabled: () => disabled.val,
-        oninput: (e: Event) => {
-          query.val = (e.target as HTMLInputElement).value;
-          if (!open.val) setOpen(true);
-          focusedIdx.val = enabledIdxs.val[0] ?? -1;
-        },
-        onfocus: () => {
-          setOpen(true);
-          // Al abrir por foco sin selección previa, la primera habilitada
-          // queda lista para Enter.
-          if (focusedIdx.val < 0) focusedIdx.val = enabledIdxs.val[0] ?? -1;
-        },
-        onkeydown: handleKeydown,
-      }),
+      multi
+        ? input({
+            type: "hidden",
+            name,
+            value: () => selectedMulti.val.join(","),
+          })
+        : input({ type: "hidden", name, value: () => selected.val }),
+      triggerArea,
       // Panel siempre montado (ancla real); el ul completo se regenera con
       // cada filtrado (un único nodo por render: sin hijos-función null).
       div(
@@ -236,14 +334,21 @@ export const Combobox = (props: ComboboxOptions): ComboboxField => {
           clampFocus();
           const fs = filtered.val;
           return ul(
-            { id: listboxId, role: "listbox", class: "max-h-60 overflow-y-auto py-1 list-none m-0" },
+            {
+              id: listboxId,
+              role: "listbox",
+              ...(multi ? { "aria-multiselectable": "true" } : {}),
+              class: "max-h-60 overflow-y-auto py-1 list-none m-0",
+            },
             fs.length === 0
               ? li(
                   { class: "px-3 py-4 text-xs text-center text-muted italic" },
                   t("dropdown.empty", "No se encontraron resultados"),
                 )
               : fs.map((opt, i) => {
-                  const isSelected = selected.val === opt.value;
+                  const isSelected = multi
+                    ? selectedMulti.val.includes(opt.value)
+                    : selected.val === opt.value;
                   const isFocused = focusedIdx.val === i;
                   const enabled = !readState(opt.disabled, false);
                   return li({
@@ -276,16 +381,23 @@ export const Combobox = (props: ComboboxOptions): ComboboxField => {
         () => errorText.val,
       ),
     );
+    textInputEl = containerEl.querySelector('input[type="text"]');
     return containerEl;
   };
 
   const field = createControlField(
     {
       name,
-      value: selected,
-      currentValue: () => selected.val,
+      value: multi
+        ? van.derive(() => selectedMulti.val.join(","))
+        : (selected as State<string>),
+      currentValue: () => (multi ? selectedMulti.val.join(",") : selected.val),
       applyValue: (rawStr) => {
-        selected.val = rawStr;
+        if (multi) {
+          selectedMulti.val = rawStr ? rawStr.split(",") : [];
+        } else {
+          selected.val = rawStr;
+        }
       },
     },
     { dom },

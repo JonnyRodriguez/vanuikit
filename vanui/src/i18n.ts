@@ -76,6 +76,14 @@ export const defaultLocales: Record<string, Record<string, any>> = {
     breadcrumbs: {
       ariaLabel: "Ruta de navegación",
     },
+    pagination: {
+      ariaLabel: "Paginación",
+      previous: "Anterior",
+      next: "Siguiente",
+    },
+    combobox: {
+      remove: "Quitar {name}",
+    },
     nav: {
       logout: "Cerrar sesión",
       ariaLabel: "Navegación principal",
@@ -202,6 +210,14 @@ export const defaultLocales: Record<string, Record<string, any>> = {
     },
     breadcrumbs: {
       ariaLabel: "Breadcrumb",
+    },
+    pagination: {
+      ariaLabel: "Pagination",
+      previous: "Previous",
+      next: "Next",
+    },
+    combobox: {
+      remove: "Remove {name}",
     },
     nav: {
       logout: "Sign out",

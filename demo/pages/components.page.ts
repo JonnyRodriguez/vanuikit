@@ -31,6 +31,8 @@ import {
   CardTitle,
   Accordion,
   Combobox,
+  Pagination,
+  Kbd,
   fmt,
   raw,
   type TableColumn,
@@ -83,6 +85,21 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
   const fmtPrice = fmt.currency(49.99, { minimumFractionDigits: 2 });
   const fmtTax = fmt.percent(0.21);
   const fmtUpdated = fmt.relative(-2, "hour");
+  const demoPage = van.state(2);
+  const demoLangs = van.state<string[]>(["es", "fr"]);
+  const langsSummary = van.derive(() => {
+    const names: Record<string, string> = {
+      es: raw("components.langEs", "Español"),
+      en: raw("components.langEn", "Inglés"),
+      fr: raw("components.langFr", "Francés"),
+      de: raw("components.langDe", "Alemán"),
+    };
+    const list = demoLangs.val.map((v) => names[v] ?? v).join(", ");
+    return raw("components.langsSelected", "Seleccionados: {list}", { list: list || "—" });
+  });
+  const pageSummary = van.derive(() =>
+    raw("components.pageOf", "Página {n} de {total}", { n: demoPage.val, total: 12 }),
+  );
   const countrySummary = van.derive(() => {
     const names: Record<string, string> = {
       ar: raw("components.countryAr", "Argentina"),
@@ -542,6 +559,37 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
             span({ class: "text-foreground font-medium" }, fmtUpdated),
           ),
           p({ class: "text-xs text-foreground-soft" }, i18n.t("components.fmtHint", "Cambia el idioma arriba: los valores se reformatean solos.")),
+        ),
+        // Pagination & Kbd
+        div(
+          { class: "p-4 rounded-xl bg-card border border-border/80 space-y-3" },
+          h3({ class: "text-xs font-semibold text-muted-foreground uppercase tracking-wider" }, i18n.t("components.paginationCard", "Pagination & Kbd")),
+          Pagination({ page: demoPage, totalPages: 12 }),
+          p({ class: "text-xs text-foreground-soft" }, pageSummary),
+          div(
+            { class: "flex items-center gap-2 text-sm text-foreground-soft" },
+            span(i18n.t("components.kbdHint", "Atajos:")),
+            Kbd({ size: "sm" }, "⌘"),
+            Kbd({ size: "sm" }, "K"),
+          ),
+        ),
+        // Combobox multiple
+        div(
+          { class: "p-4 rounded-xl bg-card border border-border/80 space-y-3" },
+          h3({ class: "text-xs font-semibold text-muted-foreground uppercase tracking-wider" }, i18n.t("components.langsLabel", "Idiomas (multiple)")),
+          Combobox({
+            name: "demo-langs",
+            multiple: true,
+            value: demoLangs,
+            options: [
+              { value: "es", label: i18n.t("components.langEs", "Español") },
+              { value: "en", label: i18n.t("components.langEn", "Inglés") },
+              { value: "fr", label: i18n.t("components.langFr", "Francés") },
+              { value: "de", label: i18n.t("components.langDe", "Alemán") },
+            ],
+          }).dom(),
+          p({ class: "text-xs text-foreground-soft" }, langsSummary),
+          p({ class: "text-xs text-muted-foreground" }, i18n.t("components.comboboxHint", "Teclea para filtrar; ↑/↓ navegan, Enter selecciona, Esc cierra.")),
         ),
       ),
     ),

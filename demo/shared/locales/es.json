@@ -8,6 +8,9 @@
   "checkbox": {
     "required": "Debes marcar esta opción"
   },
+  "combobox": {
+    "remove": "Quitar {name}"
+  },
   "components": {
     "acc1Body": "Una librería de componentes reactivos para VanJS: cero boilerplate, i18n inline y baterías incluidas.",
     "acc1Title": "¿Qué es VanUI?",
@@ -121,6 +124,13 @@
     "headerSyncTitle": "HeaderBar & Router Sync",
     "imperativeBadge": "Imperativo & Declarativo",
     "infoBtn": "🚀 Diálogo Informativo",
+    "kbdHint": "Atajos:",
+    "langDe": "Alemán",
+    "langEn": "Inglés",
+    "langEs": "Español",
+    "langFr": "Francés",
+    "langsLabel": "Idiomas (multiple)",
+    "langsSelected": "Seleccionados: {list}",
     "layoutsDesc": "Estructura adaptable Mobile-First con Drawer deslizable en pantallas táctiles y Sidebar estática en escritorio.",
     "layoutsSection": "Layouts & Dashboard Shell",
     "less": "Menos",
@@ -139,6 +149,8 @@
     "openModalBtn": "Abrir Modal Básico",
     "overlayDesc": "Tooltips accesibles, paneles flotantes y drawers con foco atrapado y bloqueo de scroll.",
     "overlaySection": "Overlay fino",
+    "pageOf": "Página {n} de {total}",
+    "paginationCard": "Pagination & Kbd",
     "perfBody": "VanUI permite renderizar vistas SPA reactivas con un bundle ultra liviano (~1.5kB de VanJS core) sin VDOM.",
     "perfTitle": "📊 Panel de Rendimiento",
     "planBasic": "Básico",
@@ -321,6 +333,11 @@
     "menuOpen": "Abrir menú",
     "platform": "Plataforma",
     "register": "Crear cuenta"
+  },
+  "pagination": {
+    "ariaLabel": "Paginación",
+    "next": "Siguiente",
+    "previous": "Anterior"
   },
   "radio": {
     "required": "Selecciona una opción"

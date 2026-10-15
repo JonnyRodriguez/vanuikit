@@ -51,6 +51,9 @@ export { Alert, type AlertOptions, type AlertVariant } from "./components/alert.
 export { Progress, type ProgressOptions, type ProgressSize } from "./components/progress.js";
 export { Skeleton, type SkeletonOptions, type SkeletonVariant } from "./components/skeleton.js";
 export { EmptyState, type EmptyStateOptions } from "./components/empty-state.js";
+export { Tooltip, type TooltipOptions, type TooltipPosition } from "./components/tooltip.js";
+export { Popover, type PopoverOptions, type PopoverPosition } from "./components/popover.js";
+export { Drawer, type DrawerOptions, type DrawerSide } from "./components/drawer.js";
 export {
   ThemeToggle,
   type ThemeToggleProps,

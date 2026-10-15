@@ -88,6 +88,7 @@ p(t("gateways.rechargeWith", "Recargar con {name}", { name: gateway.name }));
 | `Checkbox`, `Switch`, `RadioGroup` | `vanui` | Controles binarios y de elección excluyente, accesibles (Space, flechas, `role="switch"`/`radiogroup`), con `checked`/`value` como `State` bidireccional e integración nativa a `Form` (implementan el contrato `Field`). Usar `.dom()` al insertarlos como hijos. |
 | `Form` | `vanui` | Contenedor de formulario con validación automática y prevención de submits inválidos. |
 | `Modal`, `ModalBase`, `SpinModal` | `vanui` | Diálogos modales accesibles con backdrop y bloqueo de scroll. |
+| `Tooltip`, `Popover`, `Drawer` | `vanui` | Overlay fino sin dependencias: tooltips por hover/focus (off en touch), paneles flotantes con click-outside/Esc y fábrica `content(close)`, drawers por 4 lados con backdrop, focus trap y bloqueo de scroll. |
 | `Spin` | `vanui` | Indicador de carga con spinner animado y mensaje opcional. |
 | `Badge` | `vanui` | Etiquetas de estado con múltiples variantes de color y tamaño. |
 | `Button`, `PrimaryButton`, `SecondaryButton` | `vanui` | Botones accesibles con soporte para tamaños, variantes y estados de carga. |

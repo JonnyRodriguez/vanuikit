@@ -22,6 +22,9 @@ import {
   Progress,
   Skeleton,
   EmptyState,
+  Tooltip,
+  Popover,
+  Drawer,
   raw,
   type TableColumn,
   type Router,
@@ -65,6 +68,8 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
   // Controles de formulario (Fase 1 del roadmap)
   const demoTerms = van.state(false);
   const demoProgress = van.state(65);
+  const demoDrawerRight = van.state(false);
+  const demoDrawerBottom = van.state(false);
   const demoPlan = van.state("pro");
   const planSummary = van.derive(() => {
     const names: Record<string, string> = {
@@ -312,7 +317,106 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       ),
     ),
 
-    // 4. Tabs (Pestañas accesibles y reactivas)
+    // 4. Overlay fino (Tooltip / Popover / Drawer)
+    section(
+      { class: "space-y-4" },
+      div(
+        { class: "flex items-center justify-between" },
+        h2({ class: "text-xl font-bold text-foreground" }, i18n.t("components.overlaySection", "Overlay fino")),
+        Badge({ text: i18n.t("components.newBadge", "Nuevo"), variant: "success", size: "sm" }),
+      ),
+      p({ class: "text-sm text-foreground-soft" }, i18n.t("components.overlayDesc", "Tooltips accesibles, paneles flotantes y drawers con foco atrapado y bloqueo de scroll.")),
+      div(
+        { class: "grid grid-cols-1 md:grid-cols-3 gap-4" },
+        // Tooltip
+        div(
+          { class: "p-4 rounded-xl bg-card border border-border/80 space-y-3" },
+          h3({ class: "text-xs font-semibold text-muted-foreground uppercase tracking-wider" }, i18n.t("components.tooltipCard", "Tooltip")),
+          div(
+            { class: "flex flex-wrap gap-2" },
+            Tooltip(
+              { content: i18n.t("components.tipTop", "Aparece arriba") },
+              Button({ variant: "secondary", size: "sm" }, i18n.t("components.tipTopBtn", "Arriba")),
+            ),
+            Tooltip(
+              { content: i18n.t("components.tipBottom", "Aparece abajo"), position: "bottom" },
+              Button({ variant: "secondary", size: "sm" }, i18n.t("components.tipBottomBtn", "Abajo")),
+            ),
+            Tooltip(
+              { content: i18n.t("components.tipRight", "Aparece a la derecha"), position: "right" },
+              Button({ variant: "secondary", size: "sm" }, i18n.t("components.tipRightBtn", "Derecha")),
+            ),
+          ),
+          p({ class: "text-xs text-foreground-soft" }, i18n.t("components.tipFocusHint", "También aparecen al enfocar con Tab (accesible por teclado).")),
+        ),
+        // Popover
+        div(
+          { class: "p-4 rounded-xl bg-card border border-border/80 space-y-3" },
+          h3({ class: "text-xs font-semibold text-muted-foreground uppercase tracking-wider" }, i18n.t("components.popoverCard", "Popover")),
+          Popover({
+            trigger: Button({ variant: "secondary", size: "sm" }, i18n.t("components.popoverTrigger", "Opciones")),
+            ariaLabel: i18n.t("components.popoverCard", "Popover"),
+            content: (close) =>
+              div(
+                { class: "space-y-3 text-sm" },
+                p({ class: "text-foreground-soft" }, i18n.t("components.popoverBody", "Panel flotante con contenido arbitrario. Se cierra con Esc o click fuera.")),
+                div(
+                  { class: "flex gap-2" },
+                  Button(
+                    { size: "sm", onclick: () => toast.success(raw("components.popoverApplied", "¡Aplicado!")) },
+                    i18n.t("components.popoverApply", "Aplicar"),
+                  ),
+                  Button({ variant: "secondary", size: "sm", onclick: close }, i18n.t("components.popoverClose", "Cerrar")),
+                ),
+              ),
+          }),
+        ),
+        // Drawer
+        div(
+          { class: "p-4 rounded-xl bg-card border border-border/80 space-y-3" },
+          h3({ class: "text-xs font-semibold text-muted-foreground uppercase tracking-wider" }, i18n.t("components.drawerCard", "Drawer")),
+          div(
+            { class: "flex flex-wrap gap-2" },
+            Button(
+              { size: "sm", onclick: () => (demoDrawerRight.val = true) },
+              i18n.t("components.drawerSideBtn", "Panel lateral"),
+            ),
+            Button(
+              { variant: "secondary", size: "sm", onclick: () => (demoDrawerBottom.val = true) },
+              i18n.t("components.drawerBottomBtn", "Panel inferior"),
+            ),
+          ),
+          p({ class: "text-xs text-foreground-soft" }, i18n.t("components.drawerHint", "Esc, backdrop o el botón × lo cierran; el foco vuelve al origen.")),
+        ),
+      ),
+      // Drawers (posicionamiento fijo; viven aquí pero cubren la pantalla)
+      Drawer(
+        { open: demoDrawerRight, side: "right", class: "w-96" },
+        div(
+          { class: "p-6 pt-12 space-y-3 text-sm" },
+          h3({ class: "text-base font-bold text-foreground" }, i18n.t("components.drawerTitle", "Panel lateral")),
+          p({ class: "text-foreground-soft" }, i18n.t("components.drawerBody", "El drawer bloquea el scroll de la página, atrapa el foco (Tab no escapa) y lo devuelve al elemento que lo abrió.")),
+          Button(
+            { onclick: () => (demoDrawerRight.val = false) },
+            i18n.t("components.drawerOk", "Entendido"),
+          ),
+        ),
+      ),
+      Drawer(
+        { open: demoDrawerBottom, side: "bottom" },
+        div(
+          { class: "p-6 pt-12 space-y-3 text-sm" },
+          h3({ class: "text-base font-bold text-foreground" }, i18n.t("components.drawerBottomTitle", "Panel inferior")),
+          p({ class: "text-foreground-soft" }, i18n.t("components.drawerBody", "El drawer bloquea el scroll de la página, atrapa el foco (Tab no escapa) y lo devuelve al elemento que lo abrió.")),
+          Button(
+            { onclick: () => (demoDrawerBottom.val = false) },
+            i18n.t("components.drawerOk", "Entendido"),
+          ),
+        ),
+      ),
+    ),
+
+    // 5. Tabs (Pestañas accesibles y reactivas)
     section(
       { class: "space-y-4" },
       div(
@@ -371,7 +475,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       ),
     ),
 
-    // 5. Select / Dropdowns Accesibles
+    // 6. Select / Dropdowns Accesibles
     section(
       { class: "space-y-4" },
       div(
@@ -449,7 +553,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       ),
     ),
 
-    // 6. ConfirmDialog (Diálogos de confirmación)
+    // 7. ConfirmDialog (Diálogos de confirmación)
     section(
       { class: "space-y-4" },
       div(
@@ -502,7 +606,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       ),
     ),
 
-    // 7. DataGrid / Table con búsqueda, ordenamiento y selección
+    // 8. DataGrid / Table con búsqueda, ordenamiento y selección
     section(
       { class: "space-y-4" },
       div(
@@ -527,7 +631,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       }),
     ),
 
-    // 8. Badges & Toasts
+    // 9. Badges & Toasts
     section(
       { class: "space-y-4" },
       h2({ class: "text-xl font-bold text-foreground" }, i18n.t("components.badges", "Etiquetas (Badges)")),
@@ -543,7 +647,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       ),
     ),
 
-    // 9. Notificaciones Toast
+    // 10. Notificaciones Toast
     section(
       { class: "space-y-4" },
       h2({ class: "text-xl font-bold text-foreground" }, i18n.t("components.toasts", "Notificaciones (Toast)")),
@@ -580,7 +684,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       ),
     ),
 
-    // 10. Modal Clásico & Spinner
+    // 11. Modal Clásico & Spinner
     section(
       { class: "space-y-4" },
       h2({ class: "text-xl font-bold text-foreground" }, i18n.t("components.modals", "Modales")),
@@ -632,7 +736,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       modal.dom(),
     ),
 
-    // 11. Dashboard Layout & Sidebars (VanUI AppShell)
+    // 12. Dashboard Layout & Sidebars (VanUI AppShell)
     section(
       { class: "space-y-4" },
       h2({ class: "text-xl font-bold text-foreground" }, i18n.t("components.layoutsSection", "Layouts & Dashboard Shell")),

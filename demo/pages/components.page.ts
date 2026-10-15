@@ -25,6 +25,12 @@ import {
   Tooltip,
   Popover,
   Drawer,
+  Avatar,
+  Breadcrumbs,
+  Card,
+  CardTitle,
+  Accordion,
+  Combobox,
   raw,
   type TableColumn,
   type Router,
@@ -69,6 +75,17 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
   const demoTerms = van.state(false);
   const demoProgress = van.state(65);
   const demoDrawerRight = van.state(false);
+  const demoCountry = van.state("");
+  const countrySummary = van.derive(() => {
+    const names: Record<string, string> = {
+      ar: raw("components.countryAr", "Argentina"),
+      bo: raw("components.countryBo", "Bolivia"),
+      co: raw("components.countryCo", "Colombia"),
+      mx: raw("components.countryMx", "México"),
+    };
+    const name = names[demoCountry.val];
+    return raw("components.countrySelected", "País seleccionado: {name}", { name: name ?? "—" });
+  });
   const demoDrawerBottom = van.state(false);
   const demoPlan = van.state("pro");
   const planSummary = van.derive(() => {
@@ -416,7 +433,94 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       ),
     ),
 
-    // 5. Tabs (Pestañas accesibles y reactivas)
+    // 5. Escala y pulido (Avatar / Breadcrumbs / Card / Accordion / Combobox)
+    section(
+      { class: "space-y-4" },
+      div(
+        { class: "flex items-center justify-between" },
+        h2({ class: "text-xl font-bold text-foreground" }, i18n.t("components.polishSection", "Escala y pulido")),
+        Badge({ text: i18n.t("components.newBadge", "Nuevo"), variant: "success", size: "sm" }),
+      ),
+      p({ class: "text-sm text-foreground-soft" }, i18n.t("components.polishDesc", "Avatar con fallback de iniciales, ruta de navegación, tarjetas, acordeón y combobox con búsqueda por teclado.")),
+      div(
+        { class: "grid grid-cols-1 md:grid-cols-2 gap-4" },
+        // Avatar + Breadcrumbs
+        div(
+          { class: "p-4 rounded-xl bg-card border border-border/80 space-y-4" },
+          h3({ class: "text-xs font-semibold text-muted-foreground uppercase tracking-wider" }, i18n.t("components.avatarBreadcrumbsCard", "Avatar & Breadcrumbs")),
+          div(
+            { class: "flex items-center gap-3" },
+            Avatar({ name: i18n.t("components.avatarName", "Ana Morales"), size: "xs" }),
+            Avatar({ name: i18n.t("components.avatarName", "Ana Morales"), size: "sm" }),
+            Avatar({ name: i18n.t("components.avatarName", "Ana Morales"), size: "md" }),
+            Avatar({ name: i18n.t("components.avatarName", "Ana Morales"), size: "lg", src: "/favicon.svg" }),
+            Avatar({ name: i18n.t("components.avatarNoName", "?"), size: "md" }),
+          ),
+          p({ class: "text-xs text-foreground-soft" }, i18n.t("components.avatarHint", "El último usa una imagen que falla: rota solo a iniciales.")),
+          Breadcrumbs({
+            items: [
+              { label: i18n.t("components.bcHome", "Inicio"), href: "/" },
+              { label: i18n.t("components.bcComponents", "Componentes"), href: "/components" },
+              { label: i18n.t("components.bcHere", "Estás aquí") },
+            ],
+          }),
+        ),
+        // Card
+        div(
+          { class: "space-y-3" },
+          h3({ class: "text-xs font-semibold text-muted-foreground uppercase tracking-wider" }, i18n.t("components.cardCard", "Card")),
+          Card(
+            { class: "p-5 space-y-2", hoverable: true },
+            CardTitle({}, i18n.t("components.cardTitle", "Tarjeta compuesta")),
+            p({ class: "text-sm text-foreground-soft" }, i18n.t("components.cardBody", "La Card no incluye padding: el consumidor decide (aquí p-5). Con hoverable suma sombra al pasar el mouse.")),
+            Badge({ text: i18n.t("components.cardBadge", "Demo"), variant: "outline", size: "sm" }),
+          ),
+        ),
+        // Accordion
+        div(
+          { class: "p-4 rounded-xl bg-card border border-border/80 space-y-3" },
+          h3({ class: "text-xs font-semibold text-muted-foreground uppercase tracking-wider" }, i18n.t("components.accordionCard", "Accordion")),
+          Accordion({
+            items: [
+              {
+                id: "what",
+                title: i18n.t("components.acc1Title", "¿Qué es VanUI?"),
+                content: () => van.tags.p(i18n.t("components.acc1Body", "Una librería de componentes reactivos para VanJS: cero boilerplate, i18n inline y baterías incluidas.")),
+              },
+              {
+                id: "how",
+                title: i18n.t("components.acc2Title", "¿El contenido se reconstruye?"),
+                content: () => van.tags.p(i18n.t("components.acc2Body", "Sí: la fábrica de contenido se invoca en cada apertura, así que los bindings siempre están frescos.")),
+              },
+              {
+                id: "kbd",
+                title: i18n.t("components.acc3Title", "¿Y el teclado?"),
+                content: () => van.tags.p(i18n.t("components.acc3Body", "Cada cabecera es un botón con aria-expanded y su panel es una región etiquetada.")),
+              },
+            ],
+          }),
+        ),
+        // Combobox
+        div(
+          { class: "p-4 rounded-xl bg-card border border-border/80 space-y-3" },
+          h3({ class: "text-xs font-semibold text-muted-foreground uppercase tracking-wider" }, i18n.t("components.comboboxCard", "Combobox")),
+          Combobox({
+            name: "demo-country",
+            value: demoCountry,
+            options: [
+              { value: "ar", label: i18n.t("components.countryAr", "Argentina") },
+              { value: "bo", label: i18n.t("components.countryBo", "Bolivia") },
+              { value: "co", label: i18n.t("components.countryCo", "Colombia") },
+              { value: "mx", label: i18n.t("components.countryMx", "México") },
+            ],
+          }).dom(),
+          p({ class: "text-xs text-foreground-soft" }, countrySummary),
+          p({ class: "text-xs text-muted-foreground" }, i18n.t("components.comboboxHint", "Teclea para filtrar; ↑/↓ navegan, Enter selecciona, Esc cierra.")),
+        ),
+      ),
+    ),
+
+    // 6. Tabs (Pestañas accesibles y reactivas)
     section(
       { class: "space-y-4" },
       div(
@@ -475,7 +579,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       ),
     ),
 
-    // 6. Select / Dropdowns Accesibles
+    // 7. Select / Dropdowns Accesibles
     section(
       { class: "space-y-4" },
       div(
@@ -553,7 +657,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       ),
     ),
 
-    // 7. ConfirmDialog (Diálogos de confirmación)
+    // 8. ConfirmDialog (Diálogos de confirmación)
     section(
       { class: "space-y-4" },
       div(
@@ -606,7 +710,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       ),
     ),
 
-    // 8. DataGrid / Table con búsqueda, ordenamiento y selección
+    // 9. DataGrid / Table con búsqueda, ordenamiento y selección
     section(
       { class: "space-y-4" },
       div(
@@ -631,7 +735,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       }),
     ),
 
-    // 9. Badges & Toasts
+    // 10. Badges & Toasts
     section(
       { class: "space-y-4" },
       h2({ class: "text-xl font-bold text-foreground" }, i18n.t("components.badges", "Etiquetas (Badges)")),
@@ -647,7 +751,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       ),
     ),
 
-    // 10. Notificaciones Toast
+    // 11. Notificaciones Toast
     section(
       { class: "space-y-4" },
       h2({ class: "text-xl font-bold text-foreground" }, i18n.t("components.toasts", "Notificaciones (Toast)")),
@@ -684,7 +788,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       ),
     ),
 
-    // 11. Modal Clásico & Spinner
+    // 12. Modal Clásico & Spinner
     section(
       { class: "space-y-4" },
       h2({ class: "text-xl font-bold text-foreground" }, i18n.t("components.modals", "Modales")),
@@ -736,7 +840,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       modal.dom(),
     ),
 
-    // 12. Dashboard Layout & Sidebars (VanUI AppShell)
+    // 13. Dashboard Layout & Sidebars (VanUI AppShell)
     section(
       { class: "space-y-4" },
       h2({ class: "text-xl font-bold text-foreground" }, i18n.t("components.layoutsSection", "Layouts & Dashboard Shell")),

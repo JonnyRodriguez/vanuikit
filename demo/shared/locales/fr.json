@@ -232,7 +232,32 @@
     "drawerTitle": "Panneau latéral",
     "drawerBottomTitle": "Panneau inférieur",
     "drawerBody": "Le tiroir verrouille le défilement, piège le focus (Tab ne peut pas s'échapper) et le rend à l'élément qui l'a ouvert.",
-    "drawerOk": "Compris"
+    "drawerOk": "Compris",
+    "polishSection": "Échelle et finitions",
+    "polishDesc": "Avatar avec repli d'initiales, fil d'Ariane, cartes, accordéon et combobox au clavier.",
+    "avatarBreadcrumbsCard": "Avatar & Fil d'Ariane",
+    "avatarName": "Ana Morales",
+    "avatarNoName": "?",
+    "avatarHint": "Le dernier utilise une image qui échoue : il bascule sur les seules initiales.",
+    "bcHome": "Accueil",
+    "bcComponents": "Composants",
+    "bcHere": "Vous êtes ici",
+    "cardCard": "Card",
+    "cardTitle": "Carte composée",
+    "cardBody": "Card est livrée sans padding : le consommateur décide (p-5 ici). Avec hoverable, une ombre apparaît au survol.",
+    "cardBadge": "Démo",
+    "accordionCard": "Accordion",
+    "acc1Title": "Qu'est-ce que VanUI ?",
+    "acc1Body": "Une bibliothèque de composants réactifs pour VanJS : zéro boilerplate, i18n inline et tout inclus.",
+    "acc2Title": "Le contenu est-il reconstruit ?",
+    "acc2Body": "Oui : la fabrique de contenu s'exécute à chaque ouverture, les bindings sont donc toujours frais.",
+    "acc3Title": "Et le clavier ?",
+    "acc3Body": "Chaque en-tête est un bouton avec aria-expanded et son panneau est une région étiquetée.",
+    "comboboxCard": "Combobox",
+    "countryBo": "Bolivie",
+    "countryCo": "Colombie",
+    "countrySelected": "Pays sélectionné : {name}",
+    "comboboxHint": "Tapez pour filtrer ; ↑/↓ naviguent, Entrée sélectionne, Échap ferme."
   },
   "auth": {},
   "login": {
@@ -331,5 +356,8 @@
   },
   "alert": {
     "dismiss": "Fermer l'avis"
+  },
+  "breadcrumbs": {
+    "ariaLabel": "Fil d'Ariane"
   }
 }

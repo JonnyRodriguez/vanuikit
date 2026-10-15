@@ -64,13 +64,23 @@ genera.
 lint y build de integración en verde. Sin dependencias externas: posicionamiento por CSS
 (limitación documentada: un ancestro con `overflow: hidden` puede recortar el panel).
 
-## Fase 4 — Escala y pulido
+## Fase 4 — Escala y pulido ✅ *completada (2026-10-15)*
 
-- `Combobox` — select con búsqueda y teclado completo (SelectDropdown se queda corto past ~15
-  opciones).
-- `Accordion` / `Collapsible` — single/multiple, animado, accesible.
-- `Avatar` — iniciales extraídas de UserBadge, tamaños, `src` con fallback.
-- `Breadcrumbs`, `Pagination` (standalone, hoy encapsulada en DataGrid), `Card`, `Kbd`.
+- ✅ `Combobox` — patrón WAI-ARIA completo (input que filtra al teclear, ↑/↓/Home/End/Enter/Esc
+  desde el propio input, `aria-activedescendant`), enlace bidireccional y contrato `Field`
+  para `Form` (valor real vía hidden input). Convive con SelectDropdown (select de botón).
+- ✅ `Accordion` — single/multiple, `defaultOpen`, contenido como fábrica (bindings frescos),
+  `aria-expanded`/`region`.
+- ✅ `Avatar` — 4 tamaños, iniciales compartidas con UserBadge (refactor), `src` con fallback
+  automático a iniciales.
+- ✅ `Breadcrumbs` — anchors SPA vía el click handler global del Router, `aria-current="page"`.
+- ✅ `Card` + `CardTitle` — superficie base sin padding impuesto (el consumidor decide).
+
+**Pendiente de Fase 4**: `Pagination` standalone y `Kbd` (se evalúan con la próxima necesidad
+real en la demo).
+
+**Criterio de cierre**: 17 tests nuevos (suite: 148 en verde), demo showcase "Escala y pulido",
+locales recolectados (es/en/fr).
 
 ## Fase 5 — `fmt`: la otra mitad del i18n
 

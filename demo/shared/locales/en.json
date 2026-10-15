@@ -232,7 +232,32 @@
     "drawerTitle": "Side panel",
     "drawerBottomTitle": "Bottom panel",
     "drawerBody": "The drawer locks page scroll, traps focus (Tab can't escape) and returns it to the element that opened it.",
-    "drawerOk": "Got it"
+    "drawerOk": "Got it",
+    "polishSection": "Scale & Polish",
+    "polishDesc": "Avatar with initials fallback, breadcrumbs, cards, accordion and a keyboard-first combobox.",
+    "avatarBreadcrumbsCard": "Avatar & Breadcrumbs",
+    "avatarName": "Ana Morales",
+    "avatarNoName": "?",
+    "avatarHint": "The last one uses an image that fails: it rotates to initials only.",
+    "bcHome": "Home",
+    "bcComponents": "Components",
+    "bcHere": "You are here",
+    "cardCard": "Card",
+    "cardTitle": "Composed card",
+    "cardBody": "Card ships without padding: the consumer decides (p-5 here). With hoverable it adds a shadow on hover.",
+    "cardBadge": "Demo",
+    "accordionCard": "Accordion",
+    "acc1Title": "What is VanUI?",
+    "acc1Body": "A reactive component library for VanJS: zero boilerplate, inline i18n and batteries included.",
+    "acc2Title": "Is the content rebuilt?",
+    "acc2Body": "Yes: the content factory runs on every open, so bindings are always fresh.",
+    "acc3Title": "What about the keyboard?",
+    "acc3Body": "Each header is a button with aria-expanded and its panel is a labelled region.",
+    "comboboxCard": "Combobox",
+    "countryBo": "Bolivia",
+    "countryCo": "Colombia",
+    "countrySelected": "Selected country: {name}",
+    "comboboxHint": "Type to filter; ↑/↓ navigate, Enter selects, Esc closes."
   },
   "field": {
     "email": {
@@ -331,5 +356,8 @@
   },
   "alert": {
     "dismiss": "Dismiss alert"
+  },
+  "breadcrumbs": {
+    "ariaLabel": "Breadcrumb"
   }
 }

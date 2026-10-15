@@ -13,6 +13,12 @@ import {
   Spin,
   ThemeToggle,
   LocaleSelector,
+  Form,
+  Checkbox,
+  Switch,
+  RadioGroup,
+  TextareaField,
+  raw,
   type TableColumn,
   type Router,
 } from "vanui";
@@ -51,6 +57,37 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
   ]);
 
   const selectedUsers = van.state<SampleUser[]>([]);
+
+  // Controles de formulario (Fase 1 del roadmap)
+  const demoTerms = van.state(false);
+  const demoPlan = van.state("pro");
+  const planSummary = van.derive(() => {
+    const names: Record<string, string> = {
+      basic: raw("components.planBasic", "Básico"),
+      pro: raw("components.planPro", "Pro"),
+      business: raw("components.planBusiness", "Empresarial"),
+    };
+    return raw("components.planSelected", "Plan seleccionado: {name}", { name: names[demoPlan.val] ?? "—" });
+  });
+
+  const demoMessage = TextareaField({
+    name: "demo-message",
+    label: i18n.t("components.textareaLabel", "Mensaje"),
+    placeholder: i18n.t("components.textareaPlaceholder", "Cuéntanos más sobre tu proyecto..."),
+    rows: 3,
+  });
+  const demoAccept = Checkbox({
+    name: "demo-form-terms",
+    label: i18n.t("components.checkTerms", "Acepto los términos y condiciones"),
+    required: true,
+  });
+  const demoForm = Form(() => {
+    toast.success(raw("components.formSent", "¡Formulario enviado con éxito!"));
+  });
+  demoForm.add(demoMessage, demoAccept);
+  const formDemo = demoForm.dom(
+    Button({ type: "submit" }, i18n.t("components.formSubmit", "Enviar")),
+  );
 
   const columns: TableColumn<SampleUser>[] = [
     { key: "name", header: i18n.t("components.colUser", "Usuario"), sortable: true },
@@ -125,7 +162,72 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       ),
     ),
 
-    // 2. Tabs (Pestañas accesibles y reactivas)
+    // 2. Controles de Formulario (Checkbox / Switch / RadioGroup / Textarea)
+    section(
+      { class: "space-y-4" },
+      div(
+        { class: "flex items-center justify-between" },
+        h2({ class: "text-xl font-bold text-foreground" }, i18n.t("components.formControls", "Controles de Formulario")),
+        Badge({ text: i18n.t("components.newBadge", "Nuevo"), variant: "success", size: "sm" }),
+      ),
+      p({ class: "text-sm text-foreground-soft" }, i18n.t("components.formControlsDesc", "Controles binarios y multilínea con estado reactivo, navegación por teclado e integración nativa con Form.")),
+      div(
+        { class: "grid grid-cols-1 md:grid-cols-2 gap-4" },
+        // Checkbox
+        div(
+          { class: "p-4 rounded-xl bg-card border border-border/80 space-y-3" },
+          h3({ class: "text-xs font-semibold text-muted-foreground uppercase tracking-wider" }, i18n.t("components.checkboxCard", "Checkbox")),
+          Checkbox({
+            name: "demo-newsletter",
+            label: i18n.t("components.checkNewsletter", "Suscribirme al boletín"),
+            description: i18n.t("components.checkNewsletterDesc", "Recibirás como máximo un correo al mes"),
+          }).dom(),
+          Checkbox({
+            name: "demo-terms",
+            label: i18n.t("components.checkTerms", "Acepto los términos y condiciones"),
+            checked: demoTerms,
+            size: "lg",
+          }).dom(),
+          Checkbox({
+            name: "demo-disabled",
+            label: i18n.t("components.checkDisabled", "Opción deshabilitada"),
+            disabled: true,
+          }).dom(),
+        ),
+        // Switch
+        div(
+          { class: "p-4 rounded-xl bg-card border border-border/80 space-y-3" },
+          h3({ class: "text-xs font-semibold text-muted-foreground uppercase tracking-wider" }, i18n.t("components.switchCard", "Switch")),
+          Switch({ name: "demo-switch-sm", size: "sm", label: i18n.t("components.switchCompact", "Compacto") }).dom(),
+          Switch({ name: "demo-switch-md", size: "md", label: i18n.t("components.switchEmails", "Notificaciones por correo") }).dom(),
+          Switch({ name: "demo-switch-lg", size: "lg", label: i18n.t("components.switchAuto", "Actualizaciones automáticas") }).dom(),
+        ),
+        // RadioGroup
+        div(
+          { class: "p-4 rounded-xl bg-card border border-border/80 space-y-3" },
+          h3({ class: "text-xs font-semibold text-muted-foreground uppercase tracking-wider" }, i18n.t("components.radioCard", "RadioGroup")),
+          RadioGroup({
+            name: "demo-plan",
+            value: demoPlan,
+            ariaLabel: i18n.t("components.radioCard", "RadioGroup"),
+            options: [
+              { value: "basic", label: i18n.t("components.planBasic", "Básico"), description: i18n.t("components.planBasicDesc", "Para proyectos personales") },
+              { value: "pro", label: i18n.t("components.planPro", "Pro") },
+              { value: "business", label: i18n.t("components.planBusiness", "Empresarial"), disabled: true },
+            ],
+          }).dom(),
+          p({ class: "text-xs text-foreground-soft" }, planSummary),
+        ),
+        // Form + Textarea
+        div(
+          { class: "p-4 rounded-xl bg-card border border-border/80 space-y-3" },
+          h3({ class: "text-xs font-semibold text-muted-foreground uppercase tracking-wider" }, i18n.t("components.formCard", "Form + Textarea")),
+          formDemo,
+        ),
+      ),
+    ),
+
+    // 3. Tabs (Pestañas accesibles y reactivas)
     section(
       { class: "space-y-4" },
       div(
@@ -184,7 +286,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       ),
     ),
 
-    // 3. Select / Dropdowns Accesibles
+    // 4. Select / Dropdowns Accesibles
     section(
       { class: "space-y-4" },
       div(
@@ -262,7 +364,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       ),
     ),
 
-    // 4. ConfirmDialog (Diálogos de confirmación)
+    // 5. ConfirmDialog (Diálogos de confirmación)
     section(
       { class: "space-y-4" },
       div(
@@ -315,7 +417,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       ),
     ),
 
-    // 5. DataGrid / Table con búsqueda, ordenamiento y selección
+    // 6. DataGrid / Table con búsqueda, ordenamiento y selección
     section(
       { class: "space-y-4" },
       div(
@@ -340,7 +442,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       }),
     ),
 
-    // 6. Badges & Toasts
+    // 7. Badges & Toasts
     section(
       { class: "space-y-4" },
       h2({ class: "text-xl font-bold text-foreground" }, i18n.t("components.badges", "Etiquetas (Badges)")),
@@ -356,7 +458,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       ),
     ),
 
-    // 7. Notificaciones Toast
+    // 8. Notificaciones Toast
     section(
       { class: "space-y-4" },
       h2({ class: "text-xl font-bold text-foreground" }, i18n.t("components.toasts", "Notificaciones (Toast)")),
@@ -393,7 +495,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       ),
     ),
 
-    // 8. Modal Clásico & Spinner
+    // 9. Modal Clásico & Spinner
     section(
       { class: "space-y-4" },
       h2({ class: "text-xl font-bold text-foreground" }, i18n.t("components.modals", "Modales")),
@@ -445,7 +547,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       modal.dom(),
     ),
 
-    // 9. Dashboard Layout & Sidebars (VanUI AppShell)
+    // 10. Dashboard Layout & Sidebars (VanUI AppShell)
     section(
       { class: "space-y-4" },
       h2({ class: "text-xl font-bold text-foreground" }, i18n.t("components.layoutsSection", "Layouts & Dashboard Shell")),

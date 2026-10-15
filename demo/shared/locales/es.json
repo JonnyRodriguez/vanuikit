@@ -1,4 +1,7 @@
 {
+  "checkbox": {
+    "required": "Debes marcar esta opción"
+  },
   "components": {
     "accessibleBadge": "Accesible ARIA",
     "accountHeader": "Opciones de cuenta",
@@ -14,6 +17,11 @@
     "badges": "Etiquetas (Badges)",
     "cancel": "Cancelar",
     "cancelledToast": "Acción cancelada por el usuario",
+    "checkDisabled": "Opción deshabilitada",
+    "checkNewsletter": "Suscribirme al boletín",
+    "checkNewsletterDesc": "Recibirás como máximo un correo al mes",
+    "checkTerms": "Acepto los términos y condiciones",
+    "checkboxCard": "Checkbox",
     "colCreated": "Fecha Alta",
     "colRole": "Rol",
     "colStatus": "Estado",
@@ -41,6 +49,11 @@
     "embeddedBadge": "Embebidos en VanUI",
     "eventsBody": "Se registraron 4 operaciones exitosas en las últimas 24 horas.",
     "eventsTitle": "⚡ Registro de Eventos",
+    "formCard": "Form + Textarea",
+    "formControls": "Controles de Formulario",
+    "formControlsDesc": "Controles binarios y multilínea con estado reactivo, navegación por teclado e integración nativa con Form.",
+    "formSent": "¡Formulario enviado con éxito!",
+    "formSubmit": "Enviar",
     "frameworkReact": "Popular ecosystem",
     "frameworkSvelte": "Cybernetically enhanced",
     "frameworkVanjs": "Ultra lightweight (1.0kB)",
@@ -61,14 +74,21 @@
     "modalConfirmedToast": "Acción confirmada desde el modal",
     "modalTitle": "Modal Básico VanUI",
     "modals": "Modales",
+    "newBadge": "Nuevo",
     "openModalBtn": "Abrir Modal Básico",
     "perfBody": "VanUI permite renderizar vistas SPA reactivas con un bundle ultra liviano (~1.5kB de VanJS core) sin VDOM.",
     "perfTitle": "📊 Panel de Rendimiento",
+    "planBasic": "Básico",
+    "planBasicDesc": "Para proyectos personales",
+    "planBusiness": "Empresarial",
+    "planPro": "Pro",
+    "planSelected": "Plan seleccionado: {name}",
     "profileToast": "Navegando al perfil",
     "publishConfirm": "Publicar ahora",
     "publishMsg": "Los cambios se aplicarán inmediatamente a todos los usuarios en producción.",
     "publishTitle": "¿Publicar cambios?",
     "publishedToast": "Cambios publicados en producción",
+    "radioCard": "RadioGroup",
     "searchSelect": "Select con Búsqueda",
     "searchSortBadge": "Búsqueda + Sort + Paginación",
     "securityBody": "Sesiones protegidas con guards síncronos y asíncronos en el enrutador SPA.",
@@ -84,6 +104,10 @@
     "statusPending": "Pendiente",
     "statusSuspended": "Suspendido",
     "subtitle": "Componentes interactivos construidos con VanJS y VanUI",
+    "switchAuto": "Actualizaciones automáticas",
+    "switchCard": "Switch",
+    "switchCompact": "Compacto",
+    "switchEmails": "Notificaciones por correo",
     "tabActivity": "Actividad",
     "tabDisabled": "Deshabilitado",
     "tabOverview": "Resumen General",
@@ -94,6 +118,8 @@
     "tablesDesc": "Tabla de datos reactiva con ordenamiento bidireccional por columna, búsqueda instantánea, selección múltiple y paginación.",
     "tabs": "Pestañas (Tabs)",
     "tabsDesc": "Organiza contenido denso con soporte para flechas de teclado (←/→, Home, End), badges y múltiples variantes.",
+    "textareaLabel": "Mensaje",
+    "textareaPlaceholder": "Cuéntanos más sobre tu proyecto...",
     "themeDesc": "Gestión de estado global sin overhead: alternancia instantánea y sincronización automática.",
     "themeSection": "Gestión de Tema e Idioma",
     "themeToggleDemo": "ThemeToggle (Botón y Segmentado)",
@@ -135,6 +161,11 @@
       "label": "Correo electrónico",
       "placeholder": "tucorreo@ejemplo.com",
       "required": "Ingresa tu correo electrónico"
+    },
+    "message": {
+      "label": "Mensaje",
+      "placeholder": "Escribe aquí...",
+      "required": "Escribe tu mensaje"
     },
     "name": {
       "label": "Nombre completo",
@@ -208,6 +239,9 @@
     "platform": "Plataforma",
     "register": "Crear cuenta"
   },
+  "radio": {
+    "required": "Selecciona una opción"
+  },
   "register": {
     "errGeneric": "Error al registrarse. Intenta nuevamente.",
     "haveAccount": "¿Ya tienes cuenta?",
@@ -226,6 +260,9 @@
     "collapse": "Colapsar barra lateral",
     "expand": "Expandir barra lateral",
     "title": "Sidebar"
+  },
+  "switch": {
+    "required": "Debes activar esta opción"
   },
   "table": {
     "emptyText": "No hay datos disponibles",

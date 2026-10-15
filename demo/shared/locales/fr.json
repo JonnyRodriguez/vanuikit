@@ -164,7 +164,30 @@
     "countryUs": "États-Unis",
     "countryFr": "France",
     "countryMx": "Mexique",
-    "countryAr": "Argentine"
+    "countryAr": "Argentine",
+    "formControls": "Contrôles de formulaire",
+    "formControlsDesc": "Contrôles binaires et multilignes avec état réactif, navigation clavier et intégration native au Form.",
+    "newBadge": "Nouveau",
+    "checkboxCard": "Checkbox",
+    "checkNewsletter": "S'abonner à la newsletter",
+    "checkNewsletterDesc": "Vous recevrez au maximum un courriel par mois",
+    "checkTerms": "J'accepte les termes et conditions",
+    "checkDisabled": "Option désactivée",
+    "switchCard": "Switch",
+    "switchCompact": "Compact",
+    "switchEmails": "Notifications par courriel",
+    "switchAuto": "Mises à jour automatiques",
+    "radioCard": "RadioGroup",
+    "planBasic": "Basique",
+    "planBasicDesc": "Pour des projets personnels",
+    "planPro": "Pro",
+    "planBusiness": "Entreprise",
+    "planSelected": "Plan sélectionné : {name}",
+    "formCard": "Form + Textarea",
+    "textareaLabel": "Message",
+    "textareaPlaceholder": "Parlez-nous de votre projet...",
+    "formSubmit": "Envoyer",
+    "formSent": "Formulaire envoyé avec succès !"
   },
   "auth": {},
   "login": {
@@ -217,6 +240,11 @@
       "min": "Le mot de passe doit contenir au moins {min} caractères",
       "placeholder": "••••••••",
       "required": "Saisissez votre mot de passe"
+    },
+    "message": {
+      "label": "Message",
+      "placeholder": "Écrivez ici...",
+      "required": "Veuillez saisir votre message"
     }
   },
   "locale": {
@@ -246,5 +274,14 @@
   },
   "user": {
     "sessionActive": "Session active"
+  },
+  "checkbox": {
+    "required": "Vous devez cocher cette option"
+  },
+  "switch": {
+    "required": "Vous devez activer cette option"
+  },
+  "radio": {
+    "required": "Veuillez sélectionner une option"
   }
 }

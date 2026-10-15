@@ -14,9 +14,10 @@
     "dev": "npm run dev --workspace demo",
     "start": "npm run start --workspace demo",
     "test": "npm run test --workspace vanui",
-    "lint": "cd vanui && bun run typecheck && cd ../demo && bun run typecheck && cd .. && bun run i18n:check",
+    "lint": "cd vanui && bun run typecheck && cd ../demo && bun run typecheck && cd .. && bun run i18n:check && bun run i18n:scan -- --check",
     "i18n:collect": "bun scripts/i18n-collect.ts",
-    "i18n:check": "bun scripts/i18n-collect.ts --check"
+    "i18n:check": "bun scripts/i18n-collect.ts --check",
+    "i18n:scan": "bun scripts/i18n-scan.ts"
   },
   "devDependencies": {
     "typescript": "^5.8.2"

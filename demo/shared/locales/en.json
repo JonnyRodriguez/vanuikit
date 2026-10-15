@@ -8,7 +8,8 @@
     "logout": "Sign Out",
     "register": "Sign Up",
     "ariaLabel": "Main navigation",
-    "dashboard": "Dashboard"
+    "dashboard": "Dashboard",
+    "menuOpen": "Open menu"
   },
   "theme": {
     "light": "Light",
@@ -47,7 +48,8 @@
     "maxAmountErr": "The amount must be less than {max} {tipo}",
     "urlGenErr": "Could not generate top-up URL",
     "qrGenErr": "Could not generate QR code",
-    "processErr": "Error processing top-up"
+    "processErr": "Error processing top-up",
+    "qrAlt": "QR code"
   },
   "components": {
     "title": "Component Showcase",
@@ -154,7 +156,16 @@
     "desktopSidebarTitle": "Desktop Sidebar",
     "desktopSidebarDesc": "Persistent side panel with navigation groups, icons, reactive badges, and a user footer.",
     "headerSyncTitle": "HeaderBar & Router Sync",
-    "headerSyncDesc": "Automatic title and active link (aria-current) synchronization with the app's singleton router."
+    "headerSyncDesc": "Automatic title and active link (aria-current) synchronization with the app's singleton router.",
+    "frameworkVanjs": "Ultra lightweight (1.0kB)",
+    "frameworkReact": "Popular ecosystem",
+    "frameworkVue": "Progressive framework",
+    "frameworkSvelte": "Cybernetically enhanced",
+    "countryEs": "Spain",
+    "countryUs": "United States",
+    "countryFr": "France",
+    "countryMx": "Mexico",
+    "countryAr": "Argentina"
   },
   "field": {
     "email": {
@@ -219,7 +230,8 @@
   "sidebar": {
     "close": "Close menu",
     "collapse": "Collapse sidebar",
-    "expand": "Expand sidebar"
+    "expand": "Expand sidebar",
+    "title": "Sidebar"
   },
   "table": {
     "emptyText": "No data available",
@@ -228,5 +240,9 @@
     "searchPlaceholder": "Search the table...",
     "selectedCount": "{count} selected",
     "showing": "Showing {start} - {end} of {total}"
+  },
+  "router": {
+    "notFound": "404 - Not found",
+    "loading": "Loading..."
   }
 }

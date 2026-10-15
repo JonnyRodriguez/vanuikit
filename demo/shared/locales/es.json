@@ -20,8 +20,13 @@
     "colUser": "Usuario",
     "confirmDesc": "Abstracción sobre Modal para confirmaciones críticas con soporte para Promises, estados de carga y variantes.",
     "confirmDialogs": "Diálogos de Confirmación (ConfirmDialog)",
+    "countryAr": "Argentina",
+    "countryEs": "España",
+    "countryFr": "Francia",
+    "countryMx": "México",
     "countrySelect": "Selector con Iconos",
     "countryToast": "País seleccionado: {val}",
+    "countryUs": "Estados Unidos",
     "currentValue": "Valor actual: {val}",
     "dangerBtn": "🗑️ Diálogo Peligroso (Imperativo)",
     "deleteConfirm": "Sí, eliminar cuenta",
@@ -36,6 +41,10 @@
     "embeddedBadge": "Embebidos en VanUI",
     "eventsBody": "Se registraron 4 operaciones exitosas en las últimas 24 horas.",
     "eventsTitle": "⚡ Registro de Eventos",
+    "frameworkReact": "Popular ecosystem",
+    "frameworkSvelte": "Cybernetically enhanced",
+    "frameworkVanjs": "Ultra lightweight (1.0kB)",
+    "frameworkVue": "Progressive framework",
     "headerSyncDesc": "Sincronización automática de títulos y enlaces activos (aria-current) con el router singleton de la app.",
     "headerSyncTitle": "HeaderBar & Router Sync",
     "imperativeBadge": "Imperativo & Declarativo",
@@ -153,6 +162,7 @@
     "minMaxHelp": "Mínimo: {min} {tipo} · Máximo: {max} {tipo}",
     "processErr": "Error al procesar la ***REMOVED***",
     "processing": "Procesando ***REMOVED***...",
+    "qrAlt": "Código QR",
     "qrClickText": "Haz clic aquí para abrir la plataforma",
     "qrGenErr": "No se pudo generar el código QR",
     "qrNoticeText": "Tu saldo se actualizará automáticamente.",
@@ -195,6 +205,7 @@
     "***REMOVED***": "***REMOVED***s",
     "login": "Iniciar sesión",
     "logout": "Cerrar sesión",
+    "menuOpen": "Abrir menú",
     "platform": "Plataforma",
     "register": "Crear cuenta"
   },
@@ -207,10 +218,15 @@
     "subtitle": "Ingresa tus datos para comenzar a operar",
     "title": "Crear una cuenta"
   },
+  "router": {
+    "loading": "Cargando...",
+    "notFound": "404 - No encontrado"
+  },
   "sidebar": {
     "close": "Cerrar menú",
     "collapse": "Colapsar barra lateral",
-    "expand": "Expandir barra lateral"
+    "expand": "Expandir barra lateral",
+    "title": "Sidebar"
   },
   "table": {
     "emptyText": "No hay datos disponibles",

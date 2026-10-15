@@ -48,6 +48,7 @@ export const TEXTS = {
     platform: { key: "nav.platform", default: "Plataforma" },
     account: { key: "nav.account", default: "Cuenta" },
   },
+  menuOpen: { key: "nav.menuOpen", default: "Abrir menú" },
 } as const;
 
 // Header Authorization con el token que gestiona createAuth (persistencia centralizada).
@@ -175,7 +176,7 @@ export function App() {
             class:
               "text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20",
           },
-          "Dashboard",
+          i18n.t(TEXTS.titles.dashboard.key, undefined, TEXTS.titles.dashboard.default),
         ),
       ),
       content: [
@@ -243,7 +244,7 @@ export function App() {
           type: "button",
           class:
             "lg:hidden p-2 rounded-lg text-foreground hover:bg-secondary border border-border cursor-pointer text-base flex items-center justify-center",
-          "aria-label": "Abrir menú",
+          "aria-label": i18n.t(TEXTS.menuOpen.key, undefined, TEXTS.menuOpen.default),
           onclick: () => {
             sidebarOpen.val = !sidebarOpen.val;
           },

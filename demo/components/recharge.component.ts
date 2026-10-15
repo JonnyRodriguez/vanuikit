@@ -25,6 +25,7 @@ export const TEXTS = {
   ***REMOVED***With: { key: "***REMOVED***.***REMOVED***With", default: "***REMOVED***r con {name}" },
   qrClickText: { key: "***REMOVED***.qrClickText", default: "Haz clic aquí para abrir la plataforma" },
   qrScanText: { key: "***REMOVED***.qrScanText", default: "o escanea el código QR con tu app móvil" },
+  qrAlt: { key: "***REMOVED***.qrAlt", default: "Código QR" },
   qrNoticeText: { key: "***REMOVED***.qrNoticeText", default: "Tu saldo se actualizará automáticamente." },
   invalidAmount: { key: "***REMOVED***.invalidAmount", default: "Ingresa un monto válido" },
   minAmountErr: { key: "***REMOVED***.minAmountErr", default: "El monto debe ser superior a {min} {tipo}" },
@@ -165,7 +166,7 @@ export const ***REMOVED***Qr = (qr: string, url: string) => {
       img({
         class: "mx-auto",
         src: qr,
-        alt: "Código QR",
+        alt: t(TEXTS.qrAlt.key, undefined, TEXTS.qrAlt.default),
       }),
       div(
         { class: "text-muted text-sm italic" },

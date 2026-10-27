@@ -49,7 +49,11 @@
     "urlGenErr": "Impossible de générer l'URL de ***REMOVED***",
     "qrGenErr": "Impossible de générer le code QR",
     "processErr": "Erreur lors du traitement de la ***REMOVED***",
-    "qrAlt": "Code QR"
+    "qrAlt": "Code QR",
+    "wizardStep***REMOVED***": "***REMOVED***",
+    "wizardStepAmount": "Montant",
+    "select***REMOVED***": "Sélectionnez une ***REMOVED***",
+    "amountRequired": "Saisissez un montant"
   },
   "components": {
     "title": "Catalogue de Composants",

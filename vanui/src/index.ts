@@ -12,7 +12,7 @@ export { Field, TextField, EmailField, PasswordField, TextareaField, type Textar
 export { Checkbox, type CheckboxOptions, type CheckboxField, type CheckSize, type ToggleText } from "./components/checkbox.js";
 export { Switch, type SwitchOptions, type SwitchField } from "./components/switch.js";
 export { RadioGroup, type RadioGroupOptions, type RadioGroupField, type RadioOption } from "./components/radio.js";
-export { Form } from "./components/form.js";
+export { Form, type FormResult, type FormOptions, type FormConfig, type FormLegacyHandler, type SchemaLike } from "./components/form.js";
 export { Modal, ModalBase, type ModalContent, type ModalZone, type ModalProps } from "./components/modal.js";
 export { Spin } from "./components/spin.js";
 export { SpinModal } from "./components/spin-modal.js";

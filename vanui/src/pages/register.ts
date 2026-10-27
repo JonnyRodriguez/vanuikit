@@ -21,21 +21,30 @@ export interface RegisterInfo {
 /**
  * Formulario de registro limpio.
  * Los campos ya traen sus etiquetas, placeholders y validaciones por defecto.
+ * Usa el contrato de Form v3: submitting, línea general y sin doble submit.
  */
 export const RegisterForm = (info: RegisterInfo) => {
   const { div, p } = van.tags;
 
   const msg = van.state<Element | null>(null);
-  const formError = van.state("");
 
-  const form = Form(async (data) => {
-    formError.val = "";
-    msg.val = Spin(t("register.loading", "Creando cuenta..."));
-    const result = await info.handleRegister(data);
-    if ("error" in result && result.error) {
-      formError.val = result.error as string;
+  const form = Form({
+    onSubmit: async (data) => {
+      const result = await info.handleRegister(data);
+      if (result && "error" in result && result.error) {
+        return { ok: false, error: result.error as string };
+      }
+      return { ok: true };
+    },
+    onBeforeSubmit: () => {
+      msg.val = Spin(t("register.loading", "Creando cuenta..."));
+    },
+    onError: () => {
       msg.val = null;
-    }
+    },
+    onSuccess: () => {
+      msg.val = null;
+    },
   });
 
   const name = TextField({ name: "name" });
@@ -53,15 +62,18 @@ export const RegisterForm = (info: RegisterInfo) => {
   return div(
     {},
     () =>
-      formError.val
-        ? p({ class: "text-destructive text-sm mb-3" }, formError.val)
+      form.error.val
+        ? p({ class: "text-destructive text-sm mb-3" }, form.error.val)
         : "",
     form.dom(
       div(
         { class: "pt-2" },
         () =>
           (msg.val && msg.val) ||
-          Button({ type: "submit" }, t("register.submit", "Crear cuenta")),
+          Button(
+            { type: "submit", disabled: form.submitting.val },
+            t("register.submit", "Crear cuenta"),
+          ),
       ),
     ),
   );

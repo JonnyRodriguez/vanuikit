@@ -22,21 +22,30 @@ export interface LoginInfo {
 /**
  * Formulario de login limpio y directo.
  * Los campos resuelven sus etiquetas, placeholders y validaciones automáticamente.
+ * Usa el contrato de Form v3: submitting, línea general y sin doble submit.
  */
 export const LoginForm = (info: LoginInfo) => {
   const { div, p } = van.tags;
 
   const msg = van.state<Element | null>(null);
-  const formError = van.state("");
 
-  const form = Form(async (data) => {
-    formError.val = "";
-    msg.val = Spin(t("login.loading", "Iniciando sesión..."));
-    const result = await info.handleLogin(data);
-    if ("error" in result && result.error) {
-      formError.val = result.error as string;
+  const form = Form({
+    onSubmit: async (data) => {
+      const result = await info.handleLogin(data);
+      if (result && "error" in result && result.error) {
+        return { ok: false, error: result.error as string };
+      }
+      return { ok: true };
+    },
+    onBeforeSubmit: () => {
+      msg.val = Spin(t("login.loading", "Iniciando sesión..."));
+    },
+    onError: () => {
       msg.val = null;
-    }
+    },
+    onSuccess: () => {
+      msg.val = null;
+    },
   });
 
   const email = EmailField();
@@ -47,13 +56,18 @@ export const LoginForm = (info: LoginInfo) => {
   return div(
     {},
     () =>
-      formError.val
-        ? p({ class: "text-destructive text-sm mb-3" }, formError.val)
+      form.error.val
+        ? p({ class: "text-destructive text-sm mb-3" }, form.error.val)
         : "",
     form.dom(
       div(
         { class: "pt-2" },
-        () => (msg.val && msg.val) || Button({ type: "submit" }, t("login.submit", "Iniciar sesión")),
+        () =>
+          (msg.val && msg.val) ||
+          Button(
+            { type: "submit", disabled: form.submitting.val },
+            t("login.submit", "Iniciar sesión"),
+          ),
       ),
     ),
   );

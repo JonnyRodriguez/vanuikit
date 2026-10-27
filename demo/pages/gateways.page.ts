@@ -131,12 +131,14 @@ export const GatewaysPage = () => {
                 },
         },
         content: [
-          GatewaysList(
-            gatewaysQuery.data.val || [],
-            (gateway) => {
-              activeGateway.val = gateway;
-            },
-          ),
+          // Hijo-función reactivo: se reconstruye cuando llegan las pasarelas.
+          () =>
+            GatewaysList(
+              gatewaysQuery.data.val || [],
+              (gateway) => {
+                activeGateway.val = gateway;
+              },
+            ),
         ],
       },
       {

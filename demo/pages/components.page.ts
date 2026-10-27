@@ -4,6 +4,7 @@ import {
   Button,
   Badge,
   DataGrid,
+  DatePicker,
   Tabs,
   SelectDropdown,
   DropdownMenu,
@@ -61,6 +62,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
   // State para SelectDropdown
   const selectedFramework = van.state("vanjs");
   const selectedCountry = van.state("es");
+  const demoDate = van.state<Date | null>(new Date(2026, 0, 15));
 
   // State para DataGrid
   const sampleUsers = van.state<SampleUser[]>([
@@ -943,6 +945,50 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
             span({ class: "text-xl" }, "🧭"),
             h3({ class: "font-semibold text-sm text-foreground" }, i18n.t("components.headerSyncTitle", "HeaderBar & Router Sync")),
             p({ class: "text-xs text-muted-foreground" }, i18n.t("components.headerSyncDesc", "Sincronización automática de títulos y enlaces activos (aria-current) con el router singleton de la app.")),
+          ),
+        ),
+      ),
+    ),
+
+    // 14. DatePicker (inspirado en jQuery UI DatePicker)
+    section(
+      { class: "space-y-4" },
+      div(
+        { class: "flex items-center justify-between" },
+        h2({ class: "text-xl font-bold text-foreground" }, i18n.t("components.datepickerSection", "DatePicker")),
+        Badge({ text: i18n.t("components.newBadge", "Nuevo"), variant: "success", size: "sm" }),
+      ),
+      p(
+        { class: "text-sm text-foreground-soft" },
+        i18n.t("components.datepickerDesc", "Calendario de selección inspirado en jQuery UI: navegación por mes, grid de días, popup e inline, con localización vía Intl y contrato Field."),
+      ),
+      div(
+        { class: "grid grid-cols-1 md:grid-cols-2 gap-6 p-6 rounded-2xl border border-border bg-background shadow-sm" },
+        // Popup (input read-only + calendario)
+        div(
+          { class: "space-y-2" },
+          span({ class: "text-xs font-semibold text-foreground-soft uppercase tracking-wider" }, i18n.t("components.datepickerPopup", "Popup (input)")),
+          DatePicker({
+            name: "due-date",
+            label: i18n.t("components.datepickerDueLabel", "Fecha límite"),
+            value: demoDate,
+            required: true,
+          }).dom(),
+        ),
+        // Inline con min/max y valor compartido
+        div(
+          { class: "space-y-2" },
+          span({ class: "text-xs font-semibold text-foreground-soft uppercase tracking-wider" }, i18n.t("components.datepickerInline", "Inline con mínimo/máximo")),
+          DatePicker({
+            inline: true,
+            value: demoDate,
+            min: new Date(2026, 0, 1),
+            max: new Date(2026, 11, 31),
+          }).dom(),
+          p(
+            { class: "text-xs text-muted" },
+            // raw() lee currentLocale.val dentro del binding: reacciona al idioma y al valor.
+            () => i18n.raw("components.datepickerSelected", "Seleccionado: {val}", { val: fmt.raw.date(demoDate.val ?? new Date()) }),
           ),
         ),
       ),

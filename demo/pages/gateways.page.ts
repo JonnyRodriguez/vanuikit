@@ -5,7 +5,7 @@
  * Utiliza createQuery y createMutation de vanui y componentes modulares.
  * Si la petición es rechazada por falta de sesión (401), permite redirigir al login.
  */
-import { van, Modal, Spin, createQuery, createMutation, navigate, t } from "vanui";
+import { van, Modal, Spin, createQuery, createMutation, navigate } from "vanui";
 import { GatewaysList } from "../components/gateways-list.component.js";
 import { QRGenerator } from "../components/qr-generator.component.js";
 import type { Gateway, RechargeParams, RechargeResponse } from "../shared/payment.schema.js";
@@ -110,7 +110,7 @@ export const GatewaysPage = (_props: GatewaysPageProps = {}) => {
   /** Cuerpo del modal de monto */
   const amountBody = () => {
     const params = paramsQuery.data.val;
-    if (!params) return div(i18n.t("gateways.loadingParams", "Cargando parámetros..."));
+    if (!params) return div(i18n.raw("gateways.loadingParams", "Cargando parámetros..."));
 
     return div(
       {},
@@ -137,7 +137,7 @@ export const GatewaysPage = (_props: GatewaysPageProps = {}) => {
         { onsubmit: handleSubmit, class: "space-y-4" },
         div(
           { class: "mb-1 text-sm font-medium text-foreground" },
-          i18n.t("gateways.amountLabel", `Monto a recargar (${params.tipo})`, { tipo: params.tipo }),
+          i18n.raw("gateways.amountLabel", `Monto a recargar (${params.tipo})`, { tipo: params.tipo }),
         ),
         input({
           type: "number",
@@ -152,7 +152,7 @@ export const GatewaysPage = (_props: GatewaysPageProps = {}) => {
         }),
         p(
           { class: "text-xs text-muted" },
-          i18n.t("gateways.minMaxHelp", `Mínimo: ${params.monto_min_recarga} ${params.tipo} · Máximo: ${params.monto_max_recarga} ${params.tipo}`, { min: params.monto_min_recarga, max: params.monto_max_recarga, tipo: params.tipo }),
+          i18n.raw("gateways.minMaxHelp", `Mínimo: ${params.monto_min_recarga} ${params.tipo} · Máximo: ${params.monto_max_recarga} ${params.tipo}`, { min: params.monto_min_recarga, max: params.monto_max_recarga, tipo: params.tipo }),
         ),
         div(
           { class: "pt-2" },
@@ -164,8 +164,8 @@ export const GatewaysPage = (_props: GatewaysPageProps = {}) => {
             rechargeMutation.loading.val
               ? div(
                   { class: "flex items-center gap-2 text-sm text-foreground justify-center py-2" },
-                  Spin(i18n.t("gateways.generating", "Generando...")),
-                  i18n.t("gateways.processing", "Procesando recarga..."),
+                  Spin(i18n.raw("gateways.generating", "Generando...")),
+                  i18n.raw("gateways.processing", "Procesando recarga..."),
                 )
               : button(
                   {
@@ -173,7 +173,7 @@ export const GatewaysPage = (_props: GatewaysPageProps = {}) => {
                     class:
                       "w-full py-2 px-4 font-medium text-white bg-primary rounded-lg hover:bg-primary-hover transition cursor-pointer",
                   },
-                  i18n.t("gateways.rechargeBtn", "Recargar"),
+                  i18n.raw("gateways.rechargeBtn", "Recargar"),
                 ),
         ),
       ),
@@ -195,16 +195,16 @@ export const GatewaysPage = (_props: GatewaysPageProps = {}) => {
         },
         span(
           { class: "text-xl font-bold text-accent flex items-center justify-center" },
-          i18n.t("gateways.qrClickText", "Haz clic aquí para abrir la plataforma"),
+          i18n.raw("gateways.qrClickText", "Haz clic aquí para abrir la plataforma"),
         ),
         div(
           { class: "text-muted text-sm italic mt-2 text-center" },
-          i18n.t("gateways.qrScanText", "o escanea el código QR con tu app móvil"),
+          i18n.raw("gateways.qrScanText", "o escanea el código QR con tu app móvil"),
         ),
-        img({ class: "mx-auto mt-3", src: qrData, alt: t("gateways.qrAlt", "Código QR") }),
+        img({ class: "mx-auto mt-3", src: qrData, alt: i18n.raw("gateways.qrAlt", "Código QR") }),
         div(
           { class: "text-muted text-sm italic mt-2 text-center" },
-          i18n.t("gateways.qrNoticeText", "Tu saldo se actualizará automáticamente."),
+          i18n.raw("gateways.qrNoticeText", "Tu saldo se actualizará automáticamente."),
         ),
       ),
     );

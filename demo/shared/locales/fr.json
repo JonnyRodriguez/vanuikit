@@ -273,7 +273,13 @@
     "langEs": "Espagnol",
     "langEn": "Anglais",
     "langFr": "Français",
-    "langDe": "Allemand"
+    "langDe": "Allemand",
+    "datepickerSection": "DatePicker",
+    "datepickerDesc": "Calendrier de sélection inspiré de jQuery UI : navigation par mois, grille de jours, popup et inline, localisation via Intl et contrat Field.",
+    "datepickerPopup": "Popup (input)",
+    "datepickerDueLabel": "Date limite",
+    "datepickerInline": "Inline avec minimum/maximum",
+    "datepickerSelected": "Sélectionné : {val}"
   },
   "auth": {},
   "login": {
@@ -382,6 +388,13 @@
     "next": "Suivant"
   },
   "combobox": {
-    "remove": "Retirer {name}"
+    "remove": "Remove {name}"
+  },
+  "datepicker": {
+    "placeholder": "Sélectionner une date",
+    "prevMonth": "Mois précédent",
+    "nextMonth": "Mois suivant",
+    "today": "Aujourd'hui",
+    "required": "Veuillez sélectionner une date"
   }
 }

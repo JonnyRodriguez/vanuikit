@@ -84,6 +84,13 @@ export const defaultLocales: Record<string, Record<string, any>> = {
     combobox: {
       remove: "Quitar {name}",
     },
+    datepicker: {
+      placeholder: "Seleccionar fecha",
+      prevMonth: "Mes anterior",
+      nextMonth: "Mes siguiente",
+      today: "Hoy",
+      required: "Selecciona una fecha",
+    },
     nav: {
       logout: "Cerrar sesión",
       ariaLabel: "Navegación principal",
@@ -218,6 +225,13 @@ export const defaultLocales: Record<string, Record<string, any>> = {
     },
     combobox: {
       remove: "Remove {name}",
+    },
+    datepicker: {
+      placeholder: "Select a date",
+      prevMonth: "Previous month",
+      nextMonth: "Next month",
+      today: "Today",
+      required: "Please select a date",
     },
     nav: {
       logout: "Sign out",

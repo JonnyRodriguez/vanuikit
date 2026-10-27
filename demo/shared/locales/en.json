@@ -273,7 +273,13 @@
     "langEs": "Spanish",
     "langEn": "English",
     "langFr": "French",
-    "langDe": "German"
+    "langDe": "German",
+    "datepickerSection": "DatePicker",
+    "datepickerDesc": "Date selection calendar inspired by jQuery UI: month navigation, day grid, popup and inline, with Intl-based locale and the Field contract.",
+    "datepickerPopup": "Popup (input)",
+    "datepickerDueLabel": "Due date",
+    "datepickerInline": "Inline with min/max",
+    "datepickerSelected": "Selected: {val}"
   },
   "field": {
     "email": {
@@ -383,5 +389,12 @@
   },
   "combobox": {
     "remove": "Remove {name}"
+  },
+  "datepicker": {
+    "placeholder": "Select a date",
+    "prevMonth": "Previous month",
+    "nextMonth": "Next month",
+    "today": "Today",
+    "required": "Please select a date"
   }
 }

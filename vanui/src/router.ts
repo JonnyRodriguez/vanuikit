@@ -246,6 +246,7 @@ export class Router {
       // modificadores del usuario (Ctrl/Cmd abre en pestaña nueva) y target.
       clickHandler = (e) => {
         if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+        if (!(e.target instanceof Element)) return;
         const target = (e.target as HTMLElement).closest("a");
         if (
           target &&

@@ -60,6 +60,7 @@ export { Card, CardTitle, type CardOptions, type CardTitleOptions } from "./comp
 export { Accordion, type AccordionOptions, type AccordionItem } from "./components/accordion.js";
 export { Combobox, type ComboboxOptions, type ComboboxOption, type ComboboxField } from "./components/combobox.js";
 export { Pagination, pageSlots, type PaginationOptions } from "./components/pagination.js";
+export { DatePicker, type DatePickerOptions, type DatePickerField } from "./components/datepicker.js";
 export { Kbd, type KbdOptions } from "./components/kbd.js";
 export { trace, expectReactive, type ExpectReactiveOptions } from "./debug.js";
 export {

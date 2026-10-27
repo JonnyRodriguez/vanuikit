@@ -11,3 +11,7 @@ demo/dist/
 # Herramientas locales
 .atl/
 .zcodeignore
+
+# POCs (artefactos de build)
+ssr-poc/dist/
+ssg-poc/dist/

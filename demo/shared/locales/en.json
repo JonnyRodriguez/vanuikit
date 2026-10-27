@@ -279,7 +279,19 @@
     "datepickerPopup": "Popup (input)",
     "datepickerDueLabel": "Due date",
     "datepickerInline": "Inline with min/max",
-    "datepickerSelected": "Selected: {val}"
+    "datepickerSelected": "Selected: {val}",
+    "wizardSection": "Wizard (Multi-Step Form)",
+    "wizardDesc": "Large forms split across screens: shared store, per-step validation and the same FormResult contract with the backend.",
+    "wizardStep1": "Listing details",
+    "wizardStep2": "Contact",
+    "wizardStep3": "Description",
+    "wizardTitleLabel": "Title",
+    "wizardTitlePh": "E.g. iPhone 13 128GB",
+    "wizardPriceLabel": "Price",
+    "wizardPricePh": "500",
+    "wizardTitleMin": "Title must have at least 3 characters",
+    "wizardPriceReq": "Enter a price",
+    "wizardEmailErr": "Invalid email (double validation)"
   },
   "field": {
     "email": {
@@ -396,5 +408,17 @@
     "nextMonth": "Next month",
     "today": "Today",
     "required": "Please select a date"
+  },
+  "demo": {
+    "wizard": {
+      "published": "Listing published successfully"
+    }
+  },
+  "wizard": {
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "step": "Step {actual} of {total}",
+    "checkSteps": "Check step {pasos}"
   }
 }

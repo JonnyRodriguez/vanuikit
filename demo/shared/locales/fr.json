@@ -279,7 +279,19 @@
     "datepickerPopup": "Popup (input)",
     "datepickerDueLabel": "Date limite",
     "datepickerInline": "Inline avec minimum/maximum",
-    "datepickerSelected": "Sélectionné : {val}"
+    "datepickerSelected": "Sélectionné : {val}",
+    "wizardSection": "Wizard (Formulaire multi-étapes)",
+    "wizardDesc": "Grands formulaires découpés en écrans : store partagé, validation par étape et le même contrat FormResult avec le backend.",
+    "wizardStep1": "Détails de l'annonce",
+    "wizardStep2": "Contact",
+    "wizardStep3": "Description",
+    "wizardTitleLabel": "Titre",
+    "wizardTitlePh": "Ex. : iPhone 13 128GB",
+    "wizardPriceLabel": "Prix",
+    "wizardPricePh": "500",
+    "wizardTitleMin": "Le titre doit contenir au moins 3 caractères",
+    "wizardPriceReq": "Saisissez un prix",
+    "wizardEmailErr": "E-mail invalide (double validation)"
   },
   "auth": {},
   "login": {
@@ -396,5 +408,17 @@
     "nextMonth": "Mois suivant",
     "today": "Aujourd'hui",
     "required": "Veuillez sélectionner une date"
+  },
+  "demo": {
+    "wizard": {
+      "published": "Annonce publiée avec succès"
+    }
+  },
+  "wizard": {
+    "back": "Retour",
+    "next": "Suivant",
+    "submit": "Envoyer",
+    "step": "Étape {actual} sur {total}",
+    "checkSteps": "Vérifiez l'étape {pasos}"
   }
 }

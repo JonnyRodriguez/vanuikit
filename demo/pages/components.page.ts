@@ -19,6 +19,9 @@ import {
   Switch,
   RadioGroup,
   TextareaField,
+  TextField,
+  EmailField,
+  Wizard,
   Alert,
   Progress,
   Skeleton,
@@ -41,8 +44,54 @@ import {
 } from "vanui";
 import { i18n } from "../shared/i18n.config.js";
 import { theme } from "../shared/theme.config.js";
+import { z } from "zod";
 
 const { div, h1, h2, h3, p, span, section } = van.tags;
+
+const WizardDemo = (): HTMLElement =>
+  Wizard({
+    steps: [
+      {
+        title: i18n.t("components.wizardStep1", "Datos del anuncio"),
+        schema: z.object({
+          title: z.string().min(3, i18n.raw("components.wizardTitleMin", "El título debe tener al menos 3 caracteres")),
+          price: z.string().min(1, i18n.raw("components.wizardPriceReq", "Ingresa un precio")),
+        }),
+        fields: [
+          TextField({
+            name: "title",
+            label: i18n.t("components.wizardTitleLabel", "Título"),
+            placeholder: i18n.t("components.wizardTitlePh", "Ej: iPhone 13 128GB"),
+          }),
+          TextField({
+            name: "price",
+            label: i18n.t("components.wizardPriceLabel", "Precio"),
+            placeholder: i18n.t("components.wizardPricePh", "500"),
+          }),
+        ],
+      },
+      {
+        title: i18n.t("components.wizardStep2", "Contacto"),
+        fields: [EmailField()],
+      },
+      {
+        title: i18n.t("components.wizardStep3", "Descripción"),
+        fields: [TextareaField({ name: "description" })],
+      },
+    ],
+    onSubmit: async (data) => {
+      // Simula el backend: re-valida con el mismo contrato (doble validación).
+      await new Promise((r) => setTimeout(r, 600));
+      if (!data.email || String(data.email).length < 5) {
+        return {
+          ok: false,
+          fieldErrors: { email: i18n.raw("components.wizardEmailErr", "Correo inválido (doble validación)") },
+        };
+      }
+      toast.success(raw("demo.wizard.published", "Anuncio publicado correctamente"));
+      return { ok: true };
+    },
+  }).dom();
 
 interface SampleUser {
   id: string;
@@ -991,6 +1040,24 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
             () => i18n.raw("components.datepickerSelected", "Seleccionado: {val}", { val: fmt.raw.date(demoDate.val ?? new Date()) }),
           ),
         ),
+      ),
+    ),
+
+    // 15. Wizard (formulario multi-paso)
+    section(
+      { class: "space-y-4" },
+      div(
+        { class: "flex items-center justify-between" },
+        h2({ class: "text-xl font-bold text-foreground" }, i18n.t("components.wizardSection", "Wizard (Formulario Multi-Paso)")),
+        Badge({ text: i18n.t("components.newBadge", "Nuevo"), variant: "success", size: "sm" }),
+      ),
+      p(
+        { class: "text-sm text-foreground-soft" },
+        i18n.t("components.wizardDesc", "Formularios grandes partidos en pantallas: store compartido, validación por paso y el mismo contrato FormResult con el backend."),
+      ),
+      div(
+        { class: "p-6 rounded-2xl border border-border bg-background shadow-sm" },
+        WizardDemo(),
       ),
     ),
   );

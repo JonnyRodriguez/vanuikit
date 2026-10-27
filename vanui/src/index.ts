@@ -13,6 +13,7 @@ export { Checkbox, type CheckboxOptions, type CheckboxField, type CheckSize, typ
 export { Switch, type SwitchOptions, type SwitchField } from "./components/switch.js";
 export { RadioGroup, type RadioGroupOptions, type RadioGroupField, type RadioOption } from "./components/radio.js";
 export { Form, type FormResult, type FormOptions, type FormConfig, type FormLegacyHandler, type SchemaLike } from "./components/form.js";
+export { Wizard, type WizardOptions, type WizardStep, type WizardHandle } from "./components/wizard.js";
 export { Modal, ModalBase, type ModalContent, type ModalZone, type ModalProps } from "./components/modal.js";
 export { Spin } from "./components/spin.js";
 export { SpinModal } from "./components/spin-modal.js";

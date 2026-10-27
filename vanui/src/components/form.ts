@@ -39,7 +39,7 @@ export interface SchemaLike {
     success: boolean;
     data?: unknown;
     error?: {
-      issues: Array<{ path: Array<string | number>; message: string }>;
+      issues: Array<{ path: Array<PropertyKey>; message: string }>;
     };
   };
 }

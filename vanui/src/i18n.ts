@@ -91,6 +91,13 @@ export const defaultLocales: Record<string, Record<string, any>> = {
       today: "Hoy",
       required: "Selecciona una fecha",
     },
+    wizard: {
+      back: "Atrás",
+      next: "Siguiente",
+      submit: "Enviar",
+      step: "Paso {actual} de {total}",
+      checkSteps: "Revisa el paso {pasos}",
+    },
     nav: {
       logout: "Cerrar sesión",
       ariaLabel: "Navegación principal",
@@ -232,6 +239,13 @@ export const defaultLocales: Record<string, Record<string, any>> = {
       nextMonth: "Next month",
       today: "Today",
       required: "Please select a date",
+    },
+    wizard: {
+      back: "Back",
+      next: "Next",
+      submit: "Submit",
+      step: "Step {actual} of {total}",
+      checkSteps: "Check step {pasos}",
     },
     nav: {
       logout: "Sign out",

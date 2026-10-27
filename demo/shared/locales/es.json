@@ -239,7 +239,19 @@
     "tooltipCard": "Tooltip",
     "uploadLabel": "Subiendo archivos...",
     "usersSelected": "{n} usuarios seleccionados",
-    "viewProfile": "Ver Perfil"
+    "viewProfile": "Ver Perfil",
+    "wizardDesc": "Formularios grandes partidos en pantallas: store compartido, validación por paso y el mismo contrato FormResult con el backend.",
+    "wizardEmailErr": "Correo inválido (doble validación)",
+    "wizardPriceLabel": "Precio",
+    "wizardPricePh": "500",
+    "wizardPriceReq": "Ingresa un precio",
+    "wizardSection": "Wizard (Formulario Multi-Paso)",
+    "wizardStep1": "Datos del anuncio",
+    "wizardStep2": "Contacto",
+    "wizardStep3": "Descripción",
+    "wizardTitleLabel": "Título",
+    "wizardTitleMin": "El título debe tener al menos 3 caracteres",
+    "wizardTitlePh": "Ej: iPhone 13 128GB"
   },
   "datepicker": {
     "nextMonth": "Mes siguiente",
@@ -247,6 +259,11 @@
     "prevMonth": "Mes anterior",
     "required": "Selecciona una fecha",
     "today": "Hoy"
+  },
+  "demo": {
+    "wizard": {
+      "published": "Anuncio publicado correctamente"
+    }
   },
   "dialog": {
     "cancel": "Cancelar",
@@ -395,5 +412,12 @@
   },
   "user": {
     "sessionActive": "Sesión activa"
+  },
+  "wizard": {
+    "back": "Atrás",
+    "checkSteps": "Revisa el paso {pasos}",
+    "next": "Siguiente",
+    "step": "Paso {actual} de {total}",
+    "submit": "Enviar"
   }
 }

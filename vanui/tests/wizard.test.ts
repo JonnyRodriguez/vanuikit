@@ -1,0 +1,183 @@
+import { describe, test, expect } from "bun:test";
+import { Wizard, type WizardOptions } from "../src/components/wizard.js";
+import { EmailField, TextField } from "../src/components/field.js";
+import type { SchemaLike } from "../src/components/form.js";
+import { i18n } from "../src/i18n.js";
+
+// Los textos del Wizard (botones, línea general) son i18n: fija español para
+// que las aserciones sean deterministas. Los clicks son por posición.
+i18n.setLocale("es");
+
+const mount = (node: HTMLElement) => {
+  document.body.replaceChildren(node);
+  return node;
+};
+
+const flush = () => new Promise((r) => setTimeout(r, 10));
+
+/**
+ * Los únicos <button> del Wizard son los del footer (indicadores y paso son
+ * divs), así que se accede por posición: 0 = Atrás, último = Siguiente/Enviar.
+ * Así los tests no dependen del idioma activo de i18n.
+ */
+const clickFooter = (node: HTMLElement, index: number) => {
+  const btns = [...node.querySelectorAll("button")];
+  const btn = btns[index];
+  if (!btn) throw new Error(`button footer @ ${index} no existe`);
+  btn.click();
+};
+
+const clickLast = (node: HTMLElement) =>
+  clickFooter(node, node.querySelectorAll("button").length - 1);
+const clickBack = (node: HTMLElement) => clickFooter(node, 0);
+
+const setValue = (node: HTMLElement, name: string, value: string) => {
+  const input = node.querySelector(`input[name="${name}"]`) as HTMLInputElement;
+  input.value = value;
+  input.dispatchEvent(new Event("input", { bubbles: true }));
+};
+
+const makeSchema = (failWith: Array<{ path: string; message: string }> = []): SchemaLike => ({
+  safeParse: () =>
+    failWith.length === 0
+      ? { success: true, data: {} }
+      : {
+          success: false,
+          error: {
+            issues: failWith.map((f) => ({ path: [f.path], message: f.message })),
+          },
+        },
+});
+
+const twoStepWizard = (overrides: Partial<WizardOptions> = {}) =>
+  Wizard({
+    steps: [
+      { title: "Básico", schema: makeSchema(), fields: [TextField({ name: "title" })] },
+      { title: "Contacto", schema: makeSchema(), fields: [EmailField()] },
+    ],
+    onSubmit: () => ({ ok: true }),
+    ...overrides,
+  });
+
+describe("Wizard — multi-paso", () => {
+  test("bloquea avanzar si el paso actual es inválido", async () => {
+    const failing = makeSchema([{ path: "title", message: "El título es requerido" }]);
+    const w = Wizard({
+      steps: [
+        { title: "B", schema: failing, fields: [TextField({ name: "title" })] },
+        { title: "C", fields: [] },
+      ],
+      onSubmit: () => ({ ok: true }),
+    });
+    const el = mount(w.dom());
+    await flush();
+    clickLast(el);
+    await flush();
+    expect(w.step.val).toBe(0);
+    expect(el.textContent).toContain("El título es requerido");
+  });
+
+  test("acumula valores en el store y envía el merge al submit", async () => {
+    let submitted: Record<string, unknown> | null = null;
+    const w = twoStepWizard({ onSubmit: (data) => { submitted = data; return { ok: true }; } });
+    const el = mount(w.dom());
+    setValue(el, "title", "Anuncio");
+    clickLast(el);
+    await flush();
+    expect(w.step.val).toBe(1);
+    setValue(el, "email", "a@b.co");
+    clickLast(el);
+    await flush();
+    expect(submitted).toEqual({ title: "Anuncio", email: "a@b.co" });
+  });
+
+  test("volver atrás conserva los valores sembrados desde el store", async () => {
+    const w = twoStepWizard();
+    const el = mount(w.dom());
+    setValue(el, "title", "Anuncio");
+    clickLast(el);
+    await flush();
+    clickBack(el);
+    await flush();
+    expect(w.step.val).toBe(0);
+    expect((el.querySelector('input[name="title"]') as HTMLInputElement).value).toBe("Anuncio");
+  });
+
+  test("onSuccess se llama al triunfar y deja la línea general limpia", async () => {
+    let success: Record<string, unknown> | null = null;
+    const w = twoStepWizard({ onSuccess: (data) => { success = data; } });
+    const el = mount(w.dom());
+    setValue(el, "title", "X");
+    clickLast(el);
+    await flush();
+    setValue(el, "email", "a@b.co");
+    clickLast(el);
+    await flush();
+    expect(success).toEqual({ title: "X", email: "a@b.co" });
+    expect(w.error.val).toBe("");
+  });
+
+  test("fieldErrors del backend en el paso visible se pintan en el campo", async () => {
+    const w = Wizard({
+      steps: [
+        { title: "A", fields: [] },
+        { title: "B", fields: [EmailField()] },
+      ],
+      onSubmit: () => ({ ok: false, fieldErrors: { email: "Ya existe" } }),
+    });
+    const el = mount(w.dom());
+    clickLast(el);
+    await flush();
+    setValue(el, "email", "a@b.co");
+    clickLast(el);
+    await flush();
+    expect(el.textContent).toContain("Ya existe");
+    expect(w.error.val).toBe("");
+  });
+
+  test("fieldErrors del backend en OTRO paso caen en la línea general con hint", async () => {
+    const w = Wizard({
+      steps: [
+        { title: "A", fields: [EmailField()] },
+        { title: "B", fields: [] },
+      ],
+      onSubmit: () => ({ ok: false, fieldErrors: { email: "Ya existe" } }),
+    });
+    const el = mount(w.dom());
+    setValue(el, "email", "a@b.co");
+    clickLast(el);
+    await flush();
+    clickLast(el);
+    await flush();
+    expect(w.error.val).toBe("Revisa el paso 1");
+  });
+
+  test("submitting bloquea doble submit", async () => {
+    let calls = 0;
+    let resolveSubmit!: (r: { ok: true }) => void;
+    const w = Wizard({
+      steps: [
+        { title: "A", fields: [] },
+        { title: "B", fields: [] },
+      ],
+      onSubmit: () => {
+        calls++;
+        return new Promise<{ ok: true }>((res) => {
+          resolveSubmit = () => res({ ok: true });
+        });
+      },
+    });
+    const el = mount(w.dom());
+    clickLast(el);
+    await flush();
+    clickLast(el);
+    await flush();
+    expect(w.submitting.val).toBe(true);
+    clickLast(el);
+    await flush();
+    expect(calls).toBe(1);
+    resolveSubmit();
+    await flush();
+    expect(w.submitting.val).toBe(false);
+  });
+});

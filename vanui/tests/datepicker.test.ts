@@ -4,6 +4,8 @@ import { DatePicker } from "../src/components/datepicker.js";
 import { Form } from "../src/components/form.js";
 import { i18n } from "../src/i18n.js";
 
+const { div } = van.tags;
+
 const mount = (node: HTMLElement) => {
   document.body.replaceChildren(node);
   return node;
@@ -33,12 +35,55 @@ describe("DatePicker — inline", () => {
     // 7 columnas de cabecera + botón del día 15 presente
     expect(el.querySelectorAll("thead th").length).toBe(7);
     expect(dayBtn(el, "2026-01-15")).toBeTruthy();
+    expect(dayBtn(el, "2026-02-15")).toBeFalsy();
 
-    // Navegar al mes siguiente
+    // Navegar al mes siguiente: el título Y el grid deben actualizarse
     const next = el.querySelector('button[aria-label="Next month"]') as HTMLButtonElement;
     next.click();
     await tick();
     expect(el.textContent).toContain("February 2026");
+    expect(dayBtn(el, "2026-02-15")).toBeTruthy();
+    expect(dayBtn(el, "2026-01-15")).toBeFalsy();
+  });
+
+  test("navegar y luego seleccionar elige el día del mes visible (no enero)", async () => {
+    const field = DatePicker({ inline: true, value: new Date(2026, 0, 15) });
+    const el = mount(field.dom() as HTMLElement);
+
+    const next = el.querySelector('button[aria-label="Next month"]') as HTMLButtonElement;
+    next.click();
+    next.click();
+    await tick();
+    expect(dayBtn(el, "2026-03-20")).toBeTruthy();
+
+    dayBtn(el, "2026-03-20").click();
+    await tick();
+    expect(field.value.val).toBe("2026-03-20");
+  });
+
+  test("dos pickers que comparten State: navegar y seleccionar en uno no rompe al otro", async () => {
+    const shared = van.state<Date | null>(new Date(2026, 0, 15));
+    const popup = DatePicker({ name: "due-date", value: shared, required: true });
+    const inline = DatePicker({
+      inline: true,
+      value: shared,
+      min: new Date(2026, 0, 1),
+      max: new Date(2026, 11, 31),
+    });
+    const popupNode = popup.dom();
+    const inlineNode = inline.dom();
+    mount(div(popupNode, inlineNode));
+
+    const nextInline = inlineNode.querySelector('button[aria-label="Next month"]') as HTMLButtonElement;
+    nextInline.click();
+    nextInline.click();
+    await tick();
+    expect(dayBtn(inlineNode, "2026-03-10")).toBeTruthy();
+
+    dayBtn(inlineNode, "2026-03-10").click();
+    await tick();
+    expect(inline.value.val).toBe("2026-03-10");
+    expect(shared.val!.getMonth()).toBe(2);
   });
 
   test("seleccionar un día actualiza field.value (ISO) y el State externo", async () => {

@@ -123,6 +123,30 @@ Los candidatos del próximo ciclo, menos `DatePicker` (sigue sin página que lo 
 
 ---
 
+## Backlog anotado — hallazgos del ecosistema (2026-10-27)
+
+Del review de vanjs.org y del ecosistema oficial (decisión: **anotado, sin fecha** — se
+embeben cuando una página real los pida, misma filosofía de siempre):
+
+- **Nombre — decisión: quedarse con `vanui`.** Verificado en npm (2026-10-27): `vanui` está
+  LIBRE (el VanUI oficial se publica como `vanjs-ui`, vanjs.org/vanui). Rechazado `vanuix`:
+  la marca "X" pertenece a VanX (oficial) — implicaría afiliación doble que no existe.
+  Posicionamiento frente a `vanjs-ui`: es ~10 widgets sin ARIA ni focus management
+  documentados; el nuestro es un app kit (componentes accesibles + i18n/fmt + router
+  deny-by-default + auth + debug). La brecha de accesibilidad es la bandera.
+- **`Await`** (idea de `vanjs-ui`) — render declarativo desde cualquier `Promise` (no solo
+  fetch) con slots `Pending`/`Error`/success. Azúcar sobre un patrón que ya existe
+  (`createQuery` cubre fetch; `Await` cubre promesas sueltas). Esfuerzo estimado: S.
+- **`chooseDialog`** (idea de `choose` de `vanjs-ui`) — picker modal que resuelve
+  `Promise<valor | null>`, sobre `Modal` + `Combobox` (con teclado y focus trap: más
+  accesible que el de ellos). Complementa `confirmDialog`. Esfuerzo estimado: M.
+- **Docs DX** (lejano) — cuando vanui tenga sitio/docs: preview vivo por componente
+  (CodeSandbox/jsfiddle), tabla de props con defaults, formato por-componente como vanjs.org.
+- **No adoptar**: bolsas de `styleOverrides` de `vanjs-ui` (nuestro modelo de tokens UnoCSS +
+  props `class` ya lo cubre), `FloatingWindow` (niche, solo-mouse).
+
+---
+
 ## Explícitamente fuera (por ahora)
 
 - **DatePicker/Calendar** — alcance enorme (reglas de locale, teclado); merece etapa propia.

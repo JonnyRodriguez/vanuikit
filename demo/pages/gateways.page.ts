@@ -210,65 +210,72 @@ export const GatewaysPage = () => {
       ),
     );
 
-  return div(
-    { class: "page" },
-    () => {
-      if (gatewaysQuery.loading.val || paramsQuery.loading.val) {
-        return div(
-          { class: "p-8 text-center flex items-center justify-center" },
+  // Overlay de carga: cubre la página (incluido el wizard) mientras cargan datos.
+  const loadingOverlay = () =>
+    gatewaysQuery.loading.val || paramsQuery.loading.val
+      ? div(
+          {
+            class: "absolute inset-0 z-10 flex items-center justify-center bg-background/90",
+          },
           Spin(i18n.t("gateways.loading", "Cargando pasarelas...")),
-        );
-      }
+        )
+      : "";
 
-      const errMsg = gatewaysQuery.error.val || paramsQuery.error.val;
-      if (errMsg) {
-        const isUnauthorized =
-          errMsg.toLowerCase().includes("no autorizado") ||
-          errMsg.includes("401");
-
-        return div(
-          { class: "text-center p-8 border border-border rounded-xl bg-surface max-w-md mx-auto my-6" },
-          p(
-            { class: "font-semibold mb-2 text-lg text-foreground" },
-            isUnauthorized
-              ? i18n.t("gateways.restrictedTitle", "Acceso Restringido")
-              : i18n.t("gateways.errorTitle", "Error al cargar datos"),
-          ),
-          p(
-            { class: "text-sm text-muted mb-6" },
-            isUnauthorized
-              ? i18n.t("gateways.restrictedMsg", "Debes iniciar sesión para acceder a las pasarelas de pago y recargas.")
-              : errMsg,
-          ),
-          div(
-            { class: "flex gap-3 justify-center" },
-            isUnauthorized
-              ? button(
-                  {
-                    class: "px-5 py-2.5 bg-primary text-white font-medium rounded-lg text-sm cursor-pointer hover:bg-primary-hover transition",
-                    onclick: () => navigate("/login?redirect=/gateways"),
+  // Overlay de error: cubre la página cuando falla alguna query.
+  const errorOverlay = () => {
+    const errMsg = gatewaysQuery.error.val || paramsQuery.error.val;
+    if (!errMsg) return "";
+    const isUnauthorized =
+      errMsg.toLowerCase().includes("no autorizado") || errMsg.includes("401");
+    return div(
+      { class: "absolute inset-0 z-10 flex items-center justify-center" },
+      div(
+        { class: "text-center p-8 border border-border rounded-xl bg-surface max-w-md mx-auto" },
+        p(
+          { class: "font-semibold mb-2 text-lg text-foreground" },
+          isUnauthorized
+            ? i18n.t("gateways.restrictedTitle", "Acceso Restringido")
+            : i18n.t("gateways.errorTitle", "Error al cargar datos"),
+        ),
+        p(
+          { class: "text-sm text-muted mb-6" },
+          isUnauthorized
+            ? i18n.t("gateways.restrictedMsg", "Debes iniciar sesión para acceder a las pasarelas de pago y recargas.")
+            : errMsg,
+        ),
+        div(
+          { class: "flex gap-3 justify-center" },
+          isUnauthorized
+            ? button(
+                {
+                  class: "px-5 py-2.5 bg-primary text-white font-medium rounded-lg text-sm cursor-pointer hover:bg-primary-hover transition",
+                  onclick: () => navigate("/login?redirect=/gateways"),
+                },
+                i18n.t("gateways.goToLogin", "Ir al Login"),
+              )
+            : button(
+                {
+                  class: "px-4 py-2 bg-primary text-white rounded-lg text-sm cursor-pointer",
+                  onclick: () => {
+                    gatewaysQuery.refetch();
+                    paramsQuery.refetch();
                   },
-                  i18n.t("gateways.goToLogin", "Ir al Login"),
-                )
-              : button(
-                  {
-                    class: "px-4 py-2 bg-primary text-white rounded-lg text-sm cursor-pointer",
-                    onclick: () => {
-                      gatewaysQuery.refetch();
-                      paramsQuery.refetch();
-                    },
-                  },
-                  i18n.t("gateways.retry", "Reintentar"),
-                ),
-          ),
-        );
-      }
+                },
+                i18n.t("gateways.retry", "Reintentar"),
+              ),
+        ),
+      ),
+    );
+  };
 
-      return div(
-        {},
-        h1({ class: "text-2xl font-bold text-center mb-6" }, i18n.t("gateways.title", "Métodos de Pago y Recarga")),
-        div({ class: "max-w-xl mx-auto" }, wizard.dom()),
-      );
-    },
+  // El wizard se monta DIRECTO (no dentro de un Der), para que el contenido
+  // reactivo del paso (listado de pasarelas) reciba las actualizaciones de la
+  // query. Los overlays de carga/error son hermanos independientes.
+  return div(
+    { class: "page relative" },
+    () => loadingOverlay(),
+    () => errorOverlay(),
+    h1({ class: "text-2xl font-bold text-center mb-6" }, i18n.t("gateways.title", "Métodos de Pago y Recarga")),
+    div({ class: "max-w-xl mx-auto" }, wizard.dom()),
   );
 };

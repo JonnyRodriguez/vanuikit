@@ -53,7 +53,9 @@
     "wizardStepGateway": "Gateway",
     "wizardStepAmount": "Amount",
     "selectGateway": "Select a gateway",
-    "amountRequired": "Enter an amount"
+    "amountRequired": "Enter an amount",
+    "changeGateway": "Change",
+    "selectedGateway": "Selected gateway"
   },
   "components": {
     "title": "Component Showcase",

@@ -53,7 +53,9 @@
     "wizardStepGateway": "Passerelle",
     "wizardStepAmount": "Montant",
     "selectGateway": "Sélectionnez une passerelle",
-    "amountRequired": "Saisissez un montant"
+    "amountRequired": "Saisissez un montant",
+    "changeGateway": "Changer",
+    "selectedGateway": "Passerelle sélectionnée"
   },
   "components": {
     "title": "Catalogue de Composants",

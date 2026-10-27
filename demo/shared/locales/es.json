@@ -344,7 +344,9 @@
     "title": "Métodos de Pago y Recarga",
     "urlGenErr": "No se pudo generar la URL de recarga",
     "wizardStepAmount": "Monto",
-    "wizardStepGateway": "Pasarela"
+    "wizardStepGateway": "Pasarela",
+    "changeGateway": "Cambiar",
+    "selectedGateway": "Pasarela seleccionada"
   },
   "lang": {
     "en": "English",

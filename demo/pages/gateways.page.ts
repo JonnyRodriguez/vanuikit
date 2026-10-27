@@ -131,13 +131,16 @@ export const GatewaysPage = () => {
                 },
         },
         content: [
-          // Hijo-función reactivo: se reconstruye cuando llegan las pasarelas.
+          // Hijo-función reactivo: se reconstruye cuando llegan las pasarelas
+          // y refleja la selección actual. Al elegir, auto-avanza al monto.
           () =>
             GatewaysList(
               gatewaysQuery.data.val || [],
               (gateway) => {
                 activeGateway.val = gateway;
+                wizard.next();
               },
+              activeGateway.val?.id ?? null,
             ),
         ],
       },
@@ -145,23 +148,45 @@ export const GatewaysPage = () => {
         title: i18n.t("gateways.wizardStepAmount", "Monto"),
         fields: [amountField],
         content: [
-          div(
-            { class: "mb-2" },
-            () =>
-              activeGateway.val
-                ? div(
+          // Hijo-función DIRECTO (no anidado en un div): lee activeGateway y
+          // muestra la selección; evita el freeze de bindings anidados.
+          () =>
+            activeGateway.val
+              ? div(
+                  {
+                    class: "flex items-center gap-3 p-3 bg-background border border-border rounded-lg",
+                  },
+                  img({
+                    class: "h-8 w-auto",
+                    src: activeGateway.val!.img,
+                    alt: activeGateway.val!.name,
+                  }),
+                  div(
+                    { class: "min-w-0" },
+                    div(
+                      {
+                        class: "text-xs uppercase tracking-wide text-foreground-soft",
+                      },
+                      i18n.t("gateways.selectedGateway", "Pasarela seleccionada"),
+                    ),
+                    div(
+                      { class: "font-bold text-foreground truncate" },
+                      activeGateway.val!.name,
+                    ),
+                  ),
+                  button(
                     {
-                      class: "flex items-center gap-3 p-3 bg-background border border-border rounded-lg",
+                      type: "button",
+                      class:
+                        "ml-auto shrink-0 text-xs px-3 py-1.5 rounded-md border " +
+                        "border-border text-foreground-soft hover:border-accent " +
+                        "hover:text-accent transition cursor-pointer",
+                      onclick: () => wizard.goTo(0),
                     },
-                    img({
-                      class: "h-8 w-auto",
-                      src: activeGateway.val!.img,
-                      alt: activeGateway.val!.name,
-                    }),
-                    span({ class: "font-bold text-foreground" }, activeGateway.val!.name),
-                  )
-                : "",
-          ),
+                    i18n.t("gateways.changeGateway", "Cambiar"),
+                  ),
+                )
+              : "",
         ],
       },
     ],

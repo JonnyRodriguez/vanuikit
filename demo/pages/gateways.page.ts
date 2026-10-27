@@ -2,10 +2,13 @@
 /**
  * GatewaysPage — Vista principal del flujo de recarga (Ruta protegida).
  *
- * Utiliza createQuery y createMutation de vanui y componentes modulares.
- * Si la petición es rechazada por falta de sesión (401), permite redirigir al login.
+ * Convertido a un Wizard de 2 pasos (pasarela → monto) que consume el
+ * contrato FormResult end-to-end con el backend real:
+ *   · paso 1: selección de pasarela (validación por schema)
+ *   · paso 2: monto con validadores de campo (min/máx desde parámetros)
+ *   · submit: POST /api/payment/recharge → { ok } / { error } / { fieldErrors }
  */
-import { van, Modal, Spin, createQuery, createMutation, navigate } from "vanui";
+import { van, Modal, Spin, createQuery, createMutation, navigate, Wizard, Field, Required, t, type Validator } from "vanui";
 import { GatewaysList } from "../components/gateways-list.component.js";
 import { QRGenerator } from "../components/qr-generator.component.js";
 import type { Gateway, RechargeParams, RechargeResponse } from "../shared/payment.schema.js";
@@ -13,10 +16,8 @@ import { i18n } from "../shared/i18n.config.js";
 
 const RECHARGE_ENDPOINT = "/api/payment/recharge";
 
-export interface GatewaysPageProps {}
-
-export const GatewaysPage = (_props: GatewaysPageProps = {}) => {
-  const { div, h1, p, form, input, button, img, span, hr } = van.tags;
+export const GatewaysPage = () => {
+  const { div, h1, p, span, img, hr, button } = van.tags;
 
   // Carga reactiva de datos protegidos por sesión
   const gatewaysQuery = createQuery<Gateway[]>("/api/payment/gateways", {
@@ -33,152 +34,150 @@ export const GatewaysPage = (_props: GatewaysPageProps = {}) => {
   const qr = new QRGenerator();
 
   const activeGateway = van.state<Gateway | null>(null);
-  const validationError = van.state("");
 
-  // Mutación reactiva para generar la recarga
+  // Mutación reactiva para generar la recarga (onSuccess abre el QR).
   const rechargeMutation = createMutation<{ status: string; data: RechargeResponse }, any>(
     RECHARGE_ENDPOINT,
     {
       onSuccess: async (result) => {
         const url = result.data?.url;
-        if (!url) {
-          validationError.val = i18n.raw("gateways.urlGenErr", "No se pudo generar la URL de recarga");
-          return;
-        }
-
+        if (!url) return;
         const qrResult = await qr.generate(url, activeGateway.val?.img);
-        if ("error" in qrResult) {
-          validationError.val = i18n.raw("gateways.qrGenErr", "No se pudo generar el código QR");
-          return;
-        }
-
+        if ("error" in qrResult) return;
         modal.set({
           title: i18n.t("gateways.qrTitle", "Código QR"),
           body: () => qrBody(qrResult.qr, url),
           footer: null,
         });
       },
-      onError: (err) => {
-        validationError.val = err.message || i18n.raw("gateways.processErr", "Error al procesar la recarga");
-      },
     },
   );
 
-  const openAmountModal = (gateway: Gateway) => {
-    activeGateway.val = gateway;
-    validationError.val = "";
-    rechargeMutation.reset();
-    modal.set(
+  // Validador de monto: lee los parámetros reactivos en tiempo de validación.
+  const amountValidator: Validator = {
+    validate(value) {
+      const params = paramsQuery.data.val;
+      if (!params) return null;
+      const n = parseFloat(value);
+      if (Number.isNaN(n)) {
+        return i18n.raw("gateways.invalidAmount", "Ingresa un monto válido");
+      }
+      if (n < parseFloat(params.monto_min_recarga)) {
+        return i18n.raw(
+          "gateways.minAmountErr",
+          `El monto debe ser superior a ${params.monto_min_recarga} ${params.tipo}`,
+          { min: params.monto_min_recarga, tipo: params.tipo },
+        );
+      }
+      if (n > parseFloat(params.monto_max_recarga)) {
+        return i18n.raw(
+          "gateways.maxAmountErr",
+          `El monto debe ser inferior a ${params.monto_max_recarga} ${params.tipo}`,
+          { max: params.monto_max_recarga, tipo: params.tipo },
+        );
+      }
+      return null;
+    },
+  };
+
+  const amountLabel = van.derive(() => {
+    const p = paramsQuery.data.val;
+    return p
+      ? i18n.raw("gateways.amountLabel", "Monto a recargar ({tipo})", { tipo: p.tipo })
+      : "";
+  });
+
+  const amountHint = van.derive(() => {
+    const p = paramsQuery.data.val;
+    return p
+      ? i18n.raw(
+          "gateways.minMaxHelp",
+          "Mínimo: {min} {tipo} · Máximo: {max} {tipo}",
+          { min: p.monto_min_recarga, max: p.monto_max_recarga, tipo: p.tipo },
+        )
+      : "";
+  });
+
+  const amountField = Field({
+    label: amountLabel,
+    name: "amount",
+    inputType: "number",
+    placeholder: "0.00",
+    hint: amountHint,
+  })
+    .addValidator(Required(t("gateways.amountRequired", "Ingresa un monto")))
+    .addValidator(amountValidator);
+
+  const wizard = Wizard({
+    steps: [
       {
-        title: i18n.t("gateways.rechargeWith", `Recargar con ${gateway.name || gateway.id}`, { name: gateway.name || gateway.id }),
-        body: () => amountBody(),
-        footer: null,
-      },
-      true,
-    );
-  };
-
-  const handleSubmit = async (e: Event) => {
-    e.preventDefault();
-    const formEl = e.target as HTMLFormElement;
-    const amount = (formEl.elements.namedItem("amount") as HTMLInputElement).value;
-    const params = paramsQuery.data.val;
-
-    if (!params) return;
-
-    const numAmount = parseFloat(amount);
-    if (Number.isNaN(numAmount)) {
-      validationError.val = i18n.raw("gateways.invalidAmount", "Ingresa un monto válido");
-      return;
-    }
-    if (numAmount < parseFloat(params.monto_min_recarga)) {
-      validationError.val = i18n.raw("gateways.minAmountErr", `El monto debe ser superior a ${params.monto_min_recarga} ${params.tipo}`, { min: params.monto_min_recarga, tipo: params.tipo });
-      return;
-    }
-    if (numAmount > parseFloat(params.monto_max_recarga)) {
-      validationError.val = i18n.raw("gateways.maxAmountErr", `El monto debe ser inferior a ${params.monto_max_recarga} ${params.tipo}`, { max: params.monto_max_recarga, tipo: params.tipo });
-      return;
-    }
-
-    validationError.val = "";
-    await rechargeMutation.mutate({
-      amount,
-      gateway: activeGateway.val,
-    });
-  };
-
-  /** Cuerpo del modal de monto */
-  const amountBody = () => {
-    const params = paramsQuery.data.val;
-    if (!params) return div(i18n.raw("gateways.loadingParams", "Cargando parámetros..."));
-
-    return div(
-      {},
-      () =>
-        activeGateway.val
-          ? div(
-              {
-                class:
-                  "flex items-center gap-3 p-3 bg-background border border-border rounded-lg",
-              },
-              img({
-                class: "h-8 w-auto",
-                src: activeGateway.val!.img,
-                alt: activeGateway.val!.name,
-              }),
-              span(
-                { class: "font-bold text-foreground" },
-                activeGateway.val!.name,
-              ),
-            )
-          : div(),
-      hr({ class: "my-4 border-border" }),
-      form(
-        { onsubmit: handleSubmit, class: "space-y-4" },
-        div(
-          { class: "mb-1 text-sm font-medium text-foreground" },
-          i18n.raw("gateways.amountLabel", `Monto a recargar (${params.tipo})`, { tipo: params.tipo }),
-        ),
-        input({
-          type: "number",
-          name: "amount",
-          required: true,
-          min: params.monto_min_recarga,
-          max: params.monto_max_recarga,
-          step: "0.01",
-          class:
-            "w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-focus focus:border-transparent outline-none bg-background text-foreground",
-          placeholder: `${params.monto_min_recarga} - ${params.monto_max_recarga}`,
-        }),
-        p(
-          { class: "text-xs text-muted" },
-          i18n.raw("gateways.minMaxHelp", `Mínimo: ${params.monto_min_recarga} ${params.tipo} · Máximo: ${params.monto_max_recarga} ${params.tipo}`, { min: params.monto_min_recarga, max: params.monto_max_recarga, tipo: params.tipo }),
-        ),
-        div(
-          { class: "pt-2" },
-          () => {
-            const err = validationError.val || rechargeMutation.error.val;
-            return err ? p({ class: "text-destructive text-sm mb-2" }, err) : "";
-          },
-          () =>
-            rechargeMutation.loading.val
-              ? div(
-                  { class: "flex items-center gap-2 text-sm text-foreground justify-center py-2" },
-                  Spin(i18n.raw("gateways.generating", "Generando...")),
-                  i18n.raw("gateways.processing", "Procesando recarga..."),
-                )
-              : button(
-                  {
-                    type: "submit",
-                    class:
-                      "w-full py-2 px-4 font-medium text-white bg-primary rounded-lg hover:bg-primary-hover transition cursor-pointer",
+        title: i18n.t("gateways.wizardStepGateway", "Pasarela"),
+        // El valor vive en `activeGateway` (componente de selección), no en un field.
+        collect: () => ({ gateway: activeGateway.val }),
+        schema: {
+          safeParse: () =>
+            activeGateway.val
+              ? { success: true, data: {} }
+              : {
+                  success: false,
+                  error: {
+                    issues: [
+                      {
+                        path: ["gateway"],
+                        message: i18n.raw("gateways.selectGateway", "Selecciona una pasarela"),
+                      },
+                    ],
                   },
-                  i18n.raw("gateways.rechargeBtn", "Recargar"),
-                ),
-        ),
-      ),
-    );
-  };
+                },
+        },
+        content: [
+          GatewaysList(
+            gatewaysQuery.data.val || [],
+            (gateway) => {
+              activeGateway.val = gateway;
+            },
+          ),
+        ],
+      },
+      {
+        title: i18n.t("gateways.wizardStepAmount", "Monto"),
+        fields: [amountField],
+        content: [
+          div(
+            { class: "mb-2" },
+            () =>
+              activeGateway.val
+                ? div(
+                    {
+                      class: "flex items-center gap-3 p-3 bg-background border border-border rounded-lg",
+                    },
+                    img({
+                      class: "h-8 w-auto",
+                      src: activeGateway.val!.img,
+                      alt: activeGateway.val!.name,
+                    }),
+                    span({ class: "font-bold text-foreground" }, activeGateway.val!.name),
+                  )
+                : "",
+          ),
+        ],
+      },
+    ],
+    onSubmit: async (data) => {
+      const res = await rechargeMutation.mutate({
+        amount: String(data.amount ?? ""),
+        gateway: data.gateway,
+      });
+      if (rechargeMutation.error.val) {
+        return { ok: false, error: rechargeMutation.error.val };
+      }
+      const body = res as { status?: string; data?: RechargeResponse } | null;
+      if (!body?.data?.url) {
+        return { ok: false, error: i18n.raw("gateways.urlGenErr", "No se pudo generar la URL de recarga") };
+      }
+      return { ok: true };
+    },
+  });
 
   /** Cuerpo del modal de QR */
   const qrBody = (qrData: string, url: string) =>
@@ -263,14 +262,10 @@ export const GatewaysPage = (_props: GatewaysPageProps = {}) => {
         );
       }
 
-      const gateways = gatewaysQuery.data.val || [];
       return div(
         {},
         h1({ class: "text-2xl font-bold text-center mb-6" }, i18n.t("gateways.title", "Métodos de Pago y Recarga")),
-        div(
-          { class: "flex justify-center" },
-          GatewaysList(gateways, openAmountModal),
-        ),
+        div({ class: "max-w-xl mx-auto" }, wizard.dom()),
       );
     },
   );

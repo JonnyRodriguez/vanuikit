@@ -49,7 +49,11 @@
     "urlGenErr": "Could not generate top-up URL",
     "qrGenErr": "Could not generate QR code",
     "processErr": "Error processing top-up",
-    "qrAlt": "QR code"
+    "qrAlt": "QR code",
+    "wizardStepGateway": "Gateway",
+    "wizardStepAmount": "Amount",
+    "selectGateway": "Select a gateway",
+    "amountRequired": "Enter an amount"
   },
   "components": {
     "title": "Component Showcase",

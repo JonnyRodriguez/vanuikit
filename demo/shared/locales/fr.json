@@ -49,7 +49,11 @@
     "urlGenErr": "Impossible de générer l'URL de recharge",
     "qrGenErr": "Impossible de générer le code QR",
     "processErr": "Erreur lors du traitement de la recharge",
-    "qrAlt": "Code QR"
+    "qrAlt": "Code QR",
+    "wizardStepGateway": "Passerelle",
+    "wizardStepAmount": "Montant",
+    "selectGateway": "Sélectionnez une passerelle",
+    "amountRequired": "Saisissez un montant"
   },
   "components": {
     "title": "Catalogue de Composants",

@@ -53,7 +53,9 @@
     "wizardStep***REMOVED***": "***REMOVED***",
     "wizardStepAmount": "Amount",
     "select***REMOVED***": "Select a ***REMOVED***",
-    "amountRequired": "Enter an amount"
+    "amountRequired": "Enter an amount",
+    "change***REMOVED***": "Change",
+    "selected***REMOVED***": "Selected ***REMOVED***"
   },
   "components": {
     "title": "Component Showcase",

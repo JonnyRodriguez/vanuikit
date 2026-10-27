@@ -344,7 +344,9 @@
     "title": "Métodos de Transaction y ***REMOVED***",
     "urlGenErr": "No se pudo generar la URL de ***REMOVED***",
     "wizardStepAmount": "Monto",
-    "wizardStep***REMOVED***": "***REMOVED***"
+    "wizardStep***REMOVED***": "***REMOVED***",
+    "change***REMOVED***": "Cambiar",
+    "selected***REMOVED***": "***REMOVED*** seleccionada"
   },
   "lang": {
     "en": "English",

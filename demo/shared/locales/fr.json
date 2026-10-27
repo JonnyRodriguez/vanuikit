@@ -53,7 +53,9 @@
     "wizardStep***REMOVED***": "***REMOVED***",
     "wizardStepAmount": "Montant",
     "select***REMOVED***": "Sélectionnez une ***REMOVED***",
-    "amountRequired": "Saisissez un montant"
+    "amountRequired": "Saisissez un montant",
+    "change***REMOVED***": "Changer",
+    "selected***REMOVED***": "***REMOVED*** sélectionnée"
   },
   "components": {
     "title": "Catalogue de Composants",

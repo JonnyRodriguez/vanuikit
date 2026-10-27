@@ -93,6 +93,95 @@ const WizardDemo = (): HTMLElement =>
     },
   }).dom();
 
+// Demo de navegación programática (useWizard): botones externos que saltan de
+// paso, validan sin avanzar y recolectan un borrador con collectStep().
+const WizardProgrammaticDemo = (): HTMLElement => {
+  const w = Wizard({
+    steps: [
+      {
+        title: i18n.t("components.wzPgStep1", "Datos del anuncio"),
+        schema: z.object({
+          title: z.string().min(3, i18n.raw("components.wzPgTitleMin", "El título debe tener al menos 3 caracteres")),
+          price: z.string().min(1, i18n.raw("components.wzPgPriceReq", "Ingresa un precio")),
+        }),
+        fields: [
+          TextField({
+            name: "title",
+            label: i18n.t("components.wzPgTitleLabel", "Título"),
+            placeholder: i18n.t("components.wzPgTitlePh", "Ej: iPhone 13 128GB"),
+          }),
+          TextField({
+            name: "price",
+            label: i18n.t("components.wzPgPriceLabel", "Precio"),
+            placeholder: i18n.t("components.wzPgPricePh", "500"),
+          }),
+        ],
+      },
+      {
+        title: i18n.t("components.wzPgStep2", "Contacto"),
+        fields: [EmailField()],
+      },
+      {
+        title: i18n.t("components.wzPgStep3", "Descripción"),
+        fields: [TextareaField({ name: "description" })],
+      },
+    ],
+    onSubmit: async (data) => {
+      await new Promise((r) => setTimeout(r, 400));
+      if (!data.email || String(data.email).length < 5) {
+        return {
+          ok: false,
+          fieldErrors: { email: i18n.raw("components.wzPgEmailErr", "Correo inválido") },
+        };
+      }
+      toast.success(raw("components.wzPgPublished", "Anuncio publicado correctamente"));
+      return { ok: true };
+    },
+  });
+
+  // Barra externa que usa el handle del wizard (useWizard).
+  const bar = div(
+    { class: "flex flex-wrap items-center gap-2 pt-4 mt-4 border-t border-border" },
+    Button(
+      { type: "button", variant: "secondary", size: "sm", onclick: () => w.goTo(Math.max(0, w.step.val - 1)) },
+      i18n.t("components.wzPgGoBack", "Saltar atrás"),
+    ),
+    Button(
+      { type: "button", variant: "secondary", size: "sm", onclick: () => w.goTo(Math.min(2, w.step.val + 1)) },
+      i18n.t("components.wzPgGoNext", "Saltar adelante"),
+    ),
+    Button(
+      {
+        type: "button",
+        variant: "secondary",
+        size: "sm",
+        onclick: () => {
+          if (w.validateCurrent()) toast.success(raw("components.wzPgValidOk", "Paso válido ✔"));
+          else toast.error(raw("components.wzPgValidFail", "Revisa los campos del paso actual"));
+        },
+      },
+      i18n.t("components.wzPgValidate", "Validar paso"),
+    ),
+    Button(
+      {
+        type: "button",
+        variant: "secondary",
+        size: "sm",
+        onclick: () => {
+          const draft = w.collectStep();
+          const n = Object.keys(draft).length;
+          toast.info(
+            raw("components.wzPgDraft", "Borrador de {n} campo(s) capturado", { n: String(n) }),
+          );
+        },
+      },
+      i18n.t("components.wzPgDraftBtn", "Guardar borrador"),
+    ),
+  );
+
+  return div({ class: "space-y-4" }, w.dom(), bar);
+};
+
 interface SampleUser {
   id: string;
   name: string;
@@ -1058,6 +1147,10 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       div(
         { class: "p-6 rounded-2xl border border-border bg-background shadow-sm" },
         WizardDemo(),
+      ),
+      div(
+        { class: "p-6 rounded-2xl border border-border bg-background shadow-sm" },
+        WizardProgrammaticDemo(),
       ),
     ),
   );

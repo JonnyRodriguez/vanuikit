@@ -295,7 +295,25 @@
     "wizardPricePh": "500",
     "wizardTitleMin": "Title must have at least 3 characters",
     "wizardPriceReq": "Enter a price",
-    "wizardEmailErr": "Invalid email (double validation)"
+    "wizardEmailErr": "Invalid email (double validation)",
+    "wzPgStep1": "Listing details",
+    "wzPgStep2": "Contact",
+    "wzPgStep3": "Description",
+    "wzPgTitleLabel": "Title",
+    "wzPgTitlePh": "E.g. iPhone 13 128GB",
+    "wzPgPriceLabel": "Price",
+    "wzPgPricePh": "500",
+    "wzPgTitleMin": "Title must have at least 3 characters",
+    "wzPgPriceReq": "Enter a price",
+    "wzPgGoBack": "Jump back",
+    "wzPgGoNext": "Jump forward",
+    "wzPgValidate": "Validate step",
+    "wzPgValidOk": "Valid step ✔",
+    "wzPgValidFail": "Check the fields of the current step",
+    "wzPgDraftBtn": "Save draft",
+    "wzPgDraft": "Draft of {n} field(s) captured",
+    "wzPgEmailErr": "Invalid email",
+    "wzPgPublished": "Ad published successfully"
   },
   "field": {
     "email": {

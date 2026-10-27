@@ -1,6 +1,7 @@
 import { describe, test, expect } from "bun:test";
 import van, { type State } from "vanjs-core";
 import { Wizard, type WizardOptions } from "../src/components/wizard.js";
+import { createQuery } from "../src/fetch.js";
 import { EmailField, TextField } from "../src/components/field.js";
 import type { SchemaLike } from "../src/components/form.js";
 import { i18n } from "../src/i18n.js";
@@ -270,6 +271,44 @@ describe("Wizard — navegación programática (useWizard)", () => {
     await flush();
     expect(el.textContent).toContain("Binance");
     expect(el.textContent).toContain("Bancos");
+  });
+
+  test("gateways: createQuery + contenido reactivo listan las pasarelas", async () => {
+    const gateways = [
+      { id: "BINANCE", name: "Binance", img: "/img/binance.svg" },
+      { id: "BANCOS", name: "Bancos", img: "/img/bancos.svg" },
+    ];
+    const realFetch = globalThis.fetch;
+    globalThis.fetch = (async (url: any) => {
+      if (String(url).includes("/api/payment/gateways")) {
+        return new Response(JSON.stringify({ status: "ok", data: gateways }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      return new Response(JSON.stringify({ status: "ok", data: {} }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    }) as typeof fetch;
+
+    const q = createQuery<any[]>("/api/payment/gateways", {
+      transform: (j: any) => j.data,
+    });
+    const { div, p } = van.tags;
+    const w = Wizard({
+      steps: [
+        { title: "Pasarela", content: [() => div((q.data.val || []).map((g) => p(g.name)))] },
+        { title: "Monto", fields: [] },
+      ],
+      onSubmit: () => ({ ok: true }),
+    });
+    const el = mount(w.dom());
+    await flush();
+    await flush();
+    expect(el.textContent).toContain("Binance");
+    expect(el.textContent).toContain("Bancos");
+    globalThis.fetch = realFetch;
   });
 
   test("validateCurrent() refleja la validez del paso actual", async () => {

@@ -1,0 +1,27 @@
+{
+  "name": "vanui-ssg-poc",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "description": "POC #2: SSG de un sitio vanui REAL (sin cambios en la librería) — render en build con vanjs-core + happy-dom, datos embebidos en JSON y takeover por remount. Salida lista para CDN.",
+  "scripts": {
+    "build:client": "node scripts/build-client.mjs",
+    "ssg": "tsx scripts/ssg.mjs",
+    "incremental": "tsx scripts/incremental.mjs",
+    "build": "npm run build:client && npm run ssg",
+    "preview": "tsx scripts/preview.mjs",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "vanjs-core": "^1.6.0",
+    "vanui": "file:../vanui"
+  },
+  "devDependencies": {
+    "@happy-dom/global-registrator": "^20.11.6",
+    "@types/node": "^22.13.8",
+    "esbuild": "^0.25.0",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
+  }
+}

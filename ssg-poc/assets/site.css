@@ -1,0 +1,125 @@
+/* ssg-poc/assets/site.css
+   Estilos del sitio. Los componentes vanui traen sus clases de vanui.css
+   (tokens del tema); esto sólo maqueta el esqueleto (header, grid, footer). */
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.site {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 1.5rem;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.brand {
+  font-weight: 700;
+  font-size: 1.1rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+.lang-switch { display: flex; gap: 0.75rem; }
+
+.lang-switch .lang {
+  text-decoration: none;
+  color: #64748b;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+}
+
+.lang-switch .lang.active {
+  color: #2563eb;
+  background: #eff6ff;
+}
+
+.site-main {
+  flex: 1;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 3rem;
+}
+
+.site-footer {
+  padding: 1rem 1.5rem;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  border-top: 1px solid #e2e8f0;
+}
+
+/* Catálogo */
+.product-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.25rem;
+}
+
+.product-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1.25rem;
+}
+
+.product-card img { border-radius: 8px; align-self: center; }
+
+.product-desc { color: #475569; font-size: 0.9rem; margin: 0; }
+
+.product-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+/* Detalle */
+.product-detail { max-width: 640px; }
+.product-detail .product-body { display: flex; flex-direction: column; gap: 0.9rem; }
+.product-detail h2 { margin: 0; font-size: 1.3rem; }
+
+.qty-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0.5rem 0 1rem;
+}
+
+/* Button de vanui es w-full por diseño (orientado a formularios); en los
+   controles de cantidad se compacta — 2 clases vencen la utilidad w-full. */
+.qty-controls .qty-btn {
+  width: 2.75rem;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.qty-value {
+  min-width: 2ch;
+  text-align: center;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.loading-state { padding: 3rem 0; }
+
+.not-found { text-align: center; padding: 3rem 0; }

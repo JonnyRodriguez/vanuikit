@@ -48,6 +48,17 @@ export type WizardHandle = {
   readonly submitting: State<boolean>;
   /** Línea de error general (cliente o backend). */
   readonly error: State<string>;
+  /** Navegación programática (useWizard). */
+  /** Valida el paso actual y avanza; devuelve true si logró avanzar. */
+  next(): boolean;
+  /** Retrocede un paso sin validar. */
+  back(): void;
+  /** Salta a un paso (sembrando el store). No valida pasos intermedios. */
+  goTo(index: number): void;
+  /** Recolecta los datos de un paso (default: el actual) mergeados con el store. */
+  collectStep(index?: number): Record<string, unknown>;
+  /** Valida el paso actual sin avanzar; true si es válido. */
+  validateCurrent(): boolean;
 };
 
 /**
@@ -124,24 +135,35 @@ export const Wizard = (options: WizardOptions): WizardHandle => {
 
   /** Navega a un paso, sembrando el store en sus campos (re-entrada). */
   const goTo = (nextIndex: number) => {
-    const step = steps[nextIndex];
+    const clamped = Math.max(0, Math.min(steps.length - 1, nextIndex));
+    const step = steps[clamped];
     for (const f of step.fields ?? []) {
       const v = store.val[f.name];
       if (v !== undefined) f.value.val = v;
     }
-    stepIndex.val = nextIndex;
+    stepIndex.val = clamped;
     error.val = "";
-    options.onStepChange?.(nextIndex);
+    options.onStepChange?.(clamped);
   };
 
-  const next = () => {
+  const next = (): boolean => {
     const data = validateStep(stepIndex.val);
-    if (!data) return;
+    if (!data) return false;
     commit(data);
     goTo(stepIndex.val + 1);
+    return true;
   };
 
   const back = () => goTo(stepIndex.val - 1);
+
+  /** Recolecta los datos de un paso (default: actual) mergeados con el store. */
+  const collectStep = (index: number = stepIndex.val): Record<string, unknown> => ({
+    ...store.val,
+    ...collect(steps[index]),
+  });
+
+  /** Valida el paso actual sin avanzar. */
+  const validateCurrent = (): boolean => validateStep(stepIndex.val) !== null;
 
   const submit = async () => {
     const data = validateStep(stepIndex.val);
@@ -296,5 +318,10 @@ export const Wizard = (options: WizardOptions): WizardHandle => {
     get error() {
       return error;
     },
+    next,
+    back,
+    goTo,
+    collectStep,
+    validateCurrent,
   };
 };

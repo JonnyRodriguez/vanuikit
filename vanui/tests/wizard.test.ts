@@ -49,6 +49,19 @@ const makeSchema = (failWith: Array<{ path: string; message: string }> = []): Sc
         },
 });
 
+/** Schema que valida según el valor real del campo title (para tests de navegación). */
+const titleSchema: SchemaLike = {
+  safeParse: (data) =>
+    (data as Record<string, unknown>)?.title
+      ? { success: true, data: {} }
+      : {
+          success: false,
+          error: {
+            issues: [{ path: ["title"], message: "El título es requerido" }],
+          },
+        },
+};
+
 const twoStepWizard = (overrides: Partial<WizardOptions> = {}) =>
   Wizard({
     steps: [
@@ -179,5 +192,73 @@ describe("Wizard — multi-paso", () => {
     resolveSubmit();
     await flush();
     expect(w.submitting.val).toBe(false);
+  });
+});
+
+describe("Wizard — navegación programática (useWizard)", () => {
+  test("next() valida y devuelve true/false", async () => {
+    const w = Wizard({
+      steps: [
+        { title: "B", schema: titleSchema, fields: [TextField({ name: "title" })] },
+        { title: "C", fields: [] },
+      ],
+      onSubmit: () => ({ ok: true }),
+    });
+    const el = mount(w.dom());
+    await flush();
+    expect(w.next()).toBe(false);
+    expect(w.step.val).toBe(0);
+    setValue(el, "title", "X");
+    expect(w.next()).toBe(true);
+    expect(w.step.val).toBe(1);
+  });
+
+  test("back() retrocede sin validar", async () => {
+    const w = twoStepWizard();
+    const el = mount(w.dom());
+    setValue(el, "title", "Anuncio");
+    expect(w.next()).toBe(true);
+    w.back();
+    expect(w.step.val).toBe(0);
+  });
+
+  test("goTo() salta a un paso directo y el store persiste", async () => {
+    const w = Wizard({
+      steps: [
+        { title: "A", fields: [TextField({ name: "title" })] },
+        { title: "B", fields: [EmailField()] },
+        { title: "C", fields: [] },
+      ],
+      onSubmit: () => ({ ok: true }),
+    });
+    const el = mount(w.dom());
+    setValue(el, "title", "Anuncio");
+    expect(w.next()).toBe(true); // commitea title y pasa a B
+    w.goTo(2); // salta a C, sin validar B
+    expect(w.step.val).toBe(2);
+    w.goTo(0); // vuelve a A
+    await flush();
+    expect((el.querySelector('input[name="title"]') as HTMLInputElement).value).toBe("Anuncio");
+  });
+
+  test("collectStep() mergea el store con los valores del paso", async () => {
+    const w = twoStepWizard();
+    const el = mount(w.dom());
+    setValue(el, "title", "Anuncio");
+    expect(w.collectStep(0)).toEqual({ title: "Anuncio" });
+  });
+
+  test("validateCurrent() refleja la validez del paso actual", async () => {
+    const w = Wizard({
+      steps: [
+        { title: "B", schema: titleSchema, fields: [TextField({ name: "title" })] },
+        { title: "C", fields: [] },
+      ],
+      onSubmit: () => ({ ok: true }),
+    });
+    const el = mount(w.dom());
+    expect(w.validateCurrent()).toBe(false);
+    setValue(el, "title", "X");
+    expect(w.validateCurrent()).toBe(true);
   });
 });

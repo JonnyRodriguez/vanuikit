@@ -30,7 +30,7 @@ demo/
 ├── components/            <- Componentes específicos de la demo
 │   ├── header.component.ts        <- Barra de navegación superior con estado de auth
 │   ├── ***REMOVED***-list.component.ts <- Cuadrícula de métodos de transaction
-│   ├── ***REMOVED***.component.ts      <- Formulario de monto y límites
+
 │   └── qr-generator.component.ts  <- Renderizado reactivo de código QR
 ├── server/                <- Backend Hono modular
 │   ├── index.ts           <- Servidor HTTP, middleware CORS y archivos estáticos

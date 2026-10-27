@@ -78,6 +78,12 @@
     "countryUs": "Estados Unidos",
     "currentValue": "Valor actual: {val}",
     "dangerBtn": "🗑️ Diálogo Peligroso (Imperativo)",
+    "datepickerDesc": "Calendario de selección inspirado en jQuery UI: navegación por mes, grid de días, popup e inline, con localización vía Intl y contrato Field.",
+    "datepickerDueLabel": "Fecha límite",
+    "datepickerInline": "Inline con mínimo/máximo",
+    "datepickerPopup": "Popup (input)",
+    "datepickerSection": "DatePicker",
+    "datepickerSelected": "Seleccionado: {val}",
     "deleteConfirm": "Sí, eliminar cuenta",
     "deleteMsg": "Esta acción borrará todos tus datos y transacciones asociadas sin posibilidad de recuperación.",
     "deleteTitle": "¿Eliminar cuenta permanentemente?",
@@ -234,6 +240,13 @@
     "uploadLabel": "Subiendo archivos...",
     "usersSelected": "{n} usuarios seleccionados",
     "viewProfile": "Ver Perfil"
+  },
+  "datepicker": {
+    "nextMonth": "Mes siguiente",
+    "placeholder": "Seleccionar fecha",
+    "prevMonth": "Mes anterior",
+    "required": "Selecciona una fecha",
+    "today": "Hoy"
   },
   "dialog": {
     "cancel": "Cancelar",

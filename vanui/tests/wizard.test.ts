@@ -1,4 +1,5 @@
 import { describe, test, expect } from "bun:test";
+import van, { type State } from "vanjs-core";
 import { Wizard, type WizardOptions } from "../src/components/wizard.js";
 import { EmailField, TextField } from "../src/components/field.js";
 import type { SchemaLike } from "../src/components/form.js";
@@ -246,6 +247,29 @@ describe("Wizard — navegación programática (useWizard)", () => {
     const el = mount(w.dom());
     setValue(el, "title", "Anuncio");
     expect(w.collectStep(0)).toEqual({ title: "Anuncio" });
+  });
+
+  test("el contenido del paso se reconstruye al cambiar un estado (hijo-función reactivo)", async () => {
+    const items = van.state<string[]>([]);
+    const { div, p } = van.tags;
+    const w = Wizard({
+      steps: [
+        {
+          title: "Pasarela",
+          collect: () => ({}),
+          content: [() => (items.val.length ? div(items.val.map((i) => p(i))) : "")],
+        },
+        { title: "Monto", fields: [] },
+      ],
+      onSubmit: () => ({ ok: true }),
+    });
+    const el = mount(w.dom());
+    await flush();
+    expect(el.textContent).not.toContain("Binance");
+    items.val = ["Binance", "Bancos"];
+    await flush();
+    expect(el.textContent).toContain("Binance");
+    expect(el.textContent).toContain("Bancos");
   });
 
   test("validateCurrent() refleja la validez del paso actual", async () => {

@@ -40,8 +40,8 @@ p(t("***REMOVED***.***REMOVED***With", "***REMOVED***r con {name}", { name: ***R
 ```
 
 - **`t()` para slots reactivos** (hijos y props de componentes): retorna `State<string>` y el texto muta al cambiar `currentLocale`.
-- **`raw()` para consumo imperativo** (handlers, toasts, `confirmDialog`): resuelve al instante sin reactividad.
-- **Nunca llames `t()` dentro de funciones-hija o props-función de van** (`span(() => t(...).val)`): el derive creado dentro del binding se registra como *setter* del binding contenedor y van **omite suscribir el binding** — el texto queda congelado en el idioma del montaje. En esos casos usa `raw(...)` (lee `currentLocale` directo en el binding), o iza el `State` de `t()` fuera de la función.
+- **`raw()` SOLO para consumo imperativo** (handlers, toasts, `confirmDialog`): resuelve al instante sin reactividad. **Jamás dentro del render de un contenedor** (una función que se pasa como function-child): `raw()` lee `revision` y `currentLocale`, y esa lectura queda como dependencia del binding contenedor → cada cambio de idioma reconstruye el subárbol COMPLETO. Si el subárbol contiene states con valor nodo (grids, paneles), los bindings internos viejos — anclados a nodos detached — compiten con los nuevos por el nodo vivo y el componente queda vacío o congelado (bug real: DatePicker con calendario vacío tras cambiar de idioma).
+- **Nunca llames `t()` dentro de funciones-hija o props-función de van** (`span(() => t(...).val)`): el derive creado dentro del binding se registra como *setter* del binding contenedor y van **omite suscribir el binding** — el texto queda congelado en el idioma del montaje. Iza el `State` de `t()` fuera de la función.
 - La llave nunca se reescribe: puedes cambiar el default sin romper traducciones. Los diccionarios (`demo/shared/locales/*.json`) son gestionados por el tooling (`i18n:collect` / `i18n:check` / `i18n:scan` / `i18n:fix`).
 
 ### Formato locale-aware: `fmt` (fechas, números, moneda)
@@ -59,8 +59,22 @@ toast.info(`Total: ${fmt.raw.currency(total)}`); // consumo imperativo
 const miFmt = createFmt(miI18n);              // instancia aislada (opcional)
 ```
 
-### Consumo y Derivación Reactiva
-- **Enlace directo en el DOM (Reactivo)**: pasar el `State` devuelto por `t()` como hijo o prop. Al cambiar `i18n.currentLocale`, el texto en pantalla muta automáticamente.
+### Consumo y Derivación Reactiva — la regla del contenedor
+
+La pregunta que resuelve todos los casos: **¿qué binding captura esta lectura, y qué reconstruye cuando reaccione?** Un binding de van re-ejecuta su función cuando cambian los estados que leyó; la lectura es barata, la RECONSTRUCCIÓN no siempre.
+
+| Situación | Patrón | Por qué |
+|---|---|---|
+| Texto/locale como **hoja** del árbol | `h1(t("key", "def"))`, `span(fmt.date(x))` | binding de hoja: solo muta el texto |
+| Texto inmediato **fuera del render** | `raw()` en handlers, toasts, `confirmDialog` | sin binding, resuelve al instante |
+| Label **dentro de una función render** (calendario, wizard-step, panel) | iza a derive top-level + consume `() => label.val` | el contenedor queda SIN deps: corre una sola vez |
+| Subárbol desechable que SÍ debe reconstruirse al cambiar X | lee `X.val` directo en el render-fn | rebuild intencional (y sin states con valor nodo adentro) |
+
+**La regla del contenedor**: una función render pasada como function-child (`() => renderCalendar()`) debe tener **cero lecturas de estado reactivas** — incluido `raw()`, que lee `revision` y `currentLocale`. Si el contenedor reacciona, reconstruye todo el subárbol: los bindings internos viejos quedan anclados a nodos detached, se acumulan en cada cambio y terminan compitiendo por los nodos vivos (van recicla bindings anclados a nodos desconectados en su ciclo de GC de ~1 s — por eso estos bugs son intermitentes y los tests con `flush()` no los reproducen). Ejemplo real y su fix: `DatePicker` (labels como derives top-level).
+
+**Nunca guardes nodos DOM en states/derives** (regla de van): si dos bindings consumen el mismo state-con-nodo, ambos hacen `update()` sobre el mismo nodo y "una ocurrencia desaparece".
+
+**Enlace directo en el DOM (Reactivo)** — el caso hoja más común: pasar el `State` devuelto por `t()` como hijo o prop.
   ```typescript
   SidebarItem({
     href: "/***REMOVED***",
@@ -69,7 +83,7 @@ const miFmt = createFmt(miI18n);              // instancia aislada (opcional)
     current: router.path,
   })
   ```
-- **Dentro de derivaciones computadas (`van.derive`) o funciones**: usar `raw()` para obtener el string resuelto sin extraer `.val`. Como `van.derive` escucha automáticamente cualquier acceso a estados de VanJS (como `i18n.currentLocale`), la función se recalcula reactivamente al cambiar de idioma.
+**Derive top-level con `raw()` adentro** — seguro: el derive vive fuera de todo binding (nunca es GC'd) y se recalcula al cambiar `currentLocale` o lo que lea.
   ```typescript
   const getPageTitle = van.derive(() => {
     const p = router.path.val;
@@ -79,6 +93,7 @@ const miFmt = createFmt(miI18n);              // instancia aislada (opcional)
     return "Dashboard";
   });
   ```
+**Tests de regresión i18n**: los switches de idioma deben probarse con esperas reales que crucen el ciclo de GC de van (~1 s) — los `flush()` de microtask nunca lo cruzan y no reproducen estos bugs.
 
 ---
 

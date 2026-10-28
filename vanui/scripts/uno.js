@@ -185,7 +185,7 @@ const generator = await createGenerator({
     },
   ],
 });
-const { css } = await generator.generate(source, { id: "vanui" });
+const { css } = await generator.generate(source, { id: "vanui", minify: true });
 
 fs.mkdirSync(path.dirname(OUT), { recursive: true });
 fs.writeFileSync(OUT, css, "utf-8");

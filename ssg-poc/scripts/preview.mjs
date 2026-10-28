@@ -10,6 +10,7 @@
  */
 import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
+import { gzipSync, brotliCompressSync } from "node:zlib";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { PRODUCTS, findProduct } from "../src/catalog.js";
@@ -31,6 +32,25 @@ const MIME = {
   ".ico": "image/x-icon",
   ".txt": "text/plain; charset=utf-8",
   ".woff2": "font/woff2",
+};
+
+// Tipos compresibles (texto). Los binarios (imágenes, fuentes) ya vienen
+// comprimidos: comprimirlos de nuevo no gana nada y desperdicia CPU.
+const COMPRESSIBLE = new Set([".html", ".css", ".js", ".mjs", ".json", ".svg", ".txt"]);
+
+// Negocia la codificación de contenido que el cliente acepta.
+// Orden de preferencia: brotli > gzip > identidad (sin comprimir).
+const pickEncoding = (acceptEncoding = "") => {
+  const accept = acceptEncoding.toLowerCase();
+  if (accept.includes("br")) return "br";
+  if (accept.includes("gzip") || accept.includes("deflate")) return "gzip";
+  return null;
+};
+
+const compress = (content, encoding) => {
+  if (encoding === "br") return brotliCompressSync(content);
+  if (encoding === "gzip") return gzipSync(content);
+  return content;
 };
 
 const json = (body, status = 200) =>
@@ -74,7 +94,19 @@ const server = createServer(async (req, res) => {
     const content = await tryRead(candidate);
     if (content) {
       const ext = path.extname(candidate);
-      res.writeHead(200, { "Content-Type": MIME[ext] ?? "application/octet-stream" });
+      const type = MIME[ext] ?? "application/octet-stream";
+      const headers = { "Content-Type": type };
+      // Comprime texto si el cliente lo acepta (como un CDN real).
+      if (COMPRESSIBLE.has(ext)) {
+        const encoding = pickEncoding(req.headers["accept-encoding"]);
+        if (encoding) {
+          headers["Content-Encoding"] = encoding;
+          headers["Vary"] = "Accept-Encoding";
+          res.writeHead(200, headers);
+          return res.end(compress(content, encoding));
+        }
+      }
+      res.writeHead(200, headers);
       return res.end(content);
     }
   }

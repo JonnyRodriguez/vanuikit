@@ -44,11 +44,14 @@ export const GatewaysPage = () => {
         if (!url) return;
         const qrResult = await qr.generate(url, activeGateway.val?.img);
         if ("error" in qrResult) return;
-        modal.set({
-          title: i18n.t("gateways.qrTitle", "Código QR"),
-          body: () => qrBody(qrResult.qr, url),
-          footer: null,
-        });
+        modal.set(
+          {
+            title: i18n.t("gateways.qrTitle", "Código QR"),
+            body: () => qrBody(qrResult.qr, url),
+            footer: null,
+          },
+          true,
+        );
       },
     },
   );

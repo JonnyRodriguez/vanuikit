@@ -3,11 +3,9 @@
 Prueba de concepto de la arquitectura **"vanui para un sitio tipo SPA + SSG
 para SEO + servido desde CDN"**, con la librería **intacta**: los componentes
 de `vanui` se usan tal cual (`van` real de vanjs-core, `t()`/`raw()`/`fmt`,
-`createRouter`, `Link`, `Card`, `Badge`, `Button`, `createQuery`…).
-
-Complementa a `ssr-poc/` (POC #1), que exploró SSR con mini-van-plate. La
-diferencia clave: **aquí no hay mini-van ni patrón `env`** — el render de
-build corre el mismo código del cliente dentro de happy-dom.
+`createRouter`, `Link`, `Card`, `Badge`, `Button`, `createQuery`…). Es el
+camino canónico del repo (reemplaza a la POC #1, eliminada, que exploró SSR
+con mini-van-plate sin usar la librería).
 
 ## Cómo funciona
 

@@ -184,6 +184,17 @@ export const DatePicker = (props: DatePickerOptions): DatePickerField => {
     return new Intl.DateTimeFormat(i18n.currentLocale.val, { dateStyle: "medium" }).format(s);
   });
 
+  // Labels como derives top-level: renderCalendar() NO debe leer estados
+  // reactivos directamente (raw() captura currentLocale/revision como deps
+  // del binding exterior `() => renderCalendar()` y cada cambio de idioma
+  // reconstruiría el calendario entero — el binding interno del grid queda
+  // anclado a una tabla detached y los bindings se acumulan hasta robar la
+  // tabla viva: calendario vacío tras cambiar de idioma). Con derives
+  // top-level el binding exterior no tiene deps: corre UNA vez al montar.
+  const prevMonthLabel = van.derive(() => raw("datepicker.prevMonth", "Mes anterior"));
+  const nextMonthLabel = van.derive(() => raw("datepicker.nextMonth", "Mes siguiente"));
+  const todayLabel = van.derive(() => raw("datepicker.today", "Hoy"));
+
   const longDateLabel = (d: Date) =>
     new Intl.DateTimeFormat(i18n.currentLocale.val, {
       day: "numeric",
@@ -398,7 +409,7 @@ export const DatePicker = (props: DatePickerOptions): DatePickerField => {
             type: "button",
             class:
               "h-8 w-8 flex items-center justify-center rounded-full text-muted hover:bg-secondary hover:text-foreground cursor-pointer text-lg leading-none",
-            "aria-label": raw("datepicker.prevMonth", "Mes anterior"),
+            "aria-label": () => prevMonthLabel.val,
             onclick: () => changeMonth(-1),
           },
           "‹",
@@ -409,7 +420,7 @@ export const DatePicker = (props: DatePickerOptions): DatePickerField => {
             type: "button",
             class:
               "h-8 w-8 flex items-center justify-center rounded-full text-muted hover:bg-secondary hover:text-foreground cursor-pointer text-lg leading-none",
-            "aria-label": raw("datepicker.nextMonth", "Mes siguiente"),
+            "aria-label": () => nextMonthLabel.val,
             onclick: () => changeMonth(1),
           },
           "›",
@@ -425,7 +436,7 @@ export const DatePicker = (props: DatePickerOptions): DatePickerField => {
               "px-3 py-1.5 text-xs font-medium rounded-md bg-secondary text-foreground hover:bg-primary/10 cursor-pointer",
             onclick: goToToday,
           },
-          raw("datepicker.today", "Hoy"),
+          () => todayLabel.val,
         ),
       ),
     );

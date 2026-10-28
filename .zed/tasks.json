@@ -1,0 +1,28 @@
+/**
+ * Tareas de Zed para el sidecar de voz: paquete independiente `dictate`
+ * (vanuinode/dictate).
+ *
+ * Para lanzarla:
+ *   - Paleta de comandos (Cmd/Ctrl+Shift+P) → "tasks: spawn" → "Dictar por voz"
+ *   - O con el keybinding global Alt+D (definido en ~/.config/zed/keymap.json)
+ *
+ * La tarea corre en el terminal integrado de Zed con `reveal: "no_focus"`:
+ * muestra el streaming del dictado en vivo en el panel inferior, pero NO le
+ * roba el foco al cursor del editor — así el pegado (Ctrl+V vía
+ * ydotool/wtype) cae directo en el buffer donde estás editando.
+ */
+[
+  {
+    "label": "Dictar por voz",
+    "command": "bun",
+    "args": ["run", "src/cli.ts"],
+    "cwd": "$ZED_WORKTREE_ROOT/dictate",
+    "use_new_terminal": true,
+    "allow_concurrent_runs": true,
+    "reveal": "no_focus",
+    // Oculta la pestaña cuando el proceso termina exitosamente (exit 0). Así,
+    // el Alt+D de "detener" (y el dictado que mata) no dejan pestañas vacías
+    // acumuladas en el panel: solo ves una abierta mientras estás dictando.
+    "hide": "on_success"
+  }
+]

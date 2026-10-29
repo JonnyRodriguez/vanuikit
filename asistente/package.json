@@ -1,0 +1,19 @@
+{
+  "name": "asistente",
+  "dependencies": {
+    "hono": "^4.13.2",
+    "vanui": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^7"
+  },
+  "private": true,
+  "scripts": {
+    "typecheck": "bun check",
+    "web:build": "bun build web/main.ts --outfile web/dist/app.js --minify && cp node_modules/vanui/dist/vanui.css web/dist/vanui.css",
+    "web": "bun run web:build && bun server.ts"
+  }
+}

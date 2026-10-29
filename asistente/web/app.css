@@ -1,0 +1,154 @@
+/* Estilos propios del asistente (el look base viene de vanui.css y sus --vui-*).
+   La librería no impone estilos globales: el body lo viste el consumidor. */
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--vui-background);
+  color: var(--vui-foreground);
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.app {
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.app-header h1 {
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+.app-header input[type="range"] {
+  width: 90px;
+  accent-color: var(--vui-primary);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+}
+
+.gap {
+  gap: 0.5rem;
+}
+
+.status-row {
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.controls {
+  margin-left: auto;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.chat-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.chat {
+  height: 60vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.25rem 0.25rem 1rem;
+}
+
+.msg {
+  max-width: 85%;
+  border-radius: 0.75rem;
+  padding: 0.5rem 0.8rem;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.msg .who {
+  display: block;
+  font-size: 0.72rem;
+  opacity: 0.65;
+  margin-bottom: 0.15rem;
+}
+
+.msg.user {
+  align-self: flex-end;
+  background: color-mix(in srgb, var(--vui-primary) 16%, transparent);
+}
+
+.msg.assistant {
+  align-self: flex-start;
+  background: color-mix(in srgb, var(--vui-muted) 45%, transparent);
+}
+
+.msg.tool {
+  align-self: flex-start;
+  background: color-mix(in srgb, #f59e0b 14%, transparent);
+  font-family: ui-monospace, monospace;
+  font-size: 0.82rem;
+}
+
+.msg.tool .tool-out {
+  margin: 0.2rem 0 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 12rem;
+  overflow-y: auto;
+}
+
+.msg.system {
+  align-self: center;
+  font-size: 0.8rem;
+  opacity: 0.6;
+  background: none;
+  padding: 0;
+}
+
+.text-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.6rem;
+  padding: 0.5rem 0.25rem 0.75rem;
+  border-top: 1px solid var(--vui-border);
+}
+
+.text-row .field {
+  flex: 1;
+  margin: 0;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.pulse {
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  background: #f59e0b;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+.speaking {
+  font-size: 0.85rem;
+  opacity: 0.75;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}

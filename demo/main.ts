@@ -8,6 +8,20 @@
 import { van } from "vanui";
 import { App } from "./app.js";
 
+// Modo debug de VanJS (opcional): detecta violaciones de las reglas
+// reactivas (van.state dentro de derive, contenedores reactivos, ciclos).
+// Se activa con localStorage "van-debug"=1 o el parámetro ?van-debug.
+if (
+  typeof localStorage !== "undefined" &&
+  (localStorage.getItem("van-debug") === "1" ||
+    new URLSearchParams(window.location.search).has("van-debug"))
+) {
+  const { installVanDebug } = await import("vanui");
+  const debug = installVanDebug(van);
+  (window as unknown as { __vanDebug: typeof debug }).__vanDebug = debug;
+  console.info("[vanui:debug] modo debug activado — localStorage van-debug=1 o ?van-debug (vista: /debug)");
+}
+
 const mount = () => {
   const root = document.getElementById("app");
   if (root) {

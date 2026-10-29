@@ -29,6 +29,7 @@
     "types": "tsc --project tsconfig.build.json",
     "css": "node scripts/uno.js",
     "typecheck": "tsc --noEmit",
+    "check:van": "bun scripts/check-van-rules.ts",
     "test": "bun test"
   },
   "peerDependencies": {

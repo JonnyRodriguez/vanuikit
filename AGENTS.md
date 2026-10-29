@@ -152,13 +152,27 @@ La pregunta que resuelve todos los casos: **¿qué binding captura esta lectura,
 
 ---
 
-### Depuración: `trace` y `expectReactive`
+### Depuración: `trace`, `expectReactive`, `installVanDebug` y `check:van`
 
 - `trace(state, "nombre")` — loguea cada cambio del State y lo devuelve para encadenar
   (solo desarrollo: agrega un listener permanente, no llamar dentro de bindings).
 - `await expectReactive({ render, act, contains })` — detector de bindings congelados para
   suites: renderiza, muta, espera el microtask de van y lanza Error con pistas de los gotchas
   (hijos-función null, árboles separados, `t()` dentro de bindings). Agnóstico del runner.
+- `installVanDebug(van)` — instrumentador dev-only (vanui/src/debug-graph.ts) que construye
+  el **árbol de dependencias** real (derive → estados) y detecta en el momento de la violación
+  las reglas silenciosas: `van.state()` dentro de `van.derive` (R1), derive que escribe estados
+  durante su cómputo (R2, y ciclos), derive sin lecturas (R3) y contenedores reactivos vía
+  `trackRender` (R4; suprime con `renderIntentional`). Se activa en la demo con localStorage
+  `van-debug=1` o `?van-debug`; no entra al bundle de producción.
+- `bun run check:van` (en vanui) — escaneo estático en CI: falla (exit 1) si hay `van.state`/
+  `van.derive` dentro de `van.derive` (versión lexical de R1) y reporta advertencias de
+  `t()`/`raw()`/`fmt.*()` dentro de funciones pasadas como hijos (R4, revisar manualmente).
+- Vista visual del grafo: en la demo, `/debug` (pública, solo visible en modo debug) renderiza
+  el grafo de dependencias como SVG (derives → estados, escrituras en rojo discontinuo) y la
+  lista de diagnósticos con su origen. La api queda expuesta en `window.__vanDebug`.
+- Documentación completa del sistema de debug (reglas, uso, vista y escaneo):
+  ver `DEBUG_REACTIVIDAD.md` en la raíz del repo.
 
 ## 6. Pruebas y Calidad de Código
 - Todo componente nuevo debe contar con tests unitarios en `vanui/tests/` ejecutables con `bun test`.

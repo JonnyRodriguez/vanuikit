@@ -64,6 +64,7 @@ export { Pagination, pageSlots, type PaginationOptions } from "./components/pagi
 export { DatePicker, type DatePickerOptions, type DatePickerField } from "./components/datepicker.js";
 export { Kbd, type KbdOptions } from "./components/kbd.js";
 export { trace, expectReactive, type ExpectReactiveOptions } from "./debug.js";
+export { installVanDebug, type VanDebugApi, type VanDebugGraph, type VanDebugDiagnostic, type ViolationKind } from "./debug-graph.js";
 export {
   ThemeToggle,
   type ThemeToggleProps,

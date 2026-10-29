@@ -26,6 +26,7 @@ import { LoginPage } from "./pages/login.page.js";
 import { RegisterPage } from "./pages/register.page.js";
 import { GatewaysPage } from "./pages/gateways.page.js";
 import { ComponentsPage } from "./pages/components.page.js";
+import { DebugPage } from "./pages/debug.page.js";
 import { i18n } from "./shared/i18n.config.js";
 import { theme } from "./shared/theme.config.js";
 
@@ -100,7 +101,7 @@ export const authState = createAuth({
 // lo único que se declara es lo público (login, registro, vitrina).
 export const router = createRouter({
   guard: requireAuth(authState, "/login"),
-  publicRoutes: ["/login", "/register", "/components"],
+  publicRoutes: ["/login", "/register", "/components", "/debug"],
 });
 
 router
@@ -108,6 +109,7 @@ router
   .add("/register", () => RegisterPage())
   .add("/gateways", () => GatewaysPage())
   .add("/components", () => ComponentsPage())
+  .add("/debug", () => DebugPage())
   .redirect("/", "/gateways");
 
 export function App() {

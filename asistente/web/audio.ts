@@ -71,6 +71,7 @@ export class PcmPlayer {
     private ctx = new AudioContext({ sampleRate: 24000 });
     private gain: GainNode;
     private nextTime = 0;
+    private activeSources = new Set<AudioBufferSourceNode>();
 
     constructor(initialVolume = 1) {
         // La voz pasa por un nodo de ganancia: el volumen cambia EN VIVO,
@@ -99,10 +100,25 @@ export class PcmPlayer {
         const src = this.ctx.createBufferSource();
         src.buffer = buf;
         src.connect(this.gain);
+        this.activeSources.add(src);
+        src.onended = () => this.activeSources.delete(src);
         const now = this.ctx.currentTime;
         if (this.nextTime < now + 0.03) this.nextTime = now + 0.03;
         src.start(this.nextTime);
         this.nextTime += buf.duration;
+    }
+
+    /** Interrupción: frena en seco lo que suena y lo programado, y resetea el reloj. */
+    stopAll(): void {
+        for (const src of this.activeSources) {
+            try {
+                src.stop();
+            } catch {
+                /* ya detenido */
+            }
+        }
+        this.activeSources.clear();
+        this.nextTime = this.ctx.currentTime;
     }
 
     /** ¿Queda audio programado por sonar? */
@@ -111,6 +127,7 @@ export class PcmPlayer {
     }
 
     close(): void {
+        this.stopAll();
         void this.ctx.close();
     }
 }

@@ -46,7 +46,10 @@ export class GeminiSession {
     private decoder = new TextDecoder();
     private pendingConfirms = new Map<string, PendingConfirm>();
     private closed = false;
-    private child: ReturnType<typeof Bun.spawn> | null = null;
+    // Procesos vivos por id de toolCall: dos toolCalls pueden intercalarse
+    // (una espera confirmación humana mientras otra ejecuta), y close() debe
+    // poder matarlas todas.
+    private children = new Map<string, ReturnType<typeof Bun.spawn>>();
 
     constructor(private opts: RelayOptions) {
         this.gemini = new WebSocket(
@@ -121,7 +124,8 @@ export class GeminiSession {
             pending.resolve(false);
         }
         this.pendingConfirms.clear();
-        this.child?.kill();
+        for (const [, proc] of this.children) proc.kill();
+        this.children.clear();
         try {
             this.gemini.close();
         } catch {
@@ -243,7 +247,7 @@ export class GeminiSession {
             }
 
             this.opts.toBrowser({ type: "tool", phase: "running", name, args });
-            const output = await this.execute(name, args);
+            const output = await this.execute(id, name, args);
             this.opts.toBrowser({ type: "tool", phase: "done", name, args, output });
             this.respond(id, name, { output });
         }
@@ -267,7 +271,7 @@ export class GeminiSession {
         });
     }
 
-    private async execute(name: string, args: Record<string, unknown>): Promise<string> {
+    private async execute(id: string, name: string, args: Record<string, unknown>): Promise<string> {
         try {
             if (name === "run_shell_command") {
                 const proc = Bun.spawn(["sh", "-c", String(args.command ?? "")], {
@@ -275,13 +279,13 @@ export class GeminiSession {
                     stdout: "pipe",
                     stderr: "pipe",
                 });
-                this.child = proc;
+                this.children.set(id, proc);
                 const [stdout, stderr, exitCode] = await Promise.all([
                     new Response(proc.stdout).text(),
                     new Response(proc.stderr).text(),
                     proc.exited,
                 ]);
-                this.child = null;
+                this.children.delete(id);
                 let out = `$ exit ${exitCode}\n${stdout}`.trim();
                 if (stderr.trim()) out += `\n[stderr] ${stderr.trim()}`;
                 return out.slice(0, MAX_FILE_CHARS) || "(sin salida)";

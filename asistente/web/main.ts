@@ -138,6 +138,7 @@ async function handleServerMessage(msg: Record<string, any>): Promise<void> {
         case "turn-complete":
             break;
         case "interrupted":
+            player?.stopAll(); // frena la voz en seco: el usuario tiene la palabra
             appendMsg("system", raw("asistente.interrupted", "…interrumpido"));
             break;
         case "tool":

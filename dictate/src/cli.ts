@@ -14,6 +14,7 @@
 import { spawn, spawnSync } from "node:child_process";
 
 import { listenAndTranscribe } from "./stt";
+import { interpret, runCommand, type CommandDeps } from "./commands";
 
 const ENV_KEY = process.env.GEMINI_API_KEY;
 if (!ENV_KEY) {
@@ -78,30 +79,79 @@ function focusZedWindow(): string | null {
 }
 
 /**
- * Envía Ctrl+V. Primero intenta ydotool (inyección a nivel sistema, socket del
- * daemon); si falla, cae a wtype. Devuelve el método usado o "" si nada sirvió.
+ * Mapa de keycodes Linux/evdev para combos comunes (ydotool usa números).
  */
-function pasteCtrlV(): string {
-  const y = spawnSync(
-    "ydotool",
-    ["key", "29:1", "47:1", "47:0", "29:0"],
-    {
-      env: { ...process.env, YDOTOOL_SOCKET: "/run/ydotool.socket" },
-      stdio: "ignore",
-    },
-  );
-  if (y.status === 0) return "ydotool";
-  const w = spawnSync("wtype", ["-M", "ctrl", "-k", "v"], {
-    stdio: "ignore",
-  });
-  return w.status === 0 ? "wtype" : "";
+const KEYCODES: Record<string, number> = {
+  ctrl: 29,
+  shift: 42,
+  alt: 56,
+  super: 125,
+  enter: 28,
+  tab: 15,
+  space: 57,
+  backspace: 14,
+  esc: 1,
+  a: 30, b: 48, c: 46, d: 32, e: 18, f: 33, g: 34, h: 35,
+  i: 23, j: 36, k: 37, l: 38, m: 50, n: 49, o: 24, p: 25,
+  q: 16, r: 19, s: 31, t: 20, u: 22, v: 47, w: 17, x: 45,
+  y: 21, z: 44,
+  "1": 2, "2": 3, "3": 4, "4": 5, "5": 6, "6": 7, "7": 8,
+  "8": 9, "9": 10, "0": 11,
+};
+
+/** Separa un combo tipo "ctrl+shift+z" en [modificadores..., tecla]. */
+function parseCombo(combo: string): { mods: number[]; key: number } {
+  const parts = combo.split("+").map((p) => p.trim().toLowerCase());
+  const mods: number[] = [];
+  let key = -1;
+  for (const p of parts) {
+    if (p === "ctrl" || p === "shift" || p === "alt" || p === "super") {
+      const c = KEYCODES[p];
+      if (c !== undefined && !mods.includes(c)) mods.push(c);
+    } else {
+      const c = KEYCODES[p];
+      if (c !== undefined) key = c;
+    }
+  }
+  return { mods, key };
 }
 
-/** Enfoca Zed y pega el portapapeles. Devuelve el método usado o "". */
-async function autoPasteIntoZed(): Promise<string> {
-  if (!focusZedWindow()) return "";
+/**
+ * Inyecta un combo de teclas (p. ej. "ctrl+s"). Primero intenta ydotool
+ * (inyección a nivel sistema, socket del daemon); si falla, cae a wtype.
+ * Devuelve true si se envió por algún método.
+ */
+function sendKeys(combo: string): boolean {
+  const { mods, key } = parseCombo(combo);
+  if (key < 0) return false;
+
+  // ydotool key: presionar en orden (mods luego tecla), liberar en reverse.
+  const press = [...mods, key];
+  const release = [...press].reverse();
+  const keyArgs = press.flatMap((c) => [`${c}:1`]).concat(release.flatMap((c) => [`${c}:0`]));
+  const y = spawnSync("ydotool", ["key", ...keyArgs], {
+    env: { ...process.env, YDOTOOL_SOCKET: "/run/ydotool.socket" },
+    stdio: "ignore",
+  });
+  if (y.status === 0) return true;
+
+  // Fallback wtype: -M <mod> ... -k <tecla>
+  const modNames = mods.map((c) =>
+    c === KEYCODES.ctrl ? "ctrl" : c === KEYCODES.shift ? "shift" : c === KEYCODES.alt ? "alt" : "super",
+  );
+  const keyName = Object.entries(KEYCODES).find(([, c]) => c === key)?.[0];
+  if (!keyName) return false;
+  const wArgs = modNames.flatMap((m) => ["-M", m]);
+  wArgs.push("-k", keyName);
+  const w = spawnSync("wtype", wArgs, { stdio: "ignore" });
+  return w.status === 0;
+}
+
+/** Enfoca Zed y pega el portapapeles. Devuelve true si se pegó. */
+async function autoPasteIntoZed(): Promise<boolean> {
+  if (!focusZedWindow()) return false;
   await Bun.sleep(180);
-  return pasteCtrlV();
+  return sendKeys("ctrl+v");
 }
 
 const DICTATE_PIDFILE = ".dictate.pid";
@@ -199,8 +249,22 @@ async function cmdDictate(): Promise<void> {
     }
     console.log(`[${now()}] 🗣️ dictado: ${finalText}`);
 
+    // Nivel 2: el intérprete decide si es comando o dictado.
+    const intent = await interpret(finalText, API_KEY);
+    if (intent.kind === "command") {
+      const deps: CommandDeps = {
+        focusZed: () => !!focusZedWindow(),
+        sendKeys,
+        notify: sendNotify,
+        log: (m) => console.log(`[${now()}] ${m}`),
+      };
+      runCommand(intent.action, deps);
+      continue;
+    }
+    const toPaste = intent.text;
+
     try {
-      await clipboardCopy(finalText);
+      await clipboardCopy(toPaste);
     } catch (e) {
       console.error(`[${now()}] (error al copiar) ${msg(e)}`);
       sendNotify("⚠️ Error al copiar", msg(e));
@@ -208,13 +272,13 @@ async function cmdDictate(): Promise<void> {
     }
     console.log(`[${now()}] 📋 copiado`);
 
-    const method = await autoPasteIntoZed();
-    if (method) {
-      console.log(`[${now()}] ⌨️ pegado en Zed (${method})`);
-      sendNotify("✅ Pegado en Zed", finalText);
+    const ok = await autoPasteIntoZed();
+    if (ok) {
+      console.log(`[${now()}] ⌨️ pegado en Zed`);
+      sendNotify("✅ Pegado en Zed", toPaste);
     } else {
       console.log(`[${now()}] ⚠️ no pude pegar solo — usá Ctrl+V`);
-      sendNotify("📋 Copiado — pega con Ctrl+V", finalText);
+      sendNotify("📋 Copiado — pega con Ctrl+V", toPaste);
     }
 
     await Bun.sleep(250);

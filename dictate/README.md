@@ -124,11 +124,50 @@ command -v kdotool ydotool wtype wl-copy notify-send
 | `notify-send` | notificaciones de escritorio (estado del dictado) |
 | `arecord` | capturar el micrófono (PCM16 16kHz) |
 
+## Nivel 2: comandos por voz
+
+Además de dictar texto, el intérprete (`src/commands.ts`) clasifica cada
+franja transcrita con un modelo de completación (Gemini 3.5-flash-lite,
+REST, no-live) y decide si es un **comando** o **dictado puro**:
+
+- **Comando** → ejecuta la acción sobre Zed (enfoca la ventana e inyecta las
+  teclas). No pega texto.
+- **Dictado** → copia el texto al portapapeles y lo pega bajo el cursor (como
+  antes).
+
+Acciones disponibles:
+
+| Comando | Acción en Zed |
+| --- | --- |
+| guardar | Ctrl+S |
+| deshacer | Ctrl+Z |
+| rehacer | Ctrl+Shift+Z |
+| nueva línea | Enter |
+| cerrar pestaña | Ctrl+W |
+| siguiente pestaña | Ctrl+Tab |
+| pestaña anterior | Ctrl+Shift+Tab |
+| seleccionar todo | Ctrl+A |
+| copiar | Ctrl+C |
+| cortar | Ctrl+X |
+| pegar | Ctrl+V |
+| buscar | Ctrl+F |
+| cancelar | detiene el dictado (noop) |
+
+Regla del clasificador: **ante la duda, siempre dicta texto** — es mejor pegar
+texto que ejecutar un comando equivocado. El modelo de clasificación se
+configura con `GEMINI_CMD_MODEL` (por defecto `models/gemini-3.5-flash-lite`,
+el único estable en esta cuenta; los demás de Google responden 503 por cupos
+bajos).
+
+El intérprete es un módulo puro: la ejecución se inyecta vía `deps` en el CLI,
+por lo que es testeable de forma aislada.
+
 ## Arquitectura
 
 ```
 src/
   cli.ts         dictado: toggle por pidfile + clipboard + foco/pegado en Zed
+  commands.ts    Nivel 2: clasifica comando/dictado (LLM) y ejecuta acciones
   stt.ts         transcripción en vivo (Gemini Live STT, server-side activity)
   live-client.ts cliente WebSocket mínimo de la Live API (setup/send/parse)
   wav.ts         utilidades WAV PCM16

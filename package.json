@@ -6,8 +6,7 @@
   "description": "Monorepo de desarrollo: vanuikit (librería de componentes VanJS) + demo (app de ejemplo). Cada paquete se construye y publica por separado.",
   "workspaces": [
     "vanuikit",
-    "demo",
-    "asistente"
+    "demo"
   ],
   "scripts": {
     "build": "node scripts/build.js",

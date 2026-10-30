@@ -5,7 +5,7 @@
  * Utiliza el componente embebido LoginForm y delega la autenticación
  * y persistencia completamente en authState.
  */
-import { van, LoginForm, Link, navigate } from "vanui";
+import { van, LoginForm, Link, navigate } from "vanuikit";
 import { authState } from "../app.js";
 import { i18n } from "../shared/i18n.config.js";
 

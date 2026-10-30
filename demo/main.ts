@@ -5,7 +5,7 @@
  * al cargar el DOM. Todo el JS de la demo (router, pantallas, nav) se
  * empaqueta en un único bundle que este archivo importa.
  */
-import { van } from "vanui";
+import { van } from "vanuikit";
 import { App } from "./app.js";
 
 // Modo debug de VanJS (opcional): detecta violaciones de las reglas
@@ -16,10 +16,10 @@ if (
   (localStorage.getItem("van-debug") === "1" ||
     new URLSearchParams(window.location.search).has("van-debug"))
 ) {
-  const { installVanDebug } = await import("vanui");
+  const { installVanDebug } = await import("vanuikit");
   const debug = installVanDebug(van);
   (window as unknown as { __vanDebug: typeof debug }).__vanDebug = debug;
-  console.info("[vanui:debug] modo debug activado — localStorage van-debug=1 o ?van-debug (vista: /debug)");
+  console.info("[vanuikit:debug] modo debug activado — localStorage van-debug=1 o ?van-debug (vista: /debug)");
 }
 
 const mount = () => {

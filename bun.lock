@@ -12,7 +12,7 @@
       "name": "asistente",
       "dependencies": {
         "hono": "^4.13.2",
-        "vanui": "workspace:*",
+        "vanuikit": "workspace:*",
       },
       "devDependencies": {
         "@types/bun": "latest",
@@ -22,14 +22,14 @@
       },
     },
     "demo": {
-      "name": "vanui-demo",
+      "name": "vanuikit-demo",
       "version": "0.1.0",
       "dependencies": {
         "@hono/node-server": "^1.13.8",
         "hono": "^4.13.2",
         "qrcode": "^1.5.4",
         "vanjs-core": "^1.6.0",
-        "vanui": "workspace:*",
+        "vanuikit": "workspace:*",
         "zod": "^4.4.3",
       },
       "devDependencies": {
@@ -42,8 +42,8 @@
         "typescript": "^5.8.2",
       },
     },
-    "vanui": {
-      "name": "vanui",
+    "vanuikit": {
+      "name": "vanuikit",
       "version": "0.1.0",
       "devDependencies": {
         "@happy-dom/global-registrator": "^20.11.6",
@@ -219,9 +219,9 @@
 
     "vanjs-core": ["vanjs-core@1.6.1", "", {}, "sha512-CPUteb4/iW3hB7TLTKI9A9YMRTAQFpPz5n1/+vfnPxNs2wOI9HvSg6K3B/9x+uycX8eefqopBcakr2vJeHgIgw=="],
 
-    "vanui": ["vanui@workspace:vanui"],
+    "vanuikit": ["vanuikit@workspace:vanuikit"],
 
-    "vanui-demo": ["vanui-demo@workspace:demo"],
+    "vanuikit-demo": ["vanuikit-demo@workspace:demo"],
 
     "whatwg-mimetype": ["whatwg-mimetype@3.0.0", "", {}, "sha512-nt+N2dzIutVRxARx1nghPKGv1xHikU7HKdfafKkLNLindmPU/ch3U31NOCGGA/dmPcmb1VlofO0vnKAcsm0o/Q=="],
 

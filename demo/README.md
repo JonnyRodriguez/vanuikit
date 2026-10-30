@@ -1,6 +1,6 @@
-# VanUI Demo
+# VanUikit Demo
 
-Demo de la librería **vanui**, consumida como paquete real (`"vanui": "file:../vanui"` en `package.json`).
+Demo de la librería **vanuikit**, consumida como paquete real (`"vanuikit": "file:../vanuikit"` en `package.json`).
 
 SPA de página única construida con VanJS: un router cliente (`router.ts`) registra rutas declarativas (`router.add(path, () => Component)`). `App` (`app.ts`) es el shell principal con cabecera y navegación compartida (`Header`), y monta reactivamente la página resuelta por el router.
 
@@ -12,7 +12,7 @@ SPA de página única construida con VanJS: un router cliente (`router.ts`) regi
 | `/***REMOVED***`    | `***REMOVED***Page`                              | Flujo de ***REMOVED*** (lista de ***REMOVED***s → modal de monto → QR) |
 | `/login`       | `LoginPage`                                 | Inicio de sesión con validación y redirección |
 | `/register`    | `RegisterPage`                              | Registro de usuario con validación tipada |
-| `/components`  | `ComponentsPage`                            | Catálogo interactivo de componentes VanUI |
+| `/components`  | `ComponentsPage`                            | Catálogo interactivo de componentes VanUikit |
 
 ## Estructura de la Demo
 
@@ -42,7 +42,7 @@ demo/
 │   └── types.ts           <- DTOs y tipos del backend
 ├── shared/                <- Esquemas de validación Zod compartidos (cliente/servidor)
 ├── img/***REMOVED***/           <- Logos e isotipos de las ***REMOVED***s
-└── dist/                  <- Salida compilada (main.js, vanui.css, uno.css)
+└── dist/                  <- Salida compilada (main.js, vanuikit.css, uno.css)
 ```
 
 ## Comandos
@@ -50,7 +50,7 @@ demo/
 ```bash
 bun install        # Instala dependencias
 bun run lint       # Validación de tipos con tsc --noEmit
-bun run build      # Compila vanui, la demo y los estilos UnoCSS
+bun run build      # Compila vanuikit, la demo y los estilos UnoCSS
 bun run dev        # Inicia el servidor de desarrollo en http://localhost:3000
 bun test           # Ejecuta la suite de pruebas unitarias
 ```

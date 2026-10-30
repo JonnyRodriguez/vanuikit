@@ -1,5 +1,5 @@
 /**
- * App — orquestador de la SPA de demostración de VanUI.
+ * App — orquestador de la SPA de demostración de VanUikit.
  *
  * Configura:
  * - Rutas con guards de autenticación (`requireAuth`)
@@ -22,7 +22,7 @@ import {
   UserBadge,
   Icon,
   navigate,
-} from "vanui";
+} from "vanuikit";
 import { LoginPage } from "./pages/login.page.js";
 import { RegisterPage } from "./pages/register.page.js";
 import { ***REMOVED***Page } from "./pages/***REMOVED***.page.js";
@@ -140,10 +140,10 @@ export function App() {
       },
       collapsible: true,
       collapsed: sidebarCollapsed,
-      storageKey: "vanui-demo-sidebar-collapsed",
+      storageKey: "vanuikit-demo-sidebar-collapsed",
       resizable: true,
-      widthStorageKey: "vanui-demo-sidebar-width",
-      // Link de vanui: navegación SPA embebida; la demo solo aporta su estado
+      widthStorageKey: "vanuikit-demo-sidebar-width",
+      // Link de vanuikit: navegación SPA embebida; la demo solo aporta su estado
       // (cerrar el drawer mobile al tocar el logo).
       header: Link(
         {
@@ -153,7 +153,7 @@ export function App() {
             sidebarOpen.val = false;
           },
         },
-        span({ class: "text-primary font-black text-xl" }, "VanUI"),
+        span({ class: "text-primary font-black text-xl" }, "VanUikit"),
         span(
           {
             class:
@@ -236,10 +236,10 @@ export function App() {
       ),
       title: getPageTitle,
       actions: [
-        // Selector de Idioma embebido de VanUI
+        // Selector de Idioma embebido de VanUikit
         LocaleSelector({ i18n }),
 
-        // Selector de Tema embebido de VanUI
+        // Selector de Tema embebido de VanUikit
         ThemeToggle({ theme, i18n }),
       ],
     }),

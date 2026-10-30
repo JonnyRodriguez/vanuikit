@@ -1,4 +1,4 @@
-# Roadmap — VanUI
+# Roadmap — VanUikit
 
 Plan de evolución de la librería. Los principios rectores viven en [AGENTS.md](./AGENTS.md):
 componentes embebidos first-class, cero boilerplate, i18n inline con `t()`/`raw()`, accesibilidad
@@ -8,7 +8,7 @@ y suite de tests 100% verde antes de cerrar cualquier tarea.
 
 ## Estado actual (2026-10-15)
 
-**17 componentes** en `vanui/src/components/`: Button (variantes), Badge, Field family
+**17 componentes** en `vanuikit/src/components/`: Button (variantes), Badge, Field family
 (TextField/EmailField/PasswordField), Form, Modal/ModalBase/SpinModal, ConfirmDialog,
 SelectDropdown/DropdownMenu, DataGrid/Table, Tabs, toast, Spin, layout (AppShell/HeaderBar/
 Sidebar/SidebarGroup/SidebarItem), Nav/Link, ThemeToggle, LocaleSelector, UserBadge.
@@ -128,8 +128,8 @@ Los candidatos del próximo ciclo, menos `DatePicker` (sigue sin página que lo 
 Del review de vanjs.org y del ecosistema oficial (decisión: **anotado, sin fecha** — se
 embeben cuando una página real los pida, misma filosofía de siempre):
 
-- **Nombre — decisión: quedarse con `vanui`.** Verificado en npm (2026-10-27): `vanui` está
-  LIBRE (el VanUI oficial se publica como `vanjs-ui`, vanjs.org/vanui). Rechazado `vanuix`:
+- **Nombre — decisión: quedarse con `vanuikit`.** Verificado en npm (2026-10-27): `vanuikit` está
+  LIBRE (el VanUikit oficial se publica como `vanjs-ui`, vanjs.org/vanuikit). Rechazado `vanuikitx`:
   la marca "X" pertenece a VanX (oficial) — implicaría afiliación doble que no existe.
   Posicionamiento frente a `vanjs-ui`: es ~10 widgets sin ARIA ni focus management
   documentados; el nuestro es un app kit (componentes accesibles + i18n/fmt + router
@@ -140,7 +140,7 @@ embeben cuando una página real los pida, misma filosofía de siempre):
 - **`chooseDialog`** (idea de `choose` de `vanjs-ui`) — picker modal que resuelve
   `Promise<valor | null>`, sobre `Modal` + `Combobox` (con teclado y focus trap: más
   accesible que el de ellos). Complementa `confirmDialog`. Esfuerzo estimado: M.
-- **Docs DX** (lejano) — cuando vanui tenga sitio/docs: preview vivo por componente
+- **Docs DX** (lejano) — cuando vanuikit tenga sitio/docs: preview vivo por componente
   (CodeSandbox/jsfiddle), tabla de props con defaults, formato por-componente como vanjs.org.
 - **No adoptar**: bolsas de `styleOverrides` de `vanjs-ui` (nuestro modelo de tokens UnoCSS +
   props `class` ya lo cubre), `FloatingWindow` (niche, solo-mouse).
@@ -160,13 +160,13 @@ no lo que *podría* repetirse.
 
 ## Definición de Done (por componente)
 
-1. Implementación en `vanui/src/components/<name>.ts` con API reactiva (acepta `State` en
+1. Implementación en `vanuikit/src/components/<name>.ts` con API reactiva (acepta `State` en
    props visuales, mismo contrato que el resto del catálogo).
 2. i18n: todo texto visible con `t()`/`raw()`, sin strings quemados; locales recolectados con
    `i18n:collect`.
-3. Tests unitarios en `vanui/tests/` ejecutables con `bun test`.
+3. Tests unitarios en `vanuikit/tests/` ejecutables con `bun test`.
 4. Demo showcase en `demo/pages` (uso real, no screenshot).
-5. Estilos vía tokens de los dos `uno.js` (sin colores hardcodeados; mismos tokens en vanui y
+5. Estilos vía tokens de los dos `uno.js` (sin colores hardcodeados; mismos tokens en vanuikit y
    demo).
 6. Suite `bun test` 100% verde.
-7. Exportado desde `vanui` (index.ts) y documentado en el catálogo de AGENTS.md.
+7. Exportado desde `vanuikit` (index.ts) y documentado en el catálogo de AGENTS.md.

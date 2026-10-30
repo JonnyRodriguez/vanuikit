@@ -1,13 +1,13 @@
 /**
- * Estilos de la demo — consumidor puro de vanui.
+ * Estilos de la demo — consumidor puro de vanuikit.
  *
  * - Compila con UnoCSS SOLO los fuentes de la demo (pages, components, server,
  *   index.html) a demo/dist/uno.css. Los estilos y el reset de la librería no
- *   se escanean: vienen en su hoja publicada (vanui/styles.css).
- * - Copia esa hoja del paquete instalado a demo/dist/vanui.css.
+ *   se escanean: vienen en su hoja publicada (vanuikit/styles.css).
+ * - Copia esa hoja del paquete instalado a demo/dist/vanuikit.css.
  *
  * Las utilidades que referencian el tema (--vui-*) se mapean con el mismo
- * THEME que usa la librería; las variables y el reset los define vanui.css,
+ * THEME que usa la librería; las variables y el reset los define vanuikit.css,
  * que index.html carga antes que este archivo.
  */
 import fs from "node:fs";
@@ -22,15 +22,15 @@ const __dirname = path.dirname(__filename);
 const demoDir = path.resolve(__dirname, "..");
 
 const OUT_UNO = path.join(demoDir, "dist/uno.css");
-const OUT_VANUI = path.join(demoDir, "dist/vanui.css");
+const OUT_VANUI = path.join(demoDir, "dist/vanuikit.css");
 
 /** Envuelve un color (var --vui-*) en color-mix con el placeholder %alpha:
  *  así los modificadores de opacidad (bg-secondary/60, text-muted-foreground/70)
  *  resuelven de verdad en vez de descartarse en silencio. Debe espejar el THEME
- *  de vanui/scripts/uno.js. */
+ *  de vanuikit/scripts/uno.js. */
 const cm = (v) => `color-mix(in srgb, ${v} calc(%alpha * 100%), transparent)`;
 
-/** Mapea las clases de color/radio/sombra a las variables del tema --vui-* (definidas por vanui/styles.css). */
+/** Mapea las clases de color/radio/sombra a las variables del tema --vui-* (definidas por vanuikit/styles.css). */
 const THEME = {
   colors: {
     primary: cm("var(--vui-primary)"),
@@ -94,7 +94,7 @@ const generator = await createGenerator({
   presets: [presetUno()],
 });
 
-const { css } = await generator.generate(source, { id: "vanui-demo" });
+const { css } = await generator.generate(source, { id: "vanuikit-demo" });
 
 const demoCssPath = path.join(demoDir, "demo.css");
 const demoCustomCss = fs.existsSync(demoCssPath) ? fs.readFileSync(demoCssPath, "utf-8") : "";
@@ -102,18 +102,18 @@ const finalDemoCss = `${css}\n\n/* demo.css */\n${demoCustomCss}`;
 
 // Hoja publicada de la librería, resuelta desde node_modules (consumidor real).
 const require = createRequire(import.meta.url);
-let vanuiCssPath;
+let vanuikitCssPath;
 try {
-  vanuiCssPath = require.resolve("vanui/styles.css");
+  vanuikitCssPath = require.resolve("vanuikit/styles.css");
 } catch {
   // Fallback si el paquete no está enlazado aún (primer bootstrap del repo).
-  vanuiCssPath = path.resolve(demoDir, "../vanui/dist/vanui.css");
+  vanuikitCssPath = path.resolve(demoDir, "../vanuikit/dist/vanuikit.css");
 }
 
 fs.mkdirSync(path.dirname(OUT_UNO), { recursive: true });
 fs.writeFileSync(OUT_UNO, finalDemoCss, "utf-8");
-fs.copyFileSync(vanuiCssPath, OUT_VANUI);
+fs.copyFileSync(vanuikitCssPath, OUT_VANUI);
 
 console.log(
-  `CSS demo generado (${files.length} archivos escaneados, ${finalDemoCss.length} bytes) + vanui.css copiado desde ${path.relative(demoDir, vanuiCssPath)}`,
+  `CSS demo generado (${files.length} archivos escaneados, ${finalDemoCss.length} bytes) + vanuikit.css copiado desde ${path.relative(demoDir, vanuikitCssPath)}`,
 );

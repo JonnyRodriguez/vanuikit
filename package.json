@@ -1,21 +1,21 @@
 {
-  "name": "vanuinode",
+  "name": "vanuikit",
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Monorepo de desarrollo: vanui (librería de componentes VanJS) + demo (app de ejemplo). Cada paquete se construye y publica por separado.",
+  "description": "Monorepo de desarrollo: vanuikit (librería de componentes VanJS) + demo (app de ejemplo). Cada paquete se construye y publica por separado.",
   "workspaces": [
-    "vanui",
+    "vanuikit",
     "demo",
     "asistente"
   ],
   "scripts": {
     "build": "node scripts/build.js",
-    "build:min": "npm run build --workspace vanui && npm run build:min --workspace demo",
+    "build:min": "npm run build --workspace vanuikit && npm run build:min --workspace demo",
     "dev": "npm run dev --workspace demo",
     "start": "npm run start --workspace demo",
-    "test": "npm run test --workspace vanui",
-    "lint": "cd vanui && bun run typecheck && cd ../demo && bun run typecheck && cd .. && bun run i18n:check && bun run i18n:scan -- --check",
+    "test": "npm run test --workspace vanuikit",
+    "lint": "cd vanuikit && bun run typecheck && cd ../demo && bun run typecheck && cd .. && bun run i18n:check && bun run i18n:scan -- --check",
     "i18n:collect": "bun scripts/i18n-collect.ts",
     "i18n:check": "bun scripts/i18n-collect.ts --check",
     "i18n:scan": "bun scripts/i18n-scan.ts",

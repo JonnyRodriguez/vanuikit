@@ -41,7 +41,7 @@ import {
   raw,
   type TableColumn,
   type Router,
-} from "vanui";
+} from "vanuikit";
 import { i18n } from "../shared/i18n.config.js";
 import { theme } from "../shared/theme.config.js";
 import { z } from "zod";
@@ -318,16 +318,16 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
     div(
       { class: "border-b border-border pb-5" },
       h1({ class: "text-3xl font-extrabold text-foreground" }, i18n.t("components.title", "Catálogo de Componentes")),
-      p({ class: "text-foreground-soft text-sm mt-1" }, i18n.t("components.subtitle", "Componentes interactivos construidos con VanJS y VanUI")),
+      p({ class: "text-foreground-soft text-sm mt-1" }, i18n.t("components.subtitle", "Componentes interactivos construidos con VanJS y VanUikit")),
     ),
 
-    // 1. Theme & i18n Control Section (Componentes Embebidos de VanUI)
+    // 1. Theme & i18n Control Section (Componentes Embebidos de VanUikit)
     section(
       { class: "space-y-5 p-6 rounded-2xl border border-border bg-secondary/10 shadow-sm" },
       div(
         { class: "flex items-center justify-between" },
         h2({ class: "text-lg font-bold text-foreground" }, i18n.t("components.themeSection", "Gestión de Tema e Idioma")),
-        Badge({ text: i18n.t("components.embeddedBadge", "Embebidos en VanUI"), variant: "primary", size: "sm" }),
+        Badge({ text: i18n.t("components.embeddedBadge", "Embebidos en VanUikit"), variant: "primary", size: "sm" }),
       ),
       p({ class: "text-sm text-foreground-soft" }, i18n.t("components.themeDesc", "Gestión de estado global sin overhead: alternancia instantánea y sincronización automática.")),
       div(
@@ -648,7 +648,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
             items: [
               {
                 id: "what",
-                title: i18n.t("components.acc1Title", "¿Qué es VanUI?"),
+                title: i18n.t("components.acc1Title", "¿Qué es VanUikit?"),
                 content: () => van.tags.p(i18n.t("components.acc1Body", "Una librería de componentes reactivos para VanJS: cero boilerplate, i18n inline y baterías incluidas.")),
               },
               {
@@ -758,7 +758,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
                 div(
                   { class: "p-4 rounded-xl bg-secondary/10 text-sm text-foreground space-y-2" },
                   h3({ class: "font-bold text-foreground text-base" }, i18n.t("components.perfTitle", "📊 Panel de Rendimiento")),
-                  p({ class: "text-foreground-soft leading-relaxed" }, i18n.t("components.perfBody", "VanUI permite renderizar vistas SPA reactivas con un bundle ultra liviano (~1.5kB de VanJS core) sin VDOM.")),
+                  p({ class: "text-foreground-soft leading-relaxed" }, i18n.t("components.perfBody", "VanUikit permite renderizar vistas SPA reactivas con un bundle ultra liviano (~1.5kB de VanJS core) sin VDOM.")),
                 ),
             },
             {
@@ -1015,7 +1015,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
               variant: "secondary",
               onclick: () => {
                 modal.set({
-                  header: () => div({ class: "text-lg font-bold" }, i18n.raw("components.modalTitle", "Modal Básico VanUI")),
+                  header: () => div({ class: "text-lg font-bold" }, i18n.raw("components.modalTitle", "Modal Básico VanUikit")),
                   body: () => div({ class: "py-2 text-sm text-foreground-soft leading-relaxed" }, i18n.raw("components.modalBody", "Este modal es completamente reactivo y se monta/desmonta con estados nativos de VanJS.")),
                   footer: () =>
                     div(
@@ -1054,7 +1054,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       modal.dom(),
     ),
 
-    // 13. Dashboard Layout & Sidebars (VanUI AppShell)
+    // 13. Dashboard Layout & Sidebars (VanUikit AppShell)
     section(
       { class: "space-y-4" },
       h2({ class: "text-xl font-bold text-foreground" }, i18n.t("components.layoutsSection", "Layouts & Dashboard Shell")),

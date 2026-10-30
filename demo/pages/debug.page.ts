@@ -11,8 +11,8 @@
  * El SVG se genera como string (innerHTML) para respetar el namespace SVG,
  * que los tags de van no garantizan.
  */
-import { van } from "vanui";
-import type { VanDebugApi, VanDebugDiagnostic, VanDebugGraph } from "vanui";
+import { van } from "vanuikit";
+import type { VanDebugApi, VanDebugDiagnostic, VanDebugGraph } from "vanuikit";
 
 const KIND_STYLE: Record<string, { label: string; cls: string }> = {
   "state-in-derive": { label: "ESTADO EN DERIVE", cls: "bg-red-100 text-red-700 border-red-300" },

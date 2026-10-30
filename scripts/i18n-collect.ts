@@ -21,10 +21,10 @@
 import fs from "node:fs";
 import path from "node:path";
 import ts from "typescript";
-import { defaultLocales } from "../vanui/src/i18n.js";
+import { defaultLocales } from "../vanuikit/src/i18n.js";
 
 const ROOT = path.resolve(import.meta.dir, "..");
-const SCAN_PATTERNS = ["demo/**/*.ts", "vanui/src/**/*.ts"];
+const SCAN_PATTERNS = ["demo/**/*.ts", "vanuikit/src/**/*.ts"];
 const EXCLUDE = [/(^|\/)dist\//, /(^|\/)node_modules\//, /\.test\.ts$/, /(^|\/)fixtures\//];
 const LOCALES_DIR = path.join(ROOT, "demo", "shared", "locales");
 const HAND_LOCALES = ["en", "fr"] as const;
@@ -175,15 +175,15 @@ for (const entry of entries) {
 
 const allKeys = [...byKey.keys()].sort();
 
-// ── 2. Validación de la librería: claves de vanui presentes en es+en ───────
+// ── 2. Validación de la librería: claves de vanuikit presentes en es+en ───────
 for (const [key, entry] of byKey) {
-  if (!entry.file.startsWith("vanui/")) continue;
+  if (!entry.file.startsWith("vanuikit/")) continue;
   for (const locale of ["es", "en"]) {
     const resolved = key
       .split(".")
       .reduce<any>((acc, part) => (acc == null ? undefined : acc[part]), defaultLocales[locale]);
     if (typeof resolved !== "string") {
-      errors.push(`vanui: "${key}" falta en defaultLocales.${locale} (declared en ${entry.file})`);
+      errors.push(`vanuikit: "${key}" falta en defaultLocales.${locale} (declared en ${entry.file})`);
     }
   }
 }

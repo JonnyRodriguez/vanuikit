@@ -1,4 +1,4 @@
-import { i18n } from "vanui";
+import { i18n } from "vanuikit";
 import es from "./locales/es.json";
 import en from "./locales/en.json";
 import fr from "./locales/fr.json";

@@ -1,7 +1,7 @@
 /**
  * i18n-scan — detector de strings de UI sin internacionalizar.
  *
- * Recorre demo/** y vanui/src/** con el compilador de TypeScript y reporta
+ * Recorre demo/** y vanuikit/src/** con el compilador de TypeScript y reporta
  * literales de string (y template literals) que probablemente son texto
  * visible, por POSICIÓN estructural — nunca por contenido:
  *
@@ -27,7 +27,7 @@ import path from "node:path";
 import ts from "typescript";
 
 const ROOT = path.resolve(import.meta.dir, "..");
-const SCAN_PATTERNS = ["demo/**/*.ts", "vanui/src/**/*.ts"];
+const SCAN_PATTERNS = ["demo/**/*.ts", "vanuikit/src/**/*.ts"];
 const EXCLUDE = [
   /(^|\/)dist\//,
   /(^|\/)node_modules\//,
@@ -81,7 +81,7 @@ const IGNORE_MEMBERS = new Set([
 ]);
 
 /** Marcas y nombres propios que no se traducen. */
-const BRANDS = new Set(["VanUI", "VanJS", "VanJS core", "React", "Vue", "Svelte"]);
+const BRANDS = new Set(["VanUikit", "VanJS", "VanJS core", "React", "Vue", "Svelte"]);
 
 export type Confidence = "ALTA" | "MEDIA";
 export type I18nMode = "t" | "raw";

@@ -1,6 +1,6 @@
-import { createTheme } from "vanui";
+import { createTheme } from "vanuikit";
 
 export const theme = createTheme({
   defaultMode: "system",
-  storageKey: "vanui-demo-theme",
+  storageKey: "vanuikit-demo-theme",
 });

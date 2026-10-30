@@ -5,7 +5,7 @@
  * Utiliza el componente embebido RegisterForm y delega la creación de cuenta
  * y persistencia completamente en authState.
  */
-import { van, RegisterForm, Link, navigate } from "vanui";
+import { van, RegisterForm, Link, navigate } from "vanuikit";
 import { authState } from "../app.js";
 import { i18n } from "../shared/i18n.config.js";
 

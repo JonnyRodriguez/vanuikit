@@ -1,0 +1,87 @@
+import { describe, test, expect } from "bun:test";
+import van from "vanjs-core";
+import { SelectDropdown, DropdownMenu } from "../src/components/dropdown.js";
+
+const tick = () => new Promise((r) => setTimeout(r, 0));
+
+describe("SelectDropdown", () => {
+  test("renderiza el botón con la opción inicial seleccionada", async () => {
+    const selected = van.state("es");
+    const el = SelectDropdown({
+      options: [
+        { value: "es", label: "Español" },
+        { value: "en", label: "English" },
+      ],
+      value: selected,
+    });
+
+    document.body.appendChild(el);
+    await tick();
+
+    const btn = el.querySelector('[role="combobox"]') as HTMLButtonElement;
+    expect(btn.textContent).toContain("Español");
+    expect(btn.getAttribute("aria-expanded")).toBe("false");
+  });
+
+  test("al hacer clic abre el listbox y permite seleccionar una opción", async () => {
+    let changedValue = "";
+    const selected = van.state("es");
+
+    const el = SelectDropdown({
+      options: [
+        { value: "es", label: "Español" },
+        { value: "en", label: "English" },
+      ],
+      value: selected,
+      onChange: (val) => (changedValue = val),
+    });
+
+    document.body.appendChild(el);
+    await tick();
+
+    const btn = el.querySelector('[role="combobox"]') as HTMLButtonElement;
+    btn.click();
+    await tick();
+
+    expect(btn.getAttribute("aria-expanded")).toBe("true");
+    const options = el.querySelectorAll('[role="option"]');
+    expect(options.length).toBe(2);
+
+    (options[1] as HTMLElement).click();
+    await tick();
+
+    expect(selected.val).toBe("en");
+    expect(changedValue).toBe("en");
+    expect(btn.getAttribute("aria-expanded")).toBe("false");
+  });
+});
+
+describe("DropdownMenu", () => {
+  test("despliega items al hacer clic en el trigger y ejecuta el callback", async () => {
+    let clicked = false;
+    const el = DropdownMenu({
+      trigger: () => van.tags.button("Acciones"),
+      items: [
+        { label: "Editar", onClick: () => (clicked = true) },
+        { type: "divider" },
+        { label: "Eliminar", destructive: true },
+      ],
+    });
+
+    document.body.appendChild(el);
+    await tick();
+
+    const triggerWrapper = el.firstElementChild as HTMLElement;
+    triggerWrapper.click();
+    await tick();
+
+    const menu = el.querySelector('[role="menu"]');
+    expect(menu).not.toBeNull();
+
+    const editBtn = el.querySelectorAll('[role="menuitem"]')[0] as HTMLButtonElement;
+    editBtn.click();
+    await tick();
+
+    expect(clicked).toBe(true);
+  });
+});

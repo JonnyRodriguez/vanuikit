@@ -9,7 +9,7 @@ import { serveStatic } from "@hono/node-server/serve-static";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { loadRoutes } from "vanui/server";
+import { loadRoutes } from "vanuikit/server";
 import { requireAuth } from "./middlewares/auth.middleware.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -45,7 +45,7 @@ app.route("/", routesApp);
 // --- Health check ---
 app.get("/health", (c) => {
   return c.json({
-    service: "vanui-demo-api",
+    service: "vanuikit-demo-api",
     status: "online",
     timestamp: new Date().toISOString(),
   });

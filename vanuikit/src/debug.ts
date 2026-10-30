@@ -1,0 +1,73 @@
+import van, { type ChildDom, type State } from "vanjs-core";
+
+/**
+ * Loguea cada cambio del State (valor inicial incluido) y lo devuelve para
+ * encadenar. Herramienta de desarrollo: en producción conviene retirarla
+ * (o silenciar console en el build).
+ *
+ *   const count = trace(van.state(0), "count");
+ *
+ * Cuidado: como `t()`, cada `trace` agrega un listener permanente — no lo
+ * llames dentro de bindings que se re-ejecutan.
+ */
+export const trace = <T>(state: State<T>, name?: string): State<T> => {
+  const label = name ?? "state";
+  van.derive(() => {
+    console.log(`[vanuikit:trace] ${label} =`, state.val);
+  });
+  return state;
+};
+
+export interface ExpectReactiveOptions {
+  /** Construye el árbol a probar (se monta en un host temporal). */
+  render: () => ChildDom;
+  /** Muta los estados bajo prueba. */
+  act: () => void;
+  /** Texto exacto esperado en el árbol tras `act()` (textContent). */
+  text?: string;
+  /** Subcadena esperada tras `act()`. */
+  contains?: string;
+  /** Espera custom (default: un microtask, el ciclo de bindings de van). */
+  tick?: () => Promise<void>;
+}
+
+const VAN_BINDING_HINTS = `Pistas (gotchas de van):
+  1. Un hijo-función que retorna null muere en el primer cambio (keepConnected
+     descarta bindings con _dom null): usa un ancla siempre montada + hidden.
+  2. Los árboles separados del documento pierden sus bindings: móntalo en body.
+  3. t()/fmt./rawText creados DENTRO de un binding no re-suscriben: iza el
+     State fuera de la función.`;
+
+/**
+ * Detector de bindings congelados para suites de test (agnóstico del
+ * runner: lanza Error en vez de usar expect). Renderiza, captura el texto,
+ * ejecuta `act()` y verifica que el árbol mutó al texto esperado.
+ *
+ *   await expectReactive({
+ *     render: () => span(miState),
+ *     act: () => (miState.val = "nuevo"),
+ *     contains: "nuevo",
+ *   });
+ */
+export const expectReactive = async (opts: ExpectReactiveOptions): Promise<void> => {
+  const host = document.createElement("div");
+  document.body.replaceChildren(host);
+  host.append(opts.render() as Node);
+
+  opts.act();
+  await (opts.tick?.() ?? new Promise<void>((r) => setTimeout(r, 0)));
+
+  const after = host.textContent ?? "";
+  host.remove();
+
+  if (opts.text !== undefined && after !== opts.text) {
+    throw new Error(
+      `expectReactive: texto inesperado.\n  esperado: ${JSON.stringify(opts.text)}\n  recibido: ${JSON.stringify(after)}\n${VAN_BINDING_HINTS}`,
+    );
+  }
+  if (opts.contains !== undefined && !after.includes(opts.contains)) {
+    throw new Error(
+      `expectReactive: el árbol no reaccionó (no contiene ${JSON.stringify(opts.contains)}; recibido: ${JSON.stringify(after)}).\n${VAN_BINDING_HINTS}`,
+    );
+  }
+};

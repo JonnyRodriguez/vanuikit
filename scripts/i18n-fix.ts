@@ -3,7 +3,7 @@
  * `i18n-scan` en llamadas `t()`/`raw()` inline con llave semántica.
  *
  * Por cada hallazgo ALTA en demo/**: propone una llave (editable), completa el
- * import de `t`/`raw` desde "vanui" y reemplaza el literal por
+ * import de `t`/`raw` desde "vanuikit" y reemplaza el literal por
  * `t("llave", "texto")` (o `raw(...)` en contexto imperativo; los templates
  * interpolados se convierten en parámetros `{ nombre }`). Al terminar ejecuta
  * `i18n:collect` para regenerar es.json; los huecos en/fr los reporta
@@ -14,7 +14,7 @@
  *   bun scripts/i18n-fix.ts --yes      → acepta todas las propuestas
  *   bun scripts/i18n-fix.ts --dry      → muestra el plan sin escribir
  *
- * Los archivos de vanui/src se excluyen a propósito: sus componentes siguen el
+ * Los archivos de vanuikit/src se excluyen a propósito: sus componentes siguen el
  * patrón de instancia i18n por props y se ajustan a mano.
  */
 import fs from "node:fs";
@@ -55,16 +55,16 @@ function applyToFile(relFile: string, accepted: Accepted[]): void {
     });
   }
 
-  // Import de "vanui": completar llaves existentes o crear la declaración.
-  const vanuiImport = source.statements.find(
+  // Import de "vanuikit": completar llaves existentes o crear la declaración.
+  const vanuikitImport = source.statements.find(
     (s): s is ts.ImportDeclaration =>
-      ts.isImportDeclaration(s) && s.moduleSpecifier.getText(source).replace(/['"]/g, "") === "vanui",
+      ts.isImportDeclaration(s) && s.moduleSpecifier.getText(source).replace(/['"]/g, "") === "vanuikit",
   );
-  if (vanuiImport?.importClause?.namedBindings && ts.isNamedImports(vanuiImport.importClause.namedBindings)) {
-    const existing = new Set(vanuiImport.importClause.namedBindings.elements.map((e) => e.name.text));
+  if (vanuikitImport?.importClause?.namedBindings && ts.isNamedImports(vanuikitImport.importClause.namedBindings)) {
+    const existing = new Set(vanuikitImport.importClause.namedBindings.elements.map((e) => e.name.text));
     const missing = [...needs].filter((n) => !existing.has(n));
     if (missing.length > 0) {
-      const bindings = vanuiImport.importClause.namedBindings;
+      const bindings = vanuikitImport.importClause.namedBindings;
       // Insertar tras la primera llave: { t, ...resto } mantiene el orden legible.
       const insertAt = bindings.getStart(source) + 1;
       edits.push({ start: insertAt, end: insertAt, text: `${missing.join(", ")},` });
@@ -75,7 +75,7 @@ function applyToFile(relFile: string, accepted: Accepted[]): void {
     for (const s of source.statements) {
       if (ts.isImportDeclaration(s)) lastImportEnd = Math.max(lastImportEnd, s.getEnd());
     }
-    edits.push({ start: lastImportEnd, end: lastImportEnd, text: `\nimport { ${names} } from "vanui";` });
+    edits.push({ start: lastImportEnd, end: lastImportEnd, text: `\nimport { ${names} } from "vanuikit";` });
   }
 
   // Aplicar de atrás hacia adelante para no invalidar posiciones.

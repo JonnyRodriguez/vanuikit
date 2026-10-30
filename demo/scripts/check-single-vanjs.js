@@ -19,7 +19,7 @@ fs.rmSync(metaFile);
 if (copies.length > 1) {
   console.error(`❌ El bundle contiene ${copies.length} copias de vanjs-core (debe ser exactamente 1):`);
   for (const [p, i] of copies) console.error(`   ${((i.bytes ?? 0) / 1024).toFixed(1)}KB ${p}`);
-  console.error("Pista: versiones divergentes entre package.json de la app y vanui, o un import directo de vanjs-core (usar `van` desde vanui).");
+  console.error("Pista: versiones divergentes entre package.json de la app y vanuikit, o un import directo de vanjs-core (usar `van` desde vanuikit).");
   process.exit(1);
 }
 

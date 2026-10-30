@@ -77,7 +77,7 @@ app.notFound((c) => {
   return c.json({ error: "Ruta no encontrada" }, 404);
 });
 
-const port = 3000;
+const port = Number(process.env.PORT ?? 3000);
 serve({
   fetch: app.fetch,
   port: port,

@@ -18,6 +18,8 @@ export { Modal, ModalBase, type ModalContent, type ModalZone, type ModalProps } 
 export { Spin } from "./components/spin.js";
 export { SpinModal } from "./components/spin-modal.js";
 export { Nav, Link, type NavLink, type LinkProps, type LinkVariant } from "./components/nav.js";
+export { Svg, SvgPath, type SvgProps, type SvgPathProps } from "./components/svg.js";
+export { Icon, type IconName, type IconProps } from "./components/icon.js";
 export { Badge, type BadgeProps, type BadgeVariant, type BadgeSize } from "./components/badge.js";
 export { Table, DataGrid, type TableProps, type TableColumn } from "./components/table.js";
 export { Tabs, type TabItem, type TabsProps } from "./components/tabs.js";

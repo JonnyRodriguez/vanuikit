@@ -1,4 +1,5 @@
 import van from "vanjs-core";
+import { Icon, type IconName } from "./icon.js";
 
 const { div, span, button } = van.tags;
 
@@ -54,11 +55,11 @@ class ToastManager {
       error: "bg-rose-900/90 border-rose-600/50 text-rose-100",
     };
 
-    const iconSymbols: Record<ToastType, string> = {
-      info: "ℹ",
-      success: "✓",
-      warning: "⚠",
-      error: "✕",
+    const iconNames: Record<ToastType, IconName> = {
+      info: "info",
+      success: "check",
+      warning: "alert-triangle",
+      error: "x",
     };
 
     return div(
@@ -69,9 +70,9 @@ class ToastManager {
       span(
         {
           class:
-            "flex items-center justify-center w-6 h-6 rounded-full bg-white/10 font-bold text-xs shrink-0 mt-0.5",
+            "flex items-center justify-center w-6 h-6 rounded-full bg-white/10 shrink-0 mt-0.5",
         },
-        iconSymbols[item.type],
+        Icon({ name: iconNames[item.type], class: "size-3.5" }),
       ),
       div(
         { class: "flex-1 min-w-0" },
@@ -87,7 +88,7 @@ class ToastManager {
             "text-white/60 hover:text-white p-1 text-xs rounded transition-colors shrink-0 -mr-1 -mt-1",
           onclick: () => this.remove(item.id),
         },
-        "✕",
+        Icon({ name: "x", class: "size-3.5" }),
       ),
     );
   }

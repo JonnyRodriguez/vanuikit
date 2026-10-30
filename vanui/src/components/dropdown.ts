@@ -1,5 +1,6 @@
 import van, { type State, type ChildDom } from "vanjs-core";
 import { t } from "../i18n.js";
+import { Icon } from "./icon.js";
 
 const { div, button, span, input, ul, li, hr } = van.tags;
 
@@ -273,7 +274,7 @@ export function SelectDropdown<T = string | number>(props: SelectDropdownProps<T
                     ),
                   ),
                   isSelected
-                    ? span({ class: "text-primary text-xs font-bold" }, "✓")
+                    ? Icon({ name: "check", class: "size-3.5 text-primary" })
                     : null,
                 );
               }),

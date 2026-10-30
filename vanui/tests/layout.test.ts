@@ -1,4 +1,4 @@
-import { describe, test, expect } from "bun:test";
+import { describe, test, expect, beforeEach } from "bun:test";
 import {
   van,
   AppShell,
@@ -178,5 +178,97 @@ describe("Sidebar colapsable (modo rail desktop)", () => {
     await tick();
     expect(toggle.getAttribute("aria-expanded")).toBe("true");
     host.remove();
+  });
+});
+
+describe("Sidebar resizable (drag horizontal)", () => {
+  beforeEach(() => localStorage.clear());
+
+  const mountSidebar = (props: Record<string, unknown> = {}) => {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+    van.add(
+      host,
+      Sidebar({
+        header: div("Logo"),
+        content: SidebarItem({ href: "/a", label: "A" }),
+        resizable: true,
+        ...props,
+      } as any),
+    );
+    const aside = host.querySelector("aside") as HTMLElement;
+    const resizer = aside.querySelector(".vui-sb-resizer") as HTMLElement;
+    return { host, aside, resizer };
+  };
+
+  test("sin resizable no renderiza el separador de resize", () => {
+    const host = document.createElement("div");
+    van.add(host, Sidebar({ header: div("Logo"), content: SidebarItem({ href: "/a", label: "A" }) }));
+    expect(host.querySelector(".vui-sb-resizer")).toBeNull();
+    host.remove();
+  });
+
+  test("resizable: renderiza separador con aria y ancho por defecto", () => {
+    const { resizer, aside } = mountSidebar();
+    expect(resizer).not.toBeNull();
+    expect(resizer.getAttribute("role")).toBe("separator");
+    expect(resizer.getAttribute("aria-orientation")).toBe("vertical");
+    expect(resizer.getAttribute("aria-valuenow")).toBe("256");
+    expect(resizer.getAttribute("aria-valuemin")).toBe("224");
+    expect(resizer.getAttribute("aria-valuemax")).toBe("384");
+    expect(resizer.getAttribute("aria-label")).toBe("Ajustar ancho de la barra lateral");
+    expect(aside.style.width).toBe("256px");
+  });
+
+  test("drag del separador actualiza el ancho y persiste en localStorage", async () => {
+    const { resizer, aside } = mountSidebar();
+
+    resizer.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, clientX: 300 }));
+    window.dispatchEvent(new PointerEvent("pointermove", { clientX: 340 }));
+    window.dispatchEvent(new PointerEvent("pointerup"));
+    await tick();
+
+    expect(aside.style.width).toBe("296px"); // 256 + 40
+    expect(localStorage.getItem("vanui-sidebar-width")).toBe("296");
+  });
+
+  test("drag respeta ancho mínimo y máximo", async () => {
+    const { resizer, aside } = mountSidebar();
+
+    resizer.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, clientX: 300 }));
+    window.dispatchEvent(new PointerEvent("pointermove", { clientX: 2000 }));
+    window.dispatchEvent(new PointerEvent("pointerup"));
+    await tick();
+    expect(aside.style.width).toBe("384px"); // clamp max
+
+    resizer.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, clientX: 300 }));
+    window.dispatchEvent(new PointerEvent("pointermove", { clientX: -2000 }));
+    window.dispatchEvent(new PointerEvent("pointerup"));
+    await tick();
+    expect(aside.style.width).toBe("224px"); // clamp min
+  });
+
+  test("teclado: flechas ajustan el ancho en pasos de 16px", async () => {
+    const { resizer, aside } = mountSidebar();
+
+    resizer.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
+    await tick();
+    expect(aside.style.width).toBe("272px");
+
+    resizer.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowLeft", bubbles: true }));
+    await tick();
+    expect(aside.style.width).toBe("256px");
+  });
+
+  test("ancho inicial desde localStorage y límites configurables", () => {
+    localStorage.setItem("vanui-sidebar-width", "999");
+    const { aside } = mountSidebar({ maxWidth: 400 });
+    expect(aside.style.width).toBe("400px"); // clamp al máximo configurable
+
+    localStorage.setItem("vanui-sidebar-width", "300");
+    const { resizer } = mountSidebar({ minWidth: 250, maxWidth: 350 });
+    expect(resizer.getAttribute("aria-valuemin")).toBe("250");
+    expect(resizer.getAttribute("aria-valuemax")).toBe("350");
+    expect(resizer.getAttribute("aria-valuenow")).toBe("300");
   });
 });

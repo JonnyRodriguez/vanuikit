@@ -2,6 +2,7 @@ import van, { type State, type ValidChildDomValue } from "vanjs-core";
 import { Modal } from "./modal.js";
 import { PrimaryButton, SecondaryButton, Button } from "./button.js";
 import { t } from "../i18n.js";
+import { Icon, type IconName } from "./icon.js";
 
 const { div, p, span } = van.tags;
 
@@ -31,14 +32,13 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
     return PrimaryButton({ onclick }, text);
   };
 
+  const variantIcon: IconName =
+    variant === "danger" ? "alert-triangle" : variant === "warning" ? "bell" : "question";
+
   const body = () =>
     div(
       { class: "flex items-start gap-3.5 py-1" },
-      props.icon ??
-        span(
-          { class: "text-xl shrink-0" },
-          variant === "danger" ? "⚠️" : variant === "warning" ? "🔔" : "❓",
-        ),
+      props.icon ?? Icon({ name: variantIcon, class: "size-5 mt-0.5" }),
       div(
         { class: "flex-1 text-sm text-foreground-soft leading-relaxed" },
         typeof props.message === "function"

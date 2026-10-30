@@ -4,6 +4,7 @@ import { Alert } from "../src/components/alert.js";
 import { Progress } from "../src/components/progress.js";
 import { Skeleton } from "../src/components/skeleton.js";
 import { EmptyState } from "../src/components/empty-state.js";
+import { Icon } from "../src/components/icon.js";
 
 const mount = (node: HTMLElement) => {
   document.body.replaceChildren(node);
@@ -41,12 +42,12 @@ describe("Alert", () => {
 
   test("showIcon: false omite el ícono; icon personalizado lo reemplaza", () => {
     const plain = mount(Alert({ showIcon: false }, "Sin ícono") as HTMLElement);
-    expect(plain.querySelector("span[aria-hidden]")).toBeNull();
+    expect(plain.querySelector("svg")).toBeNull();
 
     const custom = mount(
       Alert({ icon: van.tags.span("🚀") }, "Con cohete") as HTMLElement,
     );
-    expect(custom.querySelector("span[aria-hidden]")?.textContent).toBe("🚀");
+    expect(custom.querySelector("span")?.textContent).toBe("🚀");
   });
 });
 
@@ -129,21 +130,22 @@ describe("Skeleton", () => {
 });
 
 describe("EmptyState", () => {
-  test("renderiza ícono default, título, descripción y acción", () => {
+  test("renderiza ícono default (SVG inbox), título, descripción y acción", () => {
     const el = mount(
       EmptyState(
         { title: "Sin datos", description: "Aún no hay registros", action: van.tags.button("Crear") },
       ) as HTMLElement,
     );
-    expect(el.textContent).toContain("📭");
+    const svg = el.querySelector("svg");
+    expect(svg).toBeInstanceOf(SVGSVGElement);
     expect(el.textContent).toContain("Sin datos");
     expect(el.textContent).toContain("Aún no hay registros");
     expect(el.querySelector("button")?.textContent).toBe("Crear");
   });
 
   test("ícono personalizado reemplaza el default", () => {
-    const el = mount(EmptyState({ icon: "🔍", title: "Sin resultados" }) as HTMLElement);
-    expect(el.textContent).toContain("🔍");
-    expect(el.textContent).not.toContain("📭");
+    const el = mount(EmptyState({ icon: Icon({ name: "search" }), title: "Sin resultados" }) as HTMLElement);
+    expect(el.querySelectorAll("svg").length).toBe(1);
+    expect(el.querySelector("svg")).toBeInstanceOf(SVGSVGElement);
   });
 });

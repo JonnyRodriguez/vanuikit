@@ -3,6 +3,7 @@ import type { AuthState, AuthUser } from "../auth.js";
 import { i18n as defaultI18n, type I18nInstance } from "../i18n.js";
 import { cx } from "../util.js";
 import { Avatar, getInitials } from "./avatar.js";
+import { Icon } from "./icon.js";
 
 export interface UserBadgeProps {
   /** Estado de autenticación reactivo de VanUI o usuario directo */
@@ -84,7 +85,7 @@ export function UserBadge(props: UserBadgeProps) {
                 title: logoutLabel,
                 onclick: handleLogout,
               },
-              "🚪",
+              Icon({ name: "log-out", class: "size-4" }),
             )
           : null,
       );
@@ -122,7 +123,8 @@ export function UserBadge(props: UserBadgeProps) {
                 "w-full text-xs font-medium py-1.5 px-2 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 active:bg-destructive/30 transition cursor-pointer text-center select-none",
               onclick: handleLogout,
             },
-            "🚪 ",
+            Icon({ name: "log-out", class: "size-3.5" }),
+            " ",
             i18n.t("nav.logout", "Cerrar sesión"),
           )
         : null,

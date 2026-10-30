@@ -4,6 +4,7 @@ import { Required } from "../validators.js";
 import { t } from "../i18n.js";
 import { cx } from "../util.js";
 import { asState, createControlField, type ControlField } from "./checkable.js";
+import { Svg, SvgPath } from "./svg.js";
 
 export type ToggleText = string | State<string>;
 export type CheckSize = "sm" | "md" | "lg";
@@ -38,7 +39,7 @@ const BOX_SIZES: Record<CheckSize, { box: string; icon: string; labelSize: strin
  * para enlace bidireccional. Con `required`/`name` se integra a `Form`.
  */
 export const Checkbox = (options: CheckboxOptions = {}): CheckboxField => {
-  const { div, label, input, p, span, svg, path } = van.tags;
+  const { div, label, input, p, span } = van.tags;
 
   const name = options.name ?? "checkbox";
   const sizes = BOX_SIZES[options.size ?? "md"];
@@ -110,7 +111,7 @@ export const Checkbox = (options: CheckboxOptions = {}): CheckboxField => {
         input(inputAttrs),
         span(
           { class: boxClass, "aria-hidden": "true" },
-          svg(
+          Svg(
             {
               viewBox: "0 0 12 12",
               fill: "none",
@@ -119,8 +120,8 @@ export const Checkbox = (options: CheckboxOptions = {}): CheckboxField => {
               "stroke-linecap": "round",
               "stroke-linejoin": "round",
             },
-            path({ d: "M2.5 6.5 5 9 9.5 3", class: checkClass }),
-            path({ d: "M2.5 6h7", class: dashClass }),
+            SvgPath({ d: "M2.5 6.5 5 9 9.5 3", class: checkClass }),
+            SvgPath({ d: "M2.5 6h7", class: dashClass }),
           ),
         ),
         span(

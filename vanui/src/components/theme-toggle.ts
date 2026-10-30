@@ -2,6 +2,7 @@ import van from "vanjs-core";
 import { createTheme, type ThemeInstance, type ThemeMode } from "../theme.js";
 import { i18n as defaultI18n, type I18nInstance } from "../i18n.js";
 import { cx } from "../util.js";
+import { Icon, type IconName } from "./icon.js";
 
 /** Contrato de llaves de i18n del componente */
 export const TEXTS = {
@@ -48,15 +49,15 @@ export function ThemeToggle(props: ThemeToggleProps = {}) {
   const includeSystem = props.includeSystem ?? true;
 
   if (variant === "segmented") {
-    const modes: { mode: ThemeMode; icon: string; text: { key: string; default: string } }[] = includeSystem
+    const modes: { mode: ThemeMode; icon: IconName; text: { key: string; default: string } }[] = includeSystem
       ? [
-          { mode: "light", icon: "☀️", text: TEXTS.light },
-          { mode: "dark", icon: "🌙", text: TEXTS.dark },
-          { mode: "system", icon: "💻", text: TEXTS.system },
+          { mode: "light", icon: "sun", text: TEXTS.light },
+          { mode: "dark", icon: "moon", text: TEXTS.dark },
+          { mode: "system", icon: "monitor", text: TEXTS.system },
         ]
       : [
-          { mode: "light", icon: "☀️", text: TEXTS.light },
-          { mode: "dark", icon: "🌙", text: TEXTS.dark },
+          { mode: "light", icon: "sun", text: TEXTS.light },
+          { mode: "dark", icon: "moon", text: TEXTS.dark },
         ];
 
     return div(
@@ -84,7 +85,7 @@ export function ThemeToggle(props: ThemeToggleProps = {}) {
               ),
             onclick: () => theme.setMode(mode),
           },
-          span({ class: "text-sm leading-none" }, icon),
+          Icon({ name: icon }),
           showLabel ? span(i18n.t(text.key, text.default)) : null,
         );
       }),
@@ -102,9 +103,9 @@ export function ThemeToggle(props: ThemeToggleProps = {}) {
     }
   };
 
-  const getIcon = () => {
-    if (theme.mode.val === "system") return "💻";
-    return theme.mode.val === "dark" ? "🌙" : "☀️";
+  const getIcon = (): IconName => {
+    if (theme.mode.val === "system") return "monitor";
+    return theme.mode.val === "dark" ? "moon" : "sun";
   };
 
   const getLabel = () => {
@@ -125,7 +126,7 @@ export function ThemeToggle(props: ThemeToggleProps = {}) {
       title: i18n.t("theme.toggleTitle", "Alternar tema (Claro / Oscuro / Sistema)"),
       onclick: cycle,
     },
-    () => span({ class: "text-sm leading-none" }, getIcon()),
+    () => Icon({ name: getIcon() }),
     showLabel ? () => span(getLabel()) : null,
   );
 }

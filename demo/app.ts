@@ -20,6 +20,7 @@ import {
   ThemeToggle,
   LocaleSelector,
   UserBadge,
+  Icon,
   navigate,
 } from "vanui";
 import { LoginPage } from "./pages/login.page.js";
@@ -140,6 +141,8 @@ export function App() {
       collapsible: true,
       collapsed: sidebarCollapsed,
       storageKey: "vanui-demo-sidebar-collapsed",
+      resizable: true,
+      widthStorageKey: "vanui-demo-sidebar-width",
       // Link de vanui: navegación SPA embebida; la demo solo aporta su estado
       // (cerrar el drawer mobile al tocar el logo).
       header: Link(
@@ -165,7 +168,7 @@ export function App() {
           SidebarItem({
             href: "/gateways",
             label: i18n.t("nav.gateways", "Pasarelas"),
-            icon: "💳",
+            icon: Icon({ name: "credit-card", class: "size-[18px]" }),
             current: router.path,
             onclick: () => {
               sidebarOpen.val = false;
@@ -174,7 +177,7 @@ export function App() {
           SidebarItem({
             href: "/components",
             label: i18n.t("nav.components", "Componentes"),
-            icon: "🧩",
+            icon: Icon({ name: "puzzle", class: "size-[18px]" }),
             badge: "17",
             badgeVariant: "secondary",
             current: router.path,
@@ -190,7 +193,7 @@ export function App() {
                 SidebarItem({
                   href: "/login",
                   label: i18n.t("nav.login", "Iniciar sesión"),
-                  icon: "🔑",
+                  icon: Icon({ name: "key", class: "size-[18px]" }),
                   current: router.path,
                   onclick: () => {
                     sidebarOpen.val = false;
@@ -199,7 +202,7 @@ export function App() {
                 SidebarItem({
                   href: "/register",
                   label: i18n.t("nav.register", "Crear cuenta"),
-                  icon: "📝",
+                  icon: Icon({ name: "user", class: "size-[18px]" }),
                   current: router.path,
                   onclick: () => {
                     sidebarOpen.val = false;
@@ -229,7 +232,7 @@ export function App() {
             sidebarOpen.val = !sidebarOpen.val;
           },
         },
-        "☰",
+        Icon({ name: "menu" }),
       ),
       title: getPageTitle,
       actions: [

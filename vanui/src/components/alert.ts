@@ -2,6 +2,7 @@ import van, { type ChildDom, type State } from "vanjs-core";
 import { t } from "../i18n.js";
 import { cx } from "../util.js";
 import type { ToggleText } from "./checkbox.js";
+import { Icon, type IconName } from "./icon.js";
 
 export type AlertVariant = "info" | "success" | "warning" | "error";
 
@@ -9,7 +10,7 @@ export interface AlertOptions {
   variant?: AlertVariant;
   title?: ToggleText;
   showIcon?: boolean;
-  /** Ícono personalizado (default: emoji según variante). */
+  /** Ícono personalizado (default: Icon según variante). */
   icon?: ChildDom;
   /** Muestra el botón de cierre; al cerrar, el aviso queda oculto. */
   dismissible?: boolean;
@@ -20,11 +21,11 @@ export interface AlertOptions {
 }
 
 /** Paleta por variante (mismo esquema que Badge). */
-const VARIANT_STYLES: Record<AlertVariant, { box: string; icon: string }> = {
-  info: { box: "bg-blue-500/10 border-blue-500/20", icon: "ℹ️" },
-  success: { box: "bg-emerald-500/10 border-emerald-500/20", icon: "✅" },
-  warning: { box: "bg-amber-500/10 border-amber-500/20", icon: "⚠️" },
-  error: { box: "bg-rose-500/10 border-rose-500/20", icon: "❌" },
+const VARIANT_STYLES: Record<AlertVariant, { box: string; icon: IconName }> = {
+  info: { box: "bg-blue-500/10 border-blue-500/20", icon: "info" },
+  success: { box: "bg-emerald-500/10 border-emerald-500/20", icon: "check-circle" },
+  warning: { box: "bg-amber-500/10 border-amber-500/20", icon: "alert-triangle" },
+  error: { box: "bg-rose-500/10 border-rose-500/20", icon: "x-circle" },
 };
 
 /**
@@ -50,7 +51,7 @@ export const Alert = (props: AlertOptions = {}, ...children: ChildDom[]) => {
         ),
     },
     props.showIcon !== false
-      ? span({ class: "shrink-0 leading-5", "aria-hidden": "true" }, props.icon ?? styles.icon)
+      ? props.icon ?? Icon({ name: styles.icon, class: "size-4 mt-0.5" })
       : null,
     div(
       { class: "flex-1 space-y-0.5" },
@@ -70,7 +71,7 @@ export const Alert = (props: AlertOptions = {}, ...children: ChildDom[]) => {
               props.onDismiss?.();
             },
           },
-          "✕",
+          Icon({ name: "x", class: "size-3.5" }),
         )
       : null,
   );

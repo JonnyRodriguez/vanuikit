@@ -1,9 +1,10 @@
 import van, { type ChildDom } from "vanjs-core";
 import { cx } from "../util.js";
 import type { ToggleText } from "./checkbox.js";
+import { Icon } from "./icon.js";
 
 export interface EmptyStateOptions {
-  /** Ícono decorativo (emoji o ChildDom); default "📭". */
+  /** Ícono decorativo (ChildDom); default Icon "inbox". */
   icon?: ChildDom;
   title: ToggleText;
   description?: ToggleText;
@@ -27,7 +28,10 @@ export const EmptyState = (props: EmptyStateOptions) => {
         props.class,
       ),
     },
-    div({ class: "text-3xl", "aria-hidden": "true" }, props.icon ?? "📭"),
+    div(
+      { class: "text-3xl text-muted-foreground/60", "aria-hidden": "true" },
+      props.icon ?? Icon({ name: "inbox", class: "size-9" }),
+    ),
     p({ class: "text-sm font-semibold text-foreground" }, props.title),
     props.description
       ? p({ class: "max-w-sm text-xs text-foreground-soft" }, props.description)

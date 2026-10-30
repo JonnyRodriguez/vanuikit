@@ -1,5 +1,6 @@
 import van, { type State, type ChildDom } from "vanjs-core";
 import { t, raw } from "../i18n.js";
+import { Icon } from "./icon.js";
 
 const { div, table, thead, tbody, tr, th, td, span, button, input } = van.tags;
 
@@ -199,8 +200,8 @@ export function Table<T extends Record<string, any> = any>(props: TableProps<T>)
                   },
                 }),
                 span(
-                  { class: "absolute left-2.5 top-2 text-xs text-muted pointer-events-none" },
-                  "🔍",
+                  { class: "absolute left-2.5 top-1/2 -translate-y-1/2 text-muted pointer-events-none" },
+                  Icon({ name: "search", class: "size-3.5" }),
                 ),
               ),
               props.selectable && selectedRows.val.length > 0

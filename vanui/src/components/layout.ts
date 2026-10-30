@@ -3,6 +3,7 @@ import { t, raw } from "../i18n.js";
 import { spaClick } from "../router.js";
 import { cx, isRouteActive } from "../util.js";
 import { Badge } from "./badge.js";
+import { Icon } from "./icon.js";
 
 /** Contrato de llaves de i18n del componente */
 export const TEXTS = {
@@ -10,6 +11,7 @@ export const TEXTS = {
   expand: { key: "sidebar.expand", default: "Expandir barra lateral" },
   close: { key: "sidebar.close", default: "Cerrar menú" },
   title: { key: "sidebar.title", default: "Sidebar" },
+  resize: { key: "sidebar.resize", default: "Ajustar ancho de la barra lateral" },
 } as const;
 
 export type SidebarItemProps = {
@@ -131,6 +133,16 @@ export type SidebarProps = {
   collapsed?: State<boolean>;
   /** Clave de localStorage para persistir el colapso no controlado (por defecto "vanui-sidebar-collapsed"). */
   storageKey?: string;
+  /** Permite redimensionar el ancho arrastrando el borde derecho (solo desktop). */
+  resizable?: boolean;
+  /** Ancho inicial en px cuando resizable (por defecto 256). */
+  defaultWidth?: number;
+  /** Ancho mínimo en px (por defecto 224). */
+  minWidth?: number;
+  /** Ancho máximo en px (por defecto 384). */
+  maxWidth?: number;
+  /** Clave de localStorage para persistir el ancho (por defecto "vanui-sidebar-width"). */
+  widthStorageKey?: string;
   class?: string;
 };
 
@@ -160,6 +172,77 @@ export function Sidebar(props: SidebarProps) {
     });
   }
 
+  // Resize horizontal (solo desktop): ancho con persistencia, handle con drag
+  // y soporte de teclado (Separator con ArrowLeft/ArrowRight).
+  const minW = props.minWidth ?? 224;
+  const maxW = props.maxWidth ?? 384;
+  const widthStorageKey = props.widthStorageKey ?? "vanui-sidebar-width";
+
+  const initialWidth = props.resizable
+    ? (() => {
+        const savedRaw =
+          typeof localStorage !== "undefined" ? localStorage.getItem(widthStorageKey) : null;
+        const saved = savedRaw != null ? Number(savedRaw) : NaN;
+        return Number.isFinite(saved)
+          ? Math.min(maxW, Math.max(minW, saved))
+          : (props.defaultWidth ?? 256);
+      })()
+    : 256;
+
+  const width = van.state(initialWidth);
+  if (props.resizable) {
+    van.derive(() => {
+      if (typeof localStorage !== "undefined") {
+        localStorage.setItem(widthStorageKey, String(Math.round(width.val)));
+      }
+    });
+  }
+
+  const dragging = van.state(false);
+
+  const startResize = (e: PointerEvent) => {
+    e.preventDefault();
+    const startX = e.clientX;
+    const startW = width.val;
+    dragging.val = true;
+    const onMove = (ev: PointerEvent) => {
+      width.val = Math.min(maxW, Math.max(minW, startW + ev.clientX - startX));
+    };
+    const onUp = () => {
+      dragging.val = false;
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+    };
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+  };
+
+  const resizer = props.resizable
+    ? div({
+        class: van.derive(() =>
+          cx(
+            "vui-sb-resizer absolute top-0 bottom-0 right-0 w-1.5 cursor-col-resize touch-none select-none hidden lg:block",
+            collapsed.val && "hidden",
+            dragging.val && "bg-primary/40",
+          ),
+        ),
+        role: "separator",
+        "aria-orientation": "vertical",
+        "aria-label": () => raw(TEXTS.resize.key, TEXTS.resize.default),
+        "aria-valuenow": () => Math.round(width.val),
+        "aria-valuemin": minW,
+        "aria-valuemax": maxW,
+        tabindex: 0,
+        onpointerdown: startResize,
+        onkeydown: (e: KeyboardEvent) => {
+          if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+            e.preventDefault();
+            width.val = Math.min(maxW, Math.max(minW, width.val + (e.key === "ArrowRight" ? 16 : -16)));
+          }
+        },
+      })
+    : null;
+
   const railClass = () =>
     collapsed.val
       ? // Modo rail SOLO desktop (lg:): en mobile el drawer siempre se abre
@@ -168,12 +251,14 @@ export function Sidebar(props: SidebarProps) {
       : "";
 
   // Botón de colapso (solo desktop: en mobile manda el drawer con backdrop).
+  // Chevron SVG que rota 180° según el estado: apunta hacia la acción que se
+  // ejecuta al pulsarlo (colapsar → izquierda; expandir → derecha).
   const collapseToggle = props.collapsible
     ? button(
         {
           type: "button",
           class:
-            "hidden lg:inline-flex items-center justify-center w-7 h-7 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary cursor-pointer transition-colors shrink-0",
+            "hidden lg:inline-flex items-center justify-center size-7 rounded-lg border border-border/60 bg-secondary text-muted-foreground hover:text-foreground hover:bg-secondary-hover hover:border-border shadow-sm cursor-pointer transition-all shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40",
           "aria-label": () => {
             // Leer collapsed.val aquí dentro: si la clave se elige fuera, el
             // derive de t() no depende del estado y el label no se actualiza.
@@ -185,7 +270,12 @@ export function Sidebar(props: SidebarProps) {
             collapsed.val = !collapsed.val;
           },
         },
-        () => span({ class: "text-sm leading-none select-none", "aria-hidden": "true" }, collapsed.val ? "»" : "«"),
+        () =>
+          Icon({
+            name: "chevron-left",
+            class: () =>
+              cx("transition-transform duration-200 ease-in-out", collapsed.val && "rotate-180"),
+          }),
       )
     : null;
 
@@ -193,12 +283,18 @@ export function Sidebar(props: SidebarProps) {
     {
       class: van.derive(() =>
         cx(
-          "h-full flex flex-col justify-between bg-card border-r border-border text-foreground select-none w-64 p-4 transition-[width] duration-200",
+          "relative h-full flex flex-col justify-between bg-card border-r border-border text-foreground select-none w-64 p-4 transition-[width] duration-200",
           collapsed.val && "lg:w-20 lg:px-3",
           railClass(),
           props.class,
         ),
       ),
+      // Ancho controlado por resize (inline gana a w-64; en rail colapsado se
+      // omite para que mande lg:w-20). Transición desactivada durante el drag.
+      style: () =>
+        props.resizable && !collapsed.val
+          ? `width:${width.val}px${dragging.val ? ";transition:none" : ""}`
+          : "",
       "aria-label": t("sidebar.title", "Sidebar"),
     },
     // Sección superior: header + navegación (scroll interno, el footer queda fijo).
@@ -221,11 +317,11 @@ export function Sidebar(props: SidebarProps) {
                   {
                     type: "button",
                     class:
-                      "lg:hidden p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary text-base cursor-pointer",
+                      "lg:hidden p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary cursor-pointer",
                     "aria-label": t("sidebar.close", "Cerrar menú"),
                     onclick: props.onClose,
                   },
-                  "✕",
+                  Icon({ name: "x" }),
                 )
               : null,
             collapseToggle,
@@ -250,6 +346,7 @@ export function Sidebar(props: SidebarProps) {
           props.footer,
         )
       : null,
+    resizer,
   );
 }
 

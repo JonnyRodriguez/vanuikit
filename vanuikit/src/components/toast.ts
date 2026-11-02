@@ -24,8 +24,8 @@ class ToastManager {
 
   private ensureContainer() {
     if (typeof document === "undefined") return;
-    // Re-adjunta si algo reemplazó el <body> y el contenedor quedó detached
-    // (suites con happy-dom que hacen replaceChildren, HMR, …).
+    // Re-attaches if something replaced the <body> and the container was left
+    // detached (happy-dom suites that call replaceChildren, HMR, …).
     if (this.containerEl?.isConnected) return;
 
     const containerEl = div(
@@ -51,8 +51,8 @@ class ToastManager {
   }
 
   private renderToast(item: ToastItem) {
-    /** Toast neutro sobre la superficie del tema con ícono en el color del
-     *  estado (patrón sonner/shadcn): legible y re-themable en ambos modos. */
+    /** Neutral toast over the theme surface with the icon in the status
+     *  color (sonner/shadcn pattern): readable and re-themable in both modes. */
     const iconColors: Record<ToastType, string> = {
       info: "text-info-fg",
       success: "text-success-fg",

@@ -4,7 +4,7 @@ import { cx } from "../util.js";
 const BASE_CLASSES =
   "font-semibold rounded-md transition duration-200 ease-in-out cursor-pointer border border-transparent";
 
-/** Variantes de color del botón (tokens semánticos del tema). Exportado para reuso (p. ej. Link variante "button"). */
+/** Button color variants (theme semantic tokens). Exported for reuse (e.g. Link variant "button"). */
 export const VARIANT_CLASSES = {
   primary:
     "bg-primary text-primary-fg hover:bg-primary-hover active:bg-primary-active shadow-primary-shadow",
@@ -14,7 +14,7 @@ export const VARIANT_CLASSES = {
     "bg-destructive text-white hover:opacity-90 active:opacity-80",
 } as const;
 
-/** Tamaños estándar (bootstrap/shadcn-like). Exportado para reuso (p. ej. Link variante "button"). */
+/** Standard sizes (bootstrap/shadcn-like). Exported for reuse (e.g. Link variant "button"). */
 export const SIZE_CLASSES = {
   sm: "text-sm px-3 py-1.5",
   md: "text-base px-4 py-2",
@@ -27,7 +27,7 @@ export type ButtonSize = keyof typeof SIZE_CLASSES;
 type ButtonProps = {
   variant?: ButtonVariant;
   size?: ButtonSize;
-  /** Ancho completo (w-full): opt-in, útil en formularios. Default: ancho auto. */
+  /** Full width (w-full): opt-in, useful in forms. Default: auto width. */
   block?: boolean;
   class?: string;
   type?: "button" | "submit" | "reset";
@@ -35,10 +35,10 @@ type ButtonProps = {
 };
 
 /**
- * Botón unificado. `variant` y `size` son opcionales (defaults: primary, md).
- * `type` por defecto es "button" para no provocar submits accidentales:
- * pasa type: "submit" cuando vaya dentro de un Form.
- * Ancho auto por defecto; `block: true` para w-full (formularios, CTAs de fila).
+ * Unified button. `variant` and `size` are optional (defaults: primary, md).
+ * `type` defaults to "button" to avoid accidental submits:
+ * pass type: "submit" when it goes inside a Form.
+ * Auto width by default; `block: true` for w-full (forms, row CTAs).
  */
 export const Button = (
   props: ButtonProps = {},
@@ -68,7 +68,7 @@ export const Button = (
   );
 };
 
-// Wrappers de compatibilidad con la API anterior.
+// Compatibility wrappers for the previous API.
 export const PrimaryButton = (props: ButtonProps = {}, ...children: ChildDom[]) =>
   Button({ ...props, variant: "primary" }, ...children);
 

@@ -17,7 +17,7 @@ export interface CheckboxOptions {
   indeterminate?: boolean | State<boolean>;
   disabled?: boolean | State<boolean>;
   size?: CheckSize;
-  /** Requerido: error al enviar sin marcar (integración con `Form`). */
+  /** Required: error on submit while unchecked (integration with `Form`). */
   required?: boolean;
   requiredMsg?: ToggleText;
   class?: string;
@@ -34,9 +34,9 @@ const BOX_SIZES: Record<CheckSize, { box: string; icon: string; labelSize: strin
 };
 
 /**
- * Checkbox accesible (input nativo + caja estilizada): Space lo alterna,
- * el click en label/description también. `checked` acepta un State externo
- * para enlace bidireccional. Con `required`/`name` se integra a `Form`.
+ * Accessible checkbox (native input + styled box): Space toggles it,
+ * clicking label/description does too. `checked` accepts an external State
+ * for two-way binding. With `required`/`name` it integrates with `Form`.
  */
 export const Checkbox = (options: CheckboxOptions = {}): CheckboxField => {
   const { div, label, input, p, span } = van.tags;

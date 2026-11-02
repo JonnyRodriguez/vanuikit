@@ -5,34 +5,34 @@ const FORM_BASE_CLASSES = "space-y-3";
 
 /**
  * =========================================================================
- * CONTRATO DE FORMULARIOS (Form v3)
+ * FORM CONTRACT (Form v3)
  *
- * El formulario coordina un flujo único (el "99% de los casos") que se
- * puede sob***REMOVED***r con hooks para el 1% restante:
+ * The form orchestrates a single flow (the "99% case") that can be
+ * overridden with hooks for the remaining 1%:
  *
- *   idle → validar en cliente (schema o validadores de campo)
- *          → si falla: pinta errores y se queda
- *        → submitting (botón deshabilitado, sin doble submit)
+ *   idle → validate on the client (schema or field validators)
+ *          → on failure: paint errors and stay put
+ *        → submitting (button disabled, no double submit)
  *        → await onSubmit(data)
- *          → { ok: true }            → onSuccess (default: limpia)
- *          → { ok: false, error }    → línea general
- *          → { ok: false, fieldErrors } → se aplican con setError por campo
+ *          → { ok: true }            → onSuccess (default: clears)
+ *          → { ok: false, error }    → general line
+ *          → { ok: false, fieldErrors } → applied with setError per field
  *        → idle
  *
- * Doble validación: el cliente valida para UX (rápido, sin red); el server
- * SIEMPRE re-valida con EL MISMO schema (seguridad). El schema vive en la
- * capa `shared/` y se importa en ambos lados.
+ * Double validation: the client validates for UX (fast, no network); the
+ * server ALWAYS re-validates with THE SAME schema (security). The schema
+ * lives in the `shared/` layer and is imported on both sides.
  * =========================================================================
  */
 
-/** Resultado del backend / de onSubmit — el contrato que une cliente y server. */
+/** Backend / onSubmit result — the contract that binds client and server. */
 export type FormResult =
   | { ok: true }
   | { ok: false; error?: string; fieldErrors?: Record<string, string> };
 
 /**
- * Forma mínima (estructural) de un schema compartido. Compatible con zod:
- * `z.object({...})` cumple esta interfaz sin necesidad de acoplarse a zod.
+ * Minimal (structural) shape of a shared schema. Compatible with zod:
+ * `z.object({...})` satisfies this interface without coupling to zod.
  */
 export interface SchemaLike {
   safeParse(data: unknown): {
@@ -48,21 +48,21 @@ type ExtractOk<R> = R extends { ok: true } ? R : never;
 type ExtractFail<R> = R extends { ok: false } ? R : never;
 
 export interface FormOptions {
-  /** Schema compartido (zod o compatible). Opcional: sin él se usan los validadores de campo. */
+  /** Shared schema (zod or compatible). Optional: without it, field validators are used. */
   schema?: SchemaLike;
-  /** Envía los datos al backend. Debe devolver el contrato FormResult. */
+  /** Sends the data to the backend. Must return the FormResult contract. */
   onSubmit(data: Record<string, unknown>): Promise<FormResult> | FormResult;
-  /** Hook antes de validar (1%). */
+  /** Hook before validating (1%). */
   onBeforeValidate?(data: Record<string, unknown>): void;
-  /** Hook tras pasar la validación, antes de enviar (1%). */
+  /** Hook after validation passes, before submitting (1%). */
   onBeforeSubmit?(data: Record<string, unknown>): void;
-  /** Hook al éxito. Default: limpia los errores. */
+  /** Hook on success. Default: clears the errors. */
   onSuccess?(data: Record<string, unknown>, result: ExtractOk<FormResult>): void;
-  /** Hook ante error. Default: pinta línea general / fieldErrors. */
+  /** Hook on error. Default: paints general line / fieldErrors. */
   onError?(result: ExtractFail<FormResult>): void;
 }
 
-/** Handler legacy (compat): devuelve `void | { ok } | { error }`. Se normaliza. */
+/** Legacy handler (compat): returns `void | { ok } | { error }`. It is normalized. */
 export type FormLegacyHandler = (
   data: Record<string, unknown>,
 ) =>
@@ -84,24 +84,24 @@ const normalizeLegacy = (
 };
 
 export type Form = {
-  /** Registra campos; devuelve el form para encadenar. */
+  /** Registers fields; returns the form for chaining. */
   add(...fields: Field[]): Form;
-  /** El <form> con los campos y el footer; valida en cada submit. */
+  /** The <form> with the fields and the footer; validates on every submit. */
   dom(...footer: ChildDom[]): ChildDom;
-  /** true mientras onSubmit corre (deshabilita botón, bloquea doble submit). */
+  /** true while onSubmit runs (disables button, blocks double submit). */
   readonly submitting: State<boolean>;
-  /** Línea de error general (cliente o backend). */
+  /** General error line (client or backend). */
   readonly error: State<string>;
-  /** Errores por campo (backend). Se aplican con setError. */
+  /** Per-field errors (backend). Applied with setError. */
   readonly fieldErrors: State<Record<string, string>>;
-  /** Limpia la línea general, los fieldErrors y los errores de campo. */
+  /** Clears the general line, the fieldErrors and the field errors. */
   clear(): void;
 };
 
 /**
- * Form — fábrica con contrato unificado. Coordina el flujo del 99%: valida,
- * muestra errores (por campo o generales), protege contra doble submit y
- * aplica la respuesta del backend con el mismo contrato en ambos extremos.
+ * Form — factory with a unified contract. Coordinates the 99% flow: validates,
+ * shows errors (per field or general), protects against double submit and
+ * applies the backend response with the same contract on both ends.
  */
 export const Form = (config: FormConfig): Form => {
   const options: FormOptions =
@@ -117,8 +117,8 @@ export const Form = (config: FormConfig): Form => {
   const fieldByName = (name: string) => fields.find((f) => f.name === name);
 
   /**
-   * Aplica errores por campo vía setError. Devuelve el primer mensaje que no
-   * pudo mapearse a un campo registrado (para la línea general). */
+   * Applies per-field errors via setError. Returns the first message that
+   * could not be mapped to a registered field (for the general line). */
   const applyFieldErrors = (map: Record<string, string>): string | undefined => {
     let unmapped: string | undefined;
     for (const [name, msg] of Object.entries(map)) {
@@ -137,17 +137,17 @@ export const Form = (config: FormConfig): Form => {
 
   const handleSubmit = async (e: SubmitEvent) => {
     e.preventDefault();
-    if (submitting.val) return; // sin doble submit
+    if (submitting.val) return; // no double submit
 
     const formEl = e.target as HTMLFormElement;
     const data = Object.fromEntries(
       new FormData(formEl).entries(),
     ) as Record<string, unknown>;
 
-    error.val = ""; // limpia la línea general para este intento
+    error.val = ""; // clears the general line for this attempt
     options.onBeforeValidate?.(data);
 
-    // Validación cliente: schema compartido (si hay) o validadores de campo.
+    // Client validation: shared schema (if any) or field validators.
     if (options.schema) {
       const parsed = options.schema.safeParse(data);
       if (!parsed.success && parsed.error) {

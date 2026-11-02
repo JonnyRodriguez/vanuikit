@@ -16,13 +16,13 @@ export interface RadioOption {
 export interface RadioGroupOptions {
   name?: string;
   options: RadioOption[];
-  /** Valor seleccionado; acepta State externo para enlace bidireccional. */
+  /** Selected value; accepts an external State for two-way binding. */
   value?: string | State<string>;
   size?: CheckSize;
-  /** Etiqueta accesible del grupo (aria-label del contenedor). */
+  /** Accessible label of the group (aria-label of the container). */
   ariaLabel?: ToggleText;
   disabled?: boolean | State<boolean>;
-  /** Requerido: error al enviar sin selección (integración con `Form`). */
+  /** Required: error on submit with no selection (integration with `Form`). */
   required?: boolean;
   requiredMsg?: ToggleText;
   class?: string;
@@ -38,9 +38,9 @@ const DOT_SIZES: Record<CheckSize, { box: string; dot: string; labelSize: string
 };
 
 /**
- * Grupo de radios excluyentes y accesible (`role="radiogroup"`): flechas
- * ↑/↓/←/→ mueven la selección entre opciones habilitadas (roving focus),
- * Tab entra y sale del grupo. Con `required`/`name` se integra a `Form`.
+ * Accessible, mutually exclusive radio group (`role="radiogroup"`): arrows
+ * ↑/↓/←/→ move the selection between enabled options (roving focus); Tab
+ * enters and leaves the group. With `required`/`name` it integrates with `Form`.
  */
 export const RadioGroup = (options: RadioGroupOptions): RadioGroupField => {
   const { div, label, input, p, span } = van.tags;
@@ -123,8 +123,8 @@ export const RadioGroup = (options: RadioGroupOptions): RadioGroupField => {
           e.preventDefault();
           const selectable = options.options.filter((x) => isEnabled(x));
           if (!selectable.length) return;
-          // El ancla del roving es la opción enfocada (o la seleccionada si
-          // el grupo no tuvo foco); sin ancla válida, se entra por el extremo.
+          // The roving anchor is the focused option (or the selected one if
+          // the group had no focus); with no valid anchor, enter from the end.
           const anchor = focusedValue.val || selected.val;
           const cur = selectable.findIndex((x) => x.value === anchor);
           const next = cur === -1

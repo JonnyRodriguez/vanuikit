@@ -3,13 +3,13 @@ import { SecondaryButton } from "./button.js";
 import { t } from "../i18n.js";
 
 /**
- * Contenido de una zona del modal: función que devuelve un hijo de VanJS
- * (se re-evalúa en cada render, sirve para contenido reactivo), o null
- * para ocultar la zona.
+ * Content of a modal zone: a function returning a VanJS child
+ * (re-evaluated on each render, useful for reactive content), or null
+ * to hide the zone.
  */
 export type ModalZone = (() => ValidChildDomValue) | null;
 
-/** Contrato de set() / initialContent: cualquiera de las zonas, opcional. */
+/** Contract for set() / initialContent: any of the zones, optional. */
 export type ModalContent = {
   header?: ModalZone | ValidChildDomValue;
   body?: ModalZone | ValidChildDomValue;
@@ -17,8 +17,8 @@ export type ModalContent = {
 };
 
 /**
- * Normaliza una zona: acepta funciones (reactivas), nodos/textos directos o
- * null/undefined (zona oculta).
+ * Normalizes a zone: accepts functions (reactive), direct nodes/text or
+ * null/undefined (hidden zone).
  */
 const zone = (v: unknown): ModalZone => {
   if (v === null || v === undefined) return null;
@@ -26,8 +26,8 @@ const zone = (v: unknown): ModalZone => {
 };
 
 /**
- * ModalBase — el ladrillo más básico: overlay + tres zonas (header, body,
- * footer) que se llenan con set() o con los setters individuales.
+ * ModalBase — the most basic brick: overlay + three zones (header, body,
+ * footer) filled with set() or the individual setters.
  */
 export const ModalBase = (
   initialContent: ModalContent | null = null,
@@ -48,7 +48,7 @@ export const ModalBase = (
   const open = () => (isVisible.val = true);
   const close = () => (isVisible.val = false);
 
-  /** Rellena por partes: set({ header, body, footer }, abrir). */
+  /** Fills by parts: set({ header, body, footer }, open). */
   const set = (input: ModalContent, show = false) => {
     if ("header" in input) setHeader(input.header);
     if ("body" in input) setBody(input.body);
@@ -99,7 +99,7 @@ export const ModalBase = (
 };
 
 // ---------------------------------------------------------------
-// Modal — compuesto: ModalBase + título, botón de cierre y footer
+// Modal — composed: ModalBase + title, close button and footer
 // ---------------------------------------------------------------
 
 export const ModalTitle = (title: string | State<string>) =>
@@ -139,16 +139,16 @@ export const ModalFooterWithCloseButton = (
 export type ModalProps = ModalContent & { title?: string | State<string> };
 
 /**
- * Modal cómodo — construido sobre ModalBase: ya trae header con título +
- * botón de cierre y un footer con "Close" por defecto.
+ * Convenience Modal — built on ModalBase: already ships a header with title +
+ * close button and a footer with the default "Close".
  *
  *   const modal = Modal();
  *   modal.mount();
- *   modal.set({ title: "Hola", body: "Mundo" }, true); // abre
+ *   modal.set({ title: "Hello", body: "World" }, true); // opens
  *   modal.close();
  *
- * Se puede sobreescribir el footer pasando `footer` en set() (o null para
- * quitarlo, por ejemplo en un modal de carga).
+ * The footer can be overridden by passing `footer` to set() (or null to
+ * remove it, e.g. in a loading modal).
  */
 export const Modal = (
   initialContent: ModalProps | null = null,
@@ -172,8 +172,8 @@ export const Modal = (
 
   const setTitle = (newTitle: string | State<string>) => (title.val = newTitle);
 
-  // Igual que ModalBase.set pero sin mutar el objeto del llamador:
-  // completa el footer por defecto en una copia si no se definió.
+  // Same as ModalBase.set but without mutating the caller's object:
+  // completes the default footer on a copy if none was defined.
   const set = (input: ModalProps, show = false) => {
     const next: ModalContent = { ...input };
     if (!("footer" in next)) next.footer = footer;

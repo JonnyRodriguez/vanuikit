@@ -6,15 +6,15 @@ import { useScrollLock } from "./overlay.js";
 export type DrawerSide = "left" | "right" | "top" | "bottom";
 
 export interface DrawerOptions {
-  /** Estado controlado por el consumidor: true = abierto. */
+  /** Consumer-controlled state: true = open. */
   open: State<boolean>;
   side?: DrawerSide;
-  /** Esc y click en el backdrop cierran (default true). */
+  /** Esc and backdrop click close it (default true). */
   dismissible?: boolean;
   onClose?: () => void;
-  /** Botón × en la esquina (default true; usa la llave modal.close). */
+  /** × button in the corner (default true; uses the modal.close key). */
   showClose?: boolean;
-  /** Clases extra del panel (p. ej. w-96 para ensancharlo). */
+  /** Extra panel classes (e.g. w-96 to widen it). */
   class?: string;
   [key: string]: any;
 }
@@ -29,10 +29,10 @@ const SIDE_PANEL: Record<DrawerSide, { base: string; open: string; closed: strin
 const FOCUSABLE = 'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
 
 /**
- * Panel deslizante por lado (generaliza el patrón responsive del sidebar):
- * backdrop con transición, Esc, bloqueo de scroll del body, foco que entra
- * al panel (con trampa de Tab) y vuelve al elemento que lo abrió. El panel
- * permanece montado (traducido fuera de pantalla) para conservar bindings.
+ * Sliding panel per side (generalizes the responsive sidebar pattern):
+ * backdrop with transition, Esc, body scroll lock, focus moving into
+ * the panel (with a Tab trap) and back to the element that opened it. The panel
+ * stays mounted (translated off-screen) to preserve bindings.
  */
 export const Drawer = (props: DrawerOptions, ...content: ChildDom[]): ChildDom => {
   const { div, button } = van.tags;
@@ -56,7 +56,7 @@ export const Drawer = (props: DrawerOptions, ...content: ChildDom[]): ChildDom =
         close();
       }
     } else if (e.key === "Tab" && panelEl) {
-      // Trampa de foco: el Tab no puede salir del panel mientras está abierto.
+      // Focus trap: Tab cannot leave the panel while it is open.
       const focusables = panelEl.querySelectorAll<HTMLElement>(FOCUSABLE);
       if (!focusables.length) {
         e.preventDefault();
@@ -78,14 +78,14 @@ export const Drawer = (props: DrawerOptions, ...content: ChildDom[]): ChildDom =
     }
   };
 
-  // Listadores de documento, gestión de foco y bloqueo de scroll, atados al
-  // estado `open` (el derive vive con el árbol del componente).
+  // Document listeners, focus management and scroll lock, tied to the
+  // `open` state (the derive lives with the component tree).
   van.derive(() => {
     if (typeof document === "undefined") return;
     if (props.open.val) {
       lastFocused = document.activeElement as HTMLElement | null;
       document.addEventListener("keydown", onKeydown);
-      // En creación con open=true el panel aún no existe: diferir el foco.
+      // When created with open=true the panel does not exist yet: defer focus.
       panelEl ? panelEl.focus() : setTimeout(() => panelEl?.focus(), 0);
     } else {
       document.removeEventListener("keydown", onKeydown);

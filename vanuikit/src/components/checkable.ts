@@ -2,9 +2,9 @@ import van, { type State } from "vanjs-core";
 import type { Validator } from "../validators.js";
 
 /**
- * Piezas compartidas por los controles de selección (Checkbox, Switch,
- * RadioGroup): implementan el contrato `Field` para poder registrarse en
- * `Form` sin duplicar la lógica de error/touch/validación.
+ * Pieces shared by the selection controls (Checkbox, Switch,
+ * RadioGroup): they implement the `Field` contract so they can register
+ * with `Form` without duplicating error/touch/validation logic.
  */
 export interface ControlCore {
   readonly name: string;
@@ -20,22 +20,22 @@ export interface ControlCore {
 }
 
 /**
- * Contrato Field completo para controles no textuales: `ControlCore` más los
- * extras de cada control (p. ej. `checked` o `dom`), con `addValidator`
- * encadenable sobre el objeto final.
+ * Full Field contract for non-textual controls: `ControlCore` plus the
+ * extras of each control (e.g. `checked` or `dom`), with a chainable
+ * `addValidator` on the final object.
  */
 export type ControlField<T extends object = Record<string, never>> = ControlCore &
   T & {
     addValidator(validator: Validator): ControlField<T>;
   };
 
-/** Acepta un valor plano o un State; devuelve el State recibido o uno propio. */
+/** Accepts a plain value or a State; returns the given State or a new one. */
 export const asState = <T>(value: T | State<T> | undefined, initial: T): State<T> =>
   value !== undefined && typeof value === "object"
     ? (value as State<T>)
     : van.state(value === undefined ? initial : (value as T));
 
-/** Lee un valor plano o un State en un contexto no reactivo (handlers). */
+/** Reads a plain value or a State in a non-reactive context (handlers). */
 export const readState = <T>(value: T | State<T> | undefined, fallback: T): T =>
   value === undefined
     ? fallback
@@ -45,20 +45,20 @@ export const readState = <T>(value: T | State<T> | undefined, fallback: T): T =>
 
 export interface ControlFieldSpec {
   name: string;
-  /** Valor canónico reactivo ("" = vacío): alimenta isValid y a los validadores. */
+  /** Canonical reactive value ("" = empty): feeds isValid and the validators. */
   value: State<string>;
-  /** Valor actual como string, leído en validate() sin datos externos. */
+  /** Current value as a string, read in validate() without external data. */
   currentValue: () => string;
-  /** Sincroniza el estado interno del control con un valor crudo (FormData). */
+  /** Syncs the control's internal state with a raw value (FormData). */
   applyValue: (raw: string) => void;
 }
 
 /**
- * Fábrica del contrato Field para controles no textuales: misma mecánica de
- * validación que Field (validadores en orden, `validate(data)` desde el Form,
- * setError/clearError) pero delegando el origen del valor en el control. Los
- * extras del control (`checked`, `dom`, ...) llegan por `extra` y quedan
- * fusionados en el objeto devuelto.
+ * Field contract factory for non-textual controls: same validation
+ * mechanics as Field (validators in order, `validate(data)` from the Form,
+ * setError/clearError) but delegating the value source to the control. The
+ * control extras (`checked`, `dom`, ...) come in via `extra` and are
+ * merged into the returned object.
  */
 export const createControlField = <T extends object>(
   spec: ControlFieldSpec,
@@ -109,7 +109,7 @@ export const createControlField = <T extends object>(
     return true;
   };
 
-  // `addValidator` después del spread de `extra`: los extras no pueden pisarlo.
+  // `addValidator` after the `extra` spread: extras cannot override it.
   const control = {
     name: spec.name,
     value: spec.value,

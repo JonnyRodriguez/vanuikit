@@ -4,20 +4,20 @@ import type { ToggleText } from "./checkbox.js";
 import { Icon } from "./icon.js";
 
 export interface EmptyStateOptions {
-  /** Ícono decorativo (ChildDom); default Icon "inbox". */
+  /** Decorative icon (ChildDom); defaults to Icon "inbox". */
   icon?: ChildDom;
   title: ToggleText;
   description?: ToggleText;
-  /** Slot de acción (p. ej. un Button que abre el flujo de creación). */
+  /** Action slot (e.g. a Button that opens the creation flow). */
   action?: ChildDom;
   class?: string;
   [key: string]: any;
 }
 
 /**
- * Estado vacío de una vista o sección: ícono, título, descripción y acción
- * principal. El texto siempre lo aporta el consumidor con `t()`; el
- * componente solo aporta la maquetación.
+ * Empty state for a view or section: icon, title, description and
+ * primary action. Text is always provided by the consumer via `t()`;
+ * the component only provides the layout.
  */
 export const EmptyState = (props: EmptyStateOptions) => {
   const { div, p } = van.tags;

@@ -8,9 +8,9 @@ export type FieldText = string | State<string>;
 
 /**
  * =========================================================================
- * DEFINICIÓN LOCAL DE TEXTOS (TEXTS)
- * Estructura limpia para desarrollo directo sin i18n, preparada para
- * extracción automatizada de traducciones cuando sea necesario.
+ * LOCAL TEXT DEFINITIONS (TEXTS)
+ * Clean structure for direct development without i18n, ready for
+ * automated translation extraction when needed.
  * =========================================================================
  */
 export const TEXTS = {
@@ -40,7 +40,7 @@ export interface FieldOptions {
   placeholder?: FieldText;
   hint?: FieldText;
   disabled?: boolean | State<boolean>;
-  /** Renderiza un <textarea> en lugar de <input>. */
+  /** Renders a <textarea> instead of <input>. */
   multiline?: boolean;
   rows?: number;
 }
@@ -216,7 +216,7 @@ export interface PasswordFieldOptions {
   minMsg?: FieldText;
 }
 
-/** Campo requerido de texto libre. Baterías incluidas con i18n global. */
+/** Required free-text field. Batteries included with global i18n. */
 export function TextField(options?: TextFieldOptions): Field;
 export function TextField(label?: string, name?: string, placeholder?: string): Field;
 export function TextField(
@@ -245,7 +245,7 @@ export function TextField(
   return Field({ label, name: fieldName, inputType: "text", placeholder: ph || undefined, hint }, validators);
 }
 
-/** Campo de correo: requerido + formato. Baterías incluidas con i18n global. */
+/** Email field: required + format. Batteries included with global i18n. */
 export function EmailField(options?: EmailFieldOptions): Field;
 export function EmailField(label?: string, name?: string, placeholder?: string): Field;
 export function EmailField(
@@ -280,7 +280,7 @@ export function EmailField(
   );
 }
 
-/** Campo de contraseña: requerido + largo mínimo. Baterías incluidas con i18n global. */
+/** Password field: required + minimum length. Batteries included with global i18n. */
 export function PasswordField(options?: PasswordFieldOptions): Field;
 export function PasswordField(label?: string, name?: string, placeholder?: string, min?: number): Field;
 export function PasswordField(
@@ -328,7 +328,7 @@ export interface TextareaFieldOptions {
   rows?: number;
 }
 
-/** Campo de texto multilínea. Baterías incluidas con i18n global. */
+/** Multiline text field. Batteries included with global i18n. */
 export function TextareaField(options: TextareaFieldOptions = {}): Field {
   const {
     label = t("field.message.label", "Message"),

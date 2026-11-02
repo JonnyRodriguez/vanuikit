@@ -9,11 +9,11 @@ export interface TabItem {
   badge?: string | number | State<string | number>;
   disabled?: boolean;
   /**
-   * Fábrica del contenido: se ejecuta en CADA activación de la pestaña.
+   * Content factory: runs on EVERY activation of the tab.
    *
-   * Es obligatorio que sea función (no un nodo pre-construido): los paneles
-   * inactivos están detached del DOM y van elimina sus bindings — un nodo
-   * pre-construido quedaría congelado en el idioma/estado del montaje.
+   * It must be a function (not a pre-built node): inactive panels are
+   * detached from the DOM and van drops their bindings — a pre-built node
+   * would stay frozen in the language/state of its mount time.
    */
   content: () => ChildDom;
 }
@@ -31,10 +31,10 @@ export interface TabsProps {
 }
 
 /**
- * Componente Tabs accesible y reactivo.
+ * Accessible, reactive Tabs component.
  *
- * Soporta navegación por teclado (flechas ←/→, Home, End), roles ARIA
- * (tablist, tab, tabpanel), badges, iconos y variantes visuales (underline, pills, boxed).
+ * Supports keyboard navigation (arrows ←/→, Home, End), ARIA roles
+ * (tablist, tab, tabpanel), badges, icons and visual variants (underline, pills, boxed).
  */
 export function Tabs(props: TabsProps) {
   const items = props.items;

@@ -26,8 +26,8 @@ export function Badge(props: BadgeProps) {
   const variant = props.variant ?? "primary";
   const size = props.size ?? "md";
 
-  /** Tokens semánticos del tema (--vui-*): texto con -fg (legible en ambos
-   *  modos, ≥ 4.5:1 sobre el tinte al 10%) y base para fondo/borde/dot. */
+  /** Theme semantic tokens (--vui-*): -fg text (readable in both
+   *  modes, ≥ 4.5:1 over the 10% tint) and base for background/border/dot. */
   const variantStyles: Record<BadgeVariant, string> = {
     primary: "bg-accent/10 text-accent-fg border border-accent/20",
     secondary: "bg-secondary/20 text-foreground-soft border border-secondary/30",

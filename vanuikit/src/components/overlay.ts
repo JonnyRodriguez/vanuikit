@@ -3,9 +3,9 @@ import van, { type State } from "vanjs-core";
 let lockCount = 0;
 
 /**
- * Bloquea el scroll del body mientras `open` esté en true. Con contador para
- * overlays apilados: solo se libera cuando el último overlay cierra.
- * El derive vive mientras viva el árbol del componente.
+ * Locks body scroll while `open` is true. Uses a counter for stacked
+ * overlays: the lock is released only when the last overlay closes.
+ * The derive lives as long as the component tree does.
  */
 export const useScrollLock = (open: State<boolean>) => {
   van.derive(() => {
@@ -20,7 +20,7 @@ export const useScrollLock = (open: State<boolean>) => {
   });
 };
 
-/** Detecta dispositivos sin hover (touch): los tooltips no se abren ahí. */
+/** Detects devices without hover (touch): tooltips do not open there. */
 export const isCoarsePointer = (): boolean => {
   if (typeof window === "undefined" || typeof window.matchMedia !== "function") return false;
   return window.matchMedia("(hover: none)").matches;

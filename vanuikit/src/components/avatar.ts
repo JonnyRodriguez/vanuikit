@@ -5,9 +5,9 @@ import type { ToggleText } from "./checkbox.js";
 export type AvatarSize = "xs" | "sm" | "md" | "lg";
 
 export interface AvatarOptions {
-  /** Nombre para las iniciales (y title/aria-label). Admite State. */
+  /** Name for the initials (and title/aria-label). Accepts a State. */
   name?: ToggleText;
-  /** Imagen; si falla la carga (o no hay) se muestran las iniciales. */
+  /** Image; if loading fails (or none given) the initials are shown. */
   src?: string;
   size?: AvatarSize;
   class?: string;
@@ -22,8 +22,8 @@ const SIZE_CLASSES: Record<AvatarSize, string> = {
 };
 
 /**
- * Iniciales de un nombre: primera letra de las dos primeras palabras, o las
- * dos primeras letras si hay una sola. Compartida con UserBadge.
+ * Initials from a name: first letter of the first two words, or the
+ * first two letters if there is only one. Shared with UserBadge.
  */
 export const getInitials = (name: string, fallback = "?"): string => {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -33,8 +33,8 @@ export const getInitials = (name: string, fallback = "?"): string => {
 };
 
 /**
- * Avatar con fallback de iniciales: muestra la imagen de `src` y, si falla
- * la carga o no hay, las iniciales de `name` sobre el color primario.
+ * Avatar with initials fallback: shows the `src` image and, if loading
+ * fails or none given, the initials of `name` over the primary color.
  */
 export const Avatar = (props: AvatarOptions = {}): ChildDom => {
   const { div, img, span } = van.tags;
@@ -58,8 +58,8 @@ export const Avatar = (props: AvatarOptions = {}): ChildDom => {
       "aria-label": () => displayName.val,
       ...(props.onclick ? { onclick: props.onclick } : {}),
     },
-    // Anclas siempre montadas: el padre alterna entre imagen e iniciales
-    // sin que ningún hijo-función devuelva null.
+    // Anchors always mounted: the parent toggles between image and initials
+    // without any function-child returning null.
     () =>
       props.src && !imgFailed.val
         ? img({

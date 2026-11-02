@@ -6,14 +6,14 @@ import type { ToggleText } from "./checkbox.js";
 
 export interface BreadcrumbItem {
   label: ToggleText;
-  /** Si se omite, el ítem se renderiza como texto (típico en el último). */
+  /** If omitted, the item renders as plain text (typical for the last one). */
   href?: string;
   icon?: ChildDom;
 }
 
 export interface BreadcrumbsOptions {
   items: BreadcrumbItem[];
-  /** Separador entre ítems (default "/"). Decorativo: aria-hidden. */
+  /** Separator between items (default "/"). Decorative: aria-hidden. */
   separator?: string;
   ariaLabel?: ToggleText;
   class?: string;
@@ -21,9 +21,9 @@ export interface BreadcrumbsOptions {
 }
 
 /**
- * Ruta de navegación (`<nav>` + lista): los ítems con `href` usan `Link`
- * (navegación SPA con Ctrl/Cmd+click, `target` y enlaces externos) y el
- * último lleva `aria-current="page"`.
+ * Navigation trail (`<nav>` + list): items with `href` use `Link`
+ * (SPA navigation with Ctrl/Cmd+click, `target` and external links) and
+ * the last one carries `aria-current="page"`.
  */
 export const Breadcrumbs = (props: BreadcrumbsOptions): ChildDom => {
   const { nav, ol, li, span } = van.tags;

@@ -16,16 +16,16 @@ export interface ComboboxOptions {
   options: ComboboxOption[];
   name?: string;
   /**
-   * Valor seleccionado; acepta State externo para enlace bidireccional.
-   * Con `multiple: true` debe ser `State<string[]>`.
+   * Selected value; accepts an external State for two-way binding.
+   * With `multiple: true` it must be `State<string[]>`.
    */
   value?: string | State<string> | State<string[]>;
-  /** Modo multi-selección: chips removibles; el panel no se cierra al elegir. */
+  /** Multi-select mode: removable chips; the panel does not close on pick. */
   multiple?: boolean;
-  /** Placeholder del input (default: "Search..."). */
+  /** Input placeholder (default: "Search..."). */
   placeholder?: ToggleText;
   disabled?: boolean | State<boolean>;
-  /** Requerido: error al enviar sin selección (integración con `Form`). */
+  /** Required: error on submit with no selection (integration with `Form`). */
   required?: boolean;
   requiredMsg?: ToggleText;
   class?: string;
@@ -40,17 +40,17 @@ const labelOf = (opt: ComboboxOption): string =>
   typeof opt.label === "object" ? (opt.label.val ?? "") : opt.label;
 
 /**
- * Combobox WAI-ARIA completo (a diferencia de SelectDropdown, que es un
- * select de botón): el input filtra al teclear y concentra todo el teclado
- * — ↑/↓ navegan, Home/End saltan, Enter selecciona, Esc cierra — con
- * `aria-activedescendant` sobre el listbox. Click fuera cierra. Con
- * `required`/`name` se integra a `Form` (contrato Field).
+ * Full WAI-ARIA Combobox (unlike SelectDropdown, which is a button select):
+ * the input filters as you type and owns the whole keyboard
+ * — ↑/↓ navigate, Home/End jump, Enter selects, Esc closes — with
+ * `aria-activedescendant` over the listbox. Click outside closes. With
+ * `required`/`name` it integrates with `Form` (Field contract).
  *
- * Con `multiple: true` la selección se muestra como chips removibles (click
- * en × o Backspace con el input vacío), elegir no cierra el panel y el
- * `value` esperado es `State<string[]>`. Limitación de Form: `FormData`
- * colapsa valores repetidos, así que en multiple usa `field.value.val` para
- * leer la selección completa.
+ * With `multiple: true` the selection shows as removable chips (click
+ * on × or Backspace with an empty input), picking does not close the panel
+ * and the expected `value` is `State<string[]>`. Form limitation: `FormData`
+ * collapses repeated values, so in multiple mode use `field.value.val` to
+ * read the full selection.
  */
 export const Combobox = (props: ComboboxOptions): ComboboxField => {
   const { div, input, ul, li, p, span, button } = van.tags;
@@ -76,8 +76,8 @@ export const Combobox = (props: ComboboxOptions): ComboboxField => {
     const opt = props.options.find((o) => o.value === selected.val);
     return opt ? labelOf(opt) : "";
   });
-  // Single: cerrado muestra la selección; abierto, lo que se teclea.
-  // Multi: la selección vive en los chips — el input siempre muestra el query.
+  // Single: closed shows the selection; open, what is typed.
+  // Multi: the selection lives in the chips — the input always shows the query.
   const display = van.derive(() =>
     multi ? query.val : open.val ? query.val : selectedLabel.val,
   );
@@ -141,7 +141,7 @@ export const Combobox = (props: ComboboxOptions): ComboboxField => {
     if (readState(opt.disabled, false)) return;
     field.isTouched.val = true;
     if (multi) {
-      // Elegir en multiple no cierra: se sigue filtrando/agregando.
+      // Picking in multiple does not close: keep filtering/adding.
       if (selectedMulti.val.includes(opt.value)) {
         removeMulti(opt.value);
       } else {
@@ -196,7 +196,7 @@ export const Combobox = (props: ComboboxOptions): ComboboxField => {
         }
         break;
       case "Backspace":
-        // Multi: Backspace con el input vacío quita el último chip.
+        // Multi: Backspace with an empty input removes the last chip.
         if (multi && query.val === "" && selectedMulti.val.length) {
           e.preventDefault();
           removeMulti(selectedMulti.val[selectedMulti.val.length - 1]);
@@ -242,15 +242,15 @@ export const Combobox = (props: ComboboxOptions): ComboboxField => {
       },
       onfocus: () => {
         setOpen(true);
-        // Al abrir por foco sin foco previo de opción, la primera habilitada
-        // queda lista para Enter.
+        // When opened by focus with no prior option focus, the first enabled
+        // one is ready for Enter.
         if (focusedIdx.val < 0) focusedIdx.val = enabledIdxs.val[0] ?? -1;
       },
       onkeydown: handleKeydown,
     };
 
-    // El input visible muestra el LABEL (single) o filtra (multi); el valor
-    // real viaja en un hidden para que FormData reciba option.value.
+    // The visible input shows the LABEL (single) or filters (multi); the real
+    // value travels in a hidden input so FormData receives option.value.
     const triggerArea = multi
       ? div(
           {
@@ -264,7 +264,7 @@ export const Combobox = (props: ComboboxOptions): ComboboxField => {
               ),
             onclick: () => textInputEl?.focus(),
           },
-          // Ancla única para los chips (los hijos internos se regeneran).
+          // Single anchor for the chips (internal children are regenerated).
           () =>
             div(
               { class: "contents" },
@@ -320,8 +320,8 @@ export const Combobox = (props: ComboboxOptions): ComboboxField => {
           })
         : input({ type: "hidden", name, value: () => selected.val }),
       triggerArea,
-      // Panel siempre montado (ancla real); el ul completo se regenera con
-      // cada filtrado (un único nodo por render: sin hijos-función null).
+      // Panel always mounted (real anchor); the whole ul is regenerated with
+      // each filter pass (a single node per render: no function-children null).
       div(
         {
           class: () =>

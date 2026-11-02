@@ -7,8 +7,8 @@ export interface AccordionItem {
   id: string;
   title: ToggleText;
   /**
-   * Fábrica del contenido: se invoca en cada apertura (contenido fresco con
-   * bindings frescos — misma razón por la que TabItem.content es factory).
+   * Content factory: invoked on each open (fresh content with fresh
+   * bindings — same reason TabItem.content is a factory).
    */
   content: () => ValidChildDomValue;
   disabled?: boolean | State<boolean>;
@@ -16,9 +16,9 @@ export interface AccordionItem {
 
 export interface AccordionOptions {
   items: AccordionItem[];
-  /** Permitir varios abiertos a la vez (default: uno solo). */
+  /** Allow several open at once (default: just one). */
   multiple?: boolean;
-  /** Ids abiertos al montar. */
+  /** Ids open on mount. */
   defaultOpen?: string[];
   class?: string;
   [key: string]: any;
@@ -27,10 +27,10 @@ export interface AccordionOptions {
 let nextId = 0;
 
 /**
- * Acordeón accesible: botones con `aria-expanded`/`aria-controls` y paneles
- * `role="region"`. Con `multiple: false` (default) abrir uno cierra el
- * anterior. El contenido se construye al abrir (y re-construye en cada
- * apertura); el panel permanece montado mientras el ítem exista.
+ * Accessible accordion: buttons with `aria-expanded`/`aria-controls` and
+ * `role="region"` panels. With `multiple: false` (default) opening one
+ * closes the previous one. Content is built on open (and rebuilt on each
+ * open); the panel stays mounted while the item exists.
  */
 export const Accordion = (props: AccordionOptions): ChildDom => {
   const { div, button, span } = van.tags;
@@ -83,7 +83,7 @@ export const Accordion = (props: AccordionOptions): ChildDom => {
             "▸",
           ),
         ),
-        // Región siempre montada (ancla real); el contenido se fabrica al abrir.
+        // Region always mounted (real anchor); content is built on open.
         div(
           {
             id: regionId,

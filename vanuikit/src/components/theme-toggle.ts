@@ -4,7 +4,7 @@ import { i18n as defaultI18n, type I18nInstance } from "../i18n.js";
 import { cx } from "../util.js";
 import { Icon, type IconName } from "./icon.js";
 
-/** Contrato de llaves de i18n del componente */
+/** Component i18n key contract */
 export const TEXTS = {
   light: { key: "theme.light", default: "Light" },
   dark: { key: "theme.dark", default: "Dark" },
@@ -14,7 +14,7 @@ export const TEXTS = {
   toggleTitle: { key: "theme.toggleTitle", default: "Toggle theme (Light / Dark / System)" },
 } as const;
 
-// Instancia singleton por defecto para aplicaciones que no pasen una instancia personalizada
+// Default singleton instance for apps that do not pass a custom instance
 let defaultThemeInstance: ThemeInstance | null = null;
 function getDefaultTheme(): ThemeInstance {
   if (!defaultThemeInstance) {
@@ -26,19 +26,19 @@ function getDefaultTheme(): ThemeInstance {
 export interface ThemeToggleProps {
   theme?: ThemeInstance;
   i18n?: I18nInstance;
-  /** Variante visual: "button" (un solo botón cíclico), "segmented" (botones para cada modo) */
+  /** Visual variant: "button" (single cycling button), "segmented" (a button per mode) */
   variant?: "button" | "segmented";
-  /** Mostrar u ocultar texto explicativo junto al ícono */
+  /** Show or hide the explanatory text next to the icon */
   showLabel?: boolean;
-  /** Clases CSS adicionales */
+  /** Extra CSS classes */
   class?: string;
-  /** Soporta tema del sistema en el ciclo */
+  /** Supports the system theme in the cycle */
   includeSystem?: boolean;
 }
 
 /**
- * Componente nativo y autocontenido para alternar el tema visual (Claro / Oscuro / Sistema).
- * Embebido directamente en VanUikit para máxima focalización y cero boilerplate en las aplicaciones.
+ * Native, self-contained component to toggle the visual theme (Light / Dark / System).
+ * Embedded directly in VanUikit for maximum focus and zero boilerplate in applications.
  */
 export function ThemeToggle(props: ThemeToggleProps = {}) {
   const { button, div, span } = van.tags;
@@ -76,8 +76,8 @@ export function ThemeToggle(props: ThemeToggleProps = {}) {
             type: "button",
             role: "radio",
             "aria-checked": isActive,
-            // Nombre accesible: el ícono es puramente visual; sin esto un
-            // lector de pantalla anuncia "radio button" sin decir cuál modo es.
+            // Accessible name: the icon is purely visual; without this a
+            // screen reader announces "radio button" without saying which mode it is.
             "aria-label": i18n.t(text.key, text.default),
             class: () =>
               cx(
@@ -95,7 +95,7 @@ export function ThemeToggle(props: ThemeToggleProps = {}) {
     );
   }
 
-  // Variante "button" (ciclo rápido con un clic)
+  // "button" variant (fast cycle with a single click)
   const cycle = () => {
     if (includeSystem) {
       if (theme.mode.val === "system") theme.setMode("dark");

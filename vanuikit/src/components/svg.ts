@@ -1,10 +1,10 @@
 import van, { type State, type ChildDom } from "vanjs-core";
 
 /**
- * Namespace SVG. En VanJS, `van.tags.svg` crea el elemento con
- * `document.createElement("svg")` (namespace HTML), por lo que los <path>
- * hijos no se dibujan como vector. Este módulo encapsula la única forma
- * correcta: `document.createElementNS` vía `van.tags(SVG_NS)`.
+ * SVG namespace. In VanJS, `van.tags.svg` creates the element with
+ * `document.createElement("svg")` (HTML namespace), so child <path>
+ * elements are not rendered as vectors. This module encapsulates the
+ * only correct way: `document.createElementNS` via `van.tags(SVG_NS)`.
  */
 const SVG_NS = "http://www.w3.org/2000/svg";
 
@@ -21,8 +21,8 @@ export type SvgProps = {
 };
 
 /**
- * Svg — <svg> con namespace real (SVGSVGElement).
- * Reemplaza a `van.tags.svg`; sin este wrapper los íconos no se pintan.
+ * Svg — <svg> with a real namespace (SVGSVGElement).
+ * Replaces `van.tags.svg`; without this wrapper icons are not painted.
  */
 export function Svg(props: SvgProps, ...children: ChildDom[]) {
   return svg(props as any, ...children);
@@ -35,7 +35,7 @@ export type SvgPathProps = {
 };
 
 /**
- * SvgPath — <path> dentro de un Svg (hereda fill/stroke del padre).
+ * SvgPath — <path> inside an Svg (inherits fill/stroke from the parent).
  */
 export function SvgPath(props: SvgPathProps) {
   const { d, ...rest } = props;

@@ -5,16 +5,16 @@ import type { ToggleText } from "./checkbox.js";
 export type PopoverPosition = "top" | "bottom" | "left" | "right";
 
 export interface PopoverOptions {
-  /** Elemento disparador (p. ej. un Button). El click alterna el panel. */
+  /** Trigger element (e.g. a Button). Click toggles the panel. */
   trigger: ChildDom;
   position?: PopoverPosition;
   ariaLabel?: ToggleText;
   /**
-   * Fábrica del contenido (se evalúa en cada apertura, como TabItem.content).
-   * Recibe `close()` para que el propio panel pueda cerrarse.
+   * Content factory (evaluated on each open, like TabItem.content).
+   * Receives `close()` so the panel can close itself.
    */
   content: (close: () => void) => ValidChildDomValue;
-  /** Clase extra para el panel (ancho mínimo, padding, etc.). */
+  /** Extra class for the panel (min width, padding, etc.). */
   panelClass?: string;
   class?: string;
   [key: string]: any;
@@ -30,13 +30,13 @@ const PANEL_POSITIONS: Record<PopoverPosition, string> = {
 let nextId = 0;
 
 /**
- * Panel flotante genérico anclado al trigger: se abre/cierra con click,
- * se cierra con Esc o click fuera, y devuelve el foco al trigger.
- * El contenido viaja como fábrica `content(close)` para reconstruirse
- * (y re-suscribirse) en cada apertura.
+ * Generic floating panel anchored to the trigger: opens/closes with click,
+ * closes with Esc or click outside, and returns focus to the trigger.
+ * Content is passed as a `content(close)` factory so it is rebuilt
+ * (and re-subscribed) on each open.
  *
- * Misma limitación que Tooltip: posicionamiento CSS, un ancestro con
- * `overflow: hidden` puede recortar el panel.
+ * Same limitation as Tooltip: CSS positioning, an ancestor with
+ * `overflow: hidden` may clip the panel.
  */
 export const Popover = (props: PopoverOptions): ChildDom => {
   const { div, span } = van.tags;
@@ -86,12 +86,12 @@ export const Popover = (props: PopoverOptions): ChildDom => {
       },
       props.trigger,
     ),
-    // Panel siempre montado (ancla real): un hijo-función que devuelve null
-    // moriría en el primer cambio (keepConnected descarta _dom null). El
-    // contenido sí se reconstruye en cada apertura vía la fábrica.
+    // Panel always mounted (real anchor): a function-child returning null
+    // would die on the first toggle (keepConnected discards _dom null). The
+    // content is indeed rebuilt on each open via the factory.
     div(
-      // aria-label solo si fue provisto: undefined escribiría el atributo
-      // literal "undefined" (props de van no aceptan undefined).
+      // aria-label only if provided: undefined would write the literal
+      // "undefined" attribute (van props do not accept undefined).
       {
         role: "dialog",
         "aria-modal": "false",

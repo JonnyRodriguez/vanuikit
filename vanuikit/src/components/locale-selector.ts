@@ -6,17 +6,17 @@ import { Icon } from "./icon.js";
 export interface LocaleOption {
   code: string;
   label: string;
-  /** Deprecated: el flag ahora se deriva del código con SVG multicolor. */
+  /** Deprecated: the flag is now derived from the code with multicolor SVG. */
   flag?: string;
 }
 
 export interface LocaleSelectorProps {
   i18n?: I18nInstance;
-  /** Lista personalizada de opciones o autodetectada desde los diccionarios cargados */
+  /** Custom list of options or auto-detected from the loaded dictionaries */
   options?: LocaleOption[];
-  /** Variante visual: "select" (dropdown nativo estilizado) o "buttons" (pastillas de selección) */
+  /** Visual variant: "select" (styled native dropdown) or "buttons" (selection pills) */
   variant?: "select" | "buttons";
-  /** Clases CSS adicionales */
+  /** Extra CSS classes */
   class?: string;
 }
 
@@ -27,7 +27,7 @@ type RectShape = { x: number; y: number; width: number; height: number; fill: st
 type CircleShape = { cx: number; cy: number; r: number; fill: string };
 type Shape = RectShape | CircleShape;
 
-/** Banderas simplificadas (SVG multicolor, 24×16): contenido, no iconografía. */
+/** Simplified flags (multicolor SVG, 24×16): content, not iconography. */
 const FLAG_SHAPES: Record<string, Shape[]> = {
   es: [
     { x: 0, y: 0, width: 24, height: 5, fill: "#aa151b" },
@@ -63,7 +63,7 @@ const FLAG_SHAPES: Record<string, Shape[]> = {
   ],
 };
 
-/** Bandera SVG por código; fallback globe para códigos desconocidos. */
+/** SVG flag per code; globe fallback for unknown codes. */
 function FlagIcon({ code }: { code: string }) {
   const shapes = FLAG_SHAPES[code];
   if (!shapes) return Icon({ name: "globe", class: "size-4" });
@@ -82,8 +82,8 @@ function FlagIcon({ code }: { code: string }) {
 }
 
 /**
- * Componente nativo y autocontenido para cambiar de idioma / locale.
- * Embebido directamente en VanUikit para máxima focalización y cero boilerplate en las aplicaciones.
+ * Native, self-contained component to switch language / locale.
+ * Embedded directly in VanUikit for maximum focus and zero boilerplate in applications.
  */
 export function LocaleSelector(props: LocaleSelectorProps = {}) {
   const { select, option, div, button, span } = van.tags;
@@ -137,7 +137,7 @@ export function LocaleSelector(props: LocaleSelectorProps = {}) {
     );
   }
 
-  // Variante "select" por defecto
+  // Default "select" variant
   return select(
     {
       class: cx(

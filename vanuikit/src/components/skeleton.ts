@@ -5,16 +5,16 @@ export type SkeletonVariant = "text" | "circle" | "block";
 
 export interface SkeletonOptions {
   variant?: SkeletonVariant;
-  /** Para la variante "text": número de líneas (la última queda más corta). */
+  /** For the "text" variant: number of lines (the last one is shorter). */
   lines?: number;
   class?: string;
   [key: string]: any;
 }
 
 /**
- * Placeholder de contenido mientras carga: líneas de texto (default),
- * círculo (avatar) o bloque (tarjeta). Decorativo: `aria-hidden` para que
- * los lectores de pantalla lo ignoren.
+ * Content placeholder while loading: text lines (default), circle
+ * (avatar) or block (card). Decorative: `aria-hidden` so screen
+ * readers ignore it.
  */
 export const Skeleton = (props: SkeletonOptions = {}) => {
   const { div } = van.tags;

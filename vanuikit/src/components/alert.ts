@@ -10,9 +10,9 @@ export interface AlertOptions {
   variant?: AlertVariant;
   title?: ToggleText;
   showIcon?: boolean;
-  /** Ícono personalizado (default: Icon según variante). */
+  /** Custom icon (default: Icon based on variant). */
   icon?: ChildDom;
-  /** Muestra el botón de cierre; al cerrar, el aviso queda oculto. */
+  /** Shows the dismiss button; when dismissed, the alert stays hidden. */
   dismissible?: boolean;
   onDismiss?: () => void;
   class?: string;
@@ -20,8 +20,8 @@ export interface AlertOptions {
   [key: string]: any;
 }
 
-/** Paleta por variante (tokens del tema, mismo esquema que Badge):
- *  caja con tinte al 10% y borde al 20%; ícono con el -fg del estado. */
+/** Palette per variant (theme tokens, same scheme as Badge):
+ *  box with 10% tint and 20% border; icon uses the status -fg. */
 const VARIANT_STYLES: Record<AlertVariant, { box: string; fg: string; icon: IconName }> = {
   info: { box: "bg-info/10 border-info/20", fg: "text-info-fg", icon: "info" },
   success: { box: "bg-success/10 border-success/20", fg: "text-success-fg", icon: "check-circle" },
@@ -30,9 +30,9 @@ const VARIANT_STYLES: Record<AlertVariant, { box: string; fg: string; icon: Icon
 };
 
 /**
- * Aviso estático (a diferencia de `toast`, que es transitorio): errores de
- * formulario persistentes, banners de estado, confirmaciones inline.
- * Uso: Alert({ variant: "error", title }, "Mensaje del aviso").
+ * Static alert (unlike `toast`, which is transient): persistent form
+ * errors, status banners, inline confirmations.
+ * Usage: Alert({ variant: "error", title }, "Alert message").
  */
 export const Alert = (props: AlertOptions = {}, ...children: ChildDom[]) => {
   const { div, p, span, button } = van.tags;

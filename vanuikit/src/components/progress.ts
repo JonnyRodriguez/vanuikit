@@ -6,15 +6,15 @@ import type { ToggleText } from "./checkbox.js";
 export type ProgressSize = "sm" | "md" | "lg";
 
 export interface ProgressOptions {
-  /** Porcentaje 0–100 (se acota); acepta State para barra reactiva. */
+  /** Percentage 0–100 (clamped); accepts a State for a reactive bar. */
   value?: number | State<number>;
-  /** Barra de progreso indeterminada (pulso); ignora `value`. */
+  /** Indeterminate progress bar (pulse); ignores `value`. */
   indeterminate?: boolean | State<boolean>;
   label?: ToggleText;
-  /** Muestra el porcentaje junto al label (default true; oculto si indeterminada). */
+  /** Shows the percentage next to the label (default true; hidden if indeterminate). */
   showValue?: boolean;
   size?: ProgressSize;
-  /** Clase del fill para colorearlo (default bg-accent). */
+  /** Fill class to color it (default bg-accent). */
   fillClass?: string;
   class?: string;
   [key: string]: any;
@@ -23,9 +23,9 @@ export interface ProgressOptions {
 const TRACK_SIZES: Record<ProgressSize, string> = { sm: "h-1.5", md: "h-2.5", lg: "h-4" };
 
 /**
- * Barra de progreso accesible (`role="progressbar"` + aria-valuenow).
- * Determinada con `value` (acepta State para actualizarse en vivo) o
- * indeterminada con `indeterminate`.
+ * Accessible progress bar (`role="progressbar"` + aria-valuenow).
+ * Determinate with `value` (accepts a State to update live) or
+ * indeterminate with `indeterminate`.
  */
 export const Progress = (props: ProgressOptions = {}) => {
   const { div, span } = van.tags;

@@ -9,15 +9,15 @@ export type TooltipPosition = "top" | "bottom" | "left" | "right";
 export interface TooltipOptions {
   content: ToggleText;
   position?: TooltipPosition;
-  /** Milisegundos antes de mostrar al hacer hover (default 300; el focus lo muestra al instante). */
+  /** Milliseconds before showing on hover (default 300; focus shows it instantly). */
   delay?: number;
   disabled?: boolean | State<boolean>;
-  /** Clase extra para la burbuja (ancho, color, etc.). */
+  /** Extra class for the bubble (width, color, etc.). */
   class?: string;
   [key: string]: any;
 }
 
-/** Burbuja posicionada por CSS puro dentro de un wrapper relativo. */
+/** Bubble positioned with pure CSS inside a relative wrapper. */
 const POSITION_CLASSES: Record<TooltipPosition, string> = {
   top: "bottom-full left-1/2 -translate-x-1/2 mb-2",
   bottom: "top-full left-1/2 -translate-x-1/2 mt-2",
@@ -28,11 +28,11 @@ const POSITION_CLASSES: Record<TooltipPosition, string> = {
 let nextId = 0;
 
 /**
- * Tooltip accesible: aparece al hacer hover (con delay) y al recibir foco
- * por teclado (al instante). Desactivado en dispositivos táctiles.
+ * Accessible tooltip: appears on hover (with delay) and on keyboard focus
+ * (instantly). Disabled on touch devices.
  *
- * Limitación conocida: la burbuja se posiciona con CSS dentro del flujo,
- * así que un ancestro con `overflow: hidden` puede recortarla.
+ * Known limitation: the bubble is positioned with CSS inside the flow,
+ * so an ancestor with `overflow: hidden` may clip it.
  */
 export const Tooltip = (props: TooltipOptions, trigger: ChildDom): ChildDom => {
   const { span } = van.tags;
@@ -69,8 +69,8 @@ export const Tooltip = (props: TooltipOptions, trigger: ChildDom): ChildDom => {
       onfocusout: hide,
     },
     trigger,
-    // La burbuja siempre montada (ancla real): un hijo-función que devuelve
-    // null moriría en el primer cambio (keepConnected descarta _dom null).
+    // The bubble is always mounted (real anchor): a function-child returning
+    // null would die on the first toggle (keepConnected discards _dom null).
     span(
       {
         id,

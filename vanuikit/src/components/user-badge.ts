@@ -6,25 +6,25 @@ import { Avatar, getInitials } from "./avatar.js";
 import { Icon } from "./icon.js";
 
 export interface UserBadgeProps {
-  /** Estado de autenticación reactivo de VanUikit o usuario directo */
+  /** Reactive VanUikit auth state or a direct user */
   auth?: AuthState;
   user?: State<AuthUser | null> | AuthUser | null;
   i18n?: I18nInstance;
-  /** Callback opcional al hacer clic en cerrar sesión */
+  /** Optional callback on logout click */
   onLogout?: () => void | Promise<void>;
-  /** Subtítulo o estado secundario (por defecto reactivo a "Sesión activa") */
+  /** Subtitle or secondary status (defaults to a reactive "Active session") */
   statusText?: string | State<string>;
-  /** Mostrar u ocultar el botón de logout */
+  /** Show or hide the logout button */
   showLogout?: boolean;
-  /** Modo compacto para sidebars colapsadas: solo avatar + logout (title con el nombre) */
+  /** Compact mode for collapsed sidebars: avatar + icon logout only (title holds the name) */
   compact?: boolean | State<boolean>;
-  /** Clases CSS adicionales para el contenedor */
+  /** Extra CSS classes for the container */
   class?: string;
 }
 
 /**
- * Componente nativo y autocontenido para mostrar la tarjeta/perfil del usuario autenticado.
- * Embebido directamente en VanUikit para máxima focalización y cero boilerplate en las aplicaciones.
+ * Native, self-contained component to show the authenticated user's card/profile.
+ * Embedded directly in VanUikit for maximum focus and zero boilerplate in applications.
  */
 export function UserBadge(props: UserBadgeProps) {
   const { div, span, button } = van.tags;
@@ -69,7 +69,7 @@ export function UserBadge(props: UserBadgeProps) {
         ? props.compact.val
         : Boolean(props.compact);
 
-    // Modo compacto (rail de Sidebar colapsada): avatar centrado + logout icónico.
+    // Compact mode (collapsed Sidebar rail): centered avatar + icon-only logout.
     if (isCompact) {
       const logoutLabel = i18n.raw("nav.logout", "Sign out");
       return div(

@@ -7,7 +7,7 @@ export interface KbdOptions {
   [key: string]: any;
 }
 
-/** Tecla estilizada semántica (`<kbd>`): atajos, combinaciones, hints de UI. */
+/** Semantic styled key (`<kbd>`): shortcuts, combos, UI hints. */
 export const Kbd = (props: KbdOptions = {}, ...children: ChildDom[]): ChildDom =>
   van.tags.kbd(
     {

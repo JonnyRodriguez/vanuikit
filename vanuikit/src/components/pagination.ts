@@ -5,11 +5,11 @@ import { asState } from "./checkable.js";
 import type { ToggleText } from "./checkbox.js";
 
 export interface PaginationOptions {
-  /** Página actual (1-based); acepta State externo para enlace bidireccional. */
+  /** Current page (1-based); accepts an external State for two-way binding. */
   page: number | State<number>;
-  /** Total de páginas; admite State (listas que crecen/encogen). */
+  /** Total pages; accepts a State (lists that grow/shrink). */
   totalPages: number | State<number>;
-  /** Páginas vecinas visibles alrededor de la actual (default 1). */
+  /** Visible sibling pages around the current one (default 1). */
   siblingCount?: number;
   ariaLabel?: ToggleText;
   class?: string;
@@ -19,8 +19,8 @@ export interface PaginationOptions {
 type Slot = number | "ellipsis-l" | "ellipsis-r";
 
 /**
- * Rango de páginas con ellipsis: 1 y última siempre visibles, `siblingCount`
- * vecinas alrededor de la actual y "…" donde se recorta.
+ * Page range with ellipsis: first and last always visible, `siblingCount`
+ * neighbors around the current page and "…" where the range is trimmed.
  */
 export const pageSlots = (page: number, totalPages: number, siblingCount: number): Slot[] => {
   const total = Math.max(1, totalPages);
@@ -39,9 +39,9 @@ export const pageSlots = (page: number, totalPages: number, siblingCount: number
 };
 
 /**
- * Paginación numerada standalone (la del DataGrid es la versión simple
- * prev/"x / y"/next): `<nav>` con botones, `aria-current="page"` en la
- * actual, prev/next deshabilitados en los extremos y `page` bidireccional.
+ * Standalone numbered pagination (the DataGrid one is the simpler
+ * prev/"x / y"/next version): `<nav>` with buttons, `aria-current="page"`
+ * on the current page, prev/next disabled at the ends and two-way `page`.
  */
 export const Pagination = (props: PaginationOptions): ChildDom => {
   const { nav, button, span } = van.tags;

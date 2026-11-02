@@ -7,33 +7,33 @@ import { asState, createControlField, readState, type ControlField } from "./che
 import type { ToggleText } from "./checkbox.js";
 
 export interface DatePickerOptions {
-  /** Nombre del campo (id de label + hidden input para FormData). */
+  /** Field name (label id + hidden input for FormData). */
   name?: string;
   /**
-   * Fecha seleccionada; acepta `Date` o `State<Date | null>` para enlace
-   * bidireccional (mismo contrato que el resto del catálogo).
+   * Selected date; accepts `Date` or `State<Date | null>` for two-way
+   * binding (same contract as the rest of the catalog).
    */
   value?: Date | null | State<Date | null>;
-  /** Etiqueta opcional del campo (se renderiza un <label>). */
+  /** Optional field label (a <label> is rendered). */
   label?: ToggleText;
   placeholder?: ToggleText;
   disabled?: boolean | State<boolean>;
-  /** Requerido: error al enviar sin fecha (integración con `Form`). */
+  /** Required: error on submit with no date (integration with `Form`). */
   required?: boolean;
   requiredMsg?: ToggleText;
   /**
-   * Fecha mínima seleccionable (los días previos se deshabilitan).
-   * Acepta un `State<Date | null>` para límites reactivos.
+   * Minimum selectable date (earlier days are disabled).
+   * Accepts a `State<Date | null>` for reactive bounds.
    */
   min?: Date | null | State<Date | null>;
   /**
-   * Fecha máxima seleccionable (los días posteriores se deshabilitan).
-   * Acepta un `State<Date | null>` para límites reactivos.
+   * Maximum selectable date (later days are disabled).
+   * Accepts a `State<Date | null>` for reactive bounds.
    */
   max?: Date | null | State<Date | null>;
-  /** true = calendario siempre visible (sin input/popup). */
+  /** true = calendar always visible (no input/popup). */
   inline?: boolean;
-  /** Primer día de semana: 0=domingo … 6=sábado (default 1 = lunes). */
+  /** First day of week: 0=Sunday … 6=Saturday (default 1 = Monday). */
   firstDayOfWeek?: number;
   class?: string;
   [key: string]: any;
@@ -82,19 +82,19 @@ type Cell = {
 };
 
 /**
- * DatePicker — calendario de selección de fecha inspirado en la interacción
- * de jQuery UI DatePicker (navegación por mes, grid de días, popup inline),
- * pero con localización vía `Intl` (meses/días/headers salen del locale) en
- * lugar de patrones manuales, y reactivo a cambio de idioma.
+ * DatePicker — date-picking calendar inspired by the jQuery UI DatePicker
+ * interaction (month navigation, day grid, inline popup), but with
+ * localization via `Intl` (months/days/headers come from the locale) instead
+ * of manual patterns, and reactive to language changes.
  *
- * Soporta dos modos: `inline` (calendario siempre visible) y popup (input
- * read-only que abre el calendario al hacer click). Implementa el contrato
- * `Field` (vía `createControlField`), así que se integra a `Form` y a los
- * validadores como cualquier otro campo.
+ * Supports two modes: `inline` (calendar always visible) and popup (read-only
+ * input that opens the calendar on click). Implements the `Field` contract
+ * (via `createControlField`), so it integrates with `Form` and validators
+ * like any other field.
  *
- * Teclado del grid: flechas (día/semana), PageUp/PageDown (mes),
- * Shift+PageUp/PageDown (año), Home/End (primero/último del mes),
- * Ctrl+Home/End (primero/último del año), Enter (seleccionar), Esc (cerrar).
+ * Grid keyboard: arrows (day/week), PageUp/PageDown (month),
+ * Shift+PageUp/PageDown (year), Home/End (first/last of month),
+ * Ctrl+Home/End (first/last of year), Enter (select), Esc (close).
  */
 export const DatePicker = (props: DatePickerOptions): DatePickerField => {
   const { div, label, input, table, thead, tbody, tr, th, td, button, p } = van.tags;
@@ -104,15 +104,15 @@ export const DatePicker = (props: DatePickerOptions): DatePickerField => {
   const inline = props.inline === true;
   const disabled = asState(props.disabled, false);
 
-  // Selección: acepta un State externo (bidireccional) o uno interno.
+  // Selection: accepts an external State (two-way) or an internal one.
   const selected =
     typeof props.value === "object" && props.value !== null && "val" in props.value
       ? (props.value as State<Date | null>)
       : van.state<Date | null>((props.value as Date | null) ?? null);
 
   const today = toDateOnly(new Date());
-  // Límites reactivos: aceptan Date o State<Date | null> y se reevalúan al mutar.
-  // Nota: no usar asState aquí (un Date también es objeto y lo confundiría con un State).
+  // Reactive bounds: accept Date or State<Date | null> and re-evaluate on mutation.
+  // Note: do not use asState here (a Date is also an object and would be mistaken for a State).
   const minState =
     typeof props.min === "object" && props.min !== null && "val" in props.min
       ? (props.min as State<Date | null>)
@@ -132,7 +132,7 @@ export const DatePicker = (props: DatePickerOptions): DatePickerField => {
   const requiredMsg: ValidatorMessage = props.requiredMsg ?? t("datepicker.required", "Please select a date");
   const validators: Validator[] = props.required ? [Required(requiredMsg)] : [];
 
-  // --- Localización reactiva (Intl): datos de fecha, no llaves de traducción ---
+  // --- Reactive localization (Intl): date data, not translation keys ---
   const monthTitle = van.derive(() => {
     const s = new Intl.DateTimeFormat(i18n.currentLocale.val, {
       month: "long",
@@ -145,7 +145,7 @@ export const DatePicker = (props: DatePickerOptions): DatePickerField => {
     const fmt = new Intl.DateTimeFormat(i18n.currentLocale.val, { weekday: "short" });
     const byDow: string[] = [];
     for (let i = 0; i < 7; i++) {
-      const d = new Date(2021, 0, 3 + i); // 2021-01-03 es domingo (getDay 0)
+      const d = new Date(2021, 0, 3 + i); // 2021-01-03 is a Sunday (getDay 0)
       byDow[d.getDay()] = fmt.format(d);
     }
     const cols: string[] = [];
@@ -184,13 +184,13 @@ export const DatePicker = (props: DatePickerOptions): DatePickerField => {
     return new Intl.DateTimeFormat(i18n.currentLocale.val, { dateStyle: "medium" }).format(s);
   });
 
-  // Labels como derives top-level: renderCalendar() NO debe leer estados
-  // reactivos directamente (raw() captura currentLocale/revision como deps
-  // del binding exterior `() => renderCalendar()` y cada cambio de idioma
-  // reconstruiría el calendario entero — el binding interno del grid queda
-  // anclado a una tabla detached y los bindings se acumulan hasta robar la
-  // tabla viva: calendario vacío tras cambiar de idioma). Con derives
-  // top-level el binding exterior no tiene deps: corre UNA vez al montar.
+  // Labels as top-level derives: renderCalendar() must NOT read reactive
+  // states directly (raw() captures currentLocale/revision as deps of the
+  // outer binding `() => renderCalendar()` and every language change would
+  // rebuild the whole calendar — the grid's inner binding ends up anchored
+  // to a detached table and bindings accumulate until they steal the live
+  // table: empty calendar after switching language). With top-level
+  // derives the outer binding has no deps: it runs ONCE on mount.
   const prevMonthLabel = van.derive(() => raw("datepicker.prevMonth", "Previous month"));
   const nextMonthLabel = van.derive(() => raw("datepicker.nextMonth", "Next month"));
   const todayLabel = van.derive(() => raw("datepicker.today", "Today"));
@@ -202,7 +202,7 @@ export const DatePicker = (props: DatePickerOptions): DatePickerField => {
       year: "numeric",
     }).format(d);
 
-  // --- Navegación y selección ---
+  // --- Navigation and selection ---
   const syncViewTo = (d: Date) => {
     viewYear.val = d.getFullYear();
     viewMonth.val = d.getMonth();
@@ -360,7 +360,7 @@ export const DatePicker = (props: DatePickerOptions): DatePickerField => {
       !cell.inMonth && !cell.selected ? "text-muted/60" : "",
     );
 
-  // El grid es un nodo reactivo único: se reconstruye al mutar células o locale.
+  // The grid is a single reactive node: rebuilt when cells or locale mutate.
   const grid = van.derive(() =>
     table(
       { class: "w-full border-collapse text-center" },

@@ -118,7 +118,7 @@ export function Table<T extends Record<string, any> = any>(props: TableProps<T>)
     () => {
       let rows = [...getData()];
 
-      // Búsqueda / Filtro
+      // Search / filter
       if (props.searchable && searchQuery.val.trim()) {
         const q = searchQuery.val.toLowerCase();
         rows = rows.filter((row) =>
@@ -129,7 +129,7 @@ export function Table<T extends Record<string, any> = any>(props: TableProps<T>)
         );
       }
 
-      // Ordenamiento
+      // Sorting
       if (sortKey.val) {
         const key = sortKey.val;
         const colDef = props.columns.find((c) => c.key === key);
@@ -153,7 +153,7 @@ export function Table<T extends Record<string, any> = any>(props: TableProps<T>)
         }
       }
 
-      // Paginación
+      // Pagination
       const totalItems = rows.length;
       const pageSize = props.pageSize ?? 0;
       let totalPages = 1;
@@ -177,7 +177,7 @@ export function Table<T extends Record<string, any> = any>(props: TableProps<T>)
 
       return div(
         { class: "flex flex-col w-full" },
-        // Barra de búsqueda superior (si searchable = true)
+        // Top search bar (if searchable = true)
         props.searchable
           ? div(
               {
@@ -212,7 +212,7 @@ export function Table<T extends Record<string, any> = any>(props: TableProps<T>)
                 : null,
             )
           : null,
-        // Tabla con scroll horizontal responsivo
+        // Table with responsive horizontal scroll
         div(
           { class: "w-full overflow-x-auto" },
           table(
@@ -342,7 +342,7 @@ export function Table<T extends Record<string, any> = any>(props: TableProps<T>)
             ),
           ),
         ),
-        // Paginación
+        // Pagination
         pageSize > 0 && totalItems > 0
           ? div(
               {
@@ -393,6 +393,6 @@ export function Table<T extends Record<string, any> = any>(props: TableProps<T>)
 }
 
 /**
- * DataGrid — Alias semántico con configuración avanzada para tablas de datos completas.
+ * DataGrid — Semantic alias with advanced configuration for full data tables.
  */
 export const DataGrid = Table;

@@ -5,7 +5,7 @@ import { Icon } from "./icon.js";
 const { div, button, span, input, ul, li, hr } = van.tags;
 
 // ---------------------------------------------------------------------
-// 1. SelectDropdown (Selector personalizado y accesible)
+// 1. SelectDropdown (Custom, accessible selector)
 // ---------------------------------------------------------------------
 
 export interface SelectOption<T = string | number> {
@@ -150,7 +150,7 @@ export function SelectDropdown<T = string | number>(props: SelectDropdownProps<T
         handleKeyDown(e, opts);
       },
     },
-    // Botón / Trigger
+    // Button / Trigger
     button(
       {
         id: `${containerId}-btn`,
@@ -192,7 +192,7 @@ export function SelectDropdown<T = string | number>(props: SelectDropdownProps<T
           "▼",
         ),
     ),
-    // Menú desplegable
+    // Dropdown menu
     () => {
       if (!isOpen.val) return span({ class: "hidden" });
 
@@ -285,7 +285,7 @@ export function SelectDropdown<T = string | number>(props: SelectDropdownProps<T
 }
 
 // ---------------------------------------------------------------------
-// 2. DropdownMenu (Menú de acciones contextual)
+// 2. DropdownMenu (Contextual action menu)
 // ---------------------------------------------------------------------
 
 export type DropdownMenuItem =

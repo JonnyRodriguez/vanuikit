@@ -13,7 +13,7 @@ export interface SwitchOptions {
   checked?: boolean | State<boolean>;
   disabled?: boolean | State<boolean>;
   size?: CheckSize;
-  /** Requerido: error al enviar sin activar (integración con `Form`). */
+  /** Required: error on submit while off (integration with `Form`). */
   required?: boolean;
   requiredMsg?: ToggleText;
   class?: string;
@@ -30,10 +30,10 @@ const TRACK_SIZES: Record<CheckSize, { track: string; thumb: string; on: string;
 };
 
 /**
- * Switch accesible (`role="switch"` sobre input nativo): Space lo alterna y
- * el anuncio en lectores de pantalla es el de un interruptor. `checked`
- * acepta un State externo para enlace bidireccional; con `required`/`name`
- * se integra a `Form`.
+ * Accessible switch (`role="switch"` on a native input): Space toggles it and
+ * screen readers announce it as a switch. `checked`
+ * accepts an external State for two-way binding; with `required`/`name`
+ * it integrates with `Form`.
  */
 export const Switch = (options: SwitchOptions = {}): SwitchField => {
   const { div, label, input, p, span } = van.tags;

@@ -6,7 +6,7 @@ import { raw, t } from "../i18n.js";
 type ExtractOk<R> = R extends { ok: true } ? R : never;
 type ExtractFail<R> = R extends { ok: false } ? R : never;
 
-/** Campo que el Wizard entiende: el contrato mínimo de Field (estructural). */
+/** Field the Wizard understands: the minimal Field contract (structural). */
 interface WizardField {
   readonly name: string;
   readonly value: State<any>;
@@ -17,21 +17,21 @@ interface WizardField {
 }
 
 export interface WizardStep {
-  /** Título del paso (se muestra en el indicador y el encabezado). */
+  /** Step title (shown in the indicator and the header). */
   title: string | State<string>;
-  /** Esquema de este paso (zod-like) — fuente primaria de validación al avanzar. */
+  /** Schema of this step (zod-like) — primary validation source when advancing. */
   schema?: SchemaLike;
-  /** Campos: se renderizan, alimentan el store y se usan como fallback de validación. */
+  /** Fields: rendered, feed the store and serve as validation fallback. */
   fields?: WizardField[];
-  /** Nodes extra que se renderizan bajo los campos (componentes embebidos, etc.). */
+  /** Extra nodes rendered below the fields (embedded components, etc.). */
   content?: ChildDom[];
-  /** Recolecta los valores estructurados del paso. Default: desde `fields`. */
+  /** Collects the structured values of the step. Default: from `fields`. */
   collect?(): Record<string, unknown>;
 }
 
 export interface WizardOptions {
   steps: WizardStep[];
-  /** Envía los datos acumulados de todos los pasos (contrato FormResult). */
+  /** Sends the accumulated data of all steps (FormResult contract). */
   onSubmit(data: Record<string, unknown>): Promise<FormResult> | FormResult;
   onStepChange?(index: number): void;
   onSuccess?(data: Record<string, unknown>, result: ExtractOk<FormResult>): void;
@@ -40,36 +40,36 @@ export interface WizardOptions {
 
 export type WizardHandle = {
   dom(): HTMLElement;
-  /** Índice del paso actual (0-based). */
+  /** Index of the current step (0-based). */
   readonly step: State<number>;
-  /** Store estructurado con los valores acumulados. */
+  /** Structured store with the accumulated values. */
   readonly store: State<Record<string, unknown>>;
-  /** true mientras onSubmit corre (deshabilita, bloquea doble submit). */
+  /** true while onSubmit runs (disables, blocks double submit). */
   readonly submitting: State<boolean>;
-  /** Línea de error general (cliente o backend). */
+  /** General error line (client or backend). */
   readonly error: State<string>;
-  /** Navegación programática (useWizard). */
-  /** Valida el paso actual y avanza; devuelve true si logró avanzar. */
+  /** Programmatic navigation (useWizard). */
+  /** Validates the current step and advances; returns true if it managed to advance. */
   next(): boolean;
-  /** Retrocede un paso sin validar. */
+  /** Goes back one step without validating. */
   back(): void;
-  /** Salta a un paso (sembrando el store). No valida pasos intermedios. */
+  /** Jumps to a step (seeding the store). Does not validate intermediate steps. */
   goTo(index: number): void;
-  /** Recolecta los datos de un paso (default: el actual) mergeados con el store. */
+  /** Collects the data of a step (default: the current one) merged with the store. */
   collectStep(index?: number): Record<string, unknown>;
-  /** Valida el paso actual sin avanzar; true si es válido. */
+  /** Validates the current step without advancing; true if valid. */
   validateCurrent(): boolean;
 };
 
 /**
- * Wizard — fábrica para formularios grandes partidos en pantallas (p. ej. un
- * anuncio estilo MercadoLibre). Reusa el contrato de `Form` v3:
+ * Wizard — factory for large forms split across screens (e.g. a
+ * marketplace-style listing). Reuses the `Form` v3 contract:
  *
- *   · store estructurado compartido (los pasos se desmontan, el valor permanece)
- *   · validación POR PASO al avanzar (schema del paso o validadores de campo)
- *   · submit final con el mismo `FormResult` que el backend
- *   · `fieldErrors` del backend se rutean al paso que contiene cada campo;
- *     si apuntan a otro paso, caen en la línea general con un hint.
+ *   · shared structured store (steps unmount, the value persists)
+ *   · PER-STEP validation when advancing (step schema or field validators)
+ *   · final submit with the same `FormResult` as the backend
+ *   · backend `fieldErrors` are routed to the step containing each field;
+ *     if they point at another step, they land in the general line with a hint.
  */
 export const Wizard = (options: WizardOptions): WizardHandle => {
   const { div, h3, p } = van.tags;
@@ -80,7 +80,7 @@ export const Wizard = (options: WizardOptions): WizardHandle => {
   const error = van.state("");
   const submitting = van.state(false);
 
-  // Índice de paso por campo → para ruteo de fieldErrors del backend.
+  // Step index per field → for routing backend fieldErrors.
   const fieldStep = new Map<string, number>();
   steps.forEach((s, i) => (s.fields ?? []).forEach((f) => fieldStep.set(f.name, i)));
 
@@ -91,7 +91,7 @@ export const Wizard = (options: WizardOptions): WizardHandle => {
     return data;
   };
 
-  /** Aplica errores por campo al paso actual; devuelve el primer no mapeado. */
+  /** Applies per-field errors to the current step; returns the first unmapped one. */
   const applyErrors = (map: Record<string, string>): string | undefined => {
     const step = steps[stepIndex.val];
     let unmapped: string | undefined;
@@ -103,7 +103,7 @@ export const Wizard = (options: WizardOptions): WizardHandle => {
     return unmapped;
   };
 
-  /** Valida un paso; devuelve los datos del paso (mergeados con el store) o null. */
+  /** Validates a step; returns the step data (merged with the store) or null. */
   const validateStep = (index: number): Record<string, unknown> | null => {
     const step = steps[index];
     const data = { ...store.val, ...collect(step) };
@@ -133,7 +133,7 @@ export const Wizard = (options: WizardOptions): WizardHandle => {
     store.val = { ...store.val, ...data };
   };
 
-  /** Navega a un paso, sembrando el store en sus campos (re-entrada). */
+  /** Navigates to a step, seeding the store into its fields (re-entry). */
   const goTo = (nextIndex: number) => {
     const clamped = Math.max(0, Math.min(steps.length - 1, nextIndex));
     const step = steps[clamped];
@@ -156,13 +156,13 @@ export const Wizard = (options: WizardOptions): WizardHandle => {
 
   const back = () => goTo(stepIndex.val - 1);
 
-  /** Recolecta los datos de un paso (default: actual) mergeados con el store. */
+  /** Collects the data of a step (default: current) merged with the store. */
   const collectStep = (index: number = stepIndex.val): Record<string, unknown> => ({
     ...store.val,
     ...collect(steps[index]),
   });
 
-  /** Valida el paso actual sin avanzar. */
+  /** Validates the current step without advancing. */
   const validateCurrent = (): boolean => validateStep(stepIndex.val) !== null;
 
   const submit = async () => {
@@ -199,13 +199,13 @@ export const Wizard = (options: WizardOptions): WizardHandle => {
         (byStep[idx] ??= {})[name] = msg;
       }
 
-      // Errores del paso visible → se pintan en sus campos.
+      // Errors of the visible step → painted on its fields.
       if (byStep[stepIndex.val]) {
         const um = applyErrors(byStep[stepIndex.val]);
         if (um !== undefined && general === undefined) general = um;
       }
 
-      // Errores de otros pasos → hint general ("revisa el paso N").
+      // Errors of other steps → general hint ("check step N").
       const otherSteps = Object.keys(byStep)
         .map(Number)
         .filter((i) => i !== stepIndex.val);

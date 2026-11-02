@@ -5,7 +5,7 @@ import { cx, isRouteActive } from "../util.js";
 import { Badge } from "./badge.js";
 import { Icon } from "./icon.js";
 
-/** Contrato de llaves de i18n del componente */
+/** Component i18n key contract */
 export const TEXTS = {
   collapse: { key: "sidebar.collapse", default: "Collapse sidebar" },
   expand: { key: "sidebar.expand", default: "Expand sidebar" },
@@ -60,7 +60,7 @@ export function SidebarItem(props: SidebarItemProps) {
         : typeof props.badge === "object" && "val" in props.badge
           ? () => Badge({ text: (props.badge as any)?.val, variant: (props.badgeVariant as any) ?? "primary", size: "sm" })
           : props.badge;
-    // Wrapper con ganancia semántica: el modo rail de Sidebar la oculta.
+    // Wrapper with semantic gain: the Sidebar rail mode hides it.
     return van.tags.span({ class: "vui-sb-badge shrink-0" }, badgeNode as Node);
   };
 
@@ -70,10 +70,10 @@ export function SidebarItem(props: SidebarItemProps) {
     const isActive = isCurrentActive();
     return tag(
       {
-        // Van no acepta `undefined` como valor de prop: con el setter del DOM
-        // terminaría como attr `href="undefined"`. Omitir la clave por rama.
+        // Van does not accept `undefined` as a prop value: with the DOM setter
+        // it would end up as attr `href="undefined"`. Omit the key per branch.
         ...(props.href ? { href: props.href } : { type: "button" }),
-        // Nombre accesible estable aunque el modo rail oculte el texto visible.
+        // Stable accessible name even if rail mode hides the visible text.
         ...(labelText ? { "aria-label": labelText } : {}),
         class: cx(
           "vui-sb-item w-full flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all no-underline cursor-pointer select-none text-left border border-transparent",
@@ -85,8 +85,8 @@ export function SidebarItem(props: SidebarItemProps) {
         ...(isActive ? { "aria-current": "page" } : {}),
         onclick: (e: MouseEvent) => {
           if (props.onclick) props.onclick(e);
-          // Navegación SPA embebida: el consumidor solo necesita su propio
-          // estado (p. ej. cerrar el drawer); el router lo maneja vanuikit.
+          // Embedded SPA navigation: the consumer only needs its own
+          // state (e.g. closing the drawer); vanuikit handles the routing.
           if (props.href) spaClick(e, props.href);
         },
       },
@@ -127,21 +127,21 @@ export type SidebarProps = {
   footer?: Node | string | (() => Node);
   isOpen?: State<boolean>;
   onClose?: () => void;
-  /** Muestra el botón de colapso en desktop (ancho completo ↔ rail de iconos). */
+  /** Shows the collapse button on desktop (full width ↔ icon rail). */
   collapsible?: boolean;
-  /** Estado controlado del colapso. Si se omite y `collapsible`, se gestiona internamente. */
+  /** Controlled collapse state. If omitted with `collapsible`, managed internally. */
   collapsed?: State<boolean>;
-  /** Clave de localStorage para persistir el colapso no controlado (por defecto "vanuikit-sidebar-collapsed"). */
+  /** localStorage key to persist uncontrolled collapse (default "vanuikit-sidebar-collapsed"). */
   storageKey?: string;
-  /** Permite redimensionar el ancho arrastrando el borde derecho (solo desktop). */
+  /** Allows resizing the width by dragging the right edge (desktop only). */
   resizable?: boolean;
-  /** Ancho inicial en px cuando resizable (por defecto 256). */
+  /** Initial width in px when resizable (default 256). */
   defaultWidth?: number;
-  /** Ancho mínimo en px (por defecto 224). */
+  /** Minimum width in px (default 224). */
   minWidth?: number;
-  /** Ancho máximo en px (por defecto 384). */
+  /** Maximum width in px (default 384). */
   maxWidth?: number;
-  /** Clave de localStorage para persistir el ancho (por defecto "vanuikit-sidebar-width"). */
+  /** localStorage key to persist the width (default "vanuikit-sidebar-width"). */
   widthStorageKey?: string;
   class?: string;
 };
@@ -152,8 +152,8 @@ export function Sidebar(props: SidebarProps) {
   let collapsed: State<boolean>;
   if (props.collapsed) {
     collapsed = props.collapsed;
-    // Controlado con storageKey: el storage inicializa al montar y refleja
-    // cada cambio (el consumidor sigue siendo dueño del estado).
+    // Controlled with storageKey: storage initializes on mount and mirrors
+    // every change (the consumer still owns the state).
     if (props.storageKey && typeof localStorage !== "undefined") {
       const saved = localStorage.getItem(props.storageKey);
       if (saved != null) collapsed.val = saved === "1";
@@ -172,8 +172,8 @@ export function Sidebar(props: SidebarProps) {
     });
   }
 
-  // Resize horizontal (solo desktop): ancho con persistencia, handle con drag
-  // y soporte de teclado (Separator con ArrowLeft/ArrowRight).
+  // Horizontal resize (desktop only): width with persistence, drag handle
+  // and keyboard support (Separator with ArrowLeft/ArrowRight).
   const minW = props.minWidth ?? 224;
   const maxW = props.maxWidth ?? 384;
   const widthStorageKey = props.widthStorageKey ?? "vanuikit-sidebar-width";
@@ -245,14 +245,14 @@ export function Sidebar(props: SidebarProps) {
 
   const railClass = () =>
     collapsed.val
-      ? // Modo rail SOLO desktop (lg:): en mobile el drawer siempre se abre
-        // expandido, sin importar el estado de colapso de desktop.
+      ? // Rail mode DESKTOP only (lg:): on mobile the drawer always opens
+        // expanded, regardless of the desktop collapse state.
         "lg:[&_.vui-sb-header]:hidden lg:[&_.vui-sb-group-title]:hidden lg:[&_.vui-sb-label]:hidden lg:[&_.vui-sb-badge]:hidden lg:[&_.vui-sb-item]:justify-center lg:[&_.vui-sb-item]:px-2"
       : "";
 
-  // Botón de colapso (solo desktop: en mobile manda el drawer con backdrop).
-  // Chevron SVG que rota 180° según el estado: apunta hacia la acción que se
-  // ejecuta al pulsarlo (colapsar → izquierda; expandir → derecha).
+  // Collapse button (desktop only: on mobile the drawer with backdrop rules).
+  // SVG chevron that rotates 180° with the state: points toward the action
+  // performed when pressed (collapse → left; expand → right).
   const collapseToggle = props.collapsible
     ? button(
         {
@@ -260,8 +260,8 @@ export function Sidebar(props: SidebarProps) {
           class:
             "hidden lg:inline-flex items-center justify-center size-7 rounded-lg border border-border/60 bg-secondary text-muted-foreground hover:text-foreground hover:bg-secondary-hover hover:border-border shadow-sm cursor-pointer transition-all shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40",
           "aria-label": () => {
-            // Leer collapsed.val aquí dentro: si la clave se elige fuera, el
-            // derive de t() no depende del estado y el label no se actualiza.
+            // Read collapsed.val in here: if the key were chosen outside, the
+            // derive would not depend on the state and the label would not update.
             const label = collapsed.val ? TEXTS.expand : TEXTS.collapse;
             return raw(label.key, label.default);
           },
@@ -289,15 +289,15 @@ export function Sidebar(props: SidebarProps) {
           props.class,
         ),
       ),
-      // Ancho controlado por resize (inline gana a w-64; en rail colapsado se
-      // omite para que mande lg:w-20). Transición desactivada durante el drag.
+      // Width controlled by resize (inline beats w-64; in collapsed rail it is
+      // omitted so lg:w-20 rules). Transition disabled during drag.
       style: () =>
         props.resizable && !collapsed.val
           ? `width:${width.val}px${dragging.val ? ";transition:none" : ""}`
           : "",
       "aria-label": t("sidebar.title", "Sidebar"),
     },
-    // Sección superior: header + navegación (scroll interno, el footer queda fijo).
+    // Top section: header + navigation (internal scroll, the footer stays fixed).
     div(
       { class: "flex flex-col gap-4 overflow-y-auto flex-1 pr-1" },
       props.header || props.onClose || collapseToggle
@@ -332,8 +332,8 @@ export function Sidebar(props: SidebarProps) {
         props.content,
       ),
     ),
-    // Sección inferior: footer / perfil de usuario (siempre visible: el nav
-    // scrollea internamente, la barra completa queda anclada al viewport).
+    // Bottom section: footer / user profile (always visible: the nav
+    // scrolls internally, the whole bar stays anchored to the viewport).
     props.footer
       ? div(
           {
@@ -413,9 +413,9 @@ export function AppShell(props: AppShellProps) {
     isOpen.val = false;
   };
 
-  // Al cruzar a desktop el drawer pierde sentido (la barra queda fija):
-  // cerrarlo, para no arrastrar un estado abierto que no se ve pero sí
-  // afecta a consumidores que derivan del isOpen (p. ej. footers compactos).
+  // Once on desktop the drawer stops making sense (the bar becomes fixed):
+  // close it, so an open state that is not visible does not linger but still
+  // affects consumers deriving from isOpen (e.g. compact footers).
   if (typeof window !== "undefined" && typeof window.matchMedia === "function") {
     const mq = window.matchMedia("(min-width: 1024px)");
     const onDesktop = (e: MediaQueryListEvent) => {
@@ -427,9 +427,9 @@ export function AppShell(props: AppShellProps) {
   return div(
     {
       class: cx(
-        // Sin overflow-x-hidden en la raíz: un ancestro con overflow != visible
-        // rompe el position:sticky del sidebar en desktop (el drawer mobile es
-        // fixed, no genera overflow del documento, no hace falta).
+        // No overflow-x-hidden at the root: an ancestor with overflow != visible
+        // breaks the sidebar's position:sticky on desktop (the mobile drawer is
+        // fixed, it does not overflow the document, not needed).
         "min-h-screen flex bg-background text-foreground transition-colors relative",
         props.class,
       ),
@@ -447,9 +447,9 @@ export function AppShell(props: AppShellProps) {
     }),
 
     // Sidebar Container (Smooth slide-in drawer on mobile, viewport-anchored
-    // sticky aside on desktop lg: — h-dvh para que header/contenido/footer
-    // vivan en la altura de la ventana y el footer (logout) nunca se vaya
-    // al fondo del documento en páginas largas).
+    // sticky aside on desktop lg: — h-dvh so header/content/footer
+    // live within the window height and the footer (logout) never ends up
+    // at the bottom of the document on long pages).
     div(
       {
         class: van.derive(() =>

@@ -3,9 +3,9 @@ import { cx } from "../util.js";
 import { Svg, SvgPath } from "./svg.js";
 
 /**
- * Icon — colección de iconos SVG de vankit (estilo Lucide, 24×24, trazo
- * `currentColor`). Reemplaza a los emojis: se tiñen con el tema y se ven
- * idénticos en toda plataforma. Todo icono del catálogo debe venir de aquí.
+ * Icon — collection of SVG icons from vankit (Lucide style, 24×24, stroked
+ * with `currentColor`). Replaces emojis: they get tinted by the theme and look
+ * identical on every platform. Every icon in the catalog must come from here.
  */
 export type IconName =
   | "sun"
@@ -161,12 +161,12 @@ const PATHS: Record<IconName, string[]> = {
 
 export type IconProps = {
   name: IconName;
-  /** Clases de tamaño (default size-4) y extras. */
+  /** Size classes (default size-4) and extras. */
   class?: string | (() => string) | State<string>;
 };
 
 /**
- * Icon — <svg> con namespace real y trazo currentColor (tiñe con el texto).
+ * Icon — <svg> with a real namespace and currentColor stroke (tinted by the text).
  */
 export function Icon(props: IconProps) {
   return Svg(

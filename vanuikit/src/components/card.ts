@@ -2,14 +2,14 @@ import van, { type ChildDom } from "vanjs-core";
 import { cx } from "../util.js";
 
 export interface CardOptions {
-  /** Sombra al pasar el mouse (para tarjetas clickeables). */
+  /** Shadow on hover (for clickable cards). */
   hoverable?: boolean;
-  /** El padding NO va incluido: el consumidor decide (p-4/p-6, full-bleed). */
+  /** Padding is NOT included: the consumer decides (p-4/p-6, full-bleed). */
   class?: string;
   [key: string]: any;
 }
 
-/** Contenedor tipo tarjeta: superficie + borde + sombra sutil. */
+/** Card-like container: surface + border + subtle shadow. */
 export const Card = (props: CardOptions = {}, ...children: ChildDom[]): ChildDom =>
   van.tags.div(
     {
@@ -28,6 +28,6 @@ export interface CardTitleOptions {
   [key: string]: any;
 }
 
-/** Título estándar de tarjeta (h3). */
+/** Standard card title (h3). */
 export const CardTitle = (props: CardTitleOptions = {}, ...children: ChildDom[]): ChildDom =>
   van.tags.h3({ class: cx("text-base font-semibold text-foreground", props.class) }, ...children);

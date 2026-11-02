@@ -12,11 +12,11 @@ const mount = (node: HTMLElement) => {
   return node;
 };
 
-// VanJS actualiza los bindings en un microtask; hay que esperarlo.
+// VanJS updates bindings in a microtask; tests must wait for it.
 const tick = () => new Promise((r) => setTimeout(r, 0));
 
 describe("Alert", () => {
-  test("pinta la variante, el título, el contenido y role=alert", () => {
+  test("paints the variant, title, content and role=alert", () => {
     const el = mount(
       Alert({ variant: "success", title: "Guardado" }, "Tus cambios quedaron aplicados.") as HTMLElement,
     );
@@ -27,7 +27,7 @@ describe("Alert", () => {
     expect(el.textContent).toContain("Tus cambios quedaron aplicados.");
   });
 
-  test("dismissible: el botón oculta el aviso y avisa via onDismiss", async () => {
+  test("dismissible: the button hides the alert and notifies via onDismiss", async () => {
     let dismissed = false;
     const el = mount(
       Alert({ dismissible: true, onDismiss: () => (dismissed = true) }, "Atención") as HTMLElement,
@@ -42,7 +42,7 @@ describe("Alert", () => {
     expect(el.className).toContain("hidden");
   });
 
-  test("showIcon: false omite el ícono; icon personalizado lo reemplaza", () => {
+  test("showIcon: false omits the icon; a custom icon replaces it", () => {
     const plain = mount(Alert({ showIcon: false }, "Sin ícono") as HTMLElement);
     expect(plain.querySelector("svg")).toBeNull();
 
@@ -52,7 +52,7 @@ describe("Alert", () => {
     expect(custom.querySelector("span")?.textContent).toBe("🚀");
   });
 
-  test("cada variante colorea el ícono con el -fg del estado (tokens, sin paleta cruda)", () => {
+  test("each variant colors the icon with the state's -fg (tokens, no raw palette)", () => {
     const cases: [Parameters<typeof Alert>[0], string][] = [
       [{ variant: "info" }, "text-info-fg"],
       [{ variant: "success" }, "text-success-fg"],
@@ -69,9 +69,9 @@ describe("Alert", () => {
 });
 
 describe("toast", () => {
-  test("toast neutro sobre bg-card (re-themable, sin fondos de paleta cruda)", async () => {
+  test("neutral toast on bg-card (re-themable, no raw palette backgrounds)", async () => {
     toast.clear();
-    toast.success("Guardado", { durationMs: 0 }); // 0: sin auto-cierre durante el test
+    toast.success("Guardado", { durationMs: 0 }); // 0: no auto-dismiss during the test
     await tick();
 
     const el = document.querySelector('[id^="toast-"]') as HTMLElement;
@@ -80,19 +80,19 @@ describe("toast", () => {
     expect(el.className).toContain("border-border");
     expect(el.className).not.toMatch(/(blue|emerald|rose|amber)-900/);
 
-    // El ícono lleva el color del estado, el texto tokens del tema.
+    // The icon carries the state color, the text uses theme tokens.
     const icon = el.querySelector("svg") as SVGElement;
     expect(icon.getAttribute("class")).toContain("text-success-fg");
     expect(el.textContent).toContain("Guardado");
 
     toast.clear();
-    await tick(); // van remueve los nodos en un microtask
+    await tick(); // van removes the nodes in a microtask
     expect(document.querySelector('[id^="toast-"]')).toBeNull();
   });
 });
 
 describe("Progress", () => {
-  test("aria-valuenow y width reactivos al State", async () => {
+  test("reactive aria-valuenow and width driven by the State", async () => {
     const value = van.state(25);
     const el = mount(Progress({ value, label: "Subida" }) as HTMLElement);
     const track = el.querySelector('[role="progressbar"]') as HTMLElement;
@@ -109,7 +109,7 @@ describe("Progress", () => {
     expect(el.textContent).toContain("80%");
   });
 
-  test("acota el porcentaje al rango 0–100", async () => {
+  test("clamps the percentage to the 0–100 range", async () => {
     const value = van.state(250);
     const el = mount(Progress({ value }) as HTMLElement);
     const track = el.querySelector('[role="progressbar"]') as HTMLElement;
@@ -121,7 +121,7 @@ describe("Progress", () => {
     expect(track.getAttribute("aria-valuenow")).toBe("0");
   });
 
-  test("indeterminada: pulsa, oculta el porcentaje y no fija width", async () => {
+  test("indeterminate: pulses, hides the percentage and does not set width", async () => {
     const el = mount(Progress({ indeterminate: true, label: "Cargando" }) as HTMLElement);
     const track = el.querySelector('[role="progressbar"]') as HTMLElement;
     const fill = track.firstElementChild as HTMLElement;
@@ -134,14 +134,14 @@ describe("Progress", () => {
     expect(valueSpan.className).toContain("hidden");
   });
 
-  test("showValue: false oculta el porcentaje incluso determinada", () => {
+  test("showValue: false hides the percentage even when determinate", () => {
     const el = mount(Progress({ value: 40, showValue: false }) as HTMLElement);
     expect(el.textContent).not.toContain("%");
   });
 });
 
 describe("Skeleton", () => {
-  test("texto: default 3 líneas, la última más corta", () => {
+  test("text: 3 lines by default, the last one shorter", () => {
     const el = mount(Skeleton() as HTMLElement);
     const lines = [...el.children] as HTMLElement[];
     expect(lines.length).toBe(3);
@@ -149,7 +149,7 @@ describe("Skeleton", () => {
     expect(lines[2].className).toContain("w-2/3");
   });
 
-  test("lines controla la cantidad; circle y block usan sus formas", () => {
+  test("lines controls the count; circle and block use their shapes", () => {
     expect((mount(Skeleton({ lines: 5 }) as HTMLElement)).children.length).toBe(5);
 
     const circle = mount(Skeleton({ variant: "circle" }) as HTMLElement);
@@ -159,7 +159,7 @@ describe("Skeleton", () => {
     expect(block.className).toContain("h-24");
   });
 
-  test("todos los skeleton pulsan (animate-pulse)", () => {
+  test("all skeletons pulse (animate-pulse)", () => {
     for (const variant of ["text", "circle", "block"] as const) {
       const el = mount(Skeleton({ variant }) as HTMLElement);
       const pulsing =
@@ -170,7 +170,7 @@ describe("Skeleton", () => {
 });
 
 describe("EmptyState", () => {
-  test("renderiza ícono default (SVG inbox), título, descripción y acción", () => {
+  test("renders the default icon (SVG inbox), title, description and action", () => {
     const el = mount(
       EmptyState(
         { title: "Sin datos", description: "Aún no hay registros", action: van.tags.button("Crear") },
@@ -183,7 +183,7 @@ describe("EmptyState", () => {
     expect(el.querySelector("button")?.textContent).toBe("Crear");
   });
 
-  test("ícono personalizado reemplaza el default", () => {
+  test("a custom icon replaces the default one", () => {
     const el = mount(EmptyState({ icon: Icon({ name: "search" }), title: "Sin resultados" }) as HTMLElement);
     expect(el.querySelectorAll("svg").length).toBe(1);
     expect(el.querySelector("svg")).toBeInstanceOf(SVGSVGElement);

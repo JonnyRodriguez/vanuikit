@@ -10,9 +10,9 @@ afterEach(() => {
 });
 
 /**
- * Crea un directorio temporal con archivos de ruta (contenido TS real).
- * Vive DENTRO de tests/fixtures para que `import "hono"` resuelva caminando
- * hasta los node_modules del paquete — en /tmp no hay resolución.
+ * Creates a temp directory with route files (real TS content).
+ * Lives INSIDE tests/fixtures so that `import "hono"` resolves walking up
+ * to the package's node_modules — /tmp has no resolution.
  */
 function makeRoutesDir(files: Record<string, string>): string {
   const fixturesDir = path.join(import.meta.dir, "fixtures");
@@ -35,7 +35,7 @@ export default app;`;
 const GUARD = async (_c: any, next: () => Promise<void>) => next();
 
 describe("loadRoutes (deny-by-default)", () => {
-  test("con auth, un archivo SIN meta queda protegido: el guard corre antes del handler", async () => {
+  test("with auth, a file WITHOUT meta is protected: the guard runs before the handler", async () => {
     const dir = makeRoutesDir({ "api/***REMOVED***.route.ts": APP_BODY });
     let guardRuns = 0;
     const guard = async (_c: any, next: () => Promise<void>) => {
@@ -51,7 +51,7 @@ describe("loadRoutes (deny-by-default)", () => {
     expect(guardRuns).toBe(1);
   });
 
-  test("meta { public: true } marca la excepción: el guard no corre", async () => {
+  test("meta { public: true } marks the exception: the guard does not run", async () => {
     const dir = makeRoutesDir({
       "api/auth.route.ts": `import { Hono } from "hono";
 const app = new Hono();
@@ -72,7 +72,7 @@ export const meta = { public: true };`,
     expect(guardRuns).toBe(0);
   });
 
-  test("sin auth en options no hay protección (comportamiento básico)", async () => {
+  test("without auth in options there is no protection (basic behavior)", async () => {
     const dir = makeRoutesDir({ "ping.route.ts": APP_BODY });
     const loaded: LoadedRouteInfo[] = [];
 
@@ -83,7 +83,7 @@ export const meta = { public: true };`,
     expect(loaded).toEqual([{ path: "/ping", file: "ping.route.ts", protected: false }]);
   });
 
-  test("respeta la jerarquía de carpetas y reporta por onLoad", async () => {
+  test("respects the folder hierarchy and reports via onLoad", async () => {
     const dir = makeRoutesDir({
       "api/***REMOVED***.route.ts": APP_BODY,
       "api/auth.route.ts": APP_BODY.replace("export default app;", "export default app;\nexport const meta = { public: true };"),
@@ -103,7 +103,7 @@ export const meta = { public: true };`,
     ]);
   });
 
-  test("directorio inexistente: app vacía sin lanzar", async () => {
+  test("missing directory: empty app without throwing", async () => {
     const app = await loadRoutes("/tmp/no-existe-vanuikit-routes-xyz");
     const res = await app.request("/cualquiera");
     expect(res.status).toBe(404);

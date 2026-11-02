@@ -4,18 +4,18 @@ import { Nav, Link } from "../src/components/nav.js";
 
 const { state } = van;
 
-// Los bindings de van descargan al microtask: los tests reactivos esperan un tick.
+// van's bindings flush on a microtask: reactive tests wait a tick.
 const flush = () => new Promise<void>((resolve) => setTimeout(resolve, 0));
 
 const click = (el: HTMLElement, init: MouseEventInit = {}) =>
   el.dispatchEvent(new window.MouseEvent("click", { bubbles: true, cancelable: true, ...init }));
 
 /**
- * ¿Decidió el COMPONENTE interceptar el click? Lee defaultPrevented al llegar
- * a los listeners del propio anchor (spaClick corre antes que este probe), sin
- * depender del interceptor global de `router.start()`: happy-dom lo deja
- * instalado entre archivos de test y, al seguir la acción por defecto de los
- * anchors, muta window.location entre tests.
+ * Did the COMPONENT decide to intercept the click? Reads defaultPrevented
+ * when it reaches the anchor's own listeners (spaClick runs before this
+ * probe), without depending on router.start()'s global interceptor:
+ * happy-dom keeps it installed across test files and, by following the
+ * anchors' default action, mutates window.location between tests.
  */
 const componentPrevents = (el: HTMLElement, init: MouseEventInit = {}) => {
   let prevented = false;
@@ -41,7 +41,7 @@ const ROUTE_LINKS = [
 ];
 
 describe("Nav", () => {
-  test("renderiza un link por item, con href y label", () => {
+  test("renders one link per item, with href and label", () => {
     const nav = Nav(LINKS, { current: "./index.html" });
     document.body.replaceChildren(nav);
     const anchors = [...document.body.querySelectorAll("a")];
@@ -50,7 +50,7 @@ describe("Nav", () => {
     expect(anchors[1].textContent).toBe("Login");
   });
 
-  test("marca el link actual con aria-current=page y clase activa", () => {
+  test("marks the current link with aria-current=page and active class", () => {
     const nav = Nav(LINKS, { current: "./register.html" });
     document.body.replaceChildren(nav);
     const active = document.body.querySelector(
@@ -62,21 +62,21 @@ describe("Nav", () => {
     expect(active.className).toContain("font-bold");
   });
 
-  test("solo un link lleva aria-current", () => {
+  test("only one link carries aria-current", () => {
     const nav = Nav(LINKS, { current: "./index.html" });
     document.body.replaceChildren(nav);
     const actives = document.body.querySelectorAll('[aria-current="page"]');
     expect(actives).toHaveLength(1);
   });
 
-  test("marca el activo por subruta: /***REMOVED***/abc activa /***REMOVED***", () => {
+  test("marks active by subroute: /***REMOVED***/abc activates /***REMOVED***", () => {
     const nav = Nav(ROUTE_LINKS, { current: "/***REMOVED***/abc" });
     document.body.replaceChildren(nav);
     const active = document.body.querySelector('[aria-current="page"]');
     expect(active?.textContent).toBe("***REMOVED***s");
   });
 
-  test("el activo se actualiza de forma reactiva al cambiar current", async () => {
+  test("the active item updates reactively when current changes", async () => {
     const current = state("/***REMOVED***");
     const nav = Nav(ROUTE_LINKS, { current });
     document.body.replaceChildren(nav);
@@ -87,10 +87,10 @@ describe("Nav", () => {
     expect(document.querySelector('[aria-current="page"]')?.textContent).toBe("Componentes");
   });
 
-  test("aria-label por defecto vía i18n, overridable por prop", () => {
+  test("default aria-label via i18n, overridable by prop", () => {
     const nav = Nav(LINKS, { current: "./index.html" });
     document.body.replaceChildren(nav);
-    // El singleton arranca en "en": resuelve del diccionario, no del default español.
+    // The singleton boots in "en": resolves from the dictionary, not the Spanish default.
     expect(nav.getAttribute("aria-label")).toBe("Main navigation");
 
     const navCustom = Nav(LINKS, { current: "./index.html", ariaLabel: "Menú principal" });
@@ -98,7 +98,7 @@ describe("Nav", () => {
     expect(navCustom.getAttribute("aria-label")).toBe("Menú principal");
   });
 
-  test("los clicks navegan embebidos: preventDefault solo en rutas internas", () => {
+  test("clicks navigate embedded: preventDefault only on internal routes", () => {
     const nav = Nav([{ href: "/***REMOVED***", label: "***REMOVED***s" }], { current: "/other" });
     document.body.replaceChildren(nav);
     const internal = nav.querySelector("a") as HTMLElement;
@@ -112,7 +112,7 @@ describe("Nav", () => {
 });
 
 describe("Link", () => {
-  test("renderiza ancla con href, variante accent por defecto y class extra", () => {
+  test("renders an anchor with href, accent variant by default and extra class", () => {
     const link = Link({ href: "/***REMOVED***", class: "my-extra" }, "Ver ***REMOVED***s");
     document.body.replaceChildren(link);
     expect(link.getAttribute("href")).toBe("/***REMOVED***");
@@ -121,14 +121,14 @@ describe("Link", () => {
     expect(link.className).toContain("my-extra");
   });
 
-  test("variante button comparte los tokens del botón primario", () => {
+  test("button variant shares the primary button tokens", () => {
     const link = Link({ href: "/login", variant: "button" }, "Entrar");
     document.body.replaceChildren(link);
     expect(link.className).toContain("bg-primary");
     expect(link.className).toContain("text-primary-fg");
   });
 
-  test("click interno delega en el router; con Ctrl o href externo navega nativo", () => {
+  test("internal click delegates to the router; with Ctrl or external href navigates natively", () => {
     const link = Link({ href: "/***REMOVED***" }, "x");
     document.body.replaceChildren(link);
     expect(componentPrevents(link)).toBe(true);
@@ -139,7 +139,7 @@ describe("Link", () => {
     expect(componentPrevents(ext)).toBe(false);
   });
 
-  test("target=_blank añade rel=noopener noreferrer salvo rel explícito", () => {
+  test("target=_blank adds rel=noopener noreferrer unless rel is explicit", () => {
     const auto = Link({ href: "https://example.com", target: "_blank" }, "x");
     expect(auto.getAttribute("rel")).toBe("noopener noreferrer");
 
@@ -150,10 +150,10 @@ describe("Link", () => {
     expect(internal.getAttribute("rel")).toBeNull();
   });
 
-  test("un preventDefault del consumidor cancela la navegación SPA", () => {
+  test("a consumer preventDefault cancels the SPA navigation", () => {
     const link = Link({ href: "/***REMOVED***", onclick: (e) => e.preventDefault() }, "x");
     document.body.replaceChildren(link);
-    // Ya viene prevenido por el consumidor: spaClick respeta la decisión y no navega.
+    // Already prevented by the consumer: spaClick respects the decision and does not navigate.
     expect(click(link)).toBe(false);
   });
 });

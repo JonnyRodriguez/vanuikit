@@ -10,12 +10,12 @@ import {
 
 const { div, span, button } = van.tags;
 
-// van 1.6 difiere la actualización del DOM a un microtask (updateDoms): los
-// clicks en tests deben esperar un tick antes de asertar el DOM.
+// van 1.6 defers DOM updates to a microtask (updateDoms): clicks in tests
+// must wait a tick before asserting the DOM.
 const tick = () => new Promise((resolve) => setTimeout(resolve, 0));
 
 describe("Layout & Dashboard Components", () => {
-  test("SidebarItem > renderiza link o botón con label, icono y badge", () => {
+  test("SidebarItem > renders link or button with label, icon and badge", () => {
     const item = SidebarItem({
       href: "/dashboard",
       label: "Tablero",
@@ -36,7 +36,7 @@ describe("Layout & Dashboard Components", () => {
     expect(anchor?.textContent).toContain("3");
   });
 
-  test("SidebarGroup > renderiza título y agrupa elementos hijos", () => {
+  test("SidebarGroup > renders title and groups child items", () => {
     const group = SidebarGroup(
       { title: "Gestión" },
       SidebarItem({ href: "/items", label: "Artículos" }),
@@ -50,7 +50,7 @@ describe("Layout & Dashboard Components", () => {
     expect(host.querySelectorAll("a").length).toBe(2);
   });
 
-  test("HeaderBar > renderiza leading, título y acciones", () => {
+  test("HeaderBar > renders leading, title and actions", () => {
     const header = HeaderBar({
       leading: button({ class: "menu-btn" }, "☰"),
       title: "Panel Principal",
@@ -65,7 +65,7 @@ describe("Layout & Dashboard Components", () => {
     expect(host.querySelector(".user-pill")?.textContent).toBe("Admin");
   });
 
-  test("AppShell > renderiza sidebar, header y content", async () => {
+  test("AppShell > renders sidebar, header and content", async () => {
     const isOpen = van.state(false);
 
     const shell = AppShell({
@@ -97,8 +97,8 @@ describe("Layout & Dashboard Components", () => {
   });
 });
 
-describe("Sidebar colapsable (modo rail desktop)", () => {
-  test("sin collapsible no renderiza el botón de colapso", () => {
+describe("Collapsible Sidebar (desktop rail mode)", () => {
+  test("without collapsible does not render the collapse button", () => {
     const host = document.createElement("div");
     van.add(
       host,
@@ -108,10 +108,10 @@ describe("Sidebar colapsable (modo rail desktop)", () => {
     expect(host.querySelector("aside button[aria-expanded]")).toBeNull();
   });
 
-  test("colapso no controlado: alterna rail, oculta labels y persiste en localStorage", async () => {
+  test("uncontrolled collapse: toggles rail, hides labels and persists to localStorage", async () => {
     localStorage.clear();
     const key = "test-sidebar-key";
-    // Conectar al documento: van descarta bindings de árboles detached (keepConnected)
+    // Connect to the document: van discards bindings of detached trees (keepConnected)
     const host = document.createElement("div");
     document.body.appendChild(host);
     van.add(
@@ -129,7 +129,7 @@ describe("Sidebar colapsable (modo rail desktop)", () => {
     expect(toggle).not.toBeNull();
     expect(aside.className).toContain("w-64");
     expect(toggle.getAttribute("aria-expanded")).toBe("true");
-    // Nombre accesible del ítem intacto aunque el label se oculte en rail
+    // Item's accessible name intact even though the label hides in rail
     const item = aside.querySelector(".vui-sb-item") as HTMLElement;
     expect(item.getAttribute("aria-label")).toBe("Artículos");
     expect(aside.querySelector(".vui-sb-label")).not.toBeNull();
@@ -137,13 +137,13 @@ describe("Sidebar colapsable (modo rail desktop)", () => {
     toggle.click();
     await tick();
 
-    // El rail solo aplica en desktop (lg:): en mobile el drawer queda expandido
+    // The rail only applies on desktop (lg:): on mobile the drawer stays expanded
     expect(aside.className).toContain("lg:w-20");
     expect(toggle.getAttribute("aria-expanded")).toBe("false");
     expect(aside.className).toContain('lg:[&_.vui-sb-label]:hidden');
     expect(localStorage.getItem(key)).toBe("1");
 
-    // Una nueva instancia con la misma clave arranca colapsada (persistencia)
+    // A new instance with the same key starts collapsed (persistence)
     host.remove();
     const host2 = document.createElement("div");
     document.body.appendChild(host2);
@@ -159,7 +159,7 @@ describe("Sidebar colapsable (modo rail desktop)", () => {
     host2.remove();
   });
 
-  test("colapso controlado: el state externo manda y el toggle lo actualiza", async () => {
+  test("controlled collapse: the external state drives and the toggle updates it", async () => {
     const collapsed = van.state(false);
     const host = document.createElement("div");
     document.body.appendChild(host);
@@ -181,7 +181,7 @@ describe("Sidebar colapsable (modo rail desktop)", () => {
   });
 });
 
-describe("Sidebar resizable (drag horizontal)", () => {
+describe("Resizable Sidebar (horizontal drag)", () => {
   beforeEach(() => localStorage.clear());
 
   const mountSidebar = (props: Record<string, unknown> = {}) => {
@@ -201,14 +201,14 @@ describe("Sidebar resizable (drag horizontal)", () => {
     return { host, aside, resizer };
   };
 
-  test("sin resizable no renderiza el separador de resize", () => {
+  test("without resizable does not render the resize handle", () => {
     const host = document.createElement("div");
     van.add(host, Sidebar({ header: div("Logo"), content: SidebarItem({ href: "/a", label: "A" }) }));
     expect(host.querySelector(".vui-sb-resizer")).toBeNull();
     host.remove();
   });
 
-  test("resizable: renderiza separador con aria y ancho por defecto", () => {
+  test("resizable: renders handle with aria and default width", () => {
     const { resizer, aside } = mountSidebar();
     expect(resizer).not.toBeNull();
     expect(resizer.getAttribute("role")).toBe("separator");
@@ -220,7 +220,7 @@ describe("Sidebar resizable (drag horizontal)", () => {
     expect(aside.style.width).toBe("256px");
   });
 
-  test("drag del separador actualiza el ancho y persiste en localStorage", async () => {
+  test("dragging the handle updates the width and persists to localStorage", async () => {
     const { resizer, aside } = mountSidebar();
 
     resizer.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, clientX: 300 }));
@@ -232,7 +232,7 @@ describe("Sidebar resizable (drag horizontal)", () => {
     expect(localStorage.getItem("vanuikit-sidebar-width")).toBe("296");
   });
 
-  test("drag respeta ancho mínimo y máximo", async () => {
+  test("drag respects minimum and maximum width", async () => {
     const { resizer, aside } = mountSidebar();
 
     resizer.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, clientX: 300 }));
@@ -248,7 +248,7 @@ describe("Sidebar resizable (drag horizontal)", () => {
     expect(aside.style.width).toBe("224px"); // clamp min
   });
 
-  test("teclado: flechas ajustan el ancho en pasos de 16px", async () => {
+  test("keyboard: arrows adjust the width in 16px steps", async () => {
     const { resizer, aside } = mountSidebar();
 
     resizer.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
@@ -260,10 +260,10 @@ describe("Sidebar resizable (drag horizontal)", () => {
     expect(aside.style.width).toBe("256px");
   });
 
-  test("ancho inicial desde localStorage y límites configurables", () => {
+  test("initial width from localStorage and configurable bounds", () => {
     localStorage.setItem("vanuikit-sidebar-width", "999");
     const { aside } = mountSidebar({ maxWidth: 400 });
-    expect(aside.style.width).toBe("400px"); // clamp al máximo configurable
+    expect(aside.style.width).toBe("400px"); // clamped to the configurable max
 
     localStorage.setItem("vanuikit-sidebar-width", "300");
     const { resizer } = mountSidebar({ minWidth: 250, maxWidth: 350 });

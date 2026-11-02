@@ -2,29 +2,29 @@ import { describe, test, expect } from "bun:test";
 import { createI18n } from "../src/i18n.js";
 import { createFmt } from "../src/fmt.js";
 
-// Instancia i18n aislada: mutar el singleton global desde los tests lo
-// contaminaría para los demás archivos (registro de módulos compartido).
+// Isolated i18n instance: mutating the global singleton from tests would
+// pollute the other files (shared module registry).
 const i18n = createI18n({ defaultLocale: "en", locales: { en: {}, es: {} } });
-// localStorage persiste entre archivos de test: fuerza el locale inicial.
+// localStorage persists across test files: force the initial locale.
 i18n.setLocale("en");
 const fmt = createFmt(i18n);
 
-// VanJS actualiza los bindings en un microtask; hay que esperarlo.
+// VanJS updates bindings in a microtask; tests must wait for it.
 const tick = () => new Promise((r) => setTimeout(r, 0));
 
-// Fecha estable e inocua en zona horaria: mediodía UTC.
+// Timezone-stable and safe date: noon UTC.
 const DATE = new Date(Date.UTC(2026, 9, 15, 12, 0, 0));
 
-describe("fmt — resolución por locale", () => {
-  test("number: separadores de miles y coma decimal en es vs en", () => {
-    // 7 dígitos: el agrupamiento es determinista (es agrupa a partir de 5).
+describe("fmt — locale resolution", () => {
+  test("number: thousands separators and decimal comma in es vs en", () => {
+    // 7 digits: grouping is deterministic (es groups from 5 up).
     expect(fmt.raw.number(1234567.89)).toContain("1,234,567.89");
     i18n.setLocale("es");
     expect(fmt.raw.number(1234567.89)).toContain("1.234.567,89");
     i18n.setLocale("en");
   });
 
-  test("currency: símbolo USD con separadores por locale", () => {
+  test("currency: USD symbol with locale separators", () => {
     const en = fmt.raw.currency(1234567.89);
     expect(en).toContain("1,234,567.89");
     i18n.setLocale("es");
@@ -46,7 +46,7 @@ describe("fmt — resolución por locale", () => {
     expect(en).toContain("%");
   });
 
-  test("date: día y año presentes, mes según locale", () => {
+  test("date: day and year present, month per locale", () => {
     const en = fmt.raw.date(DATE);
     expect(en).toContain("2026");
     expect(en).toMatch(/Oct/i);
@@ -58,34 +58,34 @@ describe("fmt — resolución por locale", () => {
     i18n.setLocale("en");
   });
 
-  test("datetime incluye la hora; time solo la hora", () => {
+  test("datetime includes the time; time only the time", () => {
     const dt = fmt.raw.datetime(DATE);
     expect(dt).toContain("2026");
     expect(dt).toMatch(/\d{1,2}:\d{2}/);
     expect(fmt.raw.time(DATE)).toMatch(/\d{1,2}:\d{2}/);
   });
 
-  test("relative: ayer/yesterday con numeric auto", () => {
+  test("relative: yesterday/ayer with numeric auto", () => {
     expect(fmt.raw.relative(-1, "day")).toBe("yesterday");
     i18n.setLocale("es");
     expect(fmt.raw.relative(-1, "day")).toBe("ayer");
     i18n.setLocale("en");
   });
 
-  test("acepta Date, timestamp e ISO string", () => {
+  test("accepts Date, timestamp and ISO string", () => {
     const ts = DATE.getTime();
     expect(fmt.raw.date(ts)).toBe(fmt.raw.date(DATE));
     expect(fmt.raw.date(DATE.toISOString().slice(0, 10))).toBe(fmt.raw.date(DATE));
   });
 
-  test("fecha inválida: string vacío, sin excepciones", () => {
+  test("invalid date: empty string, no exceptions", () => {
     expect(fmt.raw.date("no-es-fecha")).toBe("");
     expect(fmt.raw.datetime("2026-13-45")).toBe("");
   });
 });
 
-describe("fmt — reactividad al cambiar locale", () => {
-  test("el State muta tras setLocale", async () => {
+describe("fmt — reactivity on locale change", () => {
+  test("the State mutates after setLocale", async () => {
     const price = fmt.currency(99.5, { minimumFractionDigits: 2 });
     expect(price.val).toContain("99.50");
 
@@ -98,7 +98,7 @@ describe("fmt — reactividad al cambiar locale", () => {
     expect(price.val).toContain("99.50");
   });
 
-  test("en el DOM: insertar el State como hijo y cambiar locale", async () => {
+  test("in the DOM: insert the State as a child and change the locale", async () => {
     const van = (await import("vanjs-core")).default;
     const label = fmt.relative(-1, "day");
     const el = van.tags.span(label);
@@ -114,7 +114,7 @@ describe("fmt — reactividad al cambiar locale", () => {
     document.body.replaceChildren();
   });
 
-  test("raw retorna string plano, no State", () => {
+  test("raw returns a plain string, not a State", () => {
     expect(typeof fmt.raw.number(5)).toBe("string");
     expect(typeof fmt.date(5)).toBe("object");
   });

@@ -15,7 +15,7 @@ const submit = async (formEl: HTMLFormElement) => {
   await flush();
 };
 
-/** Schema fake (estructural, compatible con la interfaz SchemaLike). */
+/** Fake schema (structural, compatible with the SchemaLike interface). */
 const makeSchema = (
   failWith: Array<{ path: string; message: string }> = [],
 ): SchemaLike => ({
@@ -36,8 +36,8 @@ const setValue = (formEl: HTMLFormElement, name: string, value: string) => {
   input.dispatchEvent(new Event("input", { bubbles: true }));
 };
 
-describe("Form v3 — contrato", () => {
-  test("submitting es true mientras onSubmit corre, y bloquea doble submit", async () => {
+describe("Form v3 — contract", () => {
+  test("submitting is true while onSubmit runs, and blocks double submit", async () => {
     let calls = 0;
     let resolveSubmit!: (r: FormResult) => void;
     const form = Form({
@@ -57,7 +57,7 @@ describe("Form v3 — contrato", () => {
     await tick();
     expect(form.submitting.val).toBe(true);
 
-    // intento de doble submit mientras corre → no llama de nuevo
+    // double submit attempt while running → not called again
     el.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
     await tick();
     expect(calls).toBe(1);
@@ -68,7 +68,7 @@ describe("Form v3 — contrato", () => {
     expect(calls).toBe(1);
   });
 
-  test("schema: si falla, no llama onSubmit y pinta errores por campo", async () => {
+  test("schema: on failure, does not call onSubmit and paints per-field errors", async () => {
     let called = false;
     const schema = makeSchema([{ path: "email", message: "Correo requerido" }]);
     const form = Form({
@@ -91,7 +91,7 @@ describe("Form v3 — contrato", () => {
     expect(form.error.val).toBe("");
   });
 
-  test("schema: errores sin campo registrado caen en la línea general", async () => {
+  test("schema: errors without a registered field fall into the general line", async () => {
     const schema = makeSchema([{ path: "foo", message: "Falta el término" }]);
     const form = Form({
       schema,
@@ -103,7 +103,7 @@ describe("Form v3 — contrato", () => {
     expect(form.error.val).toBe("Falta el término");
   });
 
-  test("schema: si pasa, llama onSubmit con los datos", async () => {
+  test("schema: on success, calls onSubmit with the data", async () => {
     let received: Record<string, unknown> | null = null;
     const form = Form({
       schema: makeSchema(),
@@ -120,7 +120,7 @@ describe("Form v3 — contrato", () => {
     expect(received).toEqual({ email: "a@b.co", password: "123456" });
   });
 
-  test("backend fieldErrors: se aplican con setError; los no mapeados van a la línea general", async () => {
+  test("backend fieldErrors: applied via setError; unmapped ones go to the general line", async () => {
     const form = Form({
       onSubmit: () => ({
         ok: false,
@@ -138,7 +138,7 @@ describe("Form v3 — contrato", () => {
     expect(form.error.val).toBe("Algo falló");
   });
 
-  test("backend error general: se muestra en la línea general", async () => {
+  test("backend general error: shown in the general line", async () => {
     let onErrorCalled = false;
     const form = Form({
       onSubmit: () => ({ ok: false, error: "Credenciales inválidas" }),
@@ -155,7 +155,7 @@ describe("Form v3 — contrato", () => {
     expect(onErrorCalled).toBe(true);
   });
 
-  test("onSuccess se llama al triunfar y deja la línea general limpia", async () => {
+  test("onSuccess is called on success and leaves the general line clean", async () => {
     let successData: Record<string, unknown> | null = null;
     const form = Form({
       onSubmit: () => ({ ok: true }),
@@ -172,7 +172,7 @@ describe("Form v3 — contrato", () => {
     expect(successData).toEqual({ email: "a@b.co", password: "123456" });
   });
 
-  test("legacy handler: { error } se normaliza a la línea general", async () => {
+  test("legacy handler: { error } is normalized to the general line", async () => {
     const form = Form(async () => {
       return { error: "Falló" };
     });
@@ -184,7 +184,7 @@ describe("Form v3 — contrato", () => {
     expect(form.error.val).toBe("Falló");
   });
 
-  test("legacy handler: void se trata como éxito", async () => {
+  test("legacy handler: void is treated as success", async () => {
     const form = Form(() => {});
     form.add(EmailField(), PasswordField());
     const el = mount(form.dom()) as HTMLFormElement;

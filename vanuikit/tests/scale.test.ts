@@ -13,7 +13,7 @@ const mount = (node: HTMLElement) => {
   return node;
 };
 
-// VanJS actualiza los bindings en un microtask; hay que esperarlo.
+// VanJS updates bindings in a microtask; tests must wait for it.
 const tick = () => new Promise((r) => setTimeout(r, 0));
 
 afterEach(() => {
@@ -21,14 +21,14 @@ afterEach(() => {
 });
 
 describe("Avatar", () => {
-  test("getInitials: dos palabras, una palabra, vacío", () => {
+  test("getInitials: two words, one word, empty", () => {
     expect(getInitials("Ana Morales")).toBe("AM");
     expect(getInitials("  Chavo ")).toBe("CH");
     expect(getInitials("", "U")).toBe("U");
     expect(getInitials("x", "U")).toBe("X");
   });
 
-  test("renderiza iniciales y aria-label del nombre (State incluido)", async () => {
+  test("renders initials and the name's aria-label (including State)", async () => {
     const name = van.state("Lucía Fernández");
     const el = mount(Avatar({ name, size: "sm" }) as HTMLElement);
     await tick();
@@ -40,7 +40,7 @@ describe("Avatar", () => {
     expect(el.textContent).toBe("BE");
   });
 
-  test("src rota a iniciales cuando la imagen falla", async () => {
+  test("src falls back to initials when the image fails", async () => {
     const el = mount(Avatar({ name: "Ana Morales", src: "inexistente.png" }) as HTMLElement);
     const img = el.querySelector("img")!;
     expect(img).toBeTruthy();
@@ -53,7 +53,7 @@ describe("Avatar", () => {
 });
 
 describe("UserBadge + Avatar compartido", () => {
-  test("sigue mostrando iniciales del usuario", () => {
+  test("keeps showing the user's initials", () => {
     const el = mount(
       van.tags.div({}, UserBadge({ user: { name: "Carla Ruiz", email: "carla@x.co" } } as any)) as HTMLElement,
     );
@@ -63,7 +63,7 @@ describe("UserBadge + Avatar compartido", () => {
 });
 
 describe("Breadcrumbs", () => {
-  test("anchors navegables, último con aria-current y separadores", () => {
+  test("navigable anchors, last one with aria-current and separators", () => {
     const el = mount(
       Breadcrumbs({
         items: [
@@ -83,7 +83,7 @@ describe("Breadcrumbs", () => {
     expect(el.getAttribute("aria-label")).toBeTruthy();
   });
 
-  test("hrefs intermedios son anchors; el último es siempre aria-current", () => {
+  test("intermediate hrefs are anchors; the last one is always aria-current", () => {
     const el = mount(
       Breadcrumbs({
         items: [
@@ -94,13 +94,13 @@ describe("Breadcrumbs", () => {
         ],
       }) as HTMLElement,
     );
-    expect(el.querySelectorAll("a").length).toBe(2); // B y C; A sin href, D es la página
+    expect(el.querySelectorAll("a").length).toBe(2); // B and C; A has no href, D is the page
     expect(el.querySelector('[aria-current="page"]')!.textContent).toBe("D");
   });
 });
 
 describe("Card", () => {
-  test("superficie base + hoverable + CardTitle", () => {
+  test("base surface + hoverable + CardTitle", () => {
     const el = mount(Card({ hoverable: true }, CardTitle({}, "Hola"), "cuerpo") as HTMLElement);
     expect(el.className).toContain("bg-card");
     expect(el.className).toContain("hover:shadow-md");
@@ -118,7 +118,7 @@ describe("Accordion", () => {
       ...extra,
     }) as HTMLElement;
 
-  test("default: abrir uno cierra el otro; aria-expanded y region", async () => {
+  test("default: opening one closes the other; aria-expanded and region", async () => {
     const el = mount(build());
     const buttons = [...el.querySelectorAll("button")];
     expect(buttons[0].getAttribute("aria-expanded")).toBe("false");
@@ -138,7 +138,7 @@ describe("Accordion", () => {
     expect(el.textContent).not.toContain("Contenido A");
   });
 
-  test("multiple: conviven varios abiertos; re-click cierra", async () => {
+  test("multiple: several open at once; re-click closes", async () => {
     const el = mount(build({ multiple: true }));
     const buttons = [...el.querySelectorAll("button")];
     buttons[0].click();
@@ -153,7 +153,7 @@ describe("Accordion", () => {
     expect(el.textContent).toContain("Contenido A");
   });
 
-  test("defaultOpen y content factory invocada en cada apertura", async () => {
+  test("defaultOpen and content factory invoked on each open", async () => {
     let builds = 0;
     const el = mount(
       Accordion({
@@ -166,14 +166,14 @@ describe("Accordion", () => {
     await tick();
     expect(el.textContent).toContain("A1");
 
-    (el.querySelector("button") as HTMLButtonElement).click(); // cerrar
+    (el.querySelector("button") as HTMLButtonElement).click(); // close
     await tick();
-    (el.querySelector("button") as HTMLButtonElement).click(); // reabrir
+    (el.querySelector("button") as HTMLButtonElement).click(); // reopen
     await tick();
-    expect(el.textContent).toContain("A2"); // fábrica re-invocada
+    expect(el.textContent).toContain("A2"); // factory re-invoked
   });
 
-  test("disabled: el botón no abre", async () => {
+  test("disabled: the button does not open", async () => {
     const el = mount(
       Accordion({
         items: [{ id: "x", title: "X", content: () => van.tags.p("X"), disabled: true }],
@@ -209,7 +209,7 @@ describe("Combobox", () => {
   const key = (input: HTMLInputElement, key: string) =>
     input.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true }));
 
-  test("focus abre, filtrar reduce opciones, Esc cierra y muestra la selección", async () => {
+  test("focus opens, filtering narrows options, Esc closes and shows the selection", async () => {
     const { dom, input } = build();
     mount(dom);
     const panel = () => dom.querySelector('[role="listbox"]')!.parentElement!;
@@ -228,16 +228,16 @@ describe("Combobox", () => {
     key(input(), "Escape");
     await tick();
     expect(panel().classList.contains("hidden")).toBe(true);
-    expect(input().value).toBe(""); // sin selección, sin query
+    expect(input().value).toBe(""); // no selection, no query
   });
 
-  test("flechas navegan saltando deshabilitadas, Enter selecciona y el input refleja el label", async () => {
+  test("arrows navigate skipping disabled, Enter selects and the input reflects the label", async () => {
     const { dom, input, value } = build();
     mount(dom);
     input().focus();
     await tick();
 
-    // El foco ya dejó enfocada la primera habilitada (Argentina)
+    // Focus already highlighted the first enabled option (Argentina)
     expect(input().getAttribute("aria-activedescendant")).toContain("opt-0");
     key(input(), "ArrowDown"); // Bolivia
     await tick();
@@ -245,10 +245,10 @@ describe("Combobox", () => {
     key(input(), "ArrowDown"); // Colombia
     await tick();
     expect(input().getAttribute("aria-activedescendant")).toContain("opt-2");
-    key(input(), "ArrowDown"); // envuelve: salta Brasil (disabled) → Argentina
+    key(input(), "ArrowDown"); // wraps: skips Brasil (disabled) → Argentina
     await tick();
     expect(input().getAttribute("aria-activedescendant")).toContain("opt-0");
-    key(input(), "ArrowUp"); // hacia atrás también salta Brasil → Colombia
+    key(input(), "ArrowUp"); // backwards also skips Brasil → Colombia
     await tick();
     expect(input().getAttribute("aria-activedescendant")).toContain("opt-2");
 
@@ -262,7 +262,7 @@ describe("Combobox", () => {
     expect(input().getAttribute("aria-expanded")).toBe("false");
   });
 
-  test("selección con click (mousedown no roba el foco del input)", async () => {
+  test("selection with click (mousedown does not steal the input's focus)", async () => {
     const { dom, input, value } = build();
     mount(dom);
     input().focus();
@@ -275,7 +275,7 @@ describe("Combobox", () => {
     expect(document.activeElement).toBe(input());
   });
 
-  test("State externo manda: cerrado muestra el label del valor", async () => {
+  test("external State drives: closed shows the value's label", async () => {
     const { dom, input, value } = build();
     mount(dom);
     value.val = "ar";
@@ -283,7 +283,7 @@ describe("Combobox", () => {
     expect(input().value).toBe("Argentina");
   });
 
-  test("click fuera cierra", async () => {
+  test("click outside closes", async () => {
     const { dom, input } = build();
     mount(dom);
     input().focus();
@@ -296,7 +296,7 @@ describe("Combobox", () => {
     expect(panel.classList.contains("hidden")).toBe(true);
   });
 
-  test("required en Form: sin selección bloquea, con selección pasa", async () => {
+  test("required in Form: without selection blocks, with selection passes", async () => {
     let called = false;
     let data: Record<string, unknown> | null = null;
     const form = Form((d) => {
@@ -314,7 +314,7 @@ describe("Combobox", () => {
     const input = el.querySelector('input[type="text"]') as HTMLInputElement;
     input.focus();
     await tick();
-    key(input, "Enter"); // primera opción enfocada al abrir
+    key(input, "Enter"); // first option focused on open
     await tick();
     el.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
     await tick();

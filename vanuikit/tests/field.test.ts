@@ -8,17 +8,17 @@ const mount = (node: HTMLElement) => {
   return node;
 };
 
-// VanJS actualiza los bindings en un microtask; hay que esperarlo.
+// VanJS updates bindings in a microtask; tests must wait for it.
 const tick = () => new Promise((r) => setTimeout(r, 0));
 
-/** Dispara submit sobre el form y espera el flujo async. */
+/** Dispatches submit on the form and awaits the async flow. */
 const submit = async (formEl: HTMLFormElement) => {
   formEl.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
   await tick();
 };
 
-describe("EmailField — unidad tipada", () => {
-  test("rechaza vacío y formato inválido, acepta válido", () => {
+describe("EmailField — typed unit", () => {
+  test("rejects empty and invalid format, accepts valid", () => {
     const email = EmailField();
     expect(email.validate("")).toBe(false);
     expect(email.error.val).toContain("email");
@@ -28,8 +28,8 @@ describe("EmailField — unidad tipada", () => {
   });
 });
 
-describe("PasswordField — unidad tipada", () => {
-  test("rechaza vacío y corto, acepta >= 6", () => {
+describe("PasswordField — typed unit", () => {
+  test("rejects empty and short, accepts >= 6", () => {
     const pass = PasswordField();
     expect(pass.validate("")).toBe(false);
     expect(pass.validate("12345")).toBe(false);
@@ -43,29 +43,29 @@ describe("PasswordField — unidad tipada", () => {
   });
 });
 
-describe("TextField — requerido", () => {
-  test("rechaza vacío, acepta texto", () => {
+describe("TextField — required", () => {
+  test("rejects empty, accepts text", () => {
     const name = TextField("Nombre", "name");
     expect(name.validate("  ")).toBe(false);
     expect(name.validate("Ana")).toBe(true);
   });
 });
 
-describe("Proxy: addValidator sin perder los del tipo", () => {
-  test("EmailField + validación extra sigue chequeando formato", () => {
+describe("Proxy: addValidator without losing the type's own validators", () => {
+  test("EmailField + extra validation still checks the format", () => {
     const email = EmailField();
     email.addValidator(MinLength(20, "Muy corto"));
-    // formato inválido -> error del tipo (el extra no corre primero)
+    // invalid format -> type error (the extra one does not run first)
     expect(email.validate("abc")).toBe(false);
     expect(email.error.val).toBe("Invalid email address");
-    // formato válido pero corto -> error extra
+    // valid but short format -> extra error
     expect(email.validate("a@b.co")).toBe(false);
     expect(email.error.val).toBe("Muy corto");
-    // ambos pasan
+    // both pass
     expect(email.validate("nombre.largo@ejemplo.com")).toBe(true);
   });
 
-  test("campo base construido desde cero", () => {
+  test("base field built from scratch", () => {
     const monto = Field({ label: "Monto", name: "monto", inputType: "number" });
     monto.addValidator(Required("Ingresa un monto"));
     expect(monto.validate("")).toBe(false);
@@ -73,8 +73,8 @@ describe("Proxy: addValidator sin perder los del tipo", () => {
   });
 });
 
-describe("Form — itera las verificaciones por defecto", () => {
-  test("no llama onSubmit si algún campo falla", async () => {
+describe("Form — runs the default validations", () => {
+  test("does not call onSubmit when a field fails", async () => {
     let called = false;
     const form = Form(() => {
       called = true;
@@ -90,7 +90,7 @@ describe("Form — itera las verificaciones por defecto", () => {
     expect(el.textContent).toContain("Invalid email address");
   });
 
-  test("llama onSubmit con los datos cuando todo pasa", async () => {
+  test("calls onSubmit with the data when everything passes", async () => {
     let data: Record<string, unknown> | null = null;
     const form = Form((d) => {
       data = d;
@@ -105,7 +105,7 @@ describe("Form — itera las verificaciones por defecto", () => {
     expect(data).toEqual({ email: "a@b.co", password: "123456" });
   });
 
-  test("Match: confirmar contraseña", async () => {
+  test("Match: password confirmation", async () => {
     let called = false;
     const form = Form(() => {
       called = true;

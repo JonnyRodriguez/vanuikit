@@ -1,7 +1,14 @@
-import { describe, test, expect, beforeEach, afterEach } from "bun:test";
+import { describe, test, expect, beforeEach, afterEach, afterAll } from "bun:test";
 import { createI18n, i18n as globalI18n } from "../src/i18n.js";
 
 const nextTick = () => new Promise((resolve) => setTimeout(resolve, 10));
+
+// Tests below pin the global singleton to "es"; bun test runs the whole suite
+// in one process, so restore the default to avoid leaking into other files.
+afterAll(() => {
+  localStorage.removeItem("vanuikit-locale");
+  globalI18n.setLocale("en");
+});
 
 describe("createI18n", () => {
   beforeEach(() => {
@@ -23,13 +30,13 @@ describe("createI18n", () => {
     },
   };
 
-  test("resuelve traducciones anidadas e interpolación", () => {
+  test("resolves nested translations and interpolation", () => {
     const i18n = createI18n({ defaultLocale: "es", locales });
     expect(i18n.raw("common.save")).toBe("Guardar");
     expect(i18n.raw("greeting", undefined, { name: "Mundo" })).toBe("Hola Mundo");
   });
 
-  test("derivación reactiva con t() se actualiza al cambiar de idioma", async () => {
+  test("reactive derivation with t() updates on language change", async () => {
     const i18n = createI18n({ defaultLocale: "es", locales });
     const reactiveText = i18n.t("common.save");
     expect(reactiveText.val).toBe("Guardar");
@@ -42,7 +49,7 @@ describe("createI18n", () => {
     expect(reactiveText.val).toBe("Save");
   });
 
-  test("fallback al idioma por defecto si la llave falta en el secundario", () => {
+  test("falls back to the default locale when the key is missing in the secondary one", () => {
     const localesWithMissing = {
       es: { missingInEn: "Disponible en español" },
       en: {},
@@ -52,29 +59,29 @@ describe("createI18n", () => {
     expect(i18n.raw("missingInEn")).toBe("Disponible en español");
   });
 
-  test("createI18n sin opciones usa inglés por defecto con los diccionarios de la librería", () => {
+  test("createI18n without options defaults to English with the library dictionaries", () => {
     const i18n = createI18n();
     expect(i18n.getLocale()).toBe("en");
     expect(i18n.raw("dialog.cancel")).toBe("Cancel");
   });
 });
 
-describe("i18n — singleton (defaults de la librería)", () => {
+describe("i18n — singleton (library defaults)", () => {
   beforeEach(() => {
     localStorage.clear();
-    // Blindar del orden de ejecución entre archivos: otros tests pueden
-    // haber cambiado el locale del singleton (y localStorage es compartido).
+    // Shield from execution order across files: other tests may have changed
+    // the singleton locale (and localStorage is shared).
     globalI18n.currentLocale.val = "en";
   });
 
   afterEach(() => {
-    // El singleton se comparte entre archivos de test: restaurar el locale
-    // para no envenenar a los que corren después.
+    // The singleton is shared across test files: restore the locale so
+    // later files are not poisoned.
     globalI18n.setLocale("en");
     localStorage.clear();
   });
 
-  test("las claves de los componentes resuelven en inglés (sin leaks de español)", () => {
+  test("component keys resolve in English (no Spanish leaks)", () => {
     expect(globalI18n.raw("field.email.required")).toBe("Please enter your email");
     expect(globalI18n.raw("field.confirm.mismatch")).toBe("Passwords do not match");
     expect(globalI18n.raw("modal.close")).toBe("Close");
@@ -87,7 +94,7 @@ describe("i18n — singleton (defaults de la librería)", () => {
     );
   });
 
-  test("el mismo diccionario resuelve en español", () => {
+  test("the same dictionary resolves in Spanish", () => {
     globalI18n.setLocale("es");
     expect(globalI18n.raw("dialog.confirm")).toBe("Confirmar");
     expect(globalI18n.raw("table.prev")).toBe("← Anterior");
@@ -95,12 +102,12 @@ describe("i18n — singleton (defaults de la librería)", () => {
   });
 });
 
-describe("addTranslations — registro en caliente", () => {
+describe("addTranslations — hot registration", () => {
   beforeEach(() => {
     localStorage.clear();
   });
 
-  test("re-resuelve textos ya derivados al registrar traducciones nuevas", async () => {
+  test("re-resolves already derived texts when new translations are registered", async () => {
     const inst = createI18n({
       defaultLocale: "en",
       locales: { en: { btn: "Save" } },
@@ -114,14 +121,14 @@ describe("addTranslations — registro en caliente", () => {
     expect(btn.val).toBe("Guardar");
   });
 
-  test("re-aplica un locale guardado que se registra después (caso fr)", () => {
+  test("re-applies a stored locale registered later (fr case)", () => {
     localStorage.setItem("test-late", "fr");
     const inst = createI18n({
       defaultLocale: "en",
       locales: { en: { hi: "Hello" } },
       storageKey: "test-late",
     });
-    // "fr" estaba guardado pero aún no existía → cae al default
+    // "fr" was stored but did not exist yet → falls back to the default
     expect(inst.getLocale()).toBe("en");
 
     inst.addTranslations({ fr: { hi: "Bonjour" } });

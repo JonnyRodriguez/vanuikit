@@ -6,13 +6,13 @@ const mount = (node: HTMLElement) => {
   return node;
 };
 
-/** Los badges van con tokens del tema (--vui-*): ninguna variante puede
- *  colar clases de paleta cruda (fallarían al re-tematizar y rompían el
- *  contraste en modo claro — los -fg son los legibles sobre el tinte). */
+/** Badges use theme tokens (--vui-*): no variant may leak raw palette
+ *  classes (they would break on re-theming and ruined contrast in light
+ *  mode — the -fg ones are the readable colors over the tint). */
 const RAW_PALETTE = /(blue|emerald|rose|amber|slate|green|red)-\d/;
 
 describe("Badge", () => {
-  test("variantes suaves: tinte al 10% + texto con el -fg del estado", () => {
+  test("soft variants: 10% tint + text in the state's -fg color", () => {
     const cases: [BadgeVariant, string, string][] = [
       ["primary", "bg-accent/10", "text-accent-fg"],
       ["secondary", "bg-secondary/20", "text-foreground-soft"],
@@ -28,27 +28,27 @@ describe("Badge", () => {
     }
   });
 
-  test("outline: transparente con borde del tema y texto foreground-soft", () => {
+  test("outline: transparent with theme border and foreground-soft text", () => {
     const el = mount(Badge({ text: "x", variant: "outline" }) as HTMLElement);
     expect(el.className).toContain("bg-transparent");
     expect(el.className).toContain("border-border");
     expect(el.className).toContain("text-foreground-soft");
   });
 
-  test("danger usa destructive (red) igual que el botón destructivo", () => {
+  test("danger uses destructive (red) like the destructive button", () => {
     const el = mount(Badge({ text: "x", variant: "danger" }) as HTMLElement);
     expect(el.className).toContain("bg-destructive/10");
     expect(el.className).not.toContain("rose");
   });
 
-  test("dot con el color base del estado", () => {
+  test("dot uses the state's base color", () => {
     const el = mount(Badge({ text: "ok", variant: "success", dot: true }) as HTMLElement);
     const dot = el.firstElementChild as HTMLElement;
     expect(dot.className).toContain("bg-success");
     expect(dot.className).not.toMatch(RAW_PALETTE);
   });
 
-  test("tamaños sm/md/lg", () => {
+  test("sizes sm/md/lg", () => {
     expect((mount(Badge({ text: "x", size: "sm" }) as HTMLElement)).className).toContain(
       "text-[10px]",
     );

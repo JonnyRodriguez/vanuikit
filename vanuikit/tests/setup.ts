@@ -1,5 +1,5 @@
-/** Registra un DOM mínimo (happy-dom) para los tests de componentes. */
+/** Registers a minimal DOM (happy-dom) for component tests. */
 import { GlobalRegistrator } from "@happy-dom/global-registrator";
 
-// URL base para que location/history funcionen en el router (about:blank no permite pushState).
+// Base URL so location/history work in the router (about:blank does not allow pushState).
 GlobalRegistrator.register({ url: "http://localhost/" });

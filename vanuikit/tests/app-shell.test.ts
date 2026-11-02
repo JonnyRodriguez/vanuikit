@@ -14,16 +14,16 @@ function clickA(host: HTMLElement, href: string) {
   link.dispatchEvent(new window.MouseEvent("click", { bubbles: true, cancelable: true }));
 }
 
-// El shell es el patrón de App(): Nav reactivo al path + la vista resuelta por
-// el router. Un solo click de Nav debe cambiar URL y vista.
-test("shell: multiples clics actualizan vista y link activo", async () => {
+// The shell is the App() pattern: Nav reactive to the path + the view resolved
+// by the router. A single Nav click must change both URL and view.
+test("shell: repeated clicks update view and active link", async () => {
   const router = new Router();
   router
     .redirect("/", "/a")
     .add("/a", () => div({ id: "view-a" }, "Vista A"))
     .add("/b", () => div({ id: "view-b" }, "Vista B"));
 
-  // Sincronizar estado inicial
+  // Sync initial state
   window.history.pushState(null, "", "/");
 
   const host = div(
@@ -35,12 +35,12 @@ test("shell: multiples clics actualizan vista y link activo", async () => {
   await router.navigate("/");
   await tick();
 
-  // / redirigió a /a
+  // / redirected to /a
   expect(router.path.val).toBe("/a");
   expect(host.querySelector("#view-a")).not.toBeNull();
   expect(host.querySelector('a[href="/a"]')?.getAttribute("aria-current")).toBe("page");
 
-  // Click en B
+  // Click on B
   clickA(host, "/b");
   await tick();
   expect(router.path.val).toBe("/b");

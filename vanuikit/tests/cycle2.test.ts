@@ -17,7 +17,7 @@ afterEach(() => {
 });
 
 describe("debug — trace", () => {
-  test("loguea el valor inicial y cada cambio, y devuelve el mismo State", async () => {
+  test("logs the initial value and every change, and returns the same State", async () => {
     const logs: unknown[][] = [];
     const spy = spyOn(console, "log").mockImplementation((...args: unknown[]) => {
       logs.push(args);
@@ -30,7 +30,7 @@ describe("debug — trace", () => {
       s.val = "b";
       await tick();
 
-      expect(logs.length).toBe(2); // inicial + cambio
+      expect(logs.length).toBe(2); // initial + change
       expect(String(logs[0][0])).toContain("vanuikit:trace");
       expect(String(logs[0][0])).toContain("demo");
       expect(logs[1][1]).toBe("b");
@@ -41,7 +41,7 @@ describe("debug — trace", () => {
 });
 
 describe("debug — expectReactive", () => {
-  test("pasa cuando el binding reacciona", async () => {
+  test("passes when the binding reacts", async () => {
     const s = van.state("uno");
     await expectReactive({
       render: () => van.tags.span(s),
@@ -50,12 +50,12 @@ describe("debug — expectReactive", () => {
     });
   });
 
-  test("falla con pistas de gotchas cuando el binding está congelado", async () => {
+  test("fails with gotcha hints when the binding is frozen", async () => {
     const s = van.state("uno");
     let error: Error | null = null;
     try {
       await expectReactive({
-        // Texto estático: ningún binding que reaccionar (caso congelado).
+        // Static text: no binding to react (frozen case).
         render: () => van.tags.span("texto fijo"),
         act: () => (s.val = "dos"),
         contains: "dos",
@@ -65,10 +65,10 @@ describe("debug — expectReactive", () => {
     }
     expect(error).toBeTruthy();
     expect(error!.message).toContain("no reaccionó");
-    expect(error!.message).toContain("keepConnected"); // pistas educativas
+    expect(error!.message).toContain("keepConnected"); // educational hints
   });
 
-  test("valida text exacto y contiene", async () => {
+  test("validates exact text and contains", async () => {
     const s = van.state("Hola");
     await expectReactive({
       render: () => van.tags.span(s),
@@ -92,7 +92,7 @@ describe("debug — expectReactive", () => {
 });
 
 describe("Kbd", () => {
-  test("renderiza <kbd> semántico con tamaños", () => {
+  test("renders semantic <kbd> with sizes", () => {
     const el = mount(Kbd({}, "Ctrl") as HTMLElement);
     expect(el.tagName).toBe("KBD");
     expect(el.textContent).toBe("Ctrl");
@@ -103,30 +103,30 @@ describe("Kbd", () => {
   });
 });
 
-describe("pageSlots (rangos con ellipsis)", () => {
-  test("total pequeño: todas las páginas", () => {
+describe("pageSlots (ranges with ellipsis)", () => {
+  test("small total: all pages", () => {
     expect(pageSlots(2, 5, 1)).toEqual([1, 2, 3, 4, 5]);
   });
 
-  test("al inicio: sin ellipsis izquierdo", () => {
+  test("at start: no left ellipsis", () => {
     expect(pageSlots(1, 20, 1)).toEqual([1, 2, "ellipsis-r", 20]);
   });
 
-  test("al centro: ellipsis en ambos lados", () => {
+  test("at center: ellipsis on both sides", () => {
     expect(pageSlots(10, 20, 1)).toEqual([1, "ellipsis-l", 9, 10, 11, "ellipsis-r", 20]);
   });
 
-  test("al final: sin ellipsis derecho", () => {
+  test("at end: no right ellipsis", () => {
     expect(pageSlots(20, 20, 1)).toEqual([1, "ellipsis-l", 19, 20]);
   });
 
-  test("acota la página fuera de rango", () => {
+  test("clamps an out-of-range page", () => {
     expect(pageSlots(99, 20, 1)).toEqual([1, "ellipsis-l", 19, 20]);
   });
 });
 
 describe("Pagination", () => {
-  test("marca aria-current, navega con prev/next y deshabilita extremos", async () => {
+  test("marks aria-current, navigates with prev/next and disables edges", async () => {
     const page = van.state(3);
     const el = mount(Pagination({ page, totalPages: 10 }) as HTMLElement);
     const current = el.querySelector('[aria-current="page"]')!;
@@ -151,7 +151,7 @@ describe("Pagination", () => {
     expect((next as HTMLButtonElement).disabled).toBe(true);
   });
 
-  test("click en número navega; ellipsis decorativos no son botones", async () => {
+  test("clicking a number navigates; decorative ellipsis are not buttons", async () => {
     const page = van.state(10);
     const el = mount(Pagination({ page, totalPages: 20 }) as HTMLElement);
     expect(el.textContent).toContain("…");
@@ -163,7 +163,7 @@ describe("Pagination", () => {
     expect(page.val).toBe(9);
   });
 
-  test("totalPages reactivo", async () => {
+  test("reactive totalPages", async () => {
     const page = van.state(1);
     const total = van.state(3);
     const el = mount(Pagination({ page, totalPages: total }) as HTMLElement);
@@ -200,33 +200,33 @@ describe("Combobox multiple", () => {
   const key = (el: HTMLElement, k: string) =>
     el.dispatchEvent(new KeyboardEvent("keydown", { key: k, bubbles: true }));
 
-  test("elegir agrega chip, NO cierra el panel y limpia el query", async () => {
+  test("choosing adds a chip, does NOT close the panel and clears the query", async () => {
     const { dom, input, panel, values } = build();
     mount(dom);
     input().focus();
     await tick();
 
-    key(input(), "Enter"); // selecciona la primera (Español)
+    key(input(), "Enter"); // selects the first one (Español)
     await tick();
     expect(values.val).toEqual(["es"]);
-    expect(panel().classList.contains("hidden")).toBe(false); // sigue abierto
-    expect(input().value).toBe(""); // query limpio
+    expect(panel().classList.contains("hidden")).toBe(false); // stays open
+    expect(input().value).toBe(""); // query cleared
     expect(dom.textContent).toContain("Español"); // chip visible
   });
 
-  test("re-elegir una opción con chip la quita (toggle)", async () => {
+  test("re-choosing a chipped option removes it (toggle)", async () => {
     const { dom, input, values } = build();
     mount(dom);
     input().focus();
     await tick();
     key(input(), "Enter");
     await tick();
-    key(input(), "Enter"); // mismo índice aún enfocado: toggle off
+    key(input(), "Enter"); // same index still focused: toggle off
     await tick();
     expect(values.val).toEqual([]);
   });
 
-  test("el botón × del chip remueve (con aria-label)", async () => {
+  test("the chip's × button removes it (with aria-label)", async () => {
     const { dom, input, values } = build();
     mount(dom);
     input().focus();
@@ -241,14 +241,14 @@ describe("Combobox multiple", () => {
     expect(values.val).toEqual([]);
   });
 
-  test("Backspace con input vacío quita el último chip", async () => {
+  test("Backspace on empty input removes the last chip", async () => {
     const { dom, input, values } = build();
     mount(dom);
     input().focus();
     await tick();
-    key(input(), "Enter"); // el foco ya está en Español
+    key(input(), "Enter"); // focus is already on Español
     await tick();
-    key(input(), "ArrowDown"); // Inglés
+    key(input(), "ArrowDown"); // English
     key(input(), "Enter");
     await tick();
     expect(values.val).toEqual(["es", "en"]);
@@ -258,7 +258,7 @@ describe("Combobox multiple", () => {
     expect(values.val).toEqual(["es"]);
   });
 
-  test("Form/required: valida contra la selección acumulada", async () => {
+  test("Form/required: validates against the accumulated selection", async () => {
     let called = false;
     const form = Form(() => {
       called = true;

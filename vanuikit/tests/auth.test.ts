@@ -10,7 +10,7 @@ const api = {
 const ctx = { to: "/x", params: {}, navigate: () => {} };
 
 describe("createAuth", () => {
-  test("boot sin sesión deja status unauthenticated y usuario null", async () => {
+  test("boot without session leaves status unauthenticated and user null", async () => {
     const auth = createAuth(api);
     const user = await auth.boot();
     expect(user).toBeNull();
@@ -19,7 +19,7 @@ describe("createAuth", () => {
     expect(auth.isAuthenticated()).toBe(false);
   });
 
-  test("boot con sesión deja status authenticated", async () => {
+  test("boot with session leaves status authenticated", async () => {
     const auth = createAuth({ ...api, me: async () => ({ user: { id: "1", email: "a@b.com" } }) });
     const user = await auth.boot();
     expect(user).toEqual({ id: "1", email: "a@b.com" });
@@ -27,14 +27,14 @@ describe("createAuth", () => {
     expect(auth.isAuthenticated()).toBe(true);
   });
 
-  test("boot con error de red marca unauthenticated", async () => {
+  test("boot with network error marks unauthenticated", async () => {
     const auth = createAuth({ ...api, me: async () => { throw new Error("offline"); } });
     const user = await auth.boot();
     expect(user).toBeNull();
     expect(auth.status.val).toBe("unauthenticated");
   });
 
-  test("login establece la sesión y logout la limpia", async () => {
+  test("login sets the session and logout clears it", async () => {
     const auth = createAuth(api);
     await auth.login("a@b.com", "x");
     expect(auth.user.val).toEqual({ id: "1", email: "a@b.com" });
@@ -46,7 +46,7 @@ describe("createAuth", () => {
     expect(auth.isAuthenticated()).toBe(false);
   });
 
-  test("login y register encapsulan token y setSession", async () => {
+  test("login and register encapsulate token and setSession", async () => {
     localStorage.clear();
 
     const auth = createAuth({
@@ -72,7 +72,7 @@ describe("createAuth", () => {
     expect(localStorage.getItem("session_token")).toBeNull();
   });
 
-  test("requireAuth redirige si no hay sesión y deja pasar si la hay", async () => {
+  test("requireAuth redirects without a session and lets through with one", async () => {
     const auth = createAuth(api);
     const guard = requireAuth(auth, "/login");
 
@@ -82,11 +82,11 @@ describe("createAuth", () => {
     expect(await guard(ctx)).toBe(true);
   });
 
-  test("requireAuth espera a boot si la sesión está idle en navegación directa", async () => {
+  test("requireAuth waits for boot when the session is idle on direct navigation", async () => {
     const auth = createAuth({ ...api, me: async () => ({ user: { id: "2", email: "direct@access.com" } }) });
     const guard = requireAuth(auth, "/login");
 
-    // Guard ejecuta boot automáticamente y permite el acceso si había sesión activa
+    // Guard runs boot automatically and allows access if there was an active session
     expect(await guard(ctx)).toBe(true);
     expect(auth.user.val).toEqual({ id: "2", email: "direct@access.com" });
   });

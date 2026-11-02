@@ -17,7 +17,7 @@ describe("Embedded Core Components", () => {
   });
 
   describe("ThemeToggle", () => {
-    test("renderiza el botón y alterna el tema al hacer clic", async () => {
+    test("renders the button and toggles the theme on click", async () => {
       const theme = createTheme({ defaultMode: "light" });
       const toggle = ThemeToggle({ theme, includeSystem: false });
       van.add(document.body, toggle);
@@ -35,7 +35,7 @@ describe("Embedded Core Components", () => {
       expect(theme.mode.val).toBe("light");
     });
 
-    test("variante segmented renderiza los tres modos", async () => {
+    test("segmented variant renders the three modes", async () => {
       const theme = createTheme({ defaultMode: "light" });
       const segmented = ThemeToggle({ theme, variant: "segmented", includeSystem: true });
       van.add(document.body, segmented);
@@ -43,20 +43,20 @@ describe("Embedded Core Components", () => {
       const buttons = document.body.querySelectorAll("button");
       expect(buttons.length).toBe(3);
 
-      // Clic en Dark
+      // Click on Dark
       buttons[1].click();
       await nextTick();
       expect(theme.mode.val).toBe("dark");
 
-      // Clic en System
+      // Click on System
       buttons[2].click();
       await nextTick();
       expect(theme.mode.val).toBe("system");
     });
 
-    test("cada radio del segmented tiene nombre accesible (íconos solo visuales)", () => {
+    test("each segmented radio has an accessible name (icons are visual only)", () => {
       const theme = createTheme({ defaultMode: "light" });
-      // i18n con dicts vacíos: resuelve los defaults canónicos (inglés).
+      // i18n with empty dicts: resolves the canonical defaults (English).
       const i18n = createI18n({ defaultLocale: "es", locales: {} });
       const segmented = ThemeToggle({ theme, i18n, variant: "segmented", includeSystem: true });
       van.add(document.body, segmented);
@@ -72,7 +72,7 @@ describe("Embedded Core Components", () => {
   });
 
   describe("LocaleSelector", () => {
-    test("renderiza select con las opciones de idioma y cambia el locale", async () => {
+    test("renders a select with locale options and changes the locale", async () => {
       const i18n = createI18n({
         defaultLocale: "es",
         locales: {
@@ -96,7 +96,7 @@ describe("Embedded Core Components", () => {
       expect(i18n.currentLocale.val).toBe("en");
     });
 
-    test("variante buttons renderiza botones de idioma", async () => {
+    test("buttons variant renders language buttons", async () => {
       const i18n = createI18n({
         defaultLocale: "es",
         locales: {
@@ -118,7 +118,7 @@ describe("Embedded Core Components", () => {
   });
 
   describe("UserBadge", () => {
-    test("no renderiza contenido visible si no hay usuario autenticado", () => {
+    test("renders no visible content when there is no authenticated user", () => {
       const auth = createAuth({
         me: async () => ({ user: null }),
         login: async () => ({ user: null }),
@@ -132,7 +132,7 @@ describe("Embedded Core Components", () => {
       expect(el?.classList.contains("hidden")).toBe(true);
     });
 
-    test("renderiza iniciales, email y botón de logout cuando hay usuario", async () => {
+    test("renders initials, email and a logout button when there is a user", async () => {
       let loggedOut = false;
       const auth = createAuth({
         me: async () => ({ user: null }),
@@ -160,7 +160,7 @@ describe("Embedded Core Components", () => {
       expect(loggedOut).toBe(true);
     });
 
-    test("modo compact: solo avatar + logout icónico, reactivo al state", async () => {
+    test("compact mode: avatar only + icon-only logout, reactive to the state", async () => {
       const auth = createAuth({
         me: async () => ({ user: null }),
         login: async () => ({ user: { id: "1", email: "alice@example.com", name: "Alice Smith" } }),
@@ -168,7 +168,7 @@ describe("Embedded Core Components", () => {
       });
 
       const compact = van.state(false);
-      // Conectar al documento: van descarta bindings de árboles detached
+      // Connect to the document: van discards bindings of detached trees
       const host = document.createElement("div");
       document.body.appendChild(host);
       van.add(host, UserBadge({ auth, compact, onLogout: () => {} }));
@@ -176,13 +176,13 @@ describe("Embedded Core Components", () => {
       await auth.login("alice@example.com", "secret");
       await nextTick();
 
-      // Expandido: tarjeta con nombre y estado
+      // Expanded: card with name and status
       expect(host.textContent).toContain("Alice Smith");
 
       compact.val = true;
       await nextTick();
 
-      // Compacto: avatar con iniciales + logout con nombre accesible; sin nombre visible
+      // Compact: avatar with initials + logout with accessible name; no visible name
       expect(host.textContent).not.toContain("Alice Smith");
       expect(host.textContent).toContain("AS");
       const logoutBtn = host.querySelector("button") as HTMLButtonElement;

@@ -1,4 +1,4 @@
-import { describe, test, expect } from "bun:test";
+import { describe, test, expect, afterAll } from "bun:test";
 import van, { type State } from "vanjs-core";
 import { Wizard, type WizardOptions } from "../src/components/wizard.js";
 import { createQuery } from "../src/fetch.js";
@@ -6,9 +6,16 @@ import { EmailField, TextField } from "../src/components/field.js";
 import type { SchemaLike } from "../src/components/form.js";
 import { i18n } from "../src/i18n.js";
 
-// Los textos del Wizard (botones, línea general) son i18n: fija español para
-// que las aserciones sean deterministas. Los clicks son por posición.
+// Wizard texts (buttons, general line) are i18n: pin Spanish so the
+// assertions are deterministic. Clicks are by position.
 i18n.setLocale("es");
+
+// bun test runs the whole suite in one process (shared i18n singleton), so
+// restore the default locale to avoid leaking "es" into the other files.
+afterAll(() => {
+  localStorage.removeItem("vanuikit-locale");
+  i18n.setLocale("en");
+});
 
 const mount = (node: HTMLElement) => {
   document.body.replaceChildren(node);
@@ -18,9 +25,9 @@ const mount = (node: HTMLElement) => {
 const flush = () => new Promise((r) => setTimeout(r, 10));
 
 /**
- * Los únicos <button> del Wizard son los del footer (indicadores y paso son
- * divs), así que se accede por posición: 0 = Atrás, último = Siguiente/Enviar.
- * Así los tests no dependen del idioma activo de i18n.
+ * The only <button>s in the Wizard are the footer ones (indicators and step
+ * are divs), so access is by position: 0 = Back, last = Next/Submit.
+ * That keeps tests independent of the active i18n language.
  */
 const clickFooter = (node: HTMLElement, index: number) => {
   const btns = [...node.querySelectorAll("button")];
@@ -51,7 +58,7 @@ const makeSchema = (failWith: Array<{ path: string; message: string }> = []): Sc
         },
 });
 
-/** Schema que valida según el valor real del campo title (para tests de navegación). */
+/** Schema validating against the title field's actual value (for navigation tests). */
 const titleSchema: SchemaLike = {
   safeParse: (data) =>
     (data as Record<string, unknown>)?.title
@@ -74,8 +81,8 @@ const twoStepWizard = (overrides: Partial<WizardOptions> = {}) =>
     ...overrides,
   });
 
-describe("Wizard — multi-paso", () => {
-  test("bloquea avanzar si el paso actual es inválido", async () => {
+describe("Wizard — multi-step", () => {
+  test("blocks advancing when the current step is invalid", async () => {
     const failing = makeSchema([{ path: "title", message: "El título es requerido" }]);
     const w = Wizard({
       steps: [
@@ -92,7 +99,7 @@ describe("Wizard — multi-paso", () => {
     expect(el.textContent).toContain("El título es requerido");
   });
 
-  test("acumula valores en el store y envía el merge al submit", async () => {
+  test("accumulates values in the store and submits the merge", async () => {
     let submitted: Record<string, unknown> | null = null;
     const w = twoStepWizard({ onSubmit: (data) => { submitted = data; return { ok: true }; } });
     const el = mount(w.dom());
@@ -106,7 +113,7 @@ describe("Wizard — multi-paso", () => {
     expect(submitted).toEqual({ title: "Anuncio", email: "a@b.co" });
   });
 
-  test("volver atrás conserva los valores sembrados desde el store", async () => {
+  test("going back preserves values seeded from the store", async () => {
     const w = twoStepWizard();
     const el = mount(w.dom());
     setValue(el, "title", "Anuncio");
@@ -118,7 +125,7 @@ describe("Wizard — multi-paso", () => {
     expect((el.querySelector('input[name="title"]') as HTMLInputElement).value).toBe("Anuncio");
   });
 
-  test("onSuccess se llama al triunfar y deja la línea general limpia", async () => {
+  test("onSuccess is called on success and leaves the general line clean", async () => {
     let success: Record<string, unknown> | null = null;
     const w = twoStepWizard({ onSuccess: (data) => { success = data; } });
     const el = mount(w.dom());
@@ -132,7 +139,7 @@ describe("Wizard — multi-paso", () => {
     expect(w.error.val).toBe("");
   });
 
-  test("fieldErrors del backend en el paso visible se pintan en el campo", async () => {
+  test("backend fieldErrors on the visible step are painted on the field", async () => {
     const w = Wizard({
       steps: [
         { title: "A", fields: [] },
@@ -150,7 +157,7 @@ describe("Wizard — multi-paso", () => {
     expect(w.error.val).toBe("");
   });
 
-  test("fieldErrors del backend en OTRO paso caen en la línea general con hint", async () => {
+  test("backend fieldErrors on ANOTHER step fall into the general line with a hint", async () => {
     const w = Wizard({
       steps: [
         { title: "A", fields: [EmailField()] },
@@ -167,7 +174,7 @@ describe("Wizard — multi-paso", () => {
     expect(w.error.val).toBe("Revisa el paso 1");
   });
 
-  test("submitting bloquea doble submit", async () => {
+  test("submitting blocks double submit", async () => {
     let calls = 0;
     let resolveSubmit!: (r: { ok: true }) => void;
     const w = Wizard({
@@ -197,8 +204,8 @@ describe("Wizard — multi-paso", () => {
   });
 });
 
-describe("Wizard — navegación programática (useWizard)", () => {
-  test("next() valida y devuelve true/false", async () => {
+describe("Wizard — programmatic navigation (useWizard)", () => {
+  test("next() validates and returns true/false", async () => {
     const w = Wizard({
       steps: [
         { title: "B", schema: titleSchema, fields: [TextField({ name: "title" })] },
@@ -215,7 +222,7 @@ describe("Wizard — navegación programática (useWizard)", () => {
     expect(w.step.val).toBe(1);
   });
 
-  test("back() retrocede sin validar", async () => {
+  test("back() goes back without validating", async () => {
     const w = twoStepWizard();
     const el = mount(w.dom());
     setValue(el, "title", "Anuncio");
@@ -224,7 +231,7 @@ describe("Wizard — navegación programática (useWizard)", () => {
     expect(w.step.val).toBe(0);
   });
 
-  test("goTo() salta a un paso directo y el store persiste", async () => {
+  test("goTo() jumps straight to a step and the store persists", async () => {
     const w = Wizard({
       steps: [
         { title: "A", fields: [TextField({ name: "title" })] },
@@ -235,22 +242,22 @@ describe("Wizard — navegación programática (useWizard)", () => {
     });
     const el = mount(w.dom());
     setValue(el, "title", "Anuncio");
-    expect(w.next()).toBe(true); // commitea title y pasa a B
-    w.goTo(2); // salta a C, sin validar B
+    expect(w.next()).toBe(true); // commits title and moves to B
+    w.goTo(2); // jumps to C, without validating B
     expect(w.step.val).toBe(2);
-    w.goTo(0); // vuelve a A
+    w.goTo(0); // back to A
     await flush();
     expect((el.querySelector('input[name="title"]') as HTMLInputElement).value).toBe("Anuncio");
   });
 
-  test("collectStep() mergea el store con los valores del paso", async () => {
+  test("collectStep() merges the store with the step's values", async () => {
     const w = twoStepWizard();
     const el = mount(w.dom());
     setValue(el, "title", "Anuncio");
     expect(w.collectStep(0)).toEqual({ title: "Anuncio" });
   });
 
-  test("el contenido del paso se reconstruye al cambiar un estado (hijo-función reactivo)", async () => {
+  test("step content rebuilds when a state changes (reactive function child)", async () => {
     const items = van.state<string[]>([]);
     const { div, p } = van.tags;
     const w = Wizard({
@@ -273,7 +280,7 @@ describe("Wizard — navegación programática (useWizard)", () => {
     expect(el.textContent).toContain("Providers-B");
   });
 
-  test("***REMOVED***: createQuery + contenido reactivo listan las ***REMOVED***s", async () => {
+  test("***REMOVED***: createQuery + reactive content list the ***REMOVED***", async () => {
     const ***REMOVED*** = [
       { id: "PROVIDER-A", name: "Provider-A", img: "/img/provider-a.svg" },
       { id: "PROVIDERS-B", name: "Providers-B", img: "/img/providers-b.svg" },
@@ -311,7 +318,7 @@ describe("Wizard — navegación programática (useWizard)", () => {
     globalThis.fetch = realFetch;
   });
 
-  test("validateCurrent() refleja la validez del paso actual", async () => {
+  test("validateCurrent() reflects the current step's validity", async () => {
     const w = Wizard({
       steps: [
         { title: "B", schema: titleSchema, fields: [TextField({ name: "title" })] },

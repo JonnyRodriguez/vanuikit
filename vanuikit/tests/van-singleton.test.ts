@@ -4,9 +4,9 @@ import { guardSingleVan } from "../src/van-singleton.js";
 const KEY = Symbol.for("vanuikit.vanjs-core.instance");
 
 describe("guardSingleVan", () => {
-  test("la misma instancia no avisa; una segunda copia grita en consola", () => {
+  test("same instance does not warn; a second copy shouts in console", () => {
     const g = globalThis as unknown as Record<symbol, unknown>;
-    const original = g[KEY]; // la marca que dejó el import de src/index.ts
+    const original = g[KEY]; // the mark left by the src/index.ts import
     delete g[KEY];
 
     const errors: unknown[] = [];
@@ -16,24 +16,24 @@ describe("guardSingleVan", () => {
       const copiaA = { tags: "a" };
       const copiaB = { tags: "b" };
 
-      guardSingleVan(copiaA); // primera copia: registra, sin aviso
+      guardSingleVan(copiaA); // first copy: registers, no warning
       expect(errors.length).toBe(0);
 
-      guardSingleVan(copiaA); // misma copia (re-import/ESM cache): sin aviso
+      guardSingleVan(copiaA); // same copy (re-import/ESM cache): no warning
       expect(errors.length).toBe(0);
 
-      guardSingleVan(copiaB); // segunda copia: avisa con la solución
+      guardSingleVan(copiaB); // second copy: warns with the solution
       expect(errors.length).toBe(1);
       const msg = String((errors[0] as unknown[])[0]);
-      expect(msg).toContain("TWO copies"); // mensaje en inglés (consumidores npm)
+      expect(msg).toContain("TWO copies"); // English message (npm consumers)
       expect(msg).toContain('import { van } from "vanuikit"');
     } finally {
       console.error = origError;
-      if (original !== undefined) g[KEY] = original; // no contaminar la suite
+      if (original !== undefined) g[KEY] = original; // do not pollute the suite
     }
   });
 
-  test("la marca vive en el registro global (Symbol.for), visible para cualquier copia", () => {
+  test("the mark lives in the global registry (Symbol.for), visible to any copy", () => {
     expect(Symbol.for("vanuikit.vanjs-core.instance")).toBe(
       Symbol.for("vanuikit.vanjs-core.instance"),
     );

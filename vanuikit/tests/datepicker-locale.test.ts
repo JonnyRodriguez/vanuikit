@@ -1,17 +1,17 @@
 /**
- * Regresión: al cambiar el idioma, el calendario a veces quedaba VACÍO
- * ("a veces comienzas con español y colocas inglés y deja de aparecer").
+ * Regression: after a language switch the calendar sometimes went EMPTY
+ * ("sometimes you start with Spanish, switch to English and it stops rendering").
  *
- * Causa raíz: renderCalendar() leía raw() directamente, capturando
- * currentLocale/revision como deps del binding exterior `() =>
- * renderCalendar()` — cada cambio de idioma reconstruía el calendario
- * entero, acumulando bindings internos del grid anclados a tablas detached
- * que terminaban robando la tabla viva.
+ * Root cause: renderCalendar() read raw() directly, capturing
+ * currentLocale/revision as deps of the outer binding `() =>
+ * renderCalendar()` — every language change rebuilt the whole calendar,
+ * accumulating grid bindings anchored to detached tables that ended up
+ * stealing the live table.
  *
- * El fix convierte los labels en derives top-level: el binding exterior ya
- * no tiene deps (corre una sola vez) y la reactividad de idioma vive en los
- * bindings internos (título, grid, labels). Los waits cruzan el ciclo de GC
- * de van (1000 ms), donde el bug se manifestaba.
+ * The fix turns labels into top-level derives: the outer binding no longer
+ * has deps (runs once) and locale reactivity lives in the inner bindings
+ * (title, grid, labels). The waits cross van's GC cycle (1000 ms), where
+ * the bug manifested.
  */
 import { describe, test, expect, afterEach } from "bun:test";
 import van from "vanjs-core";
@@ -29,8 +29,8 @@ afterEach(() => {
   document.body.replaceChildren();
 });
 
-describe("DatePicker × cambio de idioma (regresión calendario vacío)", () => {
-  test("popup: el grid sobrevive a switches de idioma cruzando ciclos de GC", async () => {
+describe("DatePicker × language switch (empty calendar regression)", () => {
+  test("popup: the grid survives language switches crossing GC cycles", async () => {
     i18n.setLocale("es");
     const value = van.state<Date | null>(null);
     const popup = DatePicker({ name: "venc", value, required: true }).dom() as HTMLElement;
@@ -40,19 +40,19 @@ describe("DatePicker × cambio de idioma (regresión calendario vacío)", () => 
     expect(headers(popup)).toBe(7);
     expect(dayButtons(popup)).toBeGreaterThan(27);
 
-    // es → en cruzando el ciclo de GC de van
+    // es → en crossing van's GC cycle
     i18n.setLocale("en");
     await crossGc();
     expect(headers(popup)).toBe(7);
     expect(dayButtons(popup)).toBeGreaterThan(27);
 
-    // en → es (el reporte: "el de español deja de aparecer")
+    // en → es (the report: "the Spanish one stops rendering")
     i18n.setLocale("es");
     await crossGc();
     expect(headers(popup)).toBe(7);
     expect(dayButtons(popup)).toBeGreaterThan(27);
 
-    // Abrir el popup: calendario presente y en el idioma actual
+    // Open the popup: calendar present and in the current language
     const input = popup.querySelector("input[type=text]") as HTMLInputElement;
     input.click();
     await flush();
@@ -63,7 +63,7 @@ describe("DatePicker × cambio de idioma (regresión calendario vacío)", () => 
     expect(popupEl.querySelectorAll("button[aria-label='Mes anterior']").length).toBe(1);
   });
 
-  test("popup + inline compartiendo valor: ambos grids sobreviven", async () => {
+  test("popup + inline sharing a value: both grids survive", async () => {
     i18n.setLocale("es");
     const value = van.state<Date | null>(null);
     const popup = DatePicker({ name: "venc", value }).dom() as HTMLElement;

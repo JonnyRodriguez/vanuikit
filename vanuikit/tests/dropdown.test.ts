@@ -5,7 +5,7 @@ import { SelectDropdown, DropdownMenu } from "../src/components/dropdown.js";
 const tick = () => new Promise((r) => setTimeout(r, 0));
 
 describe("SelectDropdown", () => {
-  test("renderiza el botón con la opción inicial seleccionada", async () => {
+  test("renders the button with the initial option selected", async () => {
     const selected = van.state("es");
     const el = SelectDropdown({
       options: [
@@ -23,7 +23,7 @@ describe("SelectDropdown", () => {
     expect(btn.getAttribute("aria-expanded")).toBe("false");
   });
 
-  test("al hacer clic abre el listbox y permite seleccionar una opción", async () => {
+  test("clicking opens the listbox and allows selecting an option", async () => {
     let changedValue = "";
     const selected = van.state("es");
 
@@ -57,7 +57,7 @@ describe("SelectDropdown", () => {
 });
 
 describe("DropdownMenu", () => {
-  test("despliega items al hacer clic en el trigger y ejecuta el callback", async () => {
+  test("expands items on trigger click and runs the callback", async () => {
     let clicked = false;
     const el = DropdownMenu({
       trigger: () => van.tags.button("Acciones"),

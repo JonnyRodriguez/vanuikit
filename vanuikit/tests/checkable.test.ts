@@ -11,23 +11,23 @@ const mount = (node: HTMLElement) => {
   return node;
 };
 
-// VanJS actualiza los bindings en un microtask; hay que esperarlo.
+// VanJS updates bindings in a microtask; tests must wait for it.
 const tick = () => new Promise((r) => setTimeout(r, 0));
 
-/** Dispara submit sobre el form y espera el flujo async. */
+/** Dispatches submit on the form and awaits the async flow. */
 const submit = async (formEl: HTMLFormElement) => {
   formEl.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
   await tick();
 };
 
-/** Simula la interacción del usuario sobre un radio/checkbox oculto. */
+/** Simulates user interaction on a hidden radio/checkbox. */
 const check = (input: HTMLInputElement, checked: boolean) => {
   input.checked = checked;
   input.dispatchEvent(new Event("change", { bubbles: true }));
 };
 
 describe("Checkbox — standalone", () => {
-  test("alterna el estado y pinta la caja en consecuencia", async () => {
+  test("toggles the state and paints the box accordingly", async () => {
     const cb = Checkbox({ name: "news", label: "Novedades" });
     const el = mount(cb.dom() as HTMLElement);
     const input = el.querySelector("input[type=checkbox]") as HTMLInputElement;
@@ -44,7 +44,7 @@ describe("Checkbox — standalone", () => {
     expect(el.querySelector("span[aria-hidden]")!.className).toContain("bg-card");
   });
 
-  test("un State externo manda sobre el input, en ambas direcciones", async () => {
+  test("an external State drives the input, in both directions", async () => {
     const source = van.state(true);
     const cb = Checkbox({ name: "sync", checked: source });
     const el = mount(cb.dom() as HTMLElement);
@@ -59,7 +59,7 @@ describe("Checkbox — standalone", () => {
     expect(source.val).toBe(true);
   });
 
-  test("indeterminate se refleja en el input y muestra el guion", async () => {
+  test("indeterminate reflects on the input and shows the dash", async () => {
     const ind = van.state(true);
     const cb = Checkbox({ name: "all", indeterminate: ind });
     const el = mount(cb.dom() as HTMLElement);
@@ -76,7 +76,7 @@ describe("Checkbox — standalone", () => {
     expect(dash.getAttribute("class")).toContain("opacity-0");
   });
 
-  test("validate(raw) sincroniza el estado: 'on' marca, '' desmarca", () => {
+  test("validate(raw) syncs the state: 'on' checks, '' unchecks", () => {
     const cb = Checkbox({ name: "raw" });
     expect(cb.validate("on")).toBe(true);
     expect(cb.checked.val).toBe(true);
@@ -85,8 +85,8 @@ describe("Checkbox — standalone", () => {
   });
 });
 
-describe("Checkbox — integración con Form", () => {
-  test("required: bloquea el submit desmarcado, lo permite marcado", async () => {
+describe("Checkbox — Form integration", () => {
+  test("required: blocks submit unchecked, allows it checked", async () => {
     let called = false;
     let data: Record<string, unknown> | null = null;
     const form = Form((d) => {
@@ -110,7 +110,7 @@ describe("Checkbox — integración con Form", () => {
 });
 
 describe("Switch", () => {
-  test("role=switch, alterna y pinta el track", async () => {
+  test("role=switch, toggles and paints the track", async () => {
     const sw = Switch({ name: "notif", label: "Notificaciones" });
     const el = mount(sw.dom() as HTMLElement);
     const input = el.querySelector('input[role="switch"]') as HTMLInputElement;
@@ -122,7 +122,7 @@ describe("Switch", () => {
     expect(el.querySelector("span[aria-hidden]")!.className).toContain("bg-accent");
   });
 
-  test("required en Form usa su mensaje propio", async () => {
+  test("required in Form uses its own message", async () => {
     let called = false;
     const form = Form(() => {
       called = true;
@@ -152,7 +152,7 @@ describe("RadioGroup", () => {
       ],
     });
 
-  test("selección excluyente con value reactivo", async () => {
+  test("exclusive selection with reactive value", async () => {
     const rg = build();
     const el = mount(rg.dom() as HTMLElement);
     const inputs = [...el.querySelectorAll("input[type=radio]")] as HTMLInputElement[];
@@ -165,7 +165,7 @@ describe("RadioGroup", () => {
     expect(inputs[1].checked).toBe(true);
   });
 
-  test("ignora opciones deshabilitadas", () => {
+  test("ignores disabled options", () => {
     const rg = build();
     const el = mount(rg.dom() as HTMLElement);
     const business = el.querySelectorAll("input[type=radio]")[2] as HTMLInputElement;
@@ -174,22 +174,22 @@ describe("RadioGroup", () => {
     expect(rg.value.val).toBe("");
   });
 
-  test("flechas navegan saltando deshabilitadas y con foco roving", async () => {
+  test("arrows navigate skipping disabled options with roving focus", async () => {
     const rg = build();
     const el = mount(rg.dom() as HTMLElement);
     const inputs = [...el.querySelectorAll("input[type=radio]")] as HTMLInputElement[];
 
     inputs[0].focus();
     inputs[0].dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown" }));
-    expect(rg.value.val).toBe("pro"); // business está deshabilitada: se salta
+    expect(rg.value.val).toBe("pro"); // business is disabled: skipped
     await tick();
     expect(document.activeElement).toBe(inputs[1]);
 
     inputs[1].dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown" }));
-    expect(rg.value.val).toBe("basic"); // envuelve hasta la primera habilitada
+    expect(rg.value.val).toBe("basic"); // wraps to the first enabled one
   });
 
-  test("required en Form: sin selección bloquea, con selección pasa", async () => {
+  test("required in Form: without selection blocks, with selection passes", async () => {
     let called = false;
     let data: Record<string, unknown> | null = null;
     const form = Form((d) => {
@@ -220,7 +220,7 @@ describe("RadioGroup", () => {
 });
 
 describe("TextareaField", () => {
-  test("renderiza <textarea> y valida requerido", () => {
+  test("renders <textarea> and validates required", () => {
     const ta = TextareaField({ name: "msg" });
     expect(ta.validate("")).toBe(false);
     expect(ta.validate("hola")).toBe(true);
@@ -229,7 +229,7 @@ describe("TextareaField", () => {
     expect(el.querySelector("textarea")).toBeTruthy();
   });
 
-  test("Form junta textarea + checkbox required", async () => {
+  test("Form combines textarea + required checkbox", async () => {
     let data: Record<string, unknown> | null = null;
     const form = Form((d) => {
       data = d;

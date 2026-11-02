@@ -5,7 +5,7 @@ import { ConfirmDialog, confirmDialog } from "../src/components/confirm-dialog.j
 const tick = () => new Promise((r) => setTimeout(r, 0));
 
 describe("ConfirmDialog", () => {
-  test("renderiza el diálogo cerrado y se muestra al abrir", async () => {
+  test("renders the dialog closed and shows it on open", async () => {
     let confirmed = false;
     const dialog = ConfirmDialog({
       title: "Eliminar elemento",
@@ -30,7 +30,7 @@ describe("ConfirmDialog", () => {
     expect(dom.textContent).toContain("¿Estás seguro?");
 
     const buttons = Array.from(dom.querySelectorAll("button"));
-    // Buscamos el botón de confirmar
+    // Find the confirm button
     const confirmBtn = buttons.find((b) => b.textContent?.includes("Confirm")) as HTMLButtonElement;
     expect(confirmBtn).toBeDefined();
     confirmBtn.click();
@@ -40,7 +40,7 @@ describe("ConfirmDialog", () => {
     expect(dialog.isVisible.val).toBe(false);
   });
 
-  test("confirmDialog imperativo retorna true al confirmar", async () => {
+  test("imperative confirmDialog returns true on confirm", async () => {
     const promise = confirmDialog({
       title: "¿Continuar?",
       message: "Por favor confirme",

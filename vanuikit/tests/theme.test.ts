@@ -10,14 +10,14 @@ describe("createTheme", () => {
     document.documentElement.removeAttribute("data-theme");
   });
 
-  test("inicia con el modo por defecto y sincroniza atributos DOM", () => {
+  test("starts with the default mode and syncs DOM attributes", () => {
     const theme = createTheme({ defaultMode: "light" });
     expect(theme.mode.val).toBe("light");
     expect(document.documentElement.classList.contains("dark")).toBe(false);
     expect(document.documentElement.getAttribute("data-theme")).toBe("light");
   });
 
-  test("cambio a dark añade la clase dark y data-theme", async () => {
+  test("switching to dark adds the dark class and data-theme", async () => {
     const theme = createTheme({ defaultMode: "light" });
     theme.setMode("dark");
     expect(theme.mode.val).toBe("dark");
@@ -29,7 +29,7 @@ describe("createTheme", () => {
     expect(theme.isDark.val).toBe(true);
   });
 
-  test("toggle alterna entre claro y oscuro", async () => {
+  test("toggle alternates between light and dark", async () => {
     const theme = createTheme({ defaultMode: "light" });
     theme.toggle();
     expect(theme.mode.val).toBe("dark");

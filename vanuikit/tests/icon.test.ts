@@ -2,7 +2,7 @@ import { describe, test, expect } from "bun:test";
 import { van, Icon } from "../src/index.js";
 
 describe("Icon", () => {
-  test("crea un SVGSVGElement real con paths y aria-hidden", () => {
+  test("creates a real SVGSVGElement with paths and aria-hidden", () => {
     const host = document.createElement("div");
     van.add(host, Icon({ name: "sun" }));
 
@@ -12,7 +12,7 @@ describe("Icon", () => {
     expect(host.querySelectorAll("path").length).toBeGreaterThan(0);
   });
 
-  test("aplica clase base y clase custom", () => {
+  test("applies the base class and a custom class", () => {
     const host = document.createElement("div");
     van.add(host, Icon({ name: "moon", class: "text-primary" }));
     const svg = host.querySelector("svg") as HTMLElement;
@@ -22,7 +22,7 @@ describe("Icon", () => {
     expect(cls).toContain("text-primary");
   });
 
-  test("class reactiva: función y State", async () => {
+  test("reactive class: function and State", async () => {
     const collapsed = van.state(false);
     const host = document.createElement("div");
     document.body.appendChild(host);

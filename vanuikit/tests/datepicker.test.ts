@@ -26,18 +26,18 @@ afterEach(() => {
 });
 
 describe("DatePicker — inline", () => {
-  test("renderiza el grid y navega meses con prev/next", async () => {
+  test("renders the grid and navigates months with prev/next", async () => {
     const field = DatePicker({ inline: true, value: new Date(2026, 0, 15) });
     const el = mount(field.dom() as HTMLElement);
 
     expect(el.querySelector("table")).toBeTruthy();
     expect(el.textContent).toContain("January 2026");
-    // 7 columnas de cabecera + botón del día 15 presente
+    // 7 header columns + day-15 button present
     expect(el.querySelectorAll("thead th").length).toBe(7);
     expect(dayBtn(el, "2026-01-15")).toBeTruthy();
     expect(dayBtn(el, "2026-02-15")).toBeFalsy();
 
-    // Navegar al mes siguiente: el título Y el grid deben actualizarse
+    // Navigate to the next month: both the title AND the grid must update
     const next = el.querySelector('button[aria-label="Next month"]') as HTMLButtonElement;
     next.click();
     await tick();
@@ -46,7 +46,7 @@ describe("DatePicker — inline", () => {
     expect(dayBtn(el, "2026-01-15")).toBeFalsy();
   });
 
-  test("navegar y luego seleccionar elige el día del mes visible (no enero)", async () => {
+  test("navigate then select picks the day of the visible month (not January)", async () => {
     const field = DatePicker({ inline: true, value: new Date(2026, 0, 15) });
     const el = mount(field.dom() as HTMLElement);
 
@@ -61,7 +61,7 @@ describe("DatePicker — inline", () => {
     expect(field.value.val).toBe("2026-03-20");
   });
 
-  test("dos pickers que comparten State: navegar y seleccionar en uno no rompe al otro", async () => {
+  test("two pickers sharing a State: navigating and selecting in one does not break the other", async () => {
     const shared = van.state<Date | null>(new Date(2026, 0, 15));
     const popup = DatePicker({ name: "due-date", value: shared, required: true });
     const inline = DatePicker({
@@ -86,7 +86,7 @@ describe("DatePicker — inline", () => {
     expect(shared.val!.getMonth()).toBe(2);
   });
 
-  test("seleccionar un día actualiza field.value (ISO) y el State externo", async () => {
+  test("selecting a day updates field.value (ISO) and the external State", async () => {
     const ext = van.state<Date | null>(new Date(2026, 0, 15));
     const field = DatePicker({ inline: true, value: ext });
     const el = mount(field.dom() as HTMLElement);
@@ -99,7 +99,7 @@ describe("DatePicker — inline", () => {
     expect(field.isTouched.val).toBe(true);
   });
 
-  test("botón Hoy selecciona la fecha actual", async () => {
+  test("Today button selects the current date", async () => {
     const field = DatePicker({ inline: true });
     const el = mount(field.dom() as HTMLElement);
 
@@ -114,7 +114,7 @@ describe("DatePicker — inline", () => {
 });
 
 describe("DatePicker — popup", () => {
-  test("abre al hacer click, elige y cierra", async () => {
+  test("opens on click, picks and closes", async () => {
     const field = DatePicker({ value: new Date(2026, 0, 15) });
     const el = mount(field.dom() as HTMLElement);
 
@@ -132,7 +132,7 @@ describe("DatePicker — popup", () => {
     expect(panel.classList.contains("hidden")).toBe(true);
   });
 
-  test("Escape cierra el popup", async () => {
+  test("Escape closes the popup", async () => {
     const field = DatePicker({ value: new Date(2026, 0, 15) });
     const el = mount(field.dom() as HTMLElement);
     const panel = el.querySelector(".datepicker-popup") as HTMLElement;
@@ -149,8 +149,8 @@ describe("DatePicker — popup", () => {
   });
 });
 
-describe("DatePicker — límites min/max", () => {
-  test("deshabilita los días fuera del rango", () => {
+describe("DatePicker — min/max bounds", () => {
+  test("disables days outside the range", () => {
     const field = DatePicker({
       inline: true,
       value: new Date(2026, 0, 15),
@@ -168,7 +168,7 @@ describe("DatePicker — límites min/max", () => {
 });
 
 describe("DatePicker — Form", () => {
-  test("required: sin fecha bloquea, con fecha pasa", async () => {
+  test("required: without a date blocks, with a date passes", async () => {
     let called = false;
     const form = Form(() => {
       called = true;
@@ -182,7 +182,7 @@ describe("DatePicker — Form", () => {
     expect(called).toBe(false);
     expect(field.isInvalid.val).toBe(true);
 
-    // El grid muestra el mes actual; elegir el día 1 de este mes.
+    // The grid shows the current month; pick day 1 of this month.
     const now = new Date();
     const dayOne = new Date(now.getFullYear(), now.getMonth(), 1);
     dayBtn(el, isoDate(dayOne)).click();
@@ -195,8 +195,8 @@ describe("DatePicker — Form", () => {
   });
 });
 
-describe("DatePicker — reactividad de idioma", () => {
-  test("el título del mes se reformatea al cambiar locale", async () => {
+describe("DatePicker — locale reactivity", () => {
+  test("the month title reformats when the locale changes", async () => {
     const field = DatePicker({ inline: true, value: new Date(2026, 0, 15) });
     mount(field.dom() as HTMLElement);
     expect(document.body.textContent).toContain("January");
@@ -207,12 +207,12 @@ describe("DatePicker — reactividad de idioma", () => {
   });
 });
 
-describe("DatePicker — teclado completo", () => {
+describe("DatePicker — full keyboard", () => {
   const grid = (el: HTMLElement) => el.querySelector('[tabindex="0"]') as HTMLElement;
   const key = (g: HTMLElement, k: string, opts: KeyboardEventInit = {}) =>
     g.dispatchEvent(new KeyboardEvent("keydown", { key: k, bubbles: true, ...opts }));
 
-  test("PageUp/PageDown y Shift navegan meses y años", async () => {
+  test("PageUp/PageDown and Shift navigate months and years", async () => {
     const field = DatePicker({ inline: true, value: new Date(2026, 5, 15) });
     const el = mount(field.dom() as HTMLElement);
     const g = grid(el);
@@ -238,7 +238,7 @@ describe("DatePicker — teclado completo", () => {
     expect(field.value.val).toBe("2026-06-15");
   });
 
-  test("Home/End/Ctrl+Home/Ctrl+End van a bordes de mes/año", async () => {
+  test("Home/End/Ctrl+Home/Ctrl+End jump to month/year boundaries", async () => {
     const field = DatePicker({ inline: true, value: new Date(2026, 5, 15) });
     const el = mount(field.dom() as HTMLElement);
     const g = grid(el);
@@ -265,8 +265,8 @@ describe("DatePicker — teclado completo", () => {
   });
 });
 
-describe("DatePicker — límites reactivos (State)", () => {
-  test("mutar min/max actualiza los días deshabilitados", async () => {
+describe("DatePicker — reactive bounds (State)", () => {
+  test("mutating min/max updates disabled days", async () => {
     const min = van.state<Date | null>(null);
     const max = van.state<Date | null>(null);
     const field = DatePicker({ inline: true, value: new Date(2026, 0, 15), min, max });

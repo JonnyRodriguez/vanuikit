@@ -1,11 +1,11 @@
 import { describe, test, expect } from "bun:test";
 import { Modal, ModalBase } from "../src/components/modal.js";
 
-// VanJS actualiza los bindings en un microtask; hay que esperarlo.
+// VanJS updates bindings in a microtask; tests must wait for it.
 const tick = () => new Promise((r) => setTimeout(r, 0));
 
 describe("ModalBase", () => {
-  test("oculto por defecto; open/close alternan la clase", async () => {
+  test("hidden by default; open/close toggle the class", async () => {
     const modal = ModalBase();
     modal.mount(document.body);
     const overlay = document.body.lastElementChild as HTMLElement;
@@ -19,7 +19,7 @@ describe("ModalBase", () => {
     expect(overlay.className).toContain("hidden");
   });
 
-  test("set() rellena zonas y muestra con show=true", async () => {
+  test("set() fills the zones and shows with show=true", async () => {
     const modal = ModalBase();
     modal.mount(document.body);
     modal.set({ header: "Hola", body: "Mundo" }, true);
@@ -30,7 +30,7 @@ describe("ModalBase", () => {
     expect(overlay.className).toContain("bg-overlay");
   });
 
-  test("zona footer: null la oculta", async () => {
+  test("footer zone: null hides it", async () => {
     const modal = ModalBase();
     modal.mount(document.body);
     modal.set({ footer: null, body: "solo cuerpo" }, true);
@@ -41,7 +41,7 @@ describe("ModalBase", () => {
 });
 
 describe("Modal", () => {
-  test("trae título, botón de cierre y footer con Cerrar", async () => {
+  test("brings title, close button and a footer with Close", async () => {
     const modal = Modal();
     modal.mount(document.body);
     modal.set({ title: "Editar", body: "contenido" }, true);

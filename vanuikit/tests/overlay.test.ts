@@ -9,7 +9,7 @@ const mount = (node: HTMLElement) => {
   return node;
 };
 
-// VanJS actualiza los bindings en un microtask; hay que esperarlo.
+// VanJS updates bindings in a microtask; tests must wait for it.
 const tick = () => new Promise((r) => setTimeout(r, 0));
 
 afterEach(() => {
@@ -17,7 +17,7 @@ afterEach(() => {
 });
 
 describe("Tooltip", () => {
-  test("oculto por defecto; focusin lo muestra al instante y focusout lo esconde", async () => {
+  test("hidden by default; focusin shows it instantly and focusout hides it", async () => {
     const el = mount(
       Tooltip({ content: "Mensaje de ayuda" }, van.tags.button("Disparador")) as HTMLElement,
     );
@@ -35,7 +35,7 @@ describe("Tooltip", () => {
     expect(bubble.className).toContain("hidden");
   });
 
-  test("mouseenter muestra (delay 0) y mouseleave esconde", async () => {
+  test("mouseenter shows (delay 0) and mouseleave hides", async () => {
     const el = mount(
       Tooltip({ content: "Hola", delay: 0, position: "left" }, van.tags.button("X")) as HTMLElement,
     );
@@ -43,7 +43,7 @@ describe("Tooltip", () => {
     await tick();
     const bubble = el.querySelector('[role="tooltip"]') as HTMLElement;
     expect(bubble.textContent).toBe("Hola");
-    expect(bubble.className).toContain("-translate-y-1/2"); // posición left
+    expect(bubble.className).toContain("-translate-y-1/2"); // left position
     expect(bubble.className).toContain("mr-2");
     expect(bubble.className).not.toContain("hidden");
 
@@ -52,7 +52,7 @@ describe("Tooltip", () => {
     expect(bubble.className).toContain("hidden");
   });
 
-  test("disabled bloquea hover y focus", async () => {
+  test("disabled blocks hover and focus", async () => {
     const el = mount(
       Tooltip({ content: "Nada", delay: 0, disabled: true }, van.tags.button("X")) as HTMLElement,
     );
@@ -64,7 +64,7 @@ describe("Tooltip", () => {
     ).toContain("hidden");
   });
 
-  test("contenido reactivo (State) llega a la burbuja", async () => {
+  test("reactive content (State) reaches the bubble", async () => {
     const msg = van.state("Uno");
     const el = mount(
       Tooltip({ content: msg, delay: 0 }, van.tags.button("X")) as HTMLElement,
@@ -91,7 +91,7 @@ describe("Popover", () => {
         ),
     });
 
-  test("click alterna el panel con aria-expanded y role=dialog", async () => {
+  test("click toggles the panel with aria-expanded and role=dialog", async () => {
     const el = mount(build() as HTMLElement);
     const panel = () => el.querySelector('[role="dialog"]') as HTMLElement;
     expect(panel().className).toContain("hidden");
@@ -107,7 +107,7 @@ describe("Popover", () => {
     expect(panel().className).toContain("hidden");
   });
 
-  test("Escape cierra y devuelve el foco al trigger", async () => {
+  test("Escape closes and returns focus to the trigger", async () => {
     const el = mount(build() as HTMLElement);
     const trigger = el.querySelector("#pop-trigger") as HTMLButtonElement;
     trigger.click();
@@ -120,25 +120,25 @@ describe("Popover", () => {
     expect(document.activeElement).toBe(trigger);
   });
 
-  test("click fuera cierra; click dentro (incluido el trigger) no", async () => {
+  test("click outside closes; click inside (including the trigger) does not", async () => {
     const el = mount(build() as HTMLElement);
     (el.querySelector("#pop-trigger") as HTMLButtonElement).click();
     await tick();
     const panel = el.querySelector('[role="dialog"]') as HTMLElement;
 
-    // Click dentro del panel (burbujea hasta document): el handler de
-    // documento lo ve como "dentro del container" y no cierra.
+    // Click inside the panel (bubbles up to document): the document handler
+    // sees it as "inside the container" and does not close.
     panel.dispatchEvent(new MouseEvent("click", { bubbles: true }));
     await tick();
     expect(panel.className).not.toContain("hidden");
 
-    // Click fuera (target = body): cierra.
+    // Click outside (target = body): closes.
     document.body.dispatchEvent(new MouseEvent("click", { bubbles: true }));
     await tick();
     expect(panel.className).toContain("hidden");
   });
 
-  test("close() del panel funciona y limpia listeners", async () => {
+  test("panel close() works and cleans up listeners", async () => {
     const el = mount(build() as HTMLElement);
     (el.querySelector("#pop-trigger") as HTMLButtonElement).click();
     await tick();
@@ -146,7 +146,7 @@ describe("Popover", () => {
     await tick();
     expect((el.querySelector('[role="dialog"]') as HTMLElement).className).toContain("hidden");
 
-    // Sin listeners residuales: un click documental ya no rompe nada
+    // No residual listeners: a document click no longer breaks anything
     document.dispatchEvent(new MouseEvent("click"));
     expect((el.querySelector('[role="dialog"]') as HTMLElement).className).toContain("hidden");
   });
@@ -171,7 +171,7 @@ describe("Drawer", () => {
     return { open, dom: dom as HTMLElement, getCloses: () => closes };
   };
 
-  test("el State controla la visibilidad con clases de lado y aria-hidden", async () => {
+  test("the State controls visibility with side classes and aria-hidden", async () => {
     const { open, dom } = build("right");
     mount(dom);
     const panel = dom.querySelector('[role="dialog"]') as HTMLElement;
@@ -183,25 +183,25 @@ describe("Drawer", () => {
     await tick();
     expect(panel.className).toContain("translate-x-0");
     expect(dom.getAttribute("aria-hidden")).toBe("false");
-    expect(document.body.style.overflow).toBe("hidden"); // scroll lock
+    expect(document.body.style.overflow).toBe("hidden"); // scroll locked
 
     open.val = false;
     await tick();
     expect(panel.className).toContain("translate-x-full");
-    expect(document.body.style.overflow).toBe(""); // scroll liberado
+    expect(document.body.style.overflow).toBe(""); // scroll released
   });
 
-  test("Escape cierra (dismissible), avisa onClose y devuelve el foco", async () => {
+  test("Escape closes (dismissible), notifies onClose and returns focus", async () => {
     const { open, dom, getCloses } = build("left");
     mount(dom);
-    // El opener debe existir DESPUÉS del mount (replaceChildren lo limpiaría).
+    // The opener must exist AFTER the mount (replaceChildren would wipe it).
     const opener = van.tags.button("Abrir");
     document.body.append(opener);
     opener.focus();
 
     open.val = true;
     await tick();
-    // El foco entró al panel
+    // Focus entered the panel
     expect(document.activeElement?.closest('[role="dialog"]')).toBeTruthy();
 
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
@@ -212,7 +212,7 @@ describe("Drawer", () => {
     opener.remove();
   });
 
-  test("click en el backdrop cierra; click en el panel no", async () => {
+  test("backdrop click closes; panel click does not", async () => {
     const { open, dom } = build();
     mount(dom);
     open.val = true;
@@ -231,7 +231,7 @@ describe("Drawer", () => {
     expect(open.val).toBe(true);
   });
 
-  test("dismissible: false desactiva Esc y backdrop; showClose: false quita el botón", async () => {
+  test("dismissible: false disables Esc and backdrop; showClose: false removes the button", async () => {
     const open = van.state(true);
     const dom = Drawer(
       { open, dismissible: false, showClose: false },
@@ -249,7 +249,7 @@ describe("Drawer", () => {
     expect(dom.querySelector("button")).toBeNull();
   });
 
-  test("trampa de foco: Tab en el último elemento vuelve al primero", async () => {
+  test("focus trap: Tab on the last element wraps to the first", async () => {
     const open = van.state(true);
     const dom = Drawer(
       { open, showClose: false },
@@ -272,7 +272,7 @@ describe("Drawer", () => {
     expect(document.activeElement).toBe(last);
   });
 
-  test("lados top/bottom usan translate-y", async () => {
+  test("top/bottom sides use translate-y", async () => {
     const { open, dom } = build("bottom");
     mount(dom);
     const panel = dom.querySelector('[role="dialog"]') as HTMLElement;

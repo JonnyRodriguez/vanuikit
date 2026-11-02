@@ -5,7 +5,7 @@ import { Tabs } from "../src/components/tabs.js";
 const tick = () => new Promise((r) => setTimeout(r, 0));
 
 describe("Tabs", () => {
-  test("renderiza pestañas y muestra el contenido activo inicial", async () => {
+  test("renders tabs and shows the initial active content", async () => {
     const el = Tabs({
       items: [
         { id: "tab1", label: "General", content: () => van.tags.div("Contenido General") },
@@ -23,7 +23,7 @@ describe("Tabs", () => {
     expect(el.textContent).toContain("Contenido General");
   });
 
-  test("al hacer clic en otra pestaña cambia el panel activo y ejecuta onChange", async () => {
+  test("clicking another tab changes the active panel and runs onChange", async () => {
     let changedTo = "";
     const el = Tabs({
       items: [
@@ -45,7 +45,7 @@ describe("Tabs", () => {
     expect(el.textContent).toContain("Panel 2");
   });
 
-  test("pestaña deshabilitada no responde al clic", async () => {
+  test("disabled tab does not respond to click", async () => {
     let changed = false;
     const el = Tabs({
       items: [

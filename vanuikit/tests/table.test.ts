@@ -10,7 +10,7 @@ describe("Table / DataGrid", () => {
     { id: 3, name: "Charlie", score: 78 },
   ];
 
-  test("renderiza cabeceras y filas con datos", async () => {
+  test("renders headers and rows with data", async () => {
     const el = Table({
       columns: [
         { key: "name", header: "Nombre" },
@@ -29,7 +29,7 @@ describe("Table / DataGrid", () => {
     expect(el.textContent).toContain("Charlie");
   });
 
-  test("ordena columnas al hacer clic en cabecera sortable", async () => {
+  test("sorts columns when clicking a sortable header", async () => {
     const el = DataGrid({
       columns: [
         { key: "name", header: "Nombre", sortable: true },
@@ -42,14 +42,14 @@ describe("Table / DataGrid", () => {
     await tick();
 
     const scoreHeader = el.querySelectorAll("th")[1] as HTMLElement;
-    // Clic para ordenar asc
+    // Click to sort asc
     scoreHeader.click();
     await tick();
 
     let rows = el.querySelectorAll("tbody tr");
     expect(rows[0].textContent).toContain("Charlie"); // score 78
 
-    // Clic para ordenar desc
+    // Click to sort desc
     scoreHeader.click();
     await tick();
 
@@ -57,7 +57,7 @@ describe("Table / DataGrid", () => {
     expect(rows[0].textContent).toContain("Bob"); // score 92
   });
 
-  test("filtra por búsqueda cuando searchable=true", async () => {
+  test("filters by search when searchable=true", async () => {
     const el = DataGrid({
       columns: [
         { key: "name", header: "Nombre" },

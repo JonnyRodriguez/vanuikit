@@ -18,13 +18,13 @@ describe("Button", () => {
     expect(btn.textContent).toBe("Hola");
   });
 
-  test("variant secondary aplica las clases secundarias", () => {
+  test("variant secondary applies the secondary classes", () => {
     const btn = mount(Button({ variant: "secondary" }, "X"));
     expect(btn.className).toContain("bg-secondary");
     expect(btn.className).not.toContain("bg-primary");
   });
 
-  test("size sm y lg cambian padding/texto", () => {
+  test("size sm and lg change padding/text", () => {
     const sm = mount(Button({ size: "sm" }));
     expect(sm.className).toContain("text-sm");
     expect(sm.className).toContain("px-3");
@@ -33,29 +33,29 @@ describe("Button", () => {
     expect(lg.className).toContain("px-6");
   });
 
-  test("type submit se propaga al DOM", () => {
+  test("type submit propagates to the DOM", () => {
     const btn = mount(Button({ type: "submit" }));
     expect(btn.type).toBe("submit");
   });
 
-  test("class extra se fusiona al final", () => {
+  test("extra class merges at the end", () => {
     const btn = mount(Button({ class: "mi-clase" }));
     expect(btn.className).toContain("mi-clase");
   });
 
-  test("wrappers de compatibilidad delegan en Button", () => {
+  test("compatibility wrappers delegate to Button", () => {
     const p = mount(PrimaryButton({}, "P"));
     expect(p.className).toContain("bg-primary");
     const s = mount(SecondaryButton({}, "S"));
     expect(s.className).toContain("bg-secondary");
   });
 
-  test("ancho auto por defecto (sin w-full)", () => {
+  test("auto width by default (without w-full)", () => {
     const btn = mount(Button({}, "X"));
     expect(btn.className).not.toContain("w-full");
   });
 
-  test("block: true activa w-full (opt-in)", () => {
+  test("block: true enables w-full (opt-in)", () => {
     const btn = mount(Button({ block: true }, "X"));
     expect(btn.className).toContain("w-full");
   });

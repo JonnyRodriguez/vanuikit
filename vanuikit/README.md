@@ -160,7 +160,7 @@ por path local (`file:../vanuikit`), declara `vanjs-core` también en tu app
 > de vanjs.org y hacer `import van from "vanjs-core"`. La app "funciona" pero
 > los componentes del kit quedan en otro mundo de estado. Desde 0.2.0 la
 > librería **lo detecta en runtime** y lo grita en consola con la solución —
-> no esperes a depurar una hora: si ves el aviso `[vanuikit] DOS copias…`,
+> no esperes a depurar una hora: si ves el aviso `[vanuikit] TWO copies…`,
 > cambia los imports. El build de la demo además lo verifica estáticamente
 > (`check-single-vanjs.js`) y falla si el bundle contiene más de una copia.
 

@@ -25,7 +25,7 @@ describe("guardSingleVan", () => {
       guardSingleVan(copiaB); // segunda copia: avisa con la solución
       expect(errors.length).toBe(1);
       const msg = String((errors[0] as unknown[])[0]);
-      expect(msg).toContain("DOS copias");
+      expect(msg).toContain("TWO copies"); // mensaje en inglés (consumidores npm)
       expect(msg).toContain('import { van } from "vanuikit"');
     } finally {
       console.error = origError;

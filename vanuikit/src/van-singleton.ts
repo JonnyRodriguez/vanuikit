@@ -19,12 +19,13 @@ export function guardSingleVan(van: unknown): void {
   const prev = g[INSTANCE_KEY];
   if (prev !== undefined && prev !== van) {
     // No sobreescribe la marca: la copia real queda registrada.
+    // Mensaje en inglés: mensaje de consola para consumidores del paquete en npm.
     console.error(
       [
-        "[vanuikit] DOS copias de vanjs-core en este bundle: la reactividad se rompe en silencio.",
-        "  Síntomas: la vista no cambia al navegar, textos congelados, componentes vacíos o duplicados.",
-        '  1) Importa van siempre desde "vanuikit" (import { van } from "vanuikit"); nunca importes "vanjs-core" directo.',
-        "  2) Deja una sola copia física: alinea las versiones de vanjs-core y dedupéalo en el bundler (ver AGENTS.md §5).",
+        "[vanuikit] TWO copies of vanjs-core detected in this bundle: reactivity silently breaks.",
+        "  Symptoms: views don't update on navigation, frozen text, components going empty or duplicated.",
+        '  1) Always import van from "vanuikit" (import { van } from "vanuikit"); never import "vanjs-core" directly.',
+        "  2) Keep a single physical copy: align vanjs-core versions across your tree and dedupe it in your bundler.",
       ].join("\n"),
     );
     return;

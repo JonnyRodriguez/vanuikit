@@ -64,7 +64,7 @@ export const authState = createAuth({
     });
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || "Error al iniciar sesión");
+      throw new Error(err.error || i18n.raw("login.errGeneric", "Error signing in"));
     }
     const data = await res.json();
     return {
@@ -81,7 +81,7 @@ export const authState = createAuth({
     });
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || "Error al registrarse");
+      throw new Error(err.error || i18n.raw("register.errGeneric", "Error creating account"));
     }
     const data = await res.json();
     return {
@@ -125,10 +125,10 @@ export function App() {
 
   const getPageTitle = van.derive(() => {
     const p = router.path.val;
-    if (p.startsWith("/***REMOVED***")) return i18n.raw("***REMOVED***.title", "Métodos de Transaction y ***REMOVED***");
-    if (p.startsWith("/components")) return i18n.raw("components.title", "Catálogo de Componentes");
-    if (p.startsWith("/login")) return i18n.raw("login.title", "Iniciar sesión");
-    if (p.startsWith("/register")) return i18n.raw("register.title", "Crear una cuenta");
+    if (p.startsWith("/***REMOVED***")) return i18n.raw("***REMOVED***.title", "***REMOVED*** & Top-up Methods");
+    if (p.startsWith("/components")) return i18n.raw("components.title", "Component Showcase");
+    if (p.startsWith("/login")) return i18n.raw("login.title", "Sign In");
+    if (p.startsWith("/register")) return i18n.raw("register.title", "Create Account");
     return i18n.raw("nav.dashboard", "Dashboard");
   });
 
@@ -164,10 +164,10 @@ export function App() {
       ),
       content: [
         SidebarGroup(
-          { title: i18n.t("nav.platform", "Plataforma") },
+          { title: i18n.t("nav.platform", "Platform") },
           SidebarItem({
             href: "/***REMOVED***",
-            label: i18n.t("nav.***REMOVED***", "***REMOVED***s"),
+            label: i18n.t("nav.***REMOVED***", "***REMOVED***"),
             icon: Icon({ name: "credit-card", class: "size-[18px]" }),
             current: router.path,
             onclick: () => {
@@ -176,7 +176,7 @@ export function App() {
           }),
           SidebarItem({
             href: "/components",
-            label: i18n.t("nav.components", "Componentes"),
+            label: i18n.t("nav.components", "Components"),
             icon: Icon({ name: "puzzle", class: "size-[18px]" }),
             badge: "17",
             badgeVariant: "secondary",
@@ -189,10 +189,10 @@ export function App() {
         () =>
           !authState.user.val
             ? SidebarGroup(
-                { title: i18n.t("nav.account", "Cuenta") },
+                { title: i18n.t("nav.account", "Account") },
                 SidebarItem({
                   href: "/login",
-                  label: i18n.t("nav.login", "Iniciar sesión"),
+                  label: i18n.t("nav.login", "Sign In"),
                   icon: Icon({ name: "key", class: "size-[18px]" }),
                   current: router.path,
                   onclick: () => {
@@ -201,7 +201,7 @@ export function App() {
                 }),
                 SidebarItem({
                   href: "/register",
-                  label: i18n.t("nav.register", "Crear cuenta"),
+                  label: i18n.t("nav.register", "Sign Up"),
                   icon: Icon({ name: "user", class: "size-[18px]" }),
                   current: router.path,
                   onclick: () => {
@@ -227,7 +227,7 @@ export function App() {
           type: "button",
           class:
             "lg:hidden p-2 rounded-lg text-foreground hover:bg-secondary border border-border cursor-pointer text-base flex items-center justify-center",
-          "aria-label": i18n.t("nav.menuOpen", "Abrir menú"),
+          "aria-label": i18n.t("nav.menuOpen", "Open menu"),
           onclick: () => {
             sidebarOpen.val = !sidebarOpen.val;
           },

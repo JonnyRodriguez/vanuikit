@@ -1,9 +1,9 @@
 /**
- * Referencia — pantalla de login de la librería (Form, Field, Button, Spin).
+ * Reference — library login screen (Form, Field, Button, Spin).
  *
- * Los campos (EmailField, PasswordField) son autosuficientes con i18n global.
- * Si se desea personalizar textos o claves, se pueden pasar como opciones,
- * o cambiar directamente las traducciones en el singleton de i18n.
+ * The fields (EmailField, PasswordField) are self-sufficient with the global i18n.
+ * To customize texts or keys, they can be passed as options,
+ * or the translations changed directly on the i18n singleton.
  */
 import van from "vanjs-core";
 import { Form } from "../components/form.js";
@@ -14,15 +14,15 @@ import { t } from "../i18n.js";
 
 export type AuthResult = { error: string } | { ok?: boolean } | {};
 
-/** Lo que LoginForm necesita de su orquestador. */
+/** What LoginForm needs from its orchestrator. */
 export interface LoginInfo {
   handleLogin: (data: Record<string, unknown>) => Promise<AuthResult>;
 }
 
 /**
- * Formulario de login limpio y directo.
- * Los campos resuelven sus etiquetas, placeholders y validaciones automáticamente.
- * Usa el contrato de Form v3: submitting, línea general y sin doble submit.
+ * Clean, straightforward login form.
+ * Fields resolve their labels, placeholders and validations automatically.
+ * Uses the Form v3 contract: submitting, general error line and no double submit.
  */
 export const LoginForm = (info: LoginInfo) => {
   const { div, p } = van.tags;

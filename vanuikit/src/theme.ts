@@ -16,8 +16,8 @@ export interface ThemeInstance {
 }
 
 /**
- * Gestor reactivo de tema (Claro / Oscuro / Sistema) para VanJS.
- * Sincroniza la clase `.dark` en el elemento <html> y persiste la preferencia.
+ * Reactive theme manager (Light / Dark / System) for VanJS.
+ * Syncs the `.dark` class on the <html> element and persists the preference.
  */
 export function createTheme(options: ThemeOptions = {}): ThemeInstance {
   const storageKey = options.storageKey ?? "vanuikit-theme";
@@ -72,7 +72,7 @@ export function createTheme(options: ThemeOptions = {}): ThemeInstance {
     }
   };
 
-  // Aplicar inmediatamente al crear
+  // Apply immediately upon creation
   applyTheme();
 
   const setMode = (newMode: ThemeMode) => {

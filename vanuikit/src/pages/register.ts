@@ -1,7 +1,7 @@
 /**
- * Referencia — pantalla de registro de la librería (Form, Field, Button, Spin).
+ * Reference — library registration screen (Form, Field, Button, Spin).
  *
- * Los campos (TextField, EmailField, PasswordField) vienen con baterías incluidas e i18n global.
+ * The fields (TextField, EmailField, PasswordField) come with batteries included and global i18n.
  */
 import van from "vanjs-core";
 import { Form } from "../components/form.js";
@@ -13,15 +13,15 @@ import { t } from "../i18n.js";
 
 export type AuthResult = { error: string } | { ok?: boolean } | {};
 
-/** Lo que RegisterForm necesita de su orquestador. */
+/** What RegisterForm needs from its orchestrator. */
 export interface RegisterInfo {
   handleRegister: (data: Record<string, unknown>) => Promise<AuthResult>;
 }
 
 /**
- * Formulario de registro limpio.
- * Los campos ya traen sus etiquetas, placeholders y validaciones por defecto.
- * Usa el contrato de Form v3: submitting, línea general y sin doble submit.
+ * Clean registration form.
+ * Fields already ship their default labels, placeholders and validations.
+ * Uses the Form v3 contract: submitting, general error line and no double submit.
  */
 export const RegisterForm = (info: RegisterInfo) => {
   const { div, p } = van.tags;

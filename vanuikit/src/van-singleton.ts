@@ -1,25 +1,25 @@
 /**
- * Detector runtime de la regla de instancia única de VanJS.
+ * Runtime detector of the VanJS single-instance rule.
  *
- * Dos copias de vanjs-core en el mismo bundle son dos sistemas de estado que
- * no se hablan: la reactividad se rompe en silencio (la vista del router no
- * cambia al navegar, bindings congelados, componentes que desaparecen). La
- * documentación no alcanza — este guard convierte el error en un mensaje de
- * consola inmediato con la solución exacta.
+ * Two copies of vanjs-core in the same bundle are two state systems that
+ * do not talk to each other: reactivity silently breaks (the router view
+ * does not change on navigation, frozen bindings, components going empty).
+ * Documentation is not enough — this guard turns the error into an
+ * immediate console message with the exact fix.
  *
- * `Symbol.for` (no `Symbol`): el registro global lo comparten TODAS las
- * copias del módulo, aunque cada una viva en un archivo distinto del bundle
- * — así se delata la segunda copia al evaluarse.
+ * `Symbol.for` (not `Symbol`): ALL copies of the module share the global
+ * registry, even if each one lives in a different file of the bundle —
+ * that is how the second copy gives itself away on evaluation.
  */
 const INSTANCE_KEY = Symbol.for("vanuikit.vanjs-core.instance");
 
-/** Registra la instancia de van y avisa (console.error) si ya había otra. */
+/** Registers the van instance and warns (console.error) if another one already existed. */
 export function guardSingleVan(van: unknown): void {
   const g = globalThis as unknown as Record<symbol, unknown>;
   const prev = g[INSTANCE_KEY];
   if (prev !== undefined && prev !== van) {
-    // No sobreescribe la marca: la copia real queda registrada.
-    // Mensaje en inglés: mensaje de consola para consumidores del paquete en npm.
+    // Does not overwrite the mark: the real copy stays registered.
+    // Message in English: console message for npm package consumers.
     console.error(
       [
         "[vanuikit] TWO copies of vanjs-core detected in this bundle: reactivity silently breaks.",

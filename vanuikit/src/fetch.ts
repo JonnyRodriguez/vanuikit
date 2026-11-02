@@ -1,11 +1,11 @@
 import van, { State } from "vanjs-core";
 
 export interface QueryOptions<T> {
-  /** Función para transformar la respuesta */
+  /** Function to transform the response */
   transform?: (raw: any) => T;
-  /** Si debe ejecutar la petición inmediatamente al crearse (default: true) */
+  /** Whether to run the request immediately upon creation (default: true) */
   immediate?: boolean;
-  /** Opciones de init para pasar a fetch (headers, method, etc.) */
+  /** init options to pass to fetch (headers, method, etc.) */
   init?: RequestInit | (() => RequestInit);
 }
 
@@ -45,8 +45,8 @@ function getStoredAuthHeaders(): Record<string, string> {
 }
 
 /**
- * Hook reactivo para realizar peticiones GET / consultas a una API con VanJS.
- * Mantiene data, loading y error sincronizados con states de VanJS.
+ * Reactive hook for performing GET requests / queries against an API with VanJS.
+ * Keeps data, loading and error synced with VanJS states.
  */
 export function createQuery<T>(
   url: string | (() => string),
@@ -89,7 +89,7 @@ export function createQuery<T>(
             errMessage = body.error || body.message;
           }
         } catch {
-          // Si no es JSON, conservar mensaje por defecto
+          // If not JSON, keep the default message
         }
         throw new Error(errMessage);
       }
@@ -125,7 +125,7 @@ export function createQuery<T>(
 }
 
 /**
- * Hook reactivo para realizar mutaciones (POST, PUT, DELETE, PATCH) en APIs con VanJS.
+ * Reactive hook for performing mutations (POST, PUT, DELETE, PATCH) against APIs with VanJS.
  */
 export function createMutation<TData = any, TVariables = any>(
   urlOrFn:

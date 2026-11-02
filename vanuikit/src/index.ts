@@ -1,17 +1,17 @@
 // vanuikit/src/index.ts
 /**
- * VanUikit — Biblioteca de componentes modulares y reactivos para VanJS.
+ * VanUikit — Library of modular, reactive components for VanJS.
  */
 import van from "vanjs-core";
 import { guardSingleVan } from "./van-singleton.js";
 
-// Regla de instancia única: si este bundle trae dos copias de vanjs-core,
-// avisa en consola con la solución (ver van-singleton.ts).
+// Single-instance rule: if this bundle ships two copies of vanjs-core,
+// warn in console with the solution (see van-singleton.ts).
 guardSingleVan(van);
 
 export { van };
 
-// Componentes Básicos
+// Basic Components
 export { Button, PrimaryButton, SecondaryButton, type ButtonVariant, type ButtonSize } from "./components/button.js";
 export { Field, TextField, EmailField, PasswordField, TextareaField, type TextareaFieldOptions } from "./components/field.js";
 export { Checkbox, type CheckboxOptions, type CheckboxField, type CheckSize, type ToggleText } from "./components/checkbox.js";
@@ -86,11 +86,11 @@ export {
   type UserBadgeProps,
 } from "./components/user-badge.js";
 
-// Pantallas / Formularios preconstruidos
+// Prebuilt screens / forms
 export { LoginForm } from "./pages/login.js";
 export { RegisterForm } from "./pages/register.js";
 
-// Autenticación de Cliente
+// Client-side Authentication
 export {
   createAuth,
   requireAuth,
@@ -100,7 +100,7 @@ export {
   type AuthState,
 } from "./auth.js";
 
-// Enrutador SPA
+// SPA Router
 export {
   Router,
   createRouter,
@@ -114,7 +114,7 @@ export {
   type RouteFactory,
 } from "./router.js";
 
-// Helpers de red y reactividad
+// Network and reactivity helpers
 export {
   createQuery,
   createMutation,
@@ -124,7 +124,7 @@ export {
   type MutationResult,
 } from "./fetch.js";
 
-// Validadores
+// Validators
 export {
   Required,
   Email,
@@ -133,10 +133,10 @@ export {
   type Validator,
 } from "./validators.js";
 
-// Utilidades generales
+// General utilities
 export { cx } from "./util.js";
 
-// Tema (Claro / Oscuro / Sistema)
+// Theme (Light / Dark / System)
 export {
   createTheme,
   type ThemeMode,
@@ -144,7 +144,7 @@ export {
   type ThemeInstance,
 } from "./theme.js";
 
-// Internacionalización (i18n)
+// Internationalization (i18n)
 export {
   createI18n,
   i18n,
@@ -154,7 +154,7 @@ export {
   type I18nInstance,
 } from "./i18n.js";
 
-// Formateo locale-aware (fechas, números, moneda — la otra mitad del i18n)
+// Locale-aware formatting (dates, numbers, currency — the other half of i18n)
 export {
   createFmt,
   fmt,

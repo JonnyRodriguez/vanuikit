@@ -1,34 +1,34 @@
 /**
- * debug-graph.ts — instrumentador de VanJS en modo desarrollo.
+ * debug-graph.ts — VanJS instrumenter in development mode.
  *
- * Opciones-instala `van.state`/`van.derive` para construir el *árbol de
- * dependencias* real (qué derive lee qué estados) y detectar en el momento de
- * la violación las reglas silenciosas documentadas en AGENTS.md:
+ * Option-installs `van.state`/`van.derive` to build the real *dependency
+ * tree* (which derive reads which states) and detect, at violation time,
+ * the silent rules documented in AGENTS.md:
  *
- *  - R1 (state-in-derive):  `van.state()` creado DENTRO de un `van.derive`.
- *  - R2 (derive-writes-state): un derive escribe estados durante su cómputo
- *    (feedback; si además los leyó → ciclo).
- *  - R3 (derive-no-deps):   un derive sin lecturas (no es reactivo).
- *  - R4 (container-reactive-reads): una función de render lee estados reactivos
- *    (reconstruirá su subárbol; solo se reporta si pasó por `trackRender` o si
- *    la función fue marcada con `renderIntentional` → se suprime).
+ *  - R1 (state-in-derive):  `van.state()` created INSIDE a `van.derive`.
+ *  - R2 (derive-writes-state): a derive writes states during its computation
+ *    (feedback; if it also read them → cycle).
+ *  - R3 (derive-no-deps):   a derive with no reads (not reactive).
+ *  - R4 (container-reactive-reads): a render function reads reactive states
+ *    (it will rebuild its subtree; only reported if it went through `trackRender`,
+ *    and suppressed if the function was marked with `renderIntentional`).
  *
- * Uso (dev-only):
+ * Usage (dev-only):
  *
  *   import { van, installVanDebug } from "vanuikit";
  *   const debug = installVanDebug(van);
- *   // ... arrancar la app ...
- *   debug.printTree();   // grafo en consola
- *   debug.dump();        // grafo serializable
+ *   // ... start the app ...
+ *   debug.printTree();   // graph in console
+ *   debug.dump();        // serializable graph
  *
- * En producción NO se importa ni se llama: el módulo no tiene efectos al
- * importarse (solo define funciones) y el bundle lo elimina por tree-shaking.
+ * In production it is NOT imported nor called: the module has no effects on
+ * import (it only defines functions) and the bundle removes it via tree-shaking.
  */
 
 import type { State } from "vanjs-core";
 
 // ---------------------------------------------------------------------------
-// Tipos públicos
+// Public types
 // ---------------------------------------------------------------------------
 
 export type ViolationKind =
@@ -50,8 +50,8 @@ export interface VanDebugNode {
 }
 
 export interface VanDebugDerive extends VanDebugNode {
-  deps: number[]; // ids de estados que lee
-  writes: number[]; // ids de estados que escribe durante el cómputo
+  deps: number[]; // ids of the states it reads
+  writes: number[]; // ids of the states it writes during computation
 }
 
 export interface VanDebugGraph {
@@ -61,31 +61,31 @@ export interface VanDebugGraph {
 }
 
 export interface VanDebugApi {
-  /** Devuelve el grafo serializable actual. */
+  /** Returns the current serializable graph. */
   dump(): VanDebugGraph;
-  /** Imprime el grafo en consola (árbol derive → estados). */
+  /** Prints the graph to console (derive → states tree). */
   printTree(): void;
-  /** Diagnósticos acumulados. */
+  /** Accumulated diagnostics. */
   diagnostics(): readonly VanDebugDiagnostic[];
-  /** Limpia estados, derives y diagnósticos (para tests). */
+  /** Clears states, derives and diagnostics (for tests). */
   clear(): void;
   /**
-   * Ejecuta `fn` bajo un marco de tipo "render" (función contenedora).
-   * Si `fn` lee estados reactivos, reporta R4. Útil para verificar
-   * contenedores sospechosos durante el desarrollo.
+   * Runs `fn` under a "render"-type frame (container function).
+   * If `fn` reads reactive states, reports R4. Useful for verifying
+   * suspicious containers during development.
    */
   trackRender<T>(fn: () => T, label?: string): T;
   /**
-   * Marca una función render como intencionalmente reactiva: si se pasa por
-   * `trackRender`, la lectura de estados NO se reporta (rebuild a propósito).
+   * Marks a render function as intentionally reactive: if passed through
+   * `trackRender`, state reads are NOT reported (rebuild on purpose).
    */
   renderIntentional<T extends (...args: never[]) => unknown>(fn: T): T;
-  /** silence: true → no imprime warnings (solo acumula). */
+  /** silence: true → does not print warnings (only accumulates). */
   configure(opts: { silent?: boolean }): void;
 }
 
 // ---------------------------------------------------------------------------
-// Estado interno
+// Internal state
 // ---------------------------------------------------------------------------
 
 interface StateMeta {
@@ -143,7 +143,7 @@ function report(kind: ViolationKind, message: string, origin?: string): void {
 }
 
 // ---------------------------------------------------------------------------
-// Instrumentación de estados
+// State instrumentation
 // ---------------------------------------------------------------------------
 
 function findValDescriptor(obj: object): PropertyDescriptor | undefined {
@@ -164,8 +164,8 @@ function hookState(state: State<unknown>, label?: string): State<unknown> {
   if (label) m.label = label;
 
   const desc = findValDescriptor(state);
-  // Si el estado no expone `val` como accessor, no podemos interceptarlo sin
-  // alterar su semántica: lo dejamos sin hookear.
+  // If the state does not expose `val` as an accessor, we cannot intercept it
+  // without altering its semantics: leave it unhooked.
   if (!desc || (!desc.get && !desc.set)) return state;
 
   Object.defineProperty(state, "val", {
@@ -186,7 +186,7 @@ function hookState(state: State<unknown>, label?: string): State<unknown> {
 }
 
 // ---------------------------------------------------------------------------
-// Instalación sobre una instancia de van
+// Installation over a van instance
 // ---------------------------------------------------------------------------
 
 interface VanLike {
@@ -203,7 +203,7 @@ function installVanDebug(van: VanLike): VanDebugApi {
   const origState = van.state.bind(van);
   const origDerive = van.derive.bind(van);
 
-  // R1: crear un estado dentro de un marco (derive/render) viola la regla.
+  // R1: creating a state inside a frame (derive/render) violates the rule.
   van.state = ((initVal?: unknown, label?: string) => {
     if (activeFrame) {
       report(
@@ -214,8 +214,8 @@ function installVanDebug(van: VanLike): VanDebugApi {
     return hookState(origState(initVal), label);
   }) as VanLike["state"];
 
-  // El derive abre un marco: las lecturas de estados dentro de fn() quedan
-  // registradas como dependencias del derive (el árbol de dependencias).
+  // The derive opens a frame: state reads inside fn() get registered as
+  // dependencies of the derive (the dependency tree).
   van.derive = ((fn: () => unknown) => {
     const label = fn.name || `derive#${++deriveSeq}`;
     const frame: Frame = {
@@ -237,8 +237,8 @@ function installVanDebug(van: VanLike): VanDebugApi {
       }
     });
 
-    // Fuerza la primera evaluación para cosechar las dependencias (si van aún
-    // no computó el derive).
+    // Forces the first evaluation to harvest the dependencies (in case van has
+    // not computed the derive yet).
     void derived.val;
 
     if (frame.deps.size === 0) {

@@ -1,24 +1,24 @@
 /**
- * Genera el CSS estático de la librería vanuikit, sin el runtime del CDN.
+ * Generates the static CSS of the vanuikit library, without the CDN runtime.
  *
- * Escanea los fuentes del paquete (vanuikit/src), extrae las clases de sus
- * componentes y las compila con @unocss/preset-uno -> dist/vanuikit.css
+ * Scans the package sources (vanuikit/src), extracts the classes of its
+ * components and compiles them with @unocss/preset-uno -> dist/vanuikit.css
  *
- * Uso: node scripts/uno.js  (o npm run css, que lo invoca)
+ * Usage: node scripts/uno.js  (or npm run css, which invokes it)
  *
- * Dependencias (dev): @unocss/core y @unocss/preset-uno
+ * Dependencies (dev): @unocss/core and @unocss/preset-uno
  *
- * Tema: los colores, radios y sombras se resuelven con variables CSS `--vui-*`
- * definidas en :root (ver VUI_THEME). El consumidor re-tematiza la librería
- * sobreescribiendo esas variables en su propio CSS (cargado después de este).
+ * Theme: colors, radii and shadows resolve with CSS variables `--vui-*`
+ * defined in :root (see VUI_THEME). The consumer re-themes the library
+ * by overriding those variables in their own CSS (loaded after this one).
  */
 
-/** Reset mínimo (reemplaza el preflight que el preset trae por defecto y
- *  que el `preflights` propio del generador elimina). Sin `border-style:
- *  solid` los bordes con ancho (border-t-2, border-border…) se computan a
- *  0px y no se pintan — p. ej. el anillo del Spin quedaba invisible. El
- *  reset de <button> evita el gris nativo del navegador (#efefef) en botones
- *  sin clase de fondo propia, que en modo oscuro destapa un botón claro. */
+/** Minimal reset (replaces the preflight the preset ships by default and
+ *  that the generator's own `preflights` removes). Without `border-style:
+ *  solid`, borders with width (border-t-2, border-border…) compute to
+ *  0px and are not painted — e.g. the Spin ring used to be invisible. The
+ *  <button> reset avoids the browser's native gray (#efefef) on buttons
+ *  without their own background class, which in dark mode reveals a light button. */
 const RESET = `
 *, *::before, *::after {
   box-sizing: border-box;
@@ -42,14 +42,14 @@ button {
 }
 `.trim();
 
-/** Variables del tema por defecto (mismos valores que las clases originales).
- *  Paleta alineada a Tailwind CSS (la referencia de shadcn y los kits modernos):
- *  primary/accent = blue-600 familia (accent acompaña al primario: es el color
- *  de selección/foco/progreso en Switch, Radio, Wizard, Progress, Nav, fields);
- *  neutrales = gray; destructive = red-600/500; focus ring = blue-500/400.
- *  Estados (info/success/warning) = 600 en light / 400 en dark (bases para
- *  fondos sólidos, dots y tintes al 10%) con sus -fg al nivel legible como
- *  texto sobre tinte (700 en light / 300 en dark, ≥ 4.5:1). */
+/** Default theme variables (same values as the original classes).
+ *  Palette aligned to Tailwind CSS (the reference of shadcn and modern kits):
+ *  primary/accent = blue-600 family (accent accompanies the primary: it is the
+ *  selection/focus/progress color in Switch, Radio, Wizard, Progress, Nav, fields);
+ *  neutrals = gray; destructive = red-600/500; focus ring = blue-500/400.
+ *  States (info/success/warning) = 600 in light / 400 in dark (bases for
+ *  solid backgrounds, dots and 10% tints) with their -fg at the level readable as
+ *  text on tint (700 in light / 300 in dark, ≥ 4.5:1). */
 const VUI_THEME = `
 :root{
 --vui-primary:#2563eb;
@@ -126,12 +126,12 @@ const VUI_THEME = `
 }
 `.trim();
 
-/** Envuelve un color (var --vui-*) en color-mix con el placeholder %alpha:
- *  así los modificadores de opacidad (bg-secondary/60, text-muted-foreground/70)
- *  resuelven de verdad en vez de descartarse en silencio. */
+/** Wraps a color (var --vui-*) in color-mix with the %alpha placeholder:
+ *  this way opacity modifiers (bg-secondary/60, text-muted-foreground/70)
+ *  actually resolve instead of being silently discarded. */
 const cm = (v) => `color-mix(in srgb, ${v} calc(%alpha * 100%), transparent)`;
 
-/** Mapea las clases de color/radio/sombra a las variables del tema. */
+/** Maps the color/radius/shadow classes to the theme variables. */
 const THEME = {
   colors: {
     primary: cm("var(--vui-primary)"),
@@ -175,7 +175,7 @@ const THEME = {
     lg: "var(--vui-shadow-lg)",
     xl: "var(--vui-shadow-xl)",
     "2xl": "var(--vui-shadow-2xl)",
-    // Brillo del botón primario (button.ts: shadow-primary-shadow)
+    // Primary button glow (button.ts: shadow-primary-shadow)
     "primary-shadow": "var(--un-shadow-inset) 0 4px 14px 0 var(--vui-primary-shadow)",
   },
 };
@@ -204,13 +204,13 @@ function getFiles(dir) {
 
 const files = getFiles("src");
 
-// El extractor de UnoCSS toma los tokens de clases de cualquier texto;
-// concatenamos todo el código fuente.
+// The UnoCSS extractor takes class tokens from any text;
+// we concatenate the whole source code.
 const source = files.map((f) => fs.readFileSync(f, "utf-8")).join("\n");
 
 const generator = await createGenerator({
-  // El theme va a nivel del generador, no dentro del preset: así las clases
-  // de color custom, borderRadius y boxShadow resuelven a var(--vui-*).
+  // The theme goes at the generator level, not inside the preset: this way
+  // custom color classes, borderRadius and boxShadow resolve to var(--vui-*).
   theme: THEME,
   presets: [presetUno()],
   preflights: [

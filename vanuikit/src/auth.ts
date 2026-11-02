@@ -1,10 +1,10 @@
 /**
- * Auth — base de sesión para la SPA.
+ * Auth — session base for the SPA.
  *
- * Patrón del store (web/src/app.ts: estado de usuario + boot con `me()` +
- * guard en la vista protegida), pero sin el `setTimeout` hack ni código
- * duplicado por app. La app solo provee un `AuthApi` (cómo se comunica con
- * el backend) y recibe un estado reactivo + helpers:
+ * Pattern from the store (web/src/app.ts: user state + boot with `me()` +
+ * guard on the protected view), but without the `setTimeout` hack or code
+ * duplicated per app. The app only provides an `AuthApi` (how it talks to
+ * the backend) and receives a reactive state + helpers:
  *
  *   const auth = createAuth({
  *     me: () => api<{ user: User | null }>("/auth/me"),
@@ -12,17 +12,17 @@
  *     logout: () => api("/auth/logout", { method: "POST" }),
  *   });
  *
- *   // en App (boot al arrancar):
+ *   // in App (boot on startup):
  *   auth.boot().then(...)
  *
- *   // en una ruta protegida:
+ *   // on a protected route:
  *   router.add("/dashboard", () => Dashboard(), { beforeEnter: requireAuth(auth, "/login") });
  */
 import van from "vanjs-core";
 import type { State } from "vanjs-core";
 import type { Guard } from "./router.js";
 
-/** Usuario de sesión (lo define la app; el mínimo es id + email). */
+/** Session user (defined by the app; the minimum is id + email). */
 export type AuthUser = {
   id: string | number;
   email: string;
@@ -30,30 +30,30 @@ export type AuthUser = {
   [key: string]: unknown;
 };
 
-/** Contrato mínimo que la app implementa contra su backend. */
+/** Minimal contract the app implements against its backend. */
 export type AuthApi = {
-  /** Verifica la sesión actual — se llama al arrancar la app. */
+  /** Verifies the current session — called when the app starts. */
   me: () => Promise<{ user: AuthUser | null; token?: string | null }>;
   login: (email: string, password: string) => Promise<{ user: AuthUser; token?: string | null }>;
   register?: (data: Record<string, unknown>) => Promise<{ user: AuthUser; token?: string | null }>;
   logout: () => Promise<void> | void;
 };
 
-/** Estado de la sesión: para saber si la app ya verificó. */
+/** Session state: to know whether the app has already verified. */
 export type AuthStatus = "idle" | "checking" | "authenticated" | "unauthenticated";
 
-/** Opciones opcionales para createAuth */
+/** Optional options for createAuth */
 export interface AuthOptions {
-  /** Llave para persistir el token en localStorage (por defecto 'session_token', pasar null o false para desactivar) */
+  /** Key used to persist the token in localStorage (defaults to 'session_token'; pass null or false to disable) */
   storageKey?: string | null;
 }
 
-/** Helpers de sesión que devuelve createAuth. */
+/** Session helpers returned by createAuth. */
 export type AuthState = {
   user: State<AuthUser | null>;
   status: State<AuthStatus>;
   token: State<string | null>;
-  /** Verifica la sesión contra el backend (`me`). Devuelve el usuario o null. */
+  /** Verifies the session against the backend (`me`). Returns the user or null. */
   boot: () => Promise<AuthUser | null>;
   login: (email: string, password: string) => Promise<{ user: AuthUser; token?: string | null }>;
   register: (data: Record<string, unknown>) => Promise<{ user: AuthUser; token?: string | null }>;
@@ -90,7 +90,7 @@ export function createAuth(api: AuthApi, options?: AuthOptions): AuthState {
     } catch {}
   };
 
-  // Inicializar token desde storage si existe
+  // Initialize token from storage if present
   const initialToken = readPersistedToken();
   if (initialToken) {
     tokenState.val = initialToken;
@@ -173,9 +173,9 @@ export function createAuth(api: AuthApi, options?: AuthOptions): AuthState {
 }
 
 /**
- * Guard para rutas privadas: usado como `beforeEnter`.
- * Si no hay sesión redirige a `redirect` (por defecto `/login`).
- * Si la verificación de sesión está en curso o pendiente, espera el boot.
+ * Guard for private routes: used as `beforeEnter`.
+ * If there is no session, redirects to `redirect` (defaults to `/login`).
+ * If session verification is in progress or pending, waits for the boot.
  */
 export function requireAuth(
   auth: Pick<AuthState, "user"> & { status?: State<AuthStatus>; boot?: () => Promise<any> },

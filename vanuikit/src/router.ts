@@ -1,12 +1,12 @@
 /**
- * Router — base de navegación SPA de la librería.
+ * Router — SPA navigation base of the library.
  *
- * Patrón de los routers de demo/store (web/src/router.ts), pero como parte
- * de la base de desarrollo de vanuikit: soporta params (`/product/:id`),
- * guards por ruta (`beforeEnter`) y redirecciones. Sin dependencias: el
- * matcher de rutas está escrito a mano (~20 líneas), sin path-to-regexp.
+ * Pattern from the demo/store routers (web/src/router.ts), but as part of
+ * vanuikit's dev base: supports params (`/product/:id`), per-route guards
+ * (`beforeEnter`) and redirects. Dependency-free: the route matcher is
+ * hand-written (~20 lines), no path-to-regexp.
  *
- * Uso:
+ * Usage:
  *   const router = new Router();
  *   router.add("/product/:id", ({ params }) => ProductScreen(params));
  *   router.add("/login", () => LoginScreen());
@@ -15,62 +15,62 @@
  *   });
  *   router.redirect("/", "/login");
  *   router.setNotFound(() => NotFound());
- *   // montar: const view = router.start(); van.add(root, view);
+ *   // mount: const view = router.start(); van.add(root, view);
  *
- * El `current` es un van.State re-exportable para montar la vista; `path`
- * es la ruta actual reactiva (para el Nav).
+ * `current` is a re-exportable van.State for mounting the view; `path`
+ * is the reactive current route (Nav reads it).
  */
 import van from "vanjs-core";
 import { t } from "./i18n.js";
 
 const { div } = van.tags;
 
-/** Params extraídos de la URL, p. ej. `/product/:id` → `{ id: "42" }`. */
+/** Params extracted from the URL, e.g. `/product/:id` → `{ id: "42" }`. */
 export type RouteParams = Record<string, string>;
 
-/** Contexto disponible para factories y guards de una ruta. */
+/** Context available to a route's factories and guards. */
 export type RouteContext = {
-  /** Ruta a la que se está navegando (pathname completo). */
+  /** Route being navigated to (full pathname). */
   to: string;
-  /** Params de la ruta si el path tiene segmentos `:param`. */
+  /** Route params if the path has `:param` segments. */
   params: RouteParams;
-  /** Navega a otra ruta (útil dentro de guards). */
+  /** Navigate to another route (useful inside guards). */
   navigate: (path: string) => void;
 };
 
 /**
- * Guard de ruta: se evalúa ANTES de renderizar.
- * Devuelve:
- *  - `false`        → bloquea la navegación (no cambia la vista)
- *  - una `string`   → redirige a esa ruta
- *  - `true`/nada    → permite entrar
+ * Route guard: evaluated BEFORE rendering.
+ * Returns:
+ *  - `false`        → blocks navigation (view does not change)
+ *  - a `string`     → redirects to that route
+ *  - `true`/nothing → allows entry
  */
 export type Guard = (
   ctx: RouteContext,
 ) => boolean | string | void | Promise<boolean | string | void>;
 
-/** Opciones por ruta. */
+/** Per-route options. */
 export type RouteOptions = {
   beforeEnter?: Guard;
   afterEnter?: (ctx: RouteContext) => void;
 };
 
-/** Opciones del Router (política de acceso deny-by-default). */
+/** Router options (deny-by-default access policy). */
 export type RouterOptions = {
   /**
-   * Guard por defecto (p. ej. `requireAuth(auth, "/login")`). Si se pasa,
-   * TODA ruta queda protegida salvo las que matcheen `publicRoutes` — el
-   * programador declara lo público y nunca olvida lo protegido.
+   * Default guard (e.g. `requireAuth(auth, "/login")`). If provided, EVERY
+   * route is protected unless it matches `publicRoutes` — the developer
+   * declares what is public and never forgets what is protected.
    */
   guard?: Guard;
   /**
-   * Rutas públicas cuando hay `guard`: exactas (`"/login"`), con wildcard
-   * de cola (`"/docs/*"` cubre `/docs/` y lo que siga) o RegExp.
+   * Public routes when `guard` is set: exact (`"/login"`), with trailing
+   * wildcard (`"/docs/*"` covers `/docs/` and anything after) or RegExp.
    */
   publicRoutes?: (string | RegExp)[];
 };
 
-/** Factory de componente: devuelve un nodo DOM reactivo (recibe el contexto). */
+/** Component factory: returns a reactive DOM node (receives the context). */
 export type RouteFactory = (ctx: RouteContext) => Node;
 
 type CompiledRoute = {
@@ -82,7 +82,7 @@ type CompiledRoute = {
   afterEnter?: (ctx: RouteContext) => void;
 };
 
-/** Compila `/product/:id` → RegExp + claves de params (sin dependencias). */
+/** Compiles `/product/:id` → RegExp + param keys (dependency-free). */
 function compile(path: string): { regex: RegExp; keys: string[] } {
   const keys: string[] = [];
   const source = path
@@ -105,22 +105,22 @@ export class Router {
   private defaultGuard?: Guard;
   private publicRoutes: (string | RegExp)[];
 
-  /** Nodo reactivo de la vista actual — monta con `van.add(root, router.current)` o vía `start()`. */
+  /** Reactive node of the current view — mount with `van.add(root, router.current)` or via `start()`. */
   current = van.state<Node>(div(t("router.loading", "Loading...")));
 
-  /** Ruta actual (reactiva) — el Nav la lee para resaltar el link activo. */
+  /** Current route (reactive) — Nav reads it to highlight the active link. */
   path = van.state<string>("/");
 
   constructor(options: RouterOptions = {}) {
     this.defaultGuard = options.guard;
     this.publicRoutes = options.publicRoutes ?? [];
-    // Si no hay un router activo principal, nos registramos como el activo por defecto
+    // If there is no main active router yet, register ourselves as the default active one
     if (!activeRouter) {
       activeRouter = this;
     }
   }
 
-  /** ¿`pathname` es pública según `publicRoutes`? (exacto, wildcard "/x/*" o RegExp) */
+  /** Is `pathname` public according to `publicRoutes`? (exact, wildcard "/x/*" or RegExp) */
   private isPublic(pathname: string): boolean {
     return this.publicRoutes.some((p) => {
       if (p instanceof RegExp) return p.test(pathname);
@@ -129,25 +129,25 @@ export class Router {
     });
   }
 
-  /** Registra una ruta. `path` acepta segmentos `:param`. */
+  /** Registers a route. `path` accepts `:param` segments. */
   add(path: string, factory: RouteFactory, options: RouteOptions = {}) {
     this.routes.push({ path, ...compile(path), factory, ...options });
     return this;
   }
 
-  /** Registra una redirección: al navegar a `from` va directo a `to`. */
+  /** Registers a redirect: navigating to `from` goes straight to `to`. */
   redirect(from: string, to: string) {
     this.redirects.set(from, to);
     return this;
   }
 
-  /** Factory para rutas sin match. */
+  /** Factory for unmatched routes. */
   setNotFound(factory: RouteFactory) {
     this.notFound = factory;
     return this;
   }
 
-  /** Navega a `path` (pushState o replaceState) y resuelve. Devuelve la resolución (para tests). */
+  /** Navigates to `path` (pushState or replaceState) and resolves. Returns the resolution (for tests). */
   async navigate(path: string, options?: { replace?: boolean }) {
     if (path === (window.location.pathname || "/")) return;
     if (options?.replace) {
@@ -158,24 +158,24 @@ export class Router {
     await this.doResolve();
   }
 
-  /** Re-resuelve la ruta actual (útil en tests y tras cambios de estado). */
+  /** Re-resolves the current route (useful in tests and after state changes). */
   resolve() {
     void this.doResolve();
   }
 
   /**
-   * Navegación "de sistema" — LA única puerta para redirects. La ruta de
-   * origen nunca llegó a renderizarse (alias de `.redirect()`, verdict de
-   * un guard), así que REEMPLAZA su entrada del historial en vez de apilar:
-   * solo la navegación iniciada por el usuario (Link, spaClick, navigate)
-   * apila. Cualquier redirect futuro del router debe pasar por aquí — nunca
-   * llamar `navigate(target, { replace: true })` a mano.
+   * "System" navigation — THE single ***REMOVED*** for redirects. The origin route
+   * never got to render (alias of `.redirect()`, verdict of a guard), so it
+   * REPLACES its history entry instead of stacking: only user-initiated
+   * navigation (Link, spaClick, navigate) stacks. Any future router redirect
+   * must go through here — never call `navigate(target, { replace: true })`
+   * by hand.
    */
   private async systemRedirect(target: string): Promise<void> {
     await this.navigate(target, { replace: true });
   }
 
-  /** Busca la ruta que matchea `pathname` y la renderiza (aplica guard/redirect/notFound). */
+  /** Finds the route matching `pathname` and renders it (applies guard/redirect/notFound). */
   private async doResolve(href?: string) {
     const to = href ?? (window.location.pathname || "/");
 
@@ -202,8 +202,8 @@ export class Router {
         navigate: (p) => void this.navigate(p),
       };
 
-      // Deny-by-default: guard global (si hay) para toda ruta no pública,
-      // y después el beforeEnter explícito de la ruta, en ese orden.
+      // Deny-by-default: global guard (if any) for every non-public route,
+      // then the route's explicit beforeEnter, in that order.
       const guards: Guard[] = [];
       if (this.defaultGuard && !this.isPublic(to)) guards.push(this.defaultGuard);
       if (route.beforeEnter) guards.push(route.beforeEnter);
@@ -225,12 +225,12 @@ export class Router {
   }
 
   /**
-   * Instala listeners (popstate + intercepción de clicks en `<a>` internos)
-   * y resuelve la ruta inicial. Devuelve un binding para montar con `van.add`.
+   * Installs listeners (popstate + click interception on internal `<a>`)
+   * and resolves the initial route. Returns a binding to mount with `van.add`.
    *
-   * Los listeners son globales y únicos: delegan al router activo, así que
-   * llamar `start()` en varias instancias (HMR, tests) no acumula handlers
-   * que compitan por la misma navegación.
+   * The listeners are global and unique: they delegate to the active router,
+   * so calling `start()` on several instances (HMR, tests) does not
+   * accumulate handlers competing for the same navigation.
    */
   start() {
     activeRouter = this;
@@ -241,9 +241,9 @@ export class Router {
     }
 
     if (!clickHandler) {
-      // Fallback para anclas que vanuikit no gestiona (sin Link/Nav): mismo
-      // contrato que spaClick — respeta preventDefault del elemento, los
-      // modificadores del usuario (Ctrl/Cmd abre en pestaña nueva) y target.
+      // Fallback for anchors vanuikit does not manage (no Link/Nav): same
+      // contract as spaClick — respects the element's preventDefault, the
+      // user's modifiers (Ctrl/Cmd opens in a new tab) and target.
       clickHandler = (e) => {
         if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
         if (!(e.target instanceof Element)) return;
@@ -266,13 +266,13 @@ export class Router {
   }
 }
 
-/** Listener popstate compartido por todos los `start()` (delega al router activo). */
+/** popstate listener shared by every `start()` (delegates to the active router). */
 let popstateHandler: (() => void) | null = null;
 
-/** Listener de click compartido por todos los `start()` (delega al router activo). */
+/** Click listener shared by every `start()` (delegates to the active router). */
 let clickHandler: ((e: MouseEvent) => void) | null = null;
 
-/** Instancia activa del router principal para navegación global */
+/** Active instance of the main router for global navigation */
 let activeRouter: Router | null = null;
 
 export function setActiveRouter(router: Router | null) {
@@ -284,8 +284,8 @@ export function getActiveRouter(): Router | null {
 }
 
 /**
- * Función global de navegación.
- * Utiliza el router activo actual para navegar sin necesidad de inyectar dependencias.
+ * Global navigation function.
+ * Uses the current active router to navigate without needing dependency injection.
  */
 export async function navigate(path: string, options?: { replace?: boolean }) {
   if (activeRouter) {
@@ -300,10 +300,10 @@ export async function navigate(path: string, options?: { replace?: boolean }) {
 }
 
 /**
- * Interceptor de clicks para anclas SPA (Link/Nav/SidebarItem). El onclick del
- * consumidor corre primero; se navega solo si nadie hizo preventDefault, el
- * enlace es interno y el usuario no pidió manejarlo por su cuenta
- * (modificadores Ctrl/Cmd/Shift/Alt o target propio).
+ * Click interceptor for SPA anchors (Link/Nav/SidebarItem). The consumer's
+ * onclick runs first; navigation happens only if nobody called
+ * preventDefault, the link is internal and the user did not ask to handle
+ * it themselves (Ctrl/Cmd/Shift/Alt modifiers or their own target).
  */
 export function spaClick(
   e: MouseEvent,
@@ -328,7 +328,7 @@ export function spaClick(
   void navigate(href, { replace: options.replace });
 }
 
-/** Factory para crear una instancia de Router */
+/** Factory to create a Router instance */
 export function createRouter(options: RouterOptions = {}): Router {
   const router = new Router(options);
   activeRouter = router;

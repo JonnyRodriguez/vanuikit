@@ -13,22 +13,22 @@ export interface I18nInstance<T extends Record<string, any> = Record<string, any
   setLocale: (locale: string) => void;
   getLocale: () => string;
   /**
-   * Permite que componentes individuales (como Field, Modal, etc.)
-   * registren sus propios diccionarios de traducciones co-ubicados.
+   * Allows individual components (like Field, Modal, etc.)
+   * to register their own co-located translation dictionaries.
    */
   addTranslations: (translations: Record<string, Record<string, any>>) => void;
   /**
-   * Retorna una derivación reactiva (State<string>) con el texto traducido.
-   * Al insertarlo en el DOM de VanJS, se actualiza automáticamente cuando cambia el idioma.
+   * Returns a reactive derivation (State<string>) with the translated text.
+   * When inserted into the VanJS DOM, it updates automatically when the language changes.
    */
   t: (key: string, defaultVal?: string, params?: Record<string, string | number>) => State<string>;
   /**
-   * Retorna el texto traducido como string estático (no reactivo).
+   * Returns the translated text as a static string (non-reactive).
    */
   raw: (key: string, defaultVal?: string, params?: Record<string, string | number>) => string;
 }
 
-/** Diccionario global por defecto para VanUikit */
+/** Global default dictionary for VanUikit */
 export const defaultLocales: Record<string, Record<string, any>> = {
   es: {
     field: {
@@ -335,7 +335,7 @@ export const defaultLocales: Record<string, Record<string, any>> = {
 };
 
 /**
- * Resuelve una llave anidada como "field.email.label" o "auth.email" dentro de un diccionario.
+ * Resolves a nested key like "field.email.label" or "auth.email" inside a dictionary.
  */
 function resolveKey(dict: Record<string, any> | undefined, key: string): string | undefined {
   if (!dict) return undefined;
@@ -349,7 +349,7 @@ function resolveKey(dict: Record<string, any> | undefined, key: string): string 
 }
 
 /**
- * Reemplaza variables en una cadena: "Mínimo {min} caracteres" -> "Mínimo 6 caracteres"
+ * Replaces variables in a string: "Minimum {min} characters" -> "Minimum 6 characters"
  */
 function interpolate(template: string, params?: Record<string, string | number>): string {
   if (!params) return template;
@@ -376,7 +376,7 @@ function deepMerge(target: Record<string, any>, source: Record<string, any>) {
 }
 
 /**
- * Gestor reactivo y ultraligero de internacionalización (i18n) para VanJS.
+ * Reactive, ultra-light internationalization (i18n) manager for VanJS.
  */
 export function createI18n<T extends Record<string, any> = Record<string, any>>(
   options: I18nOptions<T> = { defaultLocale: "en", locales: defaultLocales as any }
@@ -395,8 +395,8 @@ export function createI18n<T extends Record<string, any> = Record<string, any>>(
   };
 
   const currentLocale = van.state<string>(getSavedLocale());
-  // Incrementa en cada addTranslations: t()/raw() lo leen para re-resolver
-  // textos ya renderizados (asignar el mismo locale no dispara a VanJS).
+  // Increments on each addTranslations: t()/raw() read it to re-resolve
+  // already rendered texts (assigning the same locale does not trigger VanJS).
   const revision = van.state(0);
 
   const getText = (
@@ -418,8 +418,8 @@ export function createI18n<T extends Record<string, any> = Record<string, any>>(
 
   const addTranslations = (newTranslations: Record<string, Record<string, any>>) => {
     deepMerge(localesData, newTranslations);
-    // Un locale guardado en localStorage que no existía al crear la instancia
-    // (la app lo registra después) puede ser válido ahora: re-aplicarlo.
+    // A locale saved in localStorage that did not exist when the instance
+    // was created (the app registers it later) may be valid now: re-apply it.
     if (typeof window !== "undefined" && window.localStorage) {
       const saved = window.localStorage.getItem(storageKey);
       if (saved && saved !== currentLocale.val && localesData[saved]) {
@@ -443,7 +443,7 @@ export function createI18n<T extends Record<string, any> = Record<string, any>>(
     }
   };
 
-  // Inicializar atributo lang
+  // Initialize lang attribute
   if (typeof document !== "undefined" && document.documentElement) {
     document.documentElement.lang = currentLocale.val;
   }
@@ -471,16 +471,16 @@ export function createI18n<T extends Record<string, any> = Record<string, any>>(
   };
 }
 
-/** Singleton global de i18n */
+/** Global i18n singleton */
 export const i18n = createI18n({
   defaultLocale: "en",
   locales: defaultLocales,
 });
 
-/** Helper reactivo directo con el singleton */
+/** Direct reactive helper over the singleton */
 export const t = (key: string, defaultVal?: string, params?: Record<string, string | number>): State<string> =>
   i18n.t(key, defaultVal, params);
 
-/** Helper raw directo con el singleton */
+/** Direct raw helper over the singleton */
 export const raw = (key: string, defaultVal?: string, params?: Record<string, string | number>): string =>
   i18n.raw(key, defaultVal, params);

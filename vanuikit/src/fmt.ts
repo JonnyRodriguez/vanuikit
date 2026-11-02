@@ -4,13 +4,13 @@ import { i18n as defaultI18n, type I18nInstance } from "./i18n.js";
 export type DateInput = Date | number | string;
 
 export interface FmtCurrencyOptions extends Intl.NumberFormatOptions {
-  /** Código ISO 4217 (default "USD"). */
+  /** ISO 4217 code (default "USD"). */
   currency?: string;
 }
 
 export type RelativeUnit = Intl.RelativeTimeFormatUnit;
 
-/** Fecha válida o null si no se puede interpretar. */
+/** Valid date or null if it cannot be interpreted. */
 const toDate = (value: DateInput): Date | null => {
   const d = value instanceof Date ? value : new Date(value);
   return Number.isNaN(d.getTime()) ? null : d;
@@ -45,12 +45,12 @@ const fmtRelative = (
 ): string => new Intl.RelativeTimeFormat(locale, { numeric: "auto", ...opts }).format(value, unit);
 
 /**
- * Fábrica de formateadores locale-aware: la contraparte de `t()`/`raw()`
- * para fechas, números, moneda, porcentajes y tiempos relativos. Los
- * formateadores reactivos retornan `State<string>` que muta al cambiar
- * `currentLocale` (úsalos como hijos/props, creados UNA vez fuera de los
- * bindings — igual que `t()`, no hay memoización); `fmt.raw.*` resuelve al
- * instante para consumo imperativo (handlers, toasts).
+ * Factory of locale-aware formatters: the counterpart of `t()`/`raw()`
+ * for dates, numbers, currency, percentages and relative times. Reactive
+ * formatters return a `State<string>` that mutates when `currentLocale`
+ * changes (use them as children/props, created ONCE outside of the
+ * bindings — same as `t()`, there is no memoization); `fmt.raw.*` resolves
+ * instantly for imperative consumption (handlers, toasts).
  */
 export function createFmt(i18n: I18nInstance = defaultI18n) {
   const withLocale = <T>(compute: (locale: string) => T): State<T> =>
@@ -98,5 +98,5 @@ export function createFmt(i18n: I18nInstance = defaultI18n) {
 
 export type Fmt = ReturnType<typeof createFmt>;
 
-/** Singleton global de formateo, atado al singleton `i18n`. */
+/** Global formatting singleton, tied to the `i18n` singleton. */
 export const fmt = createFmt(defaultI18n);

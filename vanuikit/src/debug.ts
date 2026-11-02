@@ -1,14 +1,14 @@
 import van, { type ChildDom, type State } from "vanjs-core";
 
 /**
- * Loguea cada cambio del State (valor inicial incluido) y lo devuelve para
- * encadenar. Herramienta de desarrollo: en producción conviene retirarla
- * (o silenciar console en el build).
+ * Logs every change of the State (initial value included) and returns it for
+ * chaining. Development tool: in production it is best to remove it
+ * (or silence console in the build).
  *
  *   const count = trace(van.state(0), "count");
  *
- * Cuidado: como `t()`, cada `trace` agrega un listener permanente — no lo
- * llames dentro de bindings que se re-ejecutan.
+ * Caution: like `t()`, each `trace` adds a permanent listener — do not
+ * call it inside bindings that re-execute.
  */
 export const trace = <T>(state: State<T>, name?: string): State<T> => {
   const label = name ?? "state";
@@ -19,15 +19,15 @@ export const trace = <T>(state: State<T>, name?: string): State<T> => {
 };
 
 export interface ExpectReactiveOptions {
-  /** Construye el árbol a probar (se monta en un host temporal). */
+  /** Builds the tree under test (mounted on a temporary host). */
   render: () => ChildDom;
-  /** Muta los estados bajo prueba. */
+  /** Mutates the states under test. */
   act: () => void;
-  /** Texto exacto esperado en el árbol tras `act()` (textContent). */
+  /** Exact text expected in the tree after `act()` (textContent). */
   text?: string;
-  /** Subcadena esperada tras `act()`. */
+  /** Substring expected after `act()`. */
   contains?: string;
-  /** Espera custom (default: un microtask, el ciclo de bindings de van). */
+  /** Custom wait (default: one microtask, van's binding cycle). */
   tick?: () => Promise<void>;
 }
 
@@ -39,9 +39,9 @@ const VAN_BINDING_HINTS = `Pistas (gotchas de van):
      State fuera de la función.`;
 
 /**
- * Detector de bindings congelados para suites de test (agnóstico del
- * runner: lanza Error en vez de usar expect). Renderiza, captura el texto,
- * ejecuta `act()` y verifica que el árbol mutó al texto esperado.
+ * Detector of frozen bindings for test suites (runner-agnostic: throws an
+ * Error instead of using expect). Renders, captures the text, runs `act()`
+ * and verifies that the tree mutated to the expected text.
  *
  *   await expectReactive({
  *     render: () => span(miState),

@@ -1,7 +1,7 @@
 /**
- * Validadores de campos — cada uno es una fábrica que retorna un objeto con
- * una sola responsabilidad: devolver un mensaje de error o null si pasa.
- * `data` es el conjunto de valores del formulario (para comparar campos).
+ * Field validators — each one is a factory returning an object with a single
+ * responsibility: return an error message or null if it passes.
+ * `data` is the set of form values (for comparing fields).
  */
 import type { State } from "vanjs-core";
 
@@ -12,7 +12,7 @@ const resolveMsg = (msg: ValidatorMessage): string => {
 };
 
 export interface Validator {
-  /** Devuelve mensaje de error, o null si el valor es válido. */
+  /** Returns an error message, or null if the value is valid. */
   validate(value: string, data?: Record<string, unknown>): string | null;
 }
 
@@ -33,7 +33,7 @@ export const MinLength = (
   validate: (value) => (value.length >= min ? null : resolveMsg(msg)),
 });
 
-/** Compara contra otro campo del formulario (p. ej. confirmar contraseña). */
+/** Compares against another form field (e.g. password confirmation). */
 export const Match = (
   otherName: string,
   msg: ValidatorMessage = "No coinciden",

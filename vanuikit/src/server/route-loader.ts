@@ -1,66 +1,66 @@
 // vanuikit/src/server/route-loader.ts
 /**
- * loadRoutes — Escáner recursivo y cargador automático de rutas Hono
- * con política **deny-by-default**.
+ * loadRoutes — Recursive scanner and auto-loader of Hono routes
+ * with a **deny-by-default** policy.
  *
- * Busca archivos *.route.ts o *.route.js dentro de routesDir y los monta
- * respetando la jerarquía de carpetas:
+ * Looks for *.route.ts or *.route.js files inside routesDir and mounts them
+ * respecting the folder hierarchy:
  *
  *   routes/api/auth.route.ts     ->  /api/auth
  *   routes/api/***REMOVED***.route.ts  ->  /api/***REMOVED***
  *
- * Cada archivo exporta un sub-app Hono por default (o por named `route`).
+ * Each file exports a Hono sub-app as default (or as the named `route`).
  *
- * Seguridad (deny-by-default): si se pasa `options.auth`, TODA ruta queda
- * protegida con ese guard, salvo los archivos que declaren lo contrario:
+ * Security (deny-by-default): if `options.auth` is passed, EVERY route is
+ * protected with that guard, except the files that declare otherwise:
  *
- *   export const meta = { public: true };   // opt-out explícito
+ *   export const meta = { public: true };   // explicit opt-out
  *
- * Así el error del programador ya no puede ser el peligroso (olvidar
- * proteger); el error posible es el inocuo al revés: una ruta que debía
- * ser pública pide login, y se ve al instante.
+ * This way the developer's error can no longer be the dangerous one
+ * (forgetting to protect); the only possible error is the harmless opposite:
+ * a route that should be public asks for login, and it shows instantly.
  *
- * Requiere un runtime capaz de importar los archivos de ruta (tsx/bun, o
- * rutas ya compiladas a .js).
+ * Requires a runtime capable of importing the route files (tsx/bun, or
+ * routes already compiled to .js).
  */
 import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { Hono, type MiddlewareHandler } from "hono";
 
-/** Meta opcional que un archivo de ruta puede exportar junto al sub-app. */
+/** Optional meta that a route file can export alongside the sub-app. */
 export type RouteMeta = {
   /**
-   * Marca el archivo como público (sin el guard de autenticación).
-   * Por defecto, con `auth` configurado, TODO es protegido.
+   * Marks the file as public (without the authentication guard).
+   * By default, with `auth` configured, EVERYTHING is protected.
    */
   public?: boolean;
 };
 
-/** Info de una ruta cargada (para el callback `onLoad`). */
+/** Info about a loaded route (for the `onLoad` callback). */
 export type LoadedRouteInfo = {
-  /** Ruta montada, p. ej. "/api/auth". */
+  /** Mounted route, e.g. "/api/auth". */
   path: string;
-  /** Archivo relativo a routesDir, p. ej. "api/auth.route.ts". */
+  /** File relative to routesDir, e.g. "api/auth.route.ts". */
   file: string;
-  /** `true` si el guard de `options.auth` quedó aplicado. */
+  /** `true` if the `options.auth` guard was applied. */
   protected: boolean;
 };
 
 export type LoadRoutesOptions = {
   /**
-   * Middleware de autenticación (p. ej. `requireAuth()`). Si se pasa, todas
-   * las rutas quedan protegidas salvo las que exporten `meta = { public: true }`.
+   * Authentication middleware (e.g. `requireAuth()`). If passed, all routes
+   * are protected except those exporting `meta = { public: true }`.
    */
   auth?: MiddlewareHandler;
   /**
-   * Callback opcional por ruta cargada. La librería no loguea sola: la app
-   * decide (p. ej. `onLoad: (i) => console.log(i.path, i.file, i.protected)`).
+   * Optional callback per loaded route. The library does not log on its own:
+   * the app decides (e.g. `onLoad: (i) => console.log(i.path, i.file, i.protected)`).
    */
   onLoad?: (info: LoadedRouteInfo) => void;
 };
 
-/** Envuelve el sub-app en uno nuevo con el guard delante (orden Hono: el middleware debe registrarse antes que los handlers). */
+/** Wraps the sub-app in a new one with the guard in front (Hono order: the middleware must be registered before the handlers). */
 function withGuard(app: Hono, guard: MiddlewareHandler): Hono {
   const wrapped = new Hono();
   wrapped.use("*", guard);
@@ -80,8 +80,8 @@ export async function loadRoutes(
   }
 
   async function scanDirectory(dir: string, baseRoute = "") {
-    // Orden determinista: el orden de registro afecta el matcheo de rutas
-    // en Hono, y readdirSync no garantiza orden del filesystem.
+    // Deterministic order: registration order affects route matching
+    // in Hono, and readdirSync does not guarantee filesystem order.
     const entries = fs
       .readdirSync(dir, { withFileTypes: true })
       .sort((a, b) => a.name.localeCompare(b.name));

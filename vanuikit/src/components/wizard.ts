@@ -212,7 +212,7 @@ export const Wizard = (options: WizardOptions): WizardHandle => {
       if (otherSteps.length) {
         general =
           general ??
-          raw("wizard.checkSteps", "Revisa el paso {pasos}", {
+          raw("wizard.checkSteps", "Check step {pasos}", {
             pasos: otherSteps.map((i) => i + 1).join(", "),
           });
       } else if (unmapped !== undefined && general === undefined) {
@@ -229,7 +229,7 @@ export const Wizard = (options: WizardOptions): WizardHandle => {
   });
 
   const stepLine = van.derive(() =>
-    raw("wizard.step", "Paso {actual} de {total}", {
+    raw("wizard.step", "Step {actual} of {total}", {
       actual: stepIndex.val + 1,
       total: steps.length,
     }),
@@ -273,7 +273,7 @@ export const Wizard = (options: WizardOptions): WizardHandle => {
       controls.push(
         Button(
           { type: "button", variant: "secondary", class: "w-auto px-4", onclick: back },
-          t("wizard.back", "Atrás"),
+          t("wizard.back", "Back"),
         ),
       );
     }
@@ -285,7 +285,7 @@ export const Wizard = (options: WizardOptions): WizardHandle => {
           disabled: submitting.val,
           onclick: isLast ? submit : next,
         },
-        isLast ? t("wizard.submit", "Enviar") : t("wizard.next", "Siguiente"),
+        isLast ? t("wizard.submit", "Submit") : t("wizard.next", "Next"),
       ),
     );
     return div({ class: "flex justify-between pt-4 gap-2" }, ...controls);

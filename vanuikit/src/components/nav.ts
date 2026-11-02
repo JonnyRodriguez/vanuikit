@@ -87,7 +87,7 @@ export type NavLink = {
 type NavProps = {
   /** Ruta del link actual (string o State reactivo); recibe la clase activa y aria-current. */
   current: string | State<string>;
-  /** Nombre accesible del menú; por defecto se resuelve con i18n ("Navegación principal"). */
+  /** Nombre accesible del menú; por defecto se resuelve con i18n ("Main navigation"). */
   ariaLabel?: string | State<string>;
   class?: string;
 };
@@ -107,7 +107,7 @@ export const Nav = (links: NavLink[], props: NavProps) => {
 
   // Resuelto una sola vez: t() crea un derive nuevo por llamada, y este
   // binding reacciona al idioma sin registrar derivaciones en cada re-render.
-  const resolvedLabel = ariaLabel ?? t("nav.ariaLabel", "Navegación principal");
+  const resolvedLabel = ariaLabel ?? t("nav.ariaLabel", "Main navigation");
 
   const getCurrent = () =>
     typeof current === "object" && current !== null && "val" in current

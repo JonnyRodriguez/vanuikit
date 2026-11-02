@@ -23,7 +23,7 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
   const variant = props.variant ?? "primary";
 
   const confirmBtn = () => {
-    const text = props.confirmText ?? t("dialog.confirm", "Confirmar");
+    const text = props.confirmText ?? t("dialog.confirm", "Confirm");
     const onclick = () => {
       modal.close();
       props.onConfirm?.();
@@ -59,13 +59,13 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
             props.onCancel?.();
           },
         },
-        props.cancelText ?? t("dialog.cancel", "Cancelar"),
+        props.cancelText ?? t("dialog.cancel", "Cancel"),
       ),
       confirmBtn(),
     );
 
   const modal = Modal({
-    title: props.title ?? t("dialog.confirmTitle", "Confirmar acción"),
+    title: props.title ?? t("dialog.confirmTitle", "Confirm action"),
     body,
     footer,
   });

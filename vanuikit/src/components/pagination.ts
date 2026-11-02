@@ -48,7 +48,7 @@ export const Pagination = (props: PaginationOptions): ChildDom => {
   const page = asState(props.page, 1);
   const totalPages = asState(props.totalPages, 1);
   const siblingCount = props.siblingCount ?? 1;
-  const ariaLabel = props.ariaLabel ?? t("pagination.ariaLabel", "Paginación");
+  const ariaLabel = props.ariaLabel ?? t("pagination.ariaLabel", "Pagination");
 
   const go = (p: number) => {
     page.val = Math.min(Math.max(1, p), totalPages.val);
@@ -62,7 +62,7 @@ export const Pagination = (props: PaginationOptions): ChildDom => {
     button(
       {
         type: "button",
-        "aria-label": t("pagination.previous", "Anterior"),
+        "aria-label": t("pagination.previous", "Previous"),
         disabled: () => page.val <= 1,
         class: baseBtn,
         onclick: () => go(page.val - 1),
@@ -100,7 +100,7 @@ export const Pagination = (props: PaginationOptions): ChildDom => {
     button(
       {
         type: "button",
-        "aria-label": t("pagination.next", "Siguiente"),
+        "aria-label": t("pagination.next", "Next"),
         disabled: () => page.val >= totalPages.val,
         class: baseBtn,
         onclick: () => go(page.val + 1),

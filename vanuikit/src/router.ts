@@ -101,12 +101,12 @@ function compile(path: string): { regex: RegExp; keys: string[] } {
 export class Router {
   private routes: CompiledRoute[] = [];
   private redirects = new Map<string, string>();
-  private notFound: RouteFactory = () => div(t("router.notFound", "404 - No encontrado"));
+  private notFound: RouteFactory = () => div(t("router.notFound", "404 - Not found"));
   private defaultGuard?: Guard;
   private publicRoutes: (string | RegExp)[];
 
   /** Nodo reactivo de la vista actual — monta con `van.add(root, router.current)` o vía `start()`. */
-  current = van.state<Node>(div(t("router.loading", "Cargando...")));
+  current = van.state<Node>(div(t("router.loading", "Loading...")));
 
   /** Ruta actual (reactiva) — el Nav la lee para resaltar el link activo. */
   path = van.state<string>("/");

@@ -71,7 +71,7 @@ export function UserBadge(props: UserBadgeProps) {
 
     // Modo compacto (rail de Sidebar colapsada): avatar centrado + logout icónico.
     if (isCompact) {
-      const logoutLabel = i18n.raw("nav.logout", "Cerrar sesión");
+      const logoutLabel = i18n.raw("nav.logout", "Sign out");
       return div(
         { class: cx("flex flex-col items-center gap-2", props.class) },
         Avatar({ name: displayName, size: "sm" }),
@@ -111,7 +111,7 @@ export function UserBadge(props: UserBadgeProps) {
             { class: "text-[10px] text-muted-foreground truncate" },
             props.statusText
               ? props.statusText
-              : i18n.raw("user.sessionActive", "Sesión activa"),
+              : i18n.raw("user.sessionActive", "Active session"),
           ),
         ),
       ),
@@ -125,7 +125,7 @@ export function UserBadge(props: UserBadgeProps) {
             },
             Icon({ name: "log-out", class: "size-3.5" }),
             " ",
-            i18n.t("nav.logout", "Cerrar sesión"),
+            i18n.t("nav.logout", "Sign out"),
           )
         : null,
     );

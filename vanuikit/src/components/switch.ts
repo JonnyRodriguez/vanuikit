@@ -45,7 +45,7 @@ export const Switch = (options: SwitchOptions = {}): SwitchField => {
   const focused = van.state(false);
 
   const value = van.derive(() => (checked.val ? "on" : ""));
-  const requiredMsg: ValidatorMessage = options.requiredMsg ?? t("switch.required", "Debes activar esta opción");
+  const requiredMsg: ValidatorMessage = options.requiredMsg ?? t("switch.required", "You must turn this option on");
   const validators: Validator[] = options.required ? [Required(requiredMsg)] : [];
 
   let field!: SwitchField;

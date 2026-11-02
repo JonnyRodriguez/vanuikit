@@ -129,7 +129,7 @@ export const DatePicker = (props: DatePickerOptions): DatePickerField => {
 
   let containerEl: HTMLElement | null = null;
 
-  const requiredMsg: ValidatorMessage = props.requiredMsg ?? t("datepicker.required", "Selecciona una fecha");
+  const requiredMsg: ValidatorMessage = props.requiredMsg ?? t("datepicker.required", "Please select a date");
   const validators: Validator[] = props.required ? [Required(requiredMsg)] : [];
 
   // --- Localización reactiva (Intl): datos de fecha, no llaves de traducción ---
@@ -191,9 +191,9 @@ export const DatePicker = (props: DatePickerOptions): DatePickerField => {
   // anclado a una tabla detached y los bindings se acumulan hasta robar la
   // tabla viva: calendario vacío tras cambiar de idioma). Con derives
   // top-level el binding exterior no tiene deps: corre UNA vez al montar.
-  const prevMonthLabel = van.derive(() => raw("datepicker.prevMonth", "Mes anterior"));
-  const nextMonthLabel = van.derive(() => raw("datepicker.nextMonth", "Mes siguiente"));
-  const todayLabel = van.derive(() => raw("datepicker.today", "Hoy"));
+  const prevMonthLabel = van.derive(() => raw("datepicker.prevMonth", "Previous month"));
+  const nextMonthLabel = van.derive(() => raw("datepicker.nextMonth", "Next month"));
+  const todayLabel = van.derive(() => raw("datepicker.today", "Today"));
 
   const longDateLabel = (d: Date) =>
     new Intl.DateTimeFormat(i18n.currentLocale.val, {
@@ -471,7 +471,7 @@ export const DatePicker = (props: DatePickerOptions): DatePickerField => {
             readOnly: true,
             class: inputCls,
             value: () => display.val,
-            placeholder: props.placeholder ?? t("datepicker.placeholder", "Seleccionar fecha"),
+            placeholder: props.placeholder ?? t("datepicker.placeholder", "Select a date"),
             disabled: () => disabled.val,
             onfocus: () => setOpen(true),
             onclick: () => setOpen(true),

@@ -107,6 +107,7 @@ export const defaultLocales: Record<string, Record<string, any>> = {
       collapse: "Colapsar barra lateral",
       expand: "Expandir barra lateral",
       close: "Cerrar menú",
+      resize: "Ajustar ancho de la barra lateral",
     },
     router: {
       notFound: "404 - No encontrado",
@@ -134,6 +135,7 @@ export const defaultLocales: Record<string, Record<string, any>> = {
     dropdown: {
       empty: "No se encontraron resultados",
       searchPlaceholder: "Buscar...",
+      placeholder: "Seleccionar opción...",
     },
     locale: {
       selectLabel: "Idioma / Language",
@@ -256,6 +258,7 @@ export const defaultLocales: Record<string, Record<string, any>> = {
       collapse: "Collapse sidebar",
       expand: "Expand sidebar",
       close: "Close menu",
+      resize: "Resize sidebar",
     },
     router: {
       notFound: "404 - Not found",
@@ -283,6 +286,7 @@ export const defaultLocales: Record<string, Record<string, any>> = {
     dropdown: {
       empty: "No results found",
       searchPlaceholder: "Search...",
+      placeholder: "Select an option...",
     },
     locale: {
       selectLabel: "Language",

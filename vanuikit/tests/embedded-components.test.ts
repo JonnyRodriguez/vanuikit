@@ -56,7 +56,7 @@ describe("Embedded Core Components", () => {
 
     test("cada radio del segmented tiene nombre accesible (íconos solo visuales)", () => {
       const theme = createTheme({ defaultMode: "light" });
-      // i18n local en español: determinista (el singleton global arranca en "en").
+      // i18n con dicts vacíos: resuelve los defaults canónicos (inglés).
       const i18n = createI18n({ defaultLocale: "es", locales: {} });
       const segmented = ThemeToggle({ theme, i18n, variant: "segmented", includeSystem: true });
       van.add(document.body, segmented);
@@ -64,10 +64,10 @@ describe("Embedded Core Components", () => {
       const labels = [...document.body.querySelectorAll('[role="radio"]')].map((el) =>
         el.getAttribute("aria-label"),
       );
-      expect(labels).toEqual(["Claro", "Oscuro", "Sistema"]);
+      expect(labels).toEqual(["Light", "Dark", "System"]);
 
       const group = document.body.querySelector('[role="radiogroup"]');
-      expect(group?.getAttribute("aria-label")).toBe("Seleccionar tema visual");
+      expect(group?.getAttribute("aria-label")).toBe("Select visual theme");
     });
   });
 

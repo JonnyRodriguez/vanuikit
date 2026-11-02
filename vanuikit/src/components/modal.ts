@@ -111,7 +111,7 @@ export const ModalClose = (onClose: () => void) =>
       type: "button",
       class:
         "text-2xl text-muted hover:text-foreground-soft bg-transparent border-none cursor-pointer p-0",
-      "aria-label": t("modal.close", "Cerrar"),
+      "aria-label": t("modal.close", "Close"),
       onclick: onClose,
     },
     "×",
@@ -129,7 +129,7 @@ export const ModalHeaderWithTitleAndClose = (
 
 export const ModalFooterWithCloseButton = (
   onClose: () => void,
-  text: string | State<string> = t("modal.close", "Cerrar"),
+  text: string | State<string> = t("modal.close", "Close"),
 ) =>
   van.tags.div(
     { class: "pt-3 flex justify-end gap-2" },
@@ -140,7 +140,7 @@ export type ModalProps = ModalContent & { title?: string | State<string> };
 
 /**
  * Modal cómodo — construido sobre ModalBase: ya trae header con título +
- * botón de cierre y un footer con "Cerrar" por defecto.
+ * botón de cierre y un footer con "Close" por defecto.
  *
  *   const modal = Modal();
  *   modal.mount();

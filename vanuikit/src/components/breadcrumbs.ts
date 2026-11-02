@@ -27,7 +27,7 @@ export interface BreadcrumbsOptions {
  */
 export const Breadcrumbs = (props: BreadcrumbsOptions): ChildDom => {
   const { nav, ol, li, span } = van.tags;
-  const ariaLabel = props.ariaLabel ?? t("breadcrumbs.ariaLabel", "Ruta de navegación");
+  const ariaLabel = props.ariaLabel ?? t("breadcrumbs.ariaLabel", "Breadcrumb");
 
   return nav(
     { "aria-label": ariaLabel, class: () => cx("breadcrumbs", props.class) },

@@ -216,7 +216,7 @@ describe("Sidebar resizable (drag horizontal)", () => {
     expect(resizer.getAttribute("aria-valuenow")).toBe("256");
     expect(resizer.getAttribute("aria-valuemin")).toBe("224");
     expect(resizer.getAttribute("aria-valuemax")).toBe("384");
-    expect(resizer.getAttribute("aria-label")).toBe("Ajustar ancho de la barra lateral");
+    expect(resizer.getAttribute("aria-label")).toBe("Resize sidebar");
     expect(aside.style.width).toBe("256px");
   });
 

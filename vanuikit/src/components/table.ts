@@ -190,7 +190,7 @@ export function Table<T extends Record<string, any> = any>(props: TableProps<T>)
                   type: "text",
                   placeholder:
                     props.searchPlaceholder ??
-                    t("table.searchPlaceholder", "Buscar en la tabla..."),
+                    t("table.searchPlaceholder", "Search the table..."),
                   value: searchQuery.val,
                   class:
                     "w-full pl-8 pr-3 py-1.5 text-xs rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-focus transition-all",
@@ -293,7 +293,7 @@ export function Table<T extends Record<string, any> = any>(props: TableProps<T>)
                         colspan: props.columns.length + (props.selectable ? 1 : 0),
                         class: "px-4 py-8 text-center text-muted text-sm italic",
                       },
-                      props.emptyText ?? t("table.emptyText", "No hay datos disponibles"),
+                      props.emptyText ?? t("table.emptyText", "No data available"),
                     ),
                   )
                 : displayRows.map((row, index) => {
@@ -351,7 +351,7 @@ export function Table<T extends Record<string, any> = any>(props: TableProps<T>)
               },
               span(
                 () =>
-                  raw("table.showing", "Mostrando {start} - {end} de {total}", {
+                  raw("table.showing", "Showing {start} - {end} of {total}", {
                       start: (currentPage.val - 1) * pageSize + 1,
                       end: Math.min(currentPage.val * pageSize, totalItems),
                       total: totalItems,
@@ -367,7 +367,7 @@ export function Table<T extends Record<string, any> = any>(props: TableProps<T>)
                       "px-2.5 py-1 rounded-md border border-border bg-background hover:bg-secondary/20 disabled:opacity-40 disabled:pointer-events-none text-foreground transition-colors cursor-pointer",
                     onclick: () => (currentPage.val = Math.max(1, currentPage.val - 1)),
                   },
-                  t("table.prev", "← Anterior"),
+                  t("table.prev", "← Previous"),
                 ),
                 span(
                   { class: "px-2 font-medium text-foreground" },
@@ -382,7 +382,7 @@ export function Table<T extends Record<string, any> = any>(props: TableProps<T>)
                     onclick: () =>
                       (currentPage.val = Math.min(totalPages, currentPage.val + 1)),
                   },
-                  t("table.next", "Siguiente →"),
+                  t("table.next", "Next →"),
                 ),
               ),
             )

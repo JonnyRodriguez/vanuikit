@@ -7,11 +7,11 @@ import { Icon } from "./icon.js";
 
 /** Contrato de llaves de i18n del componente */
 export const TEXTS = {
-  collapse: { key: "sidebar.collapse", default: "Colapsar barra lateral" },
-  expand: { key: "sidebar.expand", default: "Expandir barra lateral" },
-  close: { key: "sidebar.close", default: "Cerrar menú" },
+  collapse: { key: "sidebar.collapse", default: "Collapse sidebar" },
+  expand: { key: "sidebar.expand", default: "Expand sidebar" },
+  close: { key: "sidebar.close", default: "Close menu" },
   title: { key: "sidebar.title", default: "Sidebar" },
-  resize: { key: "sidebar.resize", default: "Ajustar ancho de la barra lateral" },
+  resize: { key: "sidebar.resize", default: "Resize sidebar" },
 } as const;
 
 export type SidebarItemProps = {
@@ -318,7 +318,7 @@ export function Sidebar(props: SidebarProps) {
                     type: "button",
                     class:
                       "lg:hidden p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary cursor-pointer",
-                    "aria-label": t("sidebar.close", "Cerrar menú"),
+                    "aria-label": t("sidebar.close", "Close menu"),
                     onclick: props.onClose,
                   },
                   Icon({ name: "x" }),

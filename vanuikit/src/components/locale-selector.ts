@@ -114,7 +114,7 @@ export function LocaleSelector(props: LocaleSelectorProps = {}) {
           props.class,
         ),
         role: "group",
-        "aria-label": i18n.t("locale.groupLabel", "Selector de idioma"),
+        "aria-label": i18n.t("locale.groupLabel", "Language selector"),
       },
       optionsList.map(({ code, label, flag }) => {
         const isActive = van.derive(() => i18n.currentLocale.val === code);
@@ -144,7 +144,7 @@ export function LocaleSelector(props: LocaleSelectorProps = {}) {
         "text-xs px-2.5 py-1.5 rounded-lg border border-border bg-card text-foreground font-medium cursor-pointer transition-colors shadow-xs outline-none select-none hover:bg-secondary/50",
         props.class,
       ),
-      "aria-label": i18n.t("locale.selectLabel", "Idioma / Language"),
+      "aria-label": i18n.t("locale.selectLabel", "Language"),
       onchange: (e: Event) => i18n.setLocale((e.target as HTMLSelectElement).value),
       value: () => i18n.currentLocale.val,
     },

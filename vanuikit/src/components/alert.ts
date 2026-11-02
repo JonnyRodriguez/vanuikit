@@ -38,7 +38,7 @@ export const Alert = (props: AlertOptions = {}, ...children: ChildDom[]) => {
   const { div, p, span, button } = van.tags;
   const styles = VARIANT_STYLES[props.variant ?? "info"];
   const visible = van.state(true);
-  const dismissLabel: State<string> = t("alert.dismiss", "Cerrar aviso");
+  const dismissLabel: State<string> = t("alert.dismiss", "Dismiss alert");
 
   return div(
     {

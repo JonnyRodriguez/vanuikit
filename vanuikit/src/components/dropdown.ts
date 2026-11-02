@@ -178,7 +178,7 @@ export function SelectDropdown<T = string | number>(props: SelectDropdownProps<T
             { class: currentOpt ? "text-foreground" : "text-muted" },
             currentOpt
               ? currentOpt.label
-              : props.placeholder ?? "Seleccionar opción...",
+              : props.placeholder ?? t("dropdown.placeholder", "Select an option..."),
           ),
         );
       },
@@ -215,7 +215,7 @@ export function SelectDropdown<T = string | number>(props: SelectDropdownProps<T
               { class: "p-2 border-b border-border bg-secondary/10" },
               input({
                 type: "text",
-                placeholder: props.searchPlaceholder ?? t("dropdown.searchPlaceholder", "Buscar..."),
+                placeholder: props.searchPlaceholder ?? t("dropdown.searchPlaceholder", "Search..."),
                 value: searchQuery.val,
                 class:
                   "w-full px-3 py-1.5 text-xs rounded-md border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-focus",
@@ -234,7 +234,7 @@ export function SelectDropdown<T = string | number>(props: SelectDropdownProps<T
           filtered.length === 0
             ? li(
                 { class: "px-3 py-4 text-xs text-center text-muted italic" },
-                t("dropdown.empty", "No se encontraron resultados"),
+                t("dropdown.empty", "No results found"),
               )
             : filtered.map((opt, idx) => {
                 const isSelected = selectedValue.val === opt.value;

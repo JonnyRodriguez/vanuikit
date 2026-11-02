@@ -49,7 +49,7 @@ export const Checkbox = (options: CheckboxOptions = {}): CheckboxField => {
   const focused = van.state(false);
 
   const value = van.derive(() => (checked.val ? "on" : ""));
-  const requiredMsg: ValidatorMessage = options.requiredMsg ?? t("checkbox.required", "Debes marcar esta opción");
+  const requiredMsg: ValidatorMessage = options.requiredMsg ?? t("checkbox.required", "You must check this option");
   const validators: Validator[] = options.required ? [Required(requiredMsg)] : [];
 
   let field!: CheckboxField;

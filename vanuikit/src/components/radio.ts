@@ -51,7 +51,7 @@ export const RadioGroup = (options: RadioGroupOptions): RadioGroupField => {
   const groupDisabled = asState(options.disabled, false);
   const focusedValue = van.state("");
 
-  const requiredMsg: ValidatorMessage = options.requiredMsg ?? t("radio.required", "Selecciona una opción");
+  const requiredMsg: ValidatorMessage = options.requiredMsg ?? t("radio.required", "Please select an option");
   const validators: Validator[] = options.required ? [Required(requiredMsg)] : [];
 
   const control = createControlField(

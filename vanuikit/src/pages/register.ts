@@ -37,7 +37,7 @@ export const RegisterForm = (info: RegisterInfo) => {
       return { ok: true };
     },
     onBeforeSubmit: () => {
-      msg.val = Spin(t("register.loading", "Creando cuenta..."));
+      msg.val = Spin(t("register.loading", "Creating account..."));
     },
     onError: () => {
       msg.val = null;
@@ -52,10 +52,10 @@ export const RegisterForm = (info: RegisterInfo) => {
   const password = PasswordField();
   const confirm = PasswordField({
     name: "confirm",
-    label: t("field.confirm.label", "Confirmar contraseña"),
+    label: t("field.confirm.label", "Confirm password"),
     placeholder: t("field.confirm.placeholder", "••••••••"),
-    requiredMsg: t("field.confirm.required", "Confirma tu contraseña"),
-  }).addValidator(Match("password", t("field.confirm.mismatch", "Las contraseñas no coinciden")));
+    requiredMsg: t("field.confirm.required", "Please confirm your password"),
+  }).addValidator(Match("password", t("field.confirm.mismatch", "Passwords do not match")));
 
   form.add(name, email, password, confirm);
 
@@ -72,7 +72,7 @@ export const RegisterForm = (info: RegisterInfo) => {
           (msg.val && msg.val) ||
           Button(
             { type: "submit", disabled: form.submitting.val },
-            t("register.submit", "Crear cuenta"),
+            t("register.submit", "Create Account"),
           ),
       ),
     ),

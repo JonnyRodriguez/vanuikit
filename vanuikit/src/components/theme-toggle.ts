@@ -6,12 +6,12 @@ import { Icon, type IconName } from "./icon.js";
 
 /** Contrato de llaves de i18n del componente */
 export const TEXTS = {
-  light: { key: "theme.light", default: "Claro" },
-  dark: { key: "theme.dark", default: "Oscuro" },
-  system: { key: "theme.system", default: "Sistema" },
-  selectLabel: { key: "theme.selectLabel", default: "Seleccionar tema visual" },
-  toggleLabel: { key: "theme.toggleLabel", default: "Alternar tema visual (Claro / Oscuro / Sistema)" },
-  toggleTitle: { key: "theme.toggleTitle", default: "Alternar tema (Claro / Oscuro / Sistema)" },
+  light: { key: "theme.light", default: "Light" },
+  dark: { key: "theme.dark", default: "Dark" },
+  system: { key: "theme.system", default: "System" },
+  selectLabel: { key: "theme.selectLabel", default: "Select visual theme" },
+  toggleLabel: { key: "theme.toggleLabel", default: "Toggle visual theme (Light / Dark / System)" },
+  toggleTitle: { key: "theme.toggleTitle", default: "Toggle theme (Light / Dark / System)" },
 } as const;
 
 // Instancia singleton por defecto para aplicaciones que no pasen una instancia personalizada
@@ -67,7 +67,7 @@ export function ThemeToggle(props: ThemeToggleProps = {}) {
           props.class,
         ),
         role: "radiogroup",
-        "aria-label": i18n.t("theme.selectLabel", "Seleccionar tema visual"),
+        "aria-label": i18n.t("theme.selectLabel", "Select visual theme"),
       },
       modes.map(({ mode, icon, text }) => {
         const isActive = van.derive(() => theme.mode.val === mode);
@@ -112,10 +112,10 @@ export function ThemeToggle(props: ThemeToggleProps = {}) {
   };
 
   const getLabel = () => {
-    if (theme.mode.val === "system") return i18n.t("theme.system", "Sistema");
+    if (theme.mode.val === "system") return i18n.t("theme.system", "System");
     return theme.mode.val === "dark"
-      ? i18n.t("theme.dark", "Oscuro")
-      : i18n.t("theme.light", "Claro");
+      ? i18n.t("theme.dark", "Dark")
+      : i18n.t("theme.light", "Light");
   };
 
   return button(
@@ -125,8 +125,8 @@ export function ThemeToggle(props: ThemeToggleProps = {}) {
         "inline-flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-border bg-card hover:bg-secondary text-foreground text-xs font-medium cursor-pointer transition-colors shadow-xs select-none",
         props.class,
       ),
-      "aria-label": i18n.t("theme.toggleLabel", "Alternar tema visual (Claro / Oscuro / Sistema)"),
-      title: i18n.t("theme.toggleTitle", "Alternar tema (Claro / Oscuro / Sistema)"),
+      "aria-label": i18n.t("theme.toggleLabel", "Toggle visual theme (Light / Dark / System)"),
+      title: i18n.t("theme.toggleTitle", "Toggle theme (Light / Dark / System)"),
       onclick: cycle,
     },
     () => Icon({ name: getIcon() }),

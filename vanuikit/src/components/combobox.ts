@@ -22,7 +22,7 @@ export interface ComboboxOptions {
   value?: string | State<string> | State<string[]>;
   /** Modo multi-selección: chips removibles; el panel no se cierra al elegir. */
   multiple?: boolean;
-  /** Placeholder del input (default: "Buscar..."). */
+  /** Placeholder del input (default: "Search..."). */
   placeholder?: ToggleText;
   disabled?: boolean | State<boolean>;
   /** Requerido: error al enviar sin selección (integración con `Form`). */
@@ -69,7 +69,7 @@ export const Combobox = (props: ComboboxOptions): ComboboxField => {
   let textInputEl: HTMLInputElement | null = null;
 
   const requiredMsg: ValidatorMessage =
-    props.requiredMsg ?? t("radio.required", "Selecciona una opción");
+    props.requiredMsg ?? t("radio.required", "Please select an option");
   const validators: Validator[] = props.required ? [Required(requiredMsg)] : [];
 
   const selectedLabel = van.derive(() => {
@@ -233,7 +233,7 @@ export const Combobox = (props: ComboboxOptions): ComboboxField => {
       "aria-invalid": () => (field.isInvalid.val ? "true" : "false"),
       autocomplete: "off",
       value: () => display.val,
-      placeholder: props.placeholder ?? t("dropdown.searchPlaceholder", "Buscar..."),
+      placeholder: props.placeholder ?? t("dropdown.searchPlaceholder", "Search..."),
       disabled: () => disabled.val,
       oninput: (e: Event) => {
         query.val = (e.target as HTMLInputElement).value;
@@ -281,7 +281,7 @@ export const Combobox = (props: ComboboxOptions): ComboboxField => {
                     {
                       type: "button",
                       class: "cursor-pointer rounded-full hover:bg-primary/20 leading-none px-0.5",
-                      "aria-label": raw("combobox.remove", "Quitar {name}", { name: label }),
+                      "aria-label": raw("combobox.remove", "Remove {name}", { name: label }),
                       onclick: (e: MouseEvent) => {
                         e.stopPropagation();
                         removeMulti(v);
@@ -343,7 +343,7 @@ export const Combobox = (props: ComboboxOptions): ComboboxField => {
             fs.length === 0
               ? li(
                   { class: "px-3 py-4 text-xs text-center text-muted italic" },
-                  t("dropdown.empty", "No se encontraron resultados"),
+                  t("dropdown.empty", "No results found"),
                 )
               : fs.map((opt, i) => {
                   const isSelected = multi

@@ -38,7 +38,7 @@ export const LoginForm = (info: LoginInfo) => {
       return { ok: true };
     },
     onBeforeSubmit: () => {
-      msg.val = Spin(t("login.loading", "Iniciando sesión..."));
+      msg.val = Spin(t("login.loading", "Signing in..."));
     },
     onError: () => {
       msg.val = null;
@@ -66,7 +66,7 @@ export const LoginForm = (info: LoginInfo) => {
           (msg.val && msg.val) ||
           Button(
             { type: "submit", disabled: form.submitting.val },
-            t("login.submit", "Iniciar sesión"),
+            t("login.submit", "Sign In"),
           ),
       ),
     ),

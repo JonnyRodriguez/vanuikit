@@ -125,7 +125,7 @@ export const Drawer = (props: DrawerOptions, ...content: ChildDom[]): ChildDom =
             type: "button",
             class:
               "absolute top-3 right-3 z-10 cursor-pointer rounded p-1 text-xl leading-none text-muted transition-colors hover:text-foreground-soft",
-            "aria-label": t("modal.close", "Cerrar"),
+            "aria-label": t("modal.close", "Close"),
             onclick: close,
           },
           "×",

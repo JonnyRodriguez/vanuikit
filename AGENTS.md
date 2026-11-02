@@ -25,18 +25,18 @@ Este documento establece las reglas fundamentales de diseño, arquitectura y con
 ## 2. Guía de Diseño de Internacionalización (i18n)
 
 ### Regla Mandatoria: Cero Strings Quemados (No Hardcoded Strings)
-Todo texto visible para el usuario (etiquetas de botones, títulos de páginas, placeholders de campos, mensajes de error, opciones de navegación) se escribe con las funciones `t()`/`raw()` de vanuikit — **llave semántica + texto por defecto, inline, sin objetos TEXTS**.
+Todo texto visible para el usuario (etiquetas de botones, títulos de páginas, placeholders de campos, mensajes de error, opciones de navegación) se escribe con las funciones `t()`/`raw()` de vanuikit — **llave semántica + texto por defecto, inline, sin objetos TEXTS**. El idioma canónico de la librería es **inglés**: el default inline se escribe en inglés y el español vive como traducción (diccionarios `es`/`fr` a mano; `en.json` se genera desde los defaults).
 
 ### Llamada Inline: `t(key, default, params?)`
-La llave es semántica y estable (`sección.propuesta`); el texto por defecto (español) vive junto al uso, y los parámetros van al final con placeholders `{nombre}`:
+La llave es semántica y estable (`sección.propuesta`); el texto por defecto (**en inglés**, es el texto canónico que verán los consumidores sin diccionarios) vive junto al uso, y los parámetros van al final con placeholders `{nombre}`:
 
 ```typescript
 import { t, raw } from "vanuikit";
 
-span(t("***REMOVED***.qrAlt", "Código QR"));
-Button({}, t("components.modal.openBtn", "Abrir Modal Básico"));
-toast.info(raw("***REMOVED***.saved", "Cambios guardados"));
-p(t("***REMOVED***.***REMOVED***With", "***REMOVED***r con {name}", { name: ***REMOVED***.name }));
+span(t("***REMOVED***.qrAlt", "QR code"));
+Button({}, t("components.modal.openBtn", "Open Basic Modal"));
+toast.info(raw("***REMOVED***.saved", "Changes saved"));
+p(t("***REMOVED***.***REMOVED***With", "Top up with {name}", { name: ***REMOVED***.name }));
 ```
 
 - **`t()` para slots reactivos** (hijos y props de componentes): retorna `State<string>` y el texto muta al cambiar `currentLocale`.

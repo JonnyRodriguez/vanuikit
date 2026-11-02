@@ -5,7 +5,16 @@ versionado SemVer.
 
 ## [0.2.0] — 2026-11-02
 
-### Changed — paleta alineada a Tailwind CSS
+### Changed — English as the canonical language
+
+- Library source (comments, JSDoc), test titles and the inline defaults of
+  `t()`/`raw()` are now **English**; Spanish and French are hand-maintained
+  translations (`es.json`/`fr.json`) and `en.json` is generated from the
+  defaults. i18n keys are unchanged — existing dictionaries keep working.
+- npm-facing docs (`README.md`, package description) translated to English.
+- `guardSingleVan` console warning shipped in English from the start.
+
+### Changed — Tailwind-aligned palette
 
 - `--vui-primary`/`--vui-accent`: verde → familia azul (blue-600 light /
   blue-500 dark), la referencia de shadcn y los kits modernos. Jerarquía

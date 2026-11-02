@@ -1,95 +1,96 @@
-# VanUikit — librería de componentes VanJS
+# VanUikit — VanJS component library
 
-Componentes VanJS organizados **de simple a complejo** en una sola capa de
-`components/`, y las **páginas y formularios preconstruidos** en
-`pages/`. Librería universal de UI, sin dependencias del backend: el tema se
-personaliza con variables CSS `--vui-*`.
+VanJS components organized **from simple to complex** in a single
+`components/` layer, plus **prebuilt pages and forms** in `pages/`. A
+universal UI library with no backend dependencies: theming is done with
+`--vui-*` CSS variables.
 
-## Inicio rápido
+## Quick start
 
     bun add vanuikit vanjs-core
 
-`vanjs-core` es una peerDependency: la declaras tú y el `van` se importa desde
-`vanuikit` (ver [regla de instancia única](#uso-consumidor)).
+`vanjs-core` is a peerDependency: you declare it and `van` is imported from
+`vanuikit` (see the [single-instance rule](#usage-consumer)).
 
-**1. Enlaza la hoja de estilos** en tu `index.html` — sin este paso los
-componentes se ven sin estilos:
+**1. Link the stylesheet** in your `index.html` — without this step the
+components render unstyled:
 
     <link rel="stylesheet" href="node_modules/vanuikit/dist/vanuikit.css" />
 
-(con bundler también vale: `import "vanuikit/styles.css"`)
+(with a bundler this also works: `import "vanuikit/styles.css"`)
 
-**2. Renderiza tu primer componente:**
+**2. Render your first component:**
 
 ```ts
 import { van, Button, ThemeToggle, toast } from "vanuikit";
 
 van.add(
   document.body,
-  ThemeToggle(),                                             // claro/oscuro/sistema
-  Button({ onclick: () => toast.success("¡Funciona!") }, "Saludar"),
+  ThemeToggle(),                                        // light/dark/system
+  Button({ onclick: () => toast.success("It works!") }, "Greet"),
 );
 ```
 
-Eso es todo — sin toolchain de CSS ni configuración. El catálogo completo con
-ejemplos vivos está en la demo (`../demo/`, `bun run dev` → `/components`).
+That's it — no CSS toolchain, no configuration. The full catalog with live
+examples lives in the demo (`../demo/`, `bun run dev` → `/components`).
 
-## Estructura
+## Structure
 
     src/
-    ├── index.ts                    <- API pública (re-exporta todo)
+    ├── index.ts                    <- public API (re-exports everything)
     ├── util.ts                     <- cx()
-    ├── validators.ts               <- Validator y subclases (Required, Email, …)
-    ├── router.ts                   <- SPA: params, guards deny-by-default, redirects
-    ├── auth.ts                     <- sesión: createAuth + requireAuth
-    ├── fetch.ts                    <- datos reactivos: createQuery + createMutation
-    ├── theme.ts                    <- tema reactivo: createTheme (light, dark, system)
-    ├── i18n.ts                     <- internacionalización reactiva: t()/raw()/createI18n
-    ├── fmt.ts                      <- formato locale-aware: fmt (fechas, números, moneda)
-    ├── debug.ts / debug-graph.ts   <- trace, expectReactive e instrumentador de reactividad
-    ├── server/                     <- loadRoutes: rutas de backend deny-by-default
-    ├── components/                 <- 40 componentes (de simple a complejo; ver catálogo)
-    └── pages/                      <- pantallas preconstruidas: LoginForm, RegisterForm
-    scripts/uno.js                  <- compila las clases de src/ a dist/vanuikit.css
-    dist/vanuikit.css               <- hoja de estilos publicada (generada)
+    ├── validators.ts               <- Validator and subclasses (Required, Email, …)
+    ├── router.ts                   <- SPA: params, deny-by-default guards, redirects
+    ├── auth.ts                     <- session: createAuth + requireAuth
+    ├── fetch.ts                    <- reactive data: createQuery + createMutation
+    ├── theme.ts                    <- reactive theme: createTheme (light, dark, system)
+    ├── i18n.ts                     <- reactive i18n: t()/raw()/createI18n
+    ├── fmt.ts                      <- locale-aware formatting: fmt (dates, numbers, currency)
+    ├── debug.ts / debug-graph.ts   <- trace, expectReactive and the reactivity instrumenter
+    ├── server/                     <- loadRoutes: deny-by-default backend routes
+    ├── components/                 <- 40 components (simple → complex; see catalog)
+    └── pages/                      <- prebuilt screens: LoginForm, RegisterForm
+    scripts/uno.js                  <- compiles src/ classes into dist/vanuikit.css
+    dist/vanuikit.css               <- published stylesheet (generated)
 
-La demo (que consume este paquete) vive aparte, en `../demo/` — no forma parte
-de la librería.
+The demo (which consumes this package) lives separately in `../demo/` — it is
+not part of the library.
 
-## Catálogo de componentes
+## Component catalog
 
-Cada familia va de lo más básico a lo compuesto. Todos aceptan `State` en sus
-props visuales (mismo contrato reactivo) y `class` extra del consumidor.
+Each family goes from the most basic to the composed. All of them accept
+`State` in their visual props (same reactive contract) plus the consumer's
+extra `class`.
 
-| Familia | Componentes | Propósito |
+| Family | Components | Purpose |
 |---|---|---|
-| **Botones** | `Button`, `PrimaryButton`, `SecondaryButton` | `variant` (`primary`/`secondary`/`destructive`/`ghost`), `size` (`sm`/`md`/`lg`), `block` (ancho completo opt-in). `type: "button"` por defecto. |
-| **Campos** | `Field`, `TextField`, `EmailField`, `PasswordField`, `TextareaField` | Unidad con label + control + validadores + error reactivo; ampliables con `addValidator`. |
-| **Controles binarios** | `Checkbox`, `Switch`, `RadioGroup` | `checked`/`value` como `State` bidireccional; accesibles (Space, flechas, `role="switch"`/`radiogroup`); integran `Form` (`.dom()`). |
-| **Selección** | `Combobox`, `SelectDropdown`, `DatePicker`, `Wizard` | Combobox WAI-ARIA con filtro y múltiple con chips; select de botón; calendario locale-aware; flujo por pasos. |
-| **Formularios** | `Form` | Itera las validaciones de sus campos y solo llama al handler si todas pasan. |
-| **Estructura** | `AppShell`, `Sidebar`(+`Group`/`Item`), `HeaderBar`, `Card`/`CardTitle` | Dashboard responsivo (drawer en mobile, sidebar colapsable en desktop), superficies base. |
-| **Datos** | `Table`, `DataGrid`, `Pagination` | Tabla declarativa tipada; grid con búsqueda/orden/paginación; paginación numerada standalone. |
-| **Pestañas** | `Tabs`, `Accordion` | Pestañas con teclado (←/→/Home/End) y badges; acordeón single/multiple. |
-| **Navegación** | `Link`, `Nav`, `Breadcrumbs` | Anclas SPA sin ***REMOVED*** (Ctrl/Cmd+click, `target`, externos), menú reactivo con `aria-current`, ruta de migas. |
-| **Feedback** | `Badge`, `Alert`, `Progress`, `Skeleton`, `EmptyState`, `Spin`, `SpinModal`, `toast`, `Kbd` | Estados de estado y carga: etiquetas suaves, avisos persistentes dismissible, barra determinada/indeterminada, placeholders shimmer, estado vacío con acción, snackbar (`toast.success/error/info/warning`), teclas estilizadas. |
-| **Overlay** | `Modal`/`ModalBase`, `ConfirmDialog`/`confirmDialog`, `Tooltip`, `Popover`, `Drawer`, `DropdownMenu` | Modales accesibles con backdrop y focus management; confirmación imperative (`await confirmDialog(...)`); tooltips hover/focus; paneles flotantes con click-outside/Esc; drawers por 4 lados con focus trap; menús de acciones. |
-| **Sesión y preferencias** | `UserBadge`, `ThemeToggle`, `LocaleSelector`, `Avatar` | Tarjeta de usuario con logout, alternador de tema (button/segmented), selector de idioma (select/buttons), avatar con iniciales. |
-| **Base** | `Icon`, `Svg`/`SvgPath` | Íconos SVG estilo Lucide trazo `currentColor` (se tiñen con el tema); primitivas SVG. |
+| **Buttons** | `Button`, `PrimaryButton`, `SecondaryButton` | `variant` (`primary`/`secondary`/`destructive`/`ghost`), `size` (`sm`/`md`/`lg`), `block` (opt-in full width). Defaults to `type: "button"`. |
+| **Fields** | `Field`, `TextField`, `EmailField`, `PasswordField`, `TextareaField` | Unit with label + control + validators + reactive error; extensible via `addValidator`. |
+| **Binary controls** | `Checkbox`, `Switch`, `RadioGroup` | `checked`/`value` as two-way `State`; accessible (Space, arrows, `role="switch"`/`radiogroup`); integrate with `Form` (`.dom()`). |
+| **Selection** | `Combobox`, `SelectDropdown`, `DatePicker`, `Wizard` | WAI-ARIA combobox with filtering and multiple with chips; button select; locale-aware calendar; step flow. |
+| **Forms** | `Form` | Iterates its fields' validations and only calls the handler when all pass. |
+| **Layout** | `AppShell`, `Sidebar`(+`Group`/`Item`), `HeaderBar`, `Card`/`CardTitle` | Responsive dashboard (drawer on mobile, collapsible sidebar on desktop), base surfaces. |
+| **Data** | `Table`, `DataGrid`, `Pagination` | Typed declarative table; grid with search/sort/pagination; standalone numbered pagination. |
+| **Tabs** | `Tabs`, `Accordion` | Tabs with keyboard support (←/→/Home/End) and badges; single/multiple accordion. |
+| **Navigation** | `Link`, `Nav`, `Breadcrumbs` | SPA anchors without reload (Ctrl/Cmd+click, `target`, external links), reactive menu with `aria-current`, breadcrumb trail. |
+| **Feedback** | `Badge`, `Alert`, `Progress`, `Skeleton`, `EmptyState`, `Spin`, `SpinModal`, `toast`, `Kbd` | Status and loading states: soft labels, dismissible persistent alerts, determinate/indeterminate bar, shimmer placeholders, empty state with action, snackbar (`toast.success/error/info/warning`), styled keys. |
+| **Overlay** | `Modal`/`ModalBase`, `ConfirmDialog`/`confirmDialog`, `Tooltip`, `Popover`, `Drawer`, `DropdownMenu` | Accessible modals with backdrop and focus management; imperative confirmation (`await confirmDialog(...)`); hover/focus tooltips; floating panels with click-outside/Esc; 4-side drawers with focus trap; action menus. |
+| **Session & preferences** | `UserBadge`, `ThemeToggle`, `LocaleSelector`, `Avatar` | User card with logout, theme toggle (button/segmented), language selector (select/buttons), initials avatar. |
+| **Foundation** | `Icon`, `Svg`/`SvgPath` | Lucide-style SVG icons with `currentColor` stroke (tinted by the theme); SVG primitives. |
 
-**API pública de `pages/`:** `LoginForm` y `RegisterForm` (formularios/vistas
-reutilizables). El flujo de ***REMOVED*** (`***REMOVED***`, `qr`, `***REMOVED***`)
-vive en la demo (`../demo/pages/` y `../demo/components/`), consumido solo por ella.
+**Public API of `pages/`:** `LoginForm` and `RegisterForm` (reusable
+forms/views). The top-up flow (`***REMOVED***`, `qr`, `***REMOVED***`) lives in the
+demo (`../demo/pages/` and `../demo/components/`), consumed only by it.
 
-## Base de desarrollo SPA
+## SPA foundation
 
-Sin frameworks externos (ni Next.js, ni SvelteKit, ni solid-router): la
-librería trae lo mínimo para armar una SPA con backend Hono.
+No external frameworks (no Next.js, no SvelteKit, no solid-router): the
+library ships the minimum to build an SPA with a Hono backend.
 
-**`Router`** (`router.ts`) — navegación cliente con pushState/popstate e
-intercepción de clicks, **params** (`/product/:id` → factory recibe `{ params }`),
-**guards** (`beforeEnter`) y **redirects**. El matcher está escrito a mano
-(sin dependencias):
+**`Router`** (`router.ts`) — client-side navigation with pushState/popstate
+and click interception, **params** (`/product/:id` → factory receives
+`{ params }`), **guards** (`beforeEnter`) and **redirects**. The matcher is
+hand-written (zero dependencies):
 
     import { Router } from "vanuikit";
 
@@ -101,14 +102,14 @@ intercepción de clicks, **params** (`/product/:id` → factory recibe `{ params
     router.redirect("/", "/login");
     router.setNotFound(() => NotFound());
 
-    // montar la vista (en App):
+    // mount the view (in App):
     van.add(root, router.start());
 
-Internamente expone `router.current` (estado reactivo de la vista) y
-`router.path` (ruta actual reactiva, para el Nav).
+Internally it exposes `router.current` (reactive view state) and
+`router.path` (reactive current route, for the Nav).
 
-**Auth** (`auth.ts`) — estado de sesión + guard, sin el hack del
-`setTimeout`. La app solo provee un `AuthApi` (`me`, `login`, `logout`):
+**Auth** (`auth.ts`) — session state + guard, without the `setTimeout`
+hack. The app only provides an `AuthApi` (`me`, `login`, `logout`):
 
     const auth = createAuth({
       me: () => api<{ user: User | null }>("/auth/me"),
@@ -116,80 +117,82 @@ Internamente expone `router.current` (estado reactivo de la vista) y
       logout: () => api("/auth/logout", { method: "POST" }),
     });
 
-    auth.boot();                                        // al arrancar la app
+    auth.boot();                                        // at app startup
     router.add("/dashboard", () => Dashboard(), {
-      beforeEnter: requireAuth(auth, "/login"),         // guard en la ruta
+      beforeEnter: requireAuth(auth, "/login"),         // route guard
     });
 
-**Deny-by-default en ambos lados.** Tanto el `Router` como `loadRoutes`
-pueden tomar un guard y aplicarlo a TODO, dejándolo solo a lo declarado
-público — el error del programador ya no puede ser exponer una ruta:
+**Deny-by-default on both sides.** Both the `Router` and `loadRoutes` can
+take a guard and apply it to EVERYTHING, leaving public only what is
+explicitly declared — the programmer's mistake can no longer expose a route:
 
-    // Cliente: declara lo público; lo demás pide sesión
+    // Client: declare what's public; everything else requires a session
     const router = createRouter({
       guard: requireAuth(auth, "/login"),
       publicRoutes: ["/login", "/register", "/docs/*"],
     });
 
-    // Server: cada archivo *.route.ts queda protegido salvo el que exporte
+    // Server: every *.route.ts file is protected unless it exports
     //   export const meta = { public: true };
     app.route("/", await loadRoutes("./routes", { auth: requireAuth() }));
 
-`loadRoutes` (en `vanuikit/server`) escanea `*.route.ts|js` recursivamente y
-monta cada sub-app según la jerarquía de carpetas (`api/auth.route.ts` →
-`/api/auth`), con orden determinista y callback `onLoad` para logging.
-Requiere un runtime que importe los archivos (tsx/bun o rutas .js).
+`loadRoutes` (in `vanuikit/server`) recursively scans `*.route.ts|js` files
+and mounts each sub-app following the folder hierarchy (`api/auth.route.ts` →
+`/api/auth`), with deterministic ordering and an `onLoad` callback for
+logging. Requires a runtime that imports the files (tsx/bun or .js routes).
 
-## Uso (consumidor)
+## Usage (consumer)
 
     bun add vanuikit vanjs-core
 
-`vanjs-core` es una **peerDependency**: la librería NO la empaca. El bundle
-publicado (`dist/index.js`) solo la importa, así que es el consumidor quien
-provee la única copia — garantizando que no existan dos instancias de VanJS.
+`vanjs-core` is a **peerDependency**: the library does NOT bundle it. The
+published bundle (`dist/index.js`) only imports it, so the consumer provides
+the single copy — guaranteeing there are never two VanJS instances.
 
-**Regla de instancia única:** dos copias de `vanjs-core` son dos sistemas de
-estado que no se hablan (la reactividad se rompe en silencio). El consumidor
-la **declara** en su `package.json` (así fija la versión y satisface el peer)
-pero **nunca la importa directo**: toma `van` desde `vanuikit`
-(`import { van } from "vanuikit"`). En demos/monorepos que consumen `vanuikit`
-por path local (`file:../vanuikit`), declara `vanjs-core` también en tu app
-(es el "host" de la peer).
+**Single-instance rule:** two copies of `vanjs-core` are two state systems
+that don't talk to each other (reactivity silently breaks). The consumer
+**declares** it in their `package.json` (pinning the version and satisfying
+the peer) but **never imports it directly**: take `van` from `vanuikit`
+(`import { van } from "vanuikit"`). In demos/monorepos that consume
+`vanuikit` via a local path (`file:../vanuikit`), declare `vanjs-core` in
+your app too (it is the peer's "host").
 
-> ⚠️ **El error más común** (y el que más tiempo cuesta): seguir los ejemplos
-> de vanjs.org y hacer `import van from "vanjs-core"`. La app "funciona" pero
-> los componentes del kit quedan en otro mundo de estado. Desde 0.2.0 la
-> librería **lo detecta en runtime** y lo grita en consola con la solución —
-> no esperes a depurar una hora: si ves el aviso `[vanuikit] TWO copies…`,
-> cambia los imports. El build de la demo además lo verifica estáticamente
-> (`check-single-vanjs.js`) y falla si el bundle contiene más de una copia.
+> ⚠️ **The most common mistake** (and the most time-consuming): following the
+> vanjs.org examples and doing `import van from "vanjs-core"`. The app
+> "works" but the kit's components live in another state universe. Since
+> 0.2.0 the library **detects it at runtime** and shouts in the console with
+> the fix — don't spend an hour debugging: if you see the
+> `[vanuikit] TWO copies…` warning, change your imports. The demo build also
+> verifies it statically (`check-single-vanjs.js`) and fails if the bundle
+> contains more than one copy.
 
     import { van, Modal, EmailField, PasswordField, Form } from "vanuikit";
 
-**Regla de oro:** importá `van` (y los estados `van.state`) desde `"vanuikit"`,
-nunca desde `"vanjs-core"` directamente. Si la app importa `van` por otra ruta
-(instalando `vanjs-core` a su lado y usándolo directo, o importándolo desde una
-copia distinta), quedan **dos instancias** de VanJS: los bindings de una copia
-NO se actualizan cuando cambia un estado de la otra (la vista del router no
-cambia al navegar aunque la URL sí). La demo hace exactamente esto: todos sus
-imports de `van` van por `import { van } from "vanuikit"`.
+**Golden rule:** import `van` (and the `van.state` states) from
+`"vanuikit"`, never from `"vanjs-core"` directly. If the app imports `van`
+through another path (installing `vanjs-core` alongside and using it
+directly, or importing it from a different copy), you get **two VanJS
+instances**: bindings of one copy are NOT updated when a state of the other
+changes (the router view doesn't change on navigation even though the URL
+does). The demo does exactly this: all its `van` imports go through
+`import { van } from "vanuikit"`.
 
-    // ✅ bien
+    // ✅ right
     import { van } from "vanuikit";
     const loading = van.state(false);
 
-    // ❌ mal: crea una segunda instancia de VanJS → reactividad rota
+    // ❌ wrong: creates a second VanJS instance → broken reactivity
     import van from "vanjs-core";
 
-    // Cada campo tipado es una unidad: trae su validación.
-    // Form itera las verificaciones y solo llama al handler si todas pasan.
+    // Each typed field is a unit: it brings its own validation.
+    // Form iterates the checks and only calls the handler if all pass.
     const form = Form(async (data) => {
-      // data = { email, password } — ya validados por los campos
+      // data = { email, password } — already validated by the fields
       await login(data);
     });
 
-    const confirm = PasswordField("Confirmar contraseña", "confirm");
-    confirm.addValidator(Match("password", "Las contraseñas no coinciden"));
+    const confirm = PasswordField("Confirm password", "confirm");
+    confirm.addValidator(Match("password", "Passwords do not match"));
 
     form.add(EmailField(), PasswordField(), confirm);
 
@@ -198,51 +201,51 @@ imports de `van` van por `import { van } from "vanuikit"`.
 
     modal.set(
       {
-        title: "Iniciar sesión",
+        title: "Sign in",
         body: () =>
           form.dom(
-            Button({ type: "submit" }, "Entrar"), // va dentro del <form>
+            Button({ type: "submit" }, "Enter"), // goes inside the <form>
           ),
       },
       true,
     );
 
-Campos tipados disponibles: `TextField` (requerido), `EmailField` (requerido +
-formato), `PasswordField` (requerido + mínimo 6). Validadores sueltos:
-`Required`, `Email`, `MinLength`, `Match`; se agregan con `addValidator`
-sin perder los del tipo.
+Available typed fields: `TextField` (required), `EmailField` (required +
+format), `PasswordField` (required + minimum 6). Standalone validators:
+`Required`, `Email`, `MinLength`, `Match`; added with `addValidator` without
+losing the type's own.
 
-Botones con variante y tamaño (defaults: `primary`, `md`):
+Buttons with variant and size (defaults: `primary`, `md`):
 
-    Button({ variant: "secondary", size: "sm" }, "Cancelar");
-    Button({ variant: "primary", size: "lg", type: "submit" }, "Guardar");
+    Button({ variant: "secondary", size: "sm" }, "Cancel");
+    Button({ variant: "primary", size: "lg", type: "submit" }, "Save");
 
 ## Shell (AppShell + Sidebar)
 
-`AppShell` arma el dashboard responsivo: drawer deslizante con backdrop en
-mobile y, en desktop, sidebar **anclada al viewport** (`sticky top-0 h-dvh`)
-con scroll interno de navegación — el `footer` (perfil/logout) queda siempre
-visible aunque la página sea larga.
+`AppShell` builds the responsive dashboard: sliding drawer with backdrop on
+mobile and, on desktop, a sidebar **anchored to the viewport**
+(`sticky top-0 h-dvh`) with internal nav scroll — the `footer`
+(profile/logout) stays visible even on long pages.
 
-`Sidebar` es colapsable en desktop (rail de iconos):
+`Sidebar` is collapsible on desktop (icon rail):
 
     const collapsed = van.state(false);
     Sidebar({
       header: ...,
       content: [SidebarGroup(...), ...],
-      footer: UserBadge({ auth, compact: collapsed }),  // modo avatar en el rail
-      collapsible: true,        // muestra el botón «/» (solo desktop)
-      collapsed,                // controlado; sin él, estado interno
-      storageKey: "mi-sidebar", // persiste en localStorage (también controlado)
+      footer: UserBadge({ auth, compact: collapsed }),  // avatar mode on the rail
+      collapsible: true,        // shows the «/» button (desktop only)
+      collapsed,                // controlled; without it, internal state
+      storageKey: "my-sidebar", // persists to localStorage (also controlled)
     });
 
-En modo rail se ocultan labels, títulos de grupo, badges y el header; los
-ítems conservan su `aria-label`. `SidebarItem`, `SidebarGroup`,
-`HeaderBar` y `UserBadge` (con `compact`) completan la familia.
+In rail mode labels, group titles, badges and the header are hidden; items
+keep their `aria-label`. `SidebarItem`, `SidebarGroup`, `HeaderBar` and
+`UserBadge` (with `compact`) complete the family.
 
-## Tema (createTheme)
+## Theme (createTheme)
 
-Gestor reactivo de tema (Claro / Oscuro / Sistema) sin dependencias:
+Reactive theme manager (Light / Dark / System) with no dependencies:
 
 ```ts
 import { createTheme } from "vanuikit";
@@ -252,21 +255,22 @@ const theme = createTheme({
   storageKey: "my-app-theme",
 });
 
-// Métodos y estados reactivos:
+// Methods and reactive states:
 theme.setMode("dark");
-theme.toggle(); // Alterna entre light y dark
+theme.toggle(); // Alternates between light and dark
 console.log(theme.mode.val);   // "dark"
 console.log(theme.isDark.val); // true
 ```
 
-Aplica automáticamente la clase `.dark` y `data-theme="dark"` al elemento `<html>`, sincronizando con las variables CSS `--vui-*`.
+It automatically applies the `.dark` class and `data-theme="dark"` to the
+`<html>` element, in sync with the `--vui-*` CSS variables.
 
-## Internacionalización (createI18n)
+## Internationalization (createI18n)
 
-Sistema reactivo ultraligero de traducción e interpolación. El idioma por
-defecto es **inglés**; los diccionarios incluidos (`field`, `dialog`, `table`,
-`modal`, `dropdown`, `theme`, `nav`, `auth`, `login`, `register`) cubren los
-textos de los componentes embebidos:
+Ultra-light reactive translation and interpolation system. The default
+language is **English**; the bundled dictionaries (`field`, `dialog`,
+`table`, `modal`, `dropdown`, `theme`, `nav`, `auth`, `login`, `register`)
+cover the embedded components' texts:
 
 ```ts
 import { createI18n } from "vanuikit";
@@ -279,16 +283,16 @@ const i18n = createI18n({
   },
 });
 
-// Reactivo: dentro de un nodo VanJS se actualiza solo al cambiar de idioma
+// Reactive: inside a VanJS node it updates when the language changes
 div(i18n.t("buttons.save"));
 div(i18n.t("greeting", { name: "Carlos" }));
 
-// Cambiar idioma (persiste en localStorage y sincroniza <html lang>):
+// Switch language (persists to localStorage and syncs <html lang>):
 i18n.setLocale("es");
 ```
 
-`addTranslations` es **reactivo**: los textos ya renderizados se re-resuelven
-al registrar diccionarios nuevos (útil para lazy loading por módulo):
+`addTranslations` is **reactive**: already-rendered texts re-resolve when
+new dictionaries are registered (useful for per-module lazy loading):
 
 ```ts
 i18n.addTranslations({
@@ -296,82 +300,84 @@ i18n.addTranslations({
 });
 ```
 
-Si el locale guardado en localStorage no existía al crear la instancia (porque
-la app lo registra después), se re-aplica automáticamente al registrarlo.
+If the locale saved in localStorage didn't exist when the instance was
+created (because the app registers it later), it is re-applied automatically
+upon registration.
 
-## Formato locale-aware (fmt)
+## Locale-aware formatting (fmt)
 
-La otra mitad del i18n: fechas, números, moneda y porcentajes sobre `Intl.*`,
-atados a `currentLocale`. Mismos dos modos que `t()`/`raw()` — los formatos
-reactivos retornan `State<string>` (crear UNA vez fuera de los bindings, igual
-que `t()`); `fmt.raw.*` resuelve al instante:
+The other half of i18n: dates, numbers, currency and percentages over
+`Intl.*`, bound to `currentLocale`. Same two modes as `t()`/`raw()` — the
+reactive formatters return `State<string>` (create ONCE outside bindings,
+just like `t()`); `fmt.raw.*` resolves immediately:
 
 ```ts
 import { fmt } from "vanuikit";
 
-span(fmt.date(order.createdAt));                   // se reformatea al cambiar el idioma
+span(fmt.date(order.createdAt));                   // reformats when the language changes
 span(fmt.currency(item.price, { currency: "EUR" }));
-span(fmt.relative(paidAt));                        // "hace 3 minutos"
+span(fmt.relative(paidAt));                        // "3 minutes ago"
 
-toast.info(`Total: ${fmt.raw.currency(total)}`);   // consumo imperativo (handlers)
+toast.info(`Total: ${fmt.raw.currency(total)}`);   // imperative use (handlers)
 
-const miFmt = createFmt(miI18n);                   // instancia aislada (opcional)
+const myFmt = createFmt(myI18n);                   // isolated instance (optional)
 ```
 
-`fmt.date/datetime/time/number/currency/percent/relative` aceptan `Date`,
-número o ISO string; fechas inválidas retornan `""` (sin excepciones).
+`fmt.date/datetime/time/number/currency/percent/relative` accept `Date`,
+number or ISO string; invalid dates return `""` (no exceptions).
 
 ## CSS
 
-El paquete genera y publica su propia hoja de estilos: `bun run css` escanea
-las clases de `src/` con UnoCSS y escribe `dist/vanuikit.css` (reset + variables
-de tema + utilidades de los componentes). El consumidor solo la enlaza (o la
-importa desde `vanuikit/styles.css`); **no necesita UnoCSS ni ninguna toolchain**
-— el CSS del paquete ya viene compilado:
+The package generates and publishes its own stylesheet: `bun run css` scans
+the `src/` classes with UnoCSS and writes `dist/vanuikit.css` (reset + theme
+variables + component utilities). The consumer just links it (or imports it
+via `vanuikit/styles.css`); **no UnoCSS or any toolchain needed** — the
+package CSS ships precompiled:
 
     <link rel="stylesheet" href="node_modules/vanuikit/dist/vanuikit.css" />
 
-## Tema
+## Theming
 
-La librería usa **tokens semánticos** (`bg-primary`, `text-muted`, `border-border`,…)
-en vez de colores hardcodeados. La paleta por defecto está alineada a Tailwind
-CSS (la referencia de shadcn y los kits modernos): `primary`/`accent` = blue-600
-en light y blue-500 en dark, neutrales = gray, `destructive` = red.
-`dist/vanuikit.css` define las variables `--vui-*` en `:root` (y en
-`:root.dark`); para re-tematizar, sobreescribe las que quieras en tu propio CSS
-(cargado después):
+The library uses **semantic tokens** (`bg-primary`, `text-muted`,
+`border-border`,…) instead of hardcoded colors. The default palette is
+aligned with Tailwind CSS (the reference used by shadcn and modern kits):
+`primary`/`accent` = blue-600 in light and blue-500 in dark, neutrals =
+gray, `destructive` = red. `dist/vanuikit.css` defines the `--vui-*`
+variables in `:root` (and `:root.dark`); to re-theme, override the ones you
+want in your own CSS (loaded after):
 
     :root {
-      --vui-primary: #0ea5e9;      /* sky en vez del azul por defecto */
-      --vui-radius-md: 0.5rem;     /* radios más grandes */
+      --vui-primary: #0ea5e9;      /* sky instead of the default blue */
+      --vui-radius-md: 0.5rem;     /* larger radii */
     }
 
-Tokens disponibles: `--vui-primary(-hover/-active/-fg/-shadow)`, `--vui-secondary
-(-hover/-active/-fg)`, `--vui-accent(-hover/-fg)`, `--vui-focus`, `--vui-background`,
-`--vui-foreground(-soft)`, `--vui-muted`, `--vui-border`, `--vui-overlay`,
-`--vui-destructive(-fg)`, `--vui-info(-fg)`, `--vui-success(-fg)`,
-`--vui-warning(-fg)`, `--vui-radius-md/lg/2xl/full` y `--vui-shadow-sm/lg/xl/2xl`.
+Available tokens: `--vui-primary(-hover/-active/-fg/-shadow)`,
+`--vui-secondary(-hover/-active/-fg)`, `--vui-accent(-hover/-fg)`,
+`--vui-focus`, `--vui-background`, `--vui-foreground(-soft)`, `--vui-muted`,
+`--vui-border`, `--vui-overlay`, `--vui-destructive(-fg)`,
+`--vui-info(-fg)`, `--vui-success(-fg)`, `--vui-warning(-fg)`,
+`--vui-radius-md/lg/2xl/full` and `--vui-shadow-sm/lg/xl/2xl`.
 
-Los colores de estado (`info`, `success`, `warning`, `destructive`) tienen una
-base (fondos sólidos, dots, tintes al 10%) y una variante `-fg`: el nivel
-legible como texto sobre el tinte en ambos modos (700 en light, 300 en dark).
-`Badge`, `Alert` y `toast` los consumen — al re-tematizar esos componentes
-siguen tu paleta.
+The status colors (`info`, `success`, `warning`, `destructive`) have a base
+(solid backgrounds, dots, 10% tints) and a `-fg` variant: the level readable
+as text over the tint in both modes (700 in light, 300 in dark). `Badge`,
+`Alert` and `toast` consume them — when you re-theme, those components
+follow your palette.
 
-## Comandos (Bun)
+## Commands (Bun)
 
-    bun install        # instala devDeps (vanjs-core, happy-dom, typescript, @unocss/*)
+    bun install        # installs devDeps (vanjs-core, happy-dom, typescript, @unocss/*)
     bun run typecheck  # tsc --noEmit
-    bun test           # suite completa en happy-dom (32 archivos)
-    bun run css        # genera dist/vanuikit.css desde las clases de src/
-    bun run bundle     # bun build src/index.ts → dist/index.js (vanjs-core externo)
+    bun test           # full suite on happy-dom (32 files)
+    bun run css        # generates dist/vanuikit.css from the src/ classes
+    bun run bundle     # bun build src/index.ts → dist/index.js (vanjs-core external)
     bun run types      # tsc --project tsconfig.build.json → dist/*.d.ts
     bun run build      # typecheck + css + bundle + types
 
-La demo se gestiona en `../demo/` (workspace `bun`, depende de
-`"vanuikit": "workspace:*"` y de `vanjs-core`, el host de la peer):
-`bun run dev` (build + server) o `bun run start` → http://localhost:3000.
+The demo is managed in `../demo/` (bun workspace, depends on
+`"vanuikit": "workspace:*"` and `vanjs-core`, the peer host):
+`bun run dev` (build + server) or `bun run start` → http://localhost:3000.
 
-El sistema de debug de reactividad (`trace`, `expectReactive`,
-`installVanDebug`, vista `/debug` y escaneo `check:van`) está documentado en
-[`DEBUG_REACTIVIDAD.md`](../DEBUG_REACTIVIDAD.md) en la raíz del repo.
+The reactivity debug system (`trace`, `expectReactive`, `installVanDebug`,
+the `/debug` view and the `check:van` scan) is documented in
+[`DEBUG_REACTIVIDAD.md`](../DEBUG_REACTIVIDAD.md) at the repo root.

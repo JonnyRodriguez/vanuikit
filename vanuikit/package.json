@@ -1,7 +1,7 @@
 {
   "name": "vanuikit",
   "version": "0.2.0",
-  "description": "Librería universal de componentes VanJS: botones, campos, formularios, modal, spinner, validación, router y auth como base de SPA",
+  "description": "Universal VanJS component library: buttons, fields, forms, modal, spinner, validation, router and auth as an SPA foundation",
   "license": "MIT",
   "repository": {
     "type": "git",

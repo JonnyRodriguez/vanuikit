@@ -53,6 +53,22 @@ describe("Embedded Core Components", () => {
       await nextTick();
       expect(theme.mode.val).toBe("system");
     });
+
+    test("cada radio del segmented tiene nombre accesible (íconos solo visuales)", () => {
+      const theme = createTheme({ defaultMode: "light" });
+      // i18n local en español: determinista (el singleton global arranca en "en").
+      const i18n = createI18n({ defaultLocale: "es", locales: {} });
+      const segmented = ThemeToggle({ theme, i18n, variant: "segmented", includeSystem: true });
+      van.add(document.body, segmented);
+
+      const labels = [...document.body.querySelectorAll('[role="radio"]')].map((el) =>
+        el.getAttribute("aria-label"),
+      );
+      expect(labels).toEqual(["Claro", "Oscuro", "Sistema"]);
+
+      const group = document.body.querySelector('[role="radiogroup"]');
+      expect(group?.getAttribute("aria-label")).toBe("Seleccionar tema visual");
+    });
   });
 
   describe("LocaleSelector", () => {

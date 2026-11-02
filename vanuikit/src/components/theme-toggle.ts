@@ -76,6 +76,9 @@ export function ThemeToggle(props: ThemeToggleProps = {}) {
             type: "button",
             role: "radio",
             "aria-checked": isActive,
+            // Nombre accesible: el ícono es puramente visual; sin esto un
+            // lector de pantalla anuncia "radio button" sin decir cuál modo es.
+            "aria-label": i18n.t(text.key, text.default),
             class: () =>
               cx(
                 "inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-lg transition-all cursor-pointer select-none",

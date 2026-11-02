@@ -290,6 +290,7 @@
   },
   "dropdown": {
     "empty": "No se encontraron resultados",
+    "placeholder": "Seleccionar opción...",
     "searchPlaceholder": "Buscar..."
   },
   "field": {
@@ -406,6 +407,7 @@
     "close": "Cerrar menú",
     "collapse": "Colapsar barra lateral",
     "expand": "Expandir barra lateral",
+    "resize": "Ajustar ancho de la barra lateral",
     "title": "Sidebar"
   },
   "switch": {

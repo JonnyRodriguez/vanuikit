@@ -207,7 +207,7 @@ export function Table<T extends Record<string, any> = any>(props: TableProps<T>)
               props.selectable && selectedRows.val.length > 0
                 ? span(
                     { class: "text-xs text-primary font-semibold" },
-                    t("table.selectedCount", `${selectedRows.val.length} seleccionados`, { count: selectedRows.val.length }),
+                    t("table.selectedCount", "{count} selected", { count: selectedRows.val.length }),
                   )
                 : null,
             )

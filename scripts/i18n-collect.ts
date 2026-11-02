@@ -8,15 +8,16 @@
  * Modos:
  *   bun scripts/i18n-collect.ts           → escribe demo/shared/locales/
  *   bun scripts/i18n-collect.ts --check   → CI: no escribe; exit 1 ante conflictos o huecos
- *   bun scripts/i18n-collect.ts --prune   → además elimina llaves obsoletas de en/fr
+ *   bun scripts/i18n-collect.ts --prune   → además elimina llaves obsoletas de es/fr
  *
- * Política de diccionarios:
- *   - es.json se GENERA completo desde los defaults de TEXTS (no editar a mano).
- *   - en.json / fr.json son editados a mano: el script conserva su contenido,
- *     nunca los rellena con español (las llaves ausentes caen al default en
- *     runtime); los huecos se reportan y --check falla si existen.
+ * Política de diccionarios (desde 0.2.0 los defaults canónicos son INGLÉS):
+ *   - en.json se GENERA completo desde los defaults de t()/TEXTS (no editar a
+ *     mano: el inglés canónico vive junto al uso en el código).
+ *   - es.json / fr.json son editados a mano (traducciones): el script conserva
+ *     su contenido, nunca los rellena (las llaves ausentes caen al default en
+ *     inglés en runtime); los huecos se reportan y --check falla si existen.
  *   - Las llaves que ya no existen en ningún TEXTS se reportan como obsoletas
- *     y solo se eliminan de en/fr con --prune.
+ *     y solo se eliminan de es/fr con --prune.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -27,7 +28,7 @@ const ROOT = path.resolve(import.meta.dir, "..");
 const SCAN_PATTERNS = ["demo/**/*.ts", "vanuikit/src/**/*.ts"];
 const EXCLUDE = [/(^|\/)dist\//, /(^|\/)node_modules\//, /\.test\.ts$/, /(^|\/)fixtures\//];
 const LOCALES_DIR = path.join(ROOT, "demo", "shared", "locales");
-const HAND_LOCALES = ["en", "fr"] as const;
+const HAND_LOCALES = ["es", "fr"] as const;
 
 const CHECK = process.argv.includes("--check");
 const PRUNE = process.argv.includes("--prune");
@@ -188,7 +189,7 @@ for (const [key, entry] of byKey) {
   }
 }
 
-// ── 3. Estado de los diccionarios manuales (en/fr) ──────────────────────────
+// ── 3. Estado de los diccionarios manuales (es/fr) ──────────────────────────
 const handState = new Map<string, { missing: string[]; stale: string[] }>();
 for (const locale of HAND_LOCALES) {
   const dict = readJson(locale);
@@ -203,7 +204,7 @@ console.log(`TEXTS detectados: ${allKeys.length} llaves en ${new Set(entries.map
 
 for (const [locale, { missing, stale }] of handState) {
   if (missing.length) {
-    console.log(`\n[${locale}] sin traducción (${missing.length}, caen al español en runtime):`);
+    console.log(`\n[${locale}] sin traducción (${missing.length}, caen al inglés en runtime):`);
     for (const key of missing) console.log(`  - ${key} = "${byKey.get(key)!.default}"`);
   }
   if (stale.length) {
@@ -217,11 +218,11 @@ for (const error of errors) console.error(`ERROR ${error}`);
 // ── 5. Escritura ────────────────────────────────────────────────────────────
 if (!CHECK) {
   fs.mkdirSync(LOCALES_DIR, { recursive: true });
-  const esFile = path.join(LOCALES_DIR, "es.json");
-  const previousEs = fs.existsSync(esFile) ? flatten(JSON.parse(fs.readFileSync(esFile, "utf8"))) : [];
-  const addedToEs = allKeys.filter((k) => !previousEs.includes(k));
-  fs.writeFileSync(esFile, JSON.stringify(buildTree([...byKey.values()]), null, 2) + "\n");
-  console.log(`\nes.json regenerado (${allKeys.length} llaves${addedToEs.length ? `, +${addedToEs.length} nuevas` : ""})`);
+  const enFile = path.join(LOCALES_DIR, "en.json");
+  const previousEn = fs.existsSync(enFile) ? flatten(JSON.parse(fs.readFileSync(enFile, "utf8"))) : [];
+  const addedToEn = allKeys.filter((k) => !previousEn.includes(k));
+  fs.writeFileSync(enFile, JSON.stringify(buildTree([...byKey.values()]), null, 2) + "\n");
+  console.log(`\nen.json regenerado (${allKeys.length} llaves${addedToEn.length ? `, +${addedToEn.length} nuevas` : ""})`);
 
   for (const locale of HAND_LOCALES) {
     if (!PRUNE) continue;
@@ -245,7 +246,7 @@ if (!CHECK) {
 
 const hasGaps = [...handState.values()].some(({ missing }) => missing.length > 0);
 if (CHECK ? errors.length || hasGaps : errors.length) {
-  console.error(`\ni18n:check FALLÓ (${errors.length} errores${hasGaps ? ", huecos de traducción en en/fr" : ""})`);
+  console.error(`\ni18n:check FALLÓ (${errors.length} errores${hasGaps ? ", huecos de traducción en es/fr" : ""})`);
   process.exit(1);
 }
 console.log(CHECK ? "\ni18n:check OK" : "\ni18n:collect OK");

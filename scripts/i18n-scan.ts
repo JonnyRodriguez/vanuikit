@@ -37,6 +37,8 @@ const EXCLUDE = [
   /(^|\/)server\//,
   /(^|\/)i18n\.ts$/,
   /(^|\/)i18n\.config\.ts$/,
+  // Página de debug dev-only (solo con van-debug=1): monolingüe a propósito.
+  /demo\/pages\/debug\.page\.ts$/,
 ];
 
 /** Callees que reciben texto visible como argumento directo. */
@@ -108,6 +110,8 @@ const hasLetters = (s: string): boolean => /\p{L}{2,}/u.test(s);
 const isEmojiish = (s: string): boolean =>
   !hasLetters(s) || /^\p{Extended_Pictographic}|\p{Extended_Pictographic}$/u.test(s.trim());
 const isPath = (s: string): boolean => /^\/[\w\-./]*$/.test(s);
+/** IDs técnicos con prefijo de namespace ("state#3", "derive#7"): no es prosa. */
+const isTechnicalId = (s: string): boolean => /^[\w-]+#/.test(s.replace(/^[`"'\s]+/, ""));
 
 function slugFile(relFile: string): string {
   const base = path.basename(relFile).replace(/\.(page|component|ts|js)/g, "").replace(/\.+$/, "");
@@ -157,7 +161,8 @@ function scanFile(relFile: string, findings: Finding[]): void {
     const raw = ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node)
       ? node.text
       : node.getText(source);
-    if (!raw || !hasLetters(raw) || isEmojiish(raw) || isPath(raw) || BRANDS.has(raw)) return;
+    if (!raw || !hasLetters(raw) || isEmojiish(raw) || isPath(raw) || isTechnicalId(raw) || BRANDS.has(raw))
+      return;
 
     let text = raw;
     const params: TemplateParam[] = [];

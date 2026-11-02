@@ -5,6 +5,35 @@ Componentes VanJS organizados **de simple a complejo** en una sola capa de
 `pages/`. Librería universal de UI, sin dependencias del backend: el tema se
 personaliza con variables CSS `--vui-*`.
 
+## Inicio rápido
+
+    bun add vanuikit vanjs-core
+
+`vanjs-core` es una peerDependency: la declaras tú y el `van` se importa desde
+`vanuikit` (ver [regla de instancia única](#uso-consumidor)).
+
+**1. Enlaza la hoja de estilos** en tu `index.html` — sin este paso los
+componentes se ven sin estilos:
+
+    <link rel="stylesheet" href="node_modules/vanuikit/dist/vanuikit.css" />
+
+(con bundler también vale: `import "vanuikit/styles.css"`)
+
+**2. Renderiza tu primer componente:**
+
+```ts
+import { van, Button, ThemeToggle, toast } from "vanuikit";
+
+van.add(
+  document.body,
+  ThemeToggle(),                                             // claro/oscuro/sistema
+  Button({ onclick: () => toast.success("¡Funciona!") }, "Saludar"),
+);
+```
+
+Eso es todo — sin toolchain de CSS ni configuración. El catálogo completo con
+ejemplos vivos está en la demo (`../demo/`, `bun run dev` → `/components`).
+
 ## Estructura
 
     src/

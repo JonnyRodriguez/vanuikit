@@ -263,6 +263,28 @@ i18n.addTranslations({
 Si el locale guardado en localStorage no existía al crear la instancia (porque
 la app lo registra después), se re-aplica automáticamente al registrarlo.
 
+## Formato locale-aware (fmt)
+
+La otra mitad del i18n: fechas, números, moneda y porcentajes sobre `Intl.*`,
+atados a `currentLocale`. Mismos dos modos que `t()`/`raw()` — los formatos
+reactivos retornan `State<string>` (crear UNA vez fuera de los bindings, igual
+que `t()`); `fmt.raw.*` resuelve al instante:
+
+```ts
+import { fmt } from "vanuikit";
+
+span(fmt.date(order.createdAt));                   // se reformatea al cambiar el idioma
+span(fmt.currency(item.price, { currency: "EUR" }));
+span(fmt.relative(paidAt));                        // "hace 3 minutos"
+
+toast.info(`Total: ${fmt.raw.currency(total)}`);   // consumo imperativo (handlers)
+
+const miFmt = createFmt(miI18n);                   // instancia aislada (opcional)
+```
+
+`fmt.date/datetime/time/number/currency/percent/relative` aceptan `Date`,
+número o ISO string; fechas inválidas retornan `""` (sin excepciones).
+
 ## CSS
 
 El paquete genera y publica su propia hoja de estilos: `bun run css` escanea
@@ -304,12 +326,16 @@ siguen tu paleta.
 
     bun install        # instala devDeps (vanjs-core, happy-dom, typescript, @unocss/*)
     bun run typecheck  # tsc --noEmit
-    bun test           # bun test (happy-dom: button, field, modal, spin, nav, router, auth)
+    bun test           # suite completa en happy-dom (32 archivos)
     bun run css        # genera dist/vanuikit.css desde las clases de src/
     bun run bundle     # bun build src/index.ts → dist/index.js (vanjs-core externo)
     bun run types      # tsc --project tsconfig.build.json → dist/*.d.ts
     bun run build      # typecheck + css + bundle + types
 
-La demo se gestiona en `../demo/` (su propio `package.json` depende de
-`"vanuikit": "file:../vanuikit"` y de `vanjs-core`, el host de la peer):
-`bun run build`, `bun run demo` → http://localhost:3000.
+La demo se gestiona en `../demo/` (workspace `bun`, depende de
+`"vanuikit": "workspace:*"` y de `vanjs-core`, el host de la peer):
+`bun run dev` (build + server) o `bun run start` → http://localhost:3000.
+
+El sistema de debug de reactividad (`trace`, `expectReactive`,
+`installVanDebug`, vista `/debug` y escaneo `check:van`) está documentado en
+[`DEBUG_REACTIVIDAD.md`](../DEBUG_REACTIVIDAD.md) en la raíz del repo.

@@ -13,12 +13,13 @@ SPA de página única construida con VanJS: un router cliente (`router.ts`) regi
 | `/login`       | `LoginPage`                                 | Inicio de sesión con validación y redirección |
 | `/register`    | `RegisterPage`                              | Registro de usuario con validación tipada |
 | `/components`  | `ComponentsPage`                            | Catálogo interactivo de componentes VanUikit |
+| `/debug`       | `DebugPage`                                 | Grafo de dependencias y diagnósticos de reactividad (solo con `van-debug=1` o `?van-debug`) |
 
 ## Estructura de la Demo
 
 ```text
 demo/
-├── app.ts                 <- Shell global: Header común + Router SPA montado
+├── app.ts                 <- Shell global: Router SPA, auth, i18n y tema compartidos
 ├── main.ts                <- Entry point cliente (monta App() en #app)
 ├── index.html             <- HTML base con contenedor y script bundled
 ├── demo.css               <- Variables de tema y estilos base
@@ -26,11 +27,10 @@ demo/
 │   ├── ***REMOVED***.page.ts   <- Flujo de ***REMOVED***s y ***REMOVED***s
 │   ├── login.page.ts      <- Página de inicio de sesión
 │   ├── register.page.ts   <- Página de creación de cuenta
-│   └── components.page.ts <- Catálogo y sandbox de componentes
+│   ├── components.page.ts <- Catálogo y sandbox de componentes
+│   └── debug.page.ts      <- Grafo de dependencias de van (modo debug)
 ├── components/            <- Componentes específicos de la demo
-│   ├── header.component.ts        <- Barra de navegación superior con estado de auth
 │   ├── ***REMOVED***-list.component.ts <- Cuadrícula de métodos de transaction
-
 │   └── qr-generator.component.ts  <- Renderizado reactivo de código QR
 ├── server/                <- Backend Hono modular
 │   ├── index.ts           <- Servidor HTTP, middleware CORS y archivos estáticos

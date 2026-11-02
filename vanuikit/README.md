@@ -8,61 +8,45 @@ personaliza con variables CSS `--vui-*`.
 ## Estructura
 
     src/
-    ├── index.ts                 <- API pública (re-exporta todo)
-    ├── util.ts                  <- cx()
-    ├── validators.ts            <- Validator y subclases (Required, Email, …)
-    ├── router.ts                <- base de SPA: navegación con params, guards y redirects
-    ├── auth.ts                  <- base de sesión: createAuth + requireAuth
-    ├── fetch.ts                 <- capa de datos reactiva: createQuery + createMutation
-    ├── theme.ts                 <- gestor reactivo de tema: createTheme (light, dark, system)
-    ├── i18n.ts                  <- internacionalización reactiva: createI18n ({ currentLocale, setLocale, t })
-    ├── components/              <- de simple a complejo
-    │   ├── button.ts            <-   Button (variant/size), PrimaryButton, SecondaryButton
-    │   ├── field.ts             <-   Input, Select, Textarea, Label y las fábricas Field, TextField, EmailField, PasswordField
-    │   ├── form.ts              <-   Form (fábrica: itera las validaciones)
-    │   ├── badge.ts             <-   Badge (variantes e indicadores de estado)
-    │   ├── table.ts             <-   Table (tabla declarativa y tipada)
-    │   ├── toast.ts             <-   toast (notificaciones flotantes reactivas)
-    │   ├── modal.ts             <-   ModalBase, ModalTitle, ModalClose, Modal
-    │   ├── nav.ts               <-   Nav (formato completo + aria-current)
-    │   ├── spin.ts              <-   Spin
-    │   └── spin-modal.ts        <-   SpinModal (contenido de modal)
-    └── pages/                   <- páginas y formularios públicos reutilizables
-        ├── login.ts             <-   LoginForm (formulario de inicio de sesión)
-        └── register.ts          <-   RegisterForm (formulario de registro)
-    ├── scripts/uno.js           <- compila las clases de src/ a dist/vanuikit.css
-    └── dist/vanuikit.css           <- hoja de estilos publicada (generada)
+    ├── index.ts                    <- API pública (re-exporta todo)
+    ├── util.ts                     <- cx()
+    ├── validators.ts               <- Validator y subclases (Required, Email, …)
+    ├── router.ts                   <- SPA: params, guards deny-by-default, redirects
+    ├── auth.ts                     <- sesión: createAuth + requireAuth
+    ├── fetch.ts                    <- datos reactivos: createQuery + createMutation
+    ├── theme.ts                    <- tema reactivo: createTheme (light, dark, system)
+    ├── i18n.ts                     <- internacionalización reactiva: t()/raw()/createI18n
+    ├── fmt.ts                      <- formato locale-aware: fmt (fechas, números, moneda)
+    ├── debug.ts / debug-graph.ts   <- trace, expectReactive e instrumentador de reactividad
+    ├── server/                     <- loadRoutes: rutas de backend deny-by-default
+    ├── components/                 <- 40 componentes (de simple a complejo; ver catálogo)
+    └── pages/                      <- pantallas preconstruidas: LoginForm, RegisterForm
+    scripts/uno.js                  <- compila las clases de src/ a dist/vanuikit.css
+    dist/vanuikit.css               <- hoja de estilos publicada (generada)
 
 La demo (que consume este paquete) vive aparte, en `../demo/` — no forma parte
 de la librería.
 
-## Cómo se construye (simple → complejo)
+## Catálogo de componentes
 
-Cada familia va de lo más básico a lo compuesto:
+Cada familia va de lo más básico a lo compuesto. Todos aceptan `State` en sus
+props visuales (mismo contrato reactivo) y `class` extra del consumidor.
 
-1. **`button.ts`** — `Button` unificado con `variant` (`primary`/`secondary`/`destructive`/`ghost`)
-   y `size` (`sm`/`md`/`lg`); `PrimaryButton` y `SecondaryButton` quedan como
-   wrappers de compatibilidad. `Button` usa `type: "button"` por defecto
-   (pasa `type: "submit"` cuando vaya dentro de un `Form`).
-2. **`field.ts`** — los controles (`Input`, `Select`, `Textarea`, `Label`) y
-   encima la fábrica `Field`: una unidad que lleva su label, su control, sus
-   validadores y su error reactivo. Los campos tipados (`TextField`,
-   `EmailField`, `PasswordField`) envuelven a `Field` y pre-registran sus
-   chequeos. Se amplían con `addValidator` (patrón proxy) sin perder los del
-   tipo.
-3. **`validators.ts`** — la interfaz `Validator` y sus fábricas: `Required`,
-   `Email`, `MinLength`, `Match` (compara con otro campo del formulario).
-4. **`form.ts`** — la fábrica `Form` junta los valores, **itera por defecto las
-   verificaciones de sus campos** y solo llama al handler si todas pasan.
-5. **`badge.ts`** — etiquetas semánticas de estado (`default`, `success`, `warning`, `destructive`, `outline`).
-6. **`table.ts`** — componente de tabla declarativo con columnas tipadas, renderizado custom y estado vacío.
-7. **`toast.ts`** — despachador global de notificaciones flotantes auto-cerrables (`toast.success`, `toast.error`, etc.).
-8. **`modal.ts`** — `ModalBase` (overlay + zonas header/body/footer) y encima
-   `Modal`, que ya trae título, botón de cierre y footer con "Cerrar".
-9. **`nav.ts`** — `Nav` trae el formato completo (contenedor centrado, links
-   accent, hover underline, activo en bold con `aria-current`); acepta
-   `class` extra para ajustes del consumidor.
-10. **`spin.ts` / `spin-modal.ts`** — el indicador y su contenido de modal.
+| Familia | Componentes | Propósito |
+|---|---|---|
+| **Botones** | `Button`, `PrimaryButton`, `SecondaryButton` | `variant` (`primary`/`secondary`/`destructive`/`ghost`), `size` (`sm`/`md`/`lg`), `block` (ancho completo opt-in). `type: "button"` por defecto. |
+| **Campos** | `Field`, `TextField`, `EmailField`, `PasswordField`, `TextareaField` | Unidad con label + control + validadores + error reactivo; ampliables con `addValidator`. |
+| **Controles binarios** | `Checkbox`, `Switch`, `RadioGroup` | `checked`/`value` como `State` bidireccional; accesibles (Space, flechas, `role="switch"`/`radiogroup`); integran `Form` (`.dom()`). |
+| **Selección** | `Combobox`, `SelectDropdown`, `DatePicker`, `Wizard` | Combobox WAI-ARIA con filtro y múltiple con chips; select de botón; calendario locale-aware; flujo por pasos. |
+| **Formularios** | `Form` | Itera las validaciones de sus campos y solo llama al handler si todas pasan. |
+| **Estructura** | `AppShell`, `Sidebar`(+`Group`/`Item`), `HeaderBar`, `Card`/`CardTitle` | Dashboard responsivo (drawer en mobile, sidebar colapsable en desktop), superficies base. |
+| **Datos** | `Table`, `DataGrid`, `Pagination` | Tabla declarativa tipada; grid con búsqueda/orden/paginación; paginación numerada standalone. |
+| **Pestañas** | `Tabs`, `Accordion` | Pestañas con teclado (←/→/Home/End) y badges; acordeón single/multiple. |
+| **Navegación** | `Link`, `Nav`, `Breadcrumbs` | Anclas SPA sin ***REMOVED*** (Ctrl/Cmd+click, `target`, externos), menú reactivo con `aria-current`, ruta de migas. |
+| **Feedback** | `Badge`, `Alert`, `Progress`, `Skeleton`, `EmptyState`, `Spin`, `SpinModal`, `toast`, `Kbd` | Estados de estado y carga: etiquetas suaves, avisos persistentes dismissible, barra determinada/indeterminada, placeholders shimmer, estado vacío con acción, snackbar (`toast.success/error/info/warning`), teclas estilizadas. |
+| **Overlay** | `Modal`/`ModalBase`, `ConfirmDialog`/`confirmDialog`, `Tooltip`, `Popover`, `Drawer`, `DropdownMenu` | Modales accesibles con backdrop y focus management; confirmación imperative (`await confirmDialog(...)`); tooltips hover/focus; paneles flotantes con click-outside/Esc; drawers por 4 lados con focus trap; menús de acciones. |
+| **Sesión y preferencias** | `UserBadge`, `ThemeToggle`, `LocaleSelector`, `Avatar` | Tarjeta de usuario con logout, alternador de tema (button/segmented), selector de idioma (select/buttons), avatar con iniciales. |
+| **Base** | `Icon`, `Svg`/`SvgPath` | Íconos SVG estilo Lucide trazo `currentColor` (se tiñen con el tema); primitivas SVG. |
 
 **API pública de `pages/`:** `LoginForm` y `RegisterForm` (formularios/vistas
 reutilizables). El flujo de ***REMOVED*** (`***REMOVED***`, `qr`, `***REMOVED***`)
@@ -292,19 +276,29 @@ importa desde `vanuikit/styles.css`); **no necesita UnoCSS ni ninguna toolchain*
 ## Tema
 
 La librería usa **tokens semánticos** (`bg-primary`, `text-muted`, `border-border`,…)
-en vez de colores hardcodeados. `dist/vanuikit.css` define las variables `--vui-*`
-en `:root`; para re-tematizar, sobreescribe las que quieras en tu propio CSS
+en vez de colores hardcodeados. La paleta por defecto está alineada a Tailwind
+CSS (la referencia de shadcn y los kits modernos): `primary`/`accent` = blue-600
+en light y blue-500 en dark, neutrales = gray, `destructive` = red.
+`dist/vanuikit.css` define las variables `--vui-*` en `:root` (y en
+`:root.dark`); para re-tematizar, sobreescribe las que quieras en tu propio CSS
 (cargado después):
 
     :root {
-      --vui-primary: #0ea5e9;      /* azul en vez de verde */
+      --vui-primary: #0ea5e9;      /* sky en vez del azul por defecto */
       --vui-radius-md: 0.5rem;     /* radios más grandes */
     }
 
 Tokens disponibles: `--vui-primary(-hover/-active/-fg/-shadow)`, `--vui-secondary
-(-hover/-active/-fg)`, `--vui-accent(-hover)`, `--vui-focus`, `--vui-background`,
+(-hover/-active/-fg)`, `--vui-accent(-hover/-fg)`, `--vui-focus`, `--vui-background`,
 `--vui-foreground(-soft)`, `--vui-muted`, `--vui-border`, `--vui-overlay`,
-`--vui-destructive`, `--vui-radius-md/lg/2xl/full` y `--vui-shadow-sm/lg/xl/2xl`.
+`--vui-destructive(-fg)`, `--vui-info(-fg)`, `--vui-success(-fg)`,
+`--vui-warning(-fg)`, `--vui-radius-md/lg/2xl/full` y `--vui-shadow-sm/lg/xl/2xl`.
+
+Los colores de estado (`info`, `success`, `warning`, `destructive`) tienen una
+base (fondos sólidos, dots, tintes al 10%) y una variante `-fg`: el nivel
+legible como texto sobre el tinte en ambos modos (700 en light, 300 en dark).
+`Badge`, `Alert` y `toast` los consumen — al re-tematizar esos componentes
+siguen tu paleta.
 
 ## Comandos (Bun)
 

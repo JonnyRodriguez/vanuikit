@@ -49,4 +49,14 @@ describe("Button", () => {
     const s = mount(SecondaryButton({}, "S"));
     expect(s.className).toContain("bg-secondary");
   });
+
+  test("ancho auto por defecto (sin w-full)", () => {
+    const btn = mount(Button({}, "X"));
+    expect(btn.className).not.toContain("w-full");
+  });
+
+  test("block: true activa w-full (opt-in)", () => {
+    const btn = mount(Button({ block: true }, "X"));
+    expect(btn.className).toContain("w-full");
+  });
 });

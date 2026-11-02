@@ -2,7 +2,7 @@ import van, { type ChildDom } from "vanjs-core";
 import { cx } from "../util.js";
 
 const BASE_CLASSES =
-  "font-semibold w-full rounded-md transition duration-200 ease-in-out cursor-pointer border border-transparent";
+  "font-semibold rounded-md transition duration-200 ease-in-out cursor-pointer border border-transparent";
 
 /** Variantes de color del botón (tokens semánticos del tema). Exportado para reuso (p. ej. Link variante "button"). */
 export const VARIANT_CLASSES = {
@@ -27,6 +27,8 @@ export type ButtonSize = keyof typeof SIZE_CLASSES;
 type ButtonProps = {
   variant?: ButtonVariant;
   size?: ButtonSize;
+  /** Ancho completo (w-full): opt-in, útil en formularios. Default: ancho auto. */
+  block?: boolean;
   class?: string;
   type?: "button" | "submit" | "reset";
   [key: string]: any;
@@ -36,6 +38,7 @@ type ButtonProps = {
  * Botón unificado. `variant` y `size` son opcionales (defaults: primary, md).
  * `type` por defecto es "button" para no provocar submits accidentales:
  * pasa type: "submit" cuando vaya dentro de un Form.
+ * Ancho auto por defecto; `block: true` para w-full (formularios, CTAs de fila).
  */
 export const Button = (
   props: ButtonProps = {},
@@ -46,6 +49,7 @@ export const Button = (
     type = "button",
     variant = "primary",
     size = "md",
+    block = false,
     ...rest
   } = props;
   return van.tags.button(
@@ -54,6 +58,7 @@ export const Button = (
       type,
       class: cx(
         BASE_CLASSES,
+        block && "w-full",
         VARIANT_CLASSES[variant],
         SIZE_CLASSES[size],
         extra,

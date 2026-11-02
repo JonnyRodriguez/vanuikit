@@ -1,7 +1,21 @@
 {
   "name": "vanuikit",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Librería universal de componentes VanJS: botones, campos, formularios, modal, spinner, validación, router y auth como base de SPA",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JonnyRodriguez/vanuikit.git"
+  },
+  "keywords": [
+    "vanjs",
+    "van",
+    "ui",
+    "components",
+    "reactive",
+    "typescript",
+    "frontend"
+  ],
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",

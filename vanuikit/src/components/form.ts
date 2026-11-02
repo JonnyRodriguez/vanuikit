@@ -179,7 +179,7 @@ export const Form = (config: FormConfig): Form => {
     } catch (err) {
       result = {
         ok: false,
-        error: err instanceof Error ? err.message : "Error inesperado",
+        error: err instanceof Error ? err.message : "Unexpected error",
       };
     } finally {
       submitting.val = false;

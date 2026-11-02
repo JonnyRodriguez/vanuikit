@@ -143,7 +143,7 @@ export function createAuth(api: AuthApi, options?: AuthOptions): AuthState {
 
   const register = async (data: Record<string, unknown>) => {
     if (!api.register) {
-      throw new Error("El método register no está implementado en AuthApi");
+      throw new Error("AuthApi does not implement register");
     }
     const res = await api.register(data);
     setSession(res.user, res.token);

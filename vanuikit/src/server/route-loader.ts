@@ -75,7 +75,7 @@ export async function loadRoutes(
   const rootApp = new Hono();
 
   if (!fs.existsSync(routesDir)) {
-    console.warn(`⚠ El directorio de rutas no existe: ${routesDir}`);
+    console.warn(`⚠ Routes directory does not exist: ${routesDir}`);
     return rootApp;
   }
 
@@ -105,7 +105,7 @@ export async function loadRoutes(
         const routeApp = routeModule.default || routeModule.route;
 
         if (!routeApp) {
-          console.warn(`⚠ El archivo de ruta ${entry.name} no exporta un 'default' de Hono.`);
+          console.warn(`⚠ Route file ${entry.name} does not export a Hono 'default'.`);
           continue;
         }
 
@@ -120,7 +120,7 @@ export async function loadRoutes(
           protected: protectedRoute,
         });
       } catch (error) {
-        console.error(`❌ Error al cargar la ruta ${entry.name}:`, error);
+        console.error(`❌ Error loading route ${entry.name}:`, error);
       }
     }
   }

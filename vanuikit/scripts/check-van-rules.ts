@@ -73,7 +73,7 @@ function scanFile(file: string): void {
           violations.push({
             file: rel,
             ...pos(sf, node),
-            msg: "van.derive anidado dentro de otro van.derive (se registra como setter del contenedor).",
+            msg: "van.derive nested inside another van.derive (it registers as the container's setter).",
             snippet: snippet(sf, node),
           });
         }
@@ -86,7 +86,7 @@ function scanFile(file: string): void {
         violations.push({
           file: rel,
           ...pos(sf, node),
-          msg: "van.state() creado dentro de van.derive (se recrea en cada recálculo). Izá el estado fuera del derive.",
+          msg: "van.state() created inside van.derive (it is recreated on every recomputation). Hoist the state out of the derive.",
           snippet: snippet(sf, node),
         });
       }
@@ -116,7 +116,7 @@ function scanFile(file: string): void {
           warnings.push({
             file: rel,
             ...pos(sf, node),
-            msg: `${callee}() dentro de una función pasada como hijo — si el contenedor reacciona, reconstruye el subárbol. Izá el State fuera (o usa renderIntentional si es intencional).`,
+            msg: `${callee}() inside a function passed as a child — if the container reacts, it rebuilds the subtree. Hoist the State out (or use renderIntentional if intentional).`,
             snippet: snippet(sf, node),
           });
           return;
@@ -137,7 +137,7 @@ function scanFunctionA(fn: ts.FunctionLikeDeclaration, depth: number, sf: ts.Sou
           violations.push({
             file: rel,
             ...pos(sf, node),
-            msg: "van.derive anidado dentro de otro van.derive (se registra como setter del contenedor).",
+            msg: "van.derive nested inside another van.derive (it registers as the container's setter).",
             snippet: snippet(sf, node),
           });
         }
@@ -150,7 +150,7 @@ function scanFunctionA(fn: ts.FunctionLikeDeclaration, depth: number, sf: ts.Sou
         violations.push({
           file: rel,
           ...pos(sf, node),
-          msg: "van.state() creado dentro de van.derive (se recrea en cada recálculo). Izá el estado fuera del derive.",
+          msg: "van.state() created inside van.derive (it is recreated on every recomputation). Hoist the state out of the derive.",
           snippet: snippet(sf, node),
         });
       }

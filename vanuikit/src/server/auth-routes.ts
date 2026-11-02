@@ -73,7 +73,7 @@ export function createAuthRoutes<TUser extends BaseUser = BaseUser>(
           201,
         );
       } catch (err: any) {
-        return c.json({ error: err?.message || "Error al procesar el registro" }, 400);
+        return c.json({ error: err?.message || "Error processing registration" }, 400);
       }
     });
   }
@@ -96,7 +96,7 @@ export function createAuthRoutes<TUser extends BaseUser = BaseUser>(
         expiresAt: session.expiresAt.toISOString(),
       });
     } catch (err: any) {
-      return c.json({ error: err?.message || "Error al iniciar sesión" }, 500);
+      return c.json({ error: err?.message || "Error signing in" }, 500);
     }
   });
 
@@ -119,7 +119,7 @@ export function createAuthRoutes<TUser extends BaseUser = BaseUser>(
     }
 
     deleteCookie(c, cookieName, { path: options.cookieOptions?.path ?? "/" });
-    return c.json({ ok: true, message: "Sesión cerrada correctamente" });
+    return c.json({ ok: true, message: "Signed out successfully" });
   });
 
   return router;

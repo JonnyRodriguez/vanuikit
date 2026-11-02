@@ -19,7 +19,7 @@ export function createAuthMiddleware<TUser extends BaseUser = BaseUser>(
 ) {
   const cookieName = options.cookieName ?? "session_token";
   const unauthorizedMessage =
-    options.unauthorizedMessage ?? "No autorizado. Inicia sesión para acceder a este recurso.";
+    options.unauthorizedMessage ?? "Unauthorized. Sign in to access this resource.";
 
   return createMiddleware<{ Variables: HonoAuthVariables<TUser> }>(async (c, next) => {
     const authHeader = c.req.header("Authorization");

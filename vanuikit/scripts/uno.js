@@ -229,6 +229,6 @@ const { css } = await generator.generate(source, { id: "vanuikit", minify: true 
 fs.mkdirSync(path.dirname(OUT), { recursive: true });
 fs.writeFileSync(OUT, css, "utf-8");
 console.log(
-  `vanuikit.css generado (${files.length} archivos escaneados, ${css.length} bytes)`,
+  `vanuikit.css generated (${files.length} files scanned, ${css.length} bytes)`,
 );
 

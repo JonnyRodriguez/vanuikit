@@ -99,7 +99,7 @@ export function createQuery<T>(
       data.val = parsedData;
       return parsedData;
     } catch (err: any) {
-      error.val = err.message || "Error al realizar la petición";
+      error.val = err.message || "Request failed";
       return null;
     } finally {
       loading.val = false;
@@ -185,7 +185,7 @@ export function createMutation<TData = any, TVariables = any>(
       options.onSuccess?.(result, variables);
       return result;
     } catch (err: any) {
-      const msg = err.message || "Error al ejecutar la acción";
+      const msg = err.message || "Action failed";
       error.val = msg;
       options.onError?.(err, variables);
       return null;

@@ -32,7 +32,7 @@ const flush = () => new Promise((r) => setTimeout(r, 10));
 const clickFooter = (node: HTMLElement, index: number) => {
   const btns = [...node.querySelectorAll("button")];
   const btn = btns[index];
-  if (!btn) throw new Error(`button footer @ ${index} no existe`);
+  if (!btn) throw new Error(`footer button @ ${index} does not exist`);
   btn.click();
 };
 

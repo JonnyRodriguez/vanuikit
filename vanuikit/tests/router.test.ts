@@ -39,12 +39,12 @@ describe("Router", () => {
     const router = new Router();
     router
       .add("/login", () => div("login-page"))
-      .setNotFound(() => div("404 - no existe"));
+      .setNotFound(() => div("404 - not found"));
 
     const host = mount(router);
 
-    await router.navigate("/no/existe");
-    expect(host.textContent).toContain("404 - no existe");
+    await router.navigate("/does-not-exist");
+    expect(host.textContent).toContain("404 - not found");
   });
 
   test("a redirect goes straight to the destination", async () => {

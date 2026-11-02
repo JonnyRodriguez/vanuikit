@@ -64,7 +64,7 @@ describe("debug — expectReactive", () => {
       error = e as Error;
     }
     expect(error).toBeTruthy();
-    expect(error!.message).toContain("no reaccionó");
+    expect(error!.message).toContain("did not react");
     expect(error!.message).toContain("keepConnected"); // educational hints
   });
 

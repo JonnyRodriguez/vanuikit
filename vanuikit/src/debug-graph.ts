@@ -138,7 +138,7 @@ function report(kind: ViolationKind, message: string, origin?: string): void {
   diagnostics.push(d);
   if (!silent) {
     console.warn(`[vanuikit:debug] ${kind} — ${message}`);
-    if (d.origin) console.warn(`  en ${d.origin}`);
+    if (d.origin) console.warn(`  at ${d.origin}`);
   }
 }
 
@@ -208,7 +208,7 @@ function installVanDebug(van: VanLike): VanDebugApi {
     if (activeFrame) {
       report(
         "state-in-derive",
-        `van.state() creado dentro de ${activeFrame.kind} "${activeFrame.label}" — el estado se recreará en cada recálculo y perderá su identidad. Izá el estado fuera de la función.`,
+        `van.state() created inside ${activeFrame.kind} "${activeFrame.label}" — the state is recreated on every recomputation and loses its identity. Hoist the state out of the function.`,
       );
     }
     return hookState(origState(initVal), label);
@@ -244,21 +244,21 @@ function installVanDebug(van: VanLike): VanDebugApi {
     if (frame.deps.size === 0) {
       report(
         "derive-no-deps",
-        `derive "${label}" no leyó ningún estado — no es reactivo (¿usa raw()/t().val que no registró deps?).`,
+        `derive "${label}" read no state — it is not reactive (did you use raw()/t().val, which registers no deps?).`,
         frame.origin,
       );
     }
     if (frame.writes.size > 0) {
       report(
         "derive-writes-state",
-        `derive "${label}" escribe estados durante su cómputo (${[...frame.writes].map((w) => w.label).join(", ")}) — feedback reactivo peligroso.`,
+        `derive "${label}" writes states during its computation (${[...frame.writes].map((w) => w.label).join(", ")}) — dangerous reactive feedback.`,
         frame.origin,
       );
       for (const w of frame.writes) {
         if (frame.deps.has(w)) {
           report(
             "derive-cycle",
-            `derive "${label}" lee y escribe el mismo estado "${w.label}" — ciclo de reactividad.`,
+            `derive "${label}" reads and writes the same state "${w.label}" — reactivity cycle.`,
             frame.origin,
           );
         }
@@ -282,13 +282,13 @@ function installVanDebug(van: VanLike): VanDebugApi {
     },
     printTree() {
       const byId = new Map(states.entries());
-      console.group("[vanuikit:debug] árbol de dependencias");
+      console.group("[vanuikit:debug] dependency tree");
       for (const d of derives) {
         const deps = d.deps.length
           ? d.deps.map((id) => byId.get(id)?.label ?? `#${id}`).join(", ")
-          : "(sin deps)";
+          : "(no deps)";
         const writes = d.writes.length
-          ? ` [escribe: ${d.writes.map((id) => byId.get(id)?.label ?? `#${id}`).join(", ")}]`
+          ? ` [writes: ${d.writes.map((id) => byId.get(id)?.label ?? `#${id}`).join(", ")}]`
           : "";
         console.log(`derive ${d.label} → ${deps}${writes}`);
       }
@@ -325,7 +325,7 @@ function installVanDebug(van: VanLike): VanDebugApi {
       if (frame.deps.size > 0) {
         report(
           "container-reactive-reads",
-          `función de render "${frame.label}" leyó estados reactivos (${[...frame.deps].map((m) => m.label).join(", ")}) — reconstruirá su subárbol al cambiar esos estados. Si es intencional, envuelve la función con renderIntentional().`,
+          `render function "${frame.label}" read reactive states (${[...frame.deps].map((m) => m.label).join(", ")}) — it will rebuild its subtree when those states change. If intentional, wrap the function with renderIntentional().`,
           frame.origin,
         );
       }

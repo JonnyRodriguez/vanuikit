@@ -16,19 +16,19 @@ export interface Validator {
   validate(value: string, data?: Record<string, unknown>): string | null;
 }
 
-export const Required = (msg: ValidatorMessage = "Campo requerido"): Validator => ({
+export const Required = (msg: ValidatorMessage = "Required field"): Validator => ({
   validate: (value) => (value.trim() ? null : resolveMsg(msg)),
 });
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export const Email = (msg: ValidatorMessage = "Correo electrónico inválido"): Validator => ({
+export const Email = (msg: ValidatorMessage = "Invalid email address"): Validator => ({
   validate: (value) => (EMAIL_RE.test(value) ? null : resolveMsg(msg)),
 });
 
 export const MinLength = (
   min: number,
-  msg: ValidatorMessage = `Mínimo ${min} caracteres`,
+  msg: ValidatorMessage = `Minimum ${min} characters`,
 ): Validator => ({
   validate: (value) => (value.length >= min ? null : resolveMsg(msg)),
 });
@@ -36,7 +36,7 @@ export const MinLength = (
 /** Compares against another form field (e.g. password confirmation). */
 export const Match = (
   otherName: string,
-  msg: ValidatorMessage = "No coinciden",
+  msg: ValidatorMessage = "Values do not match",
 ): Validator => ({
   validate: (value, data) => (value === data?.[otherName] ? null : resolveMsg(msg)),
 });

@@ -31,12 +31,12 @@ export interface ExpectReactiveOptions {
   tick?: () => Promise<void>;
 }
 
-const VAN_BINDING_HINTS = `Pistas (gotchas de van):
-  1. Un hijo-función que retorna null muere en el primer cambio (keepConnected
-     descarta bindings con _dom null): usa un ancla siempre montada + hidden.
-  2. Los árboles separados del documento pierden sus bindings: móntalo en body.
-  3. t()/fmt./rawText creados DENTRO de un binding no re-suscriben: iza el
-     State fuera de la función.`;
+const VAN_BINDING_HINTS = `Hints (van gotchas):
+  1. A function-child returning null dies on the first change (keepConnected
+     discards bindings with a null _dom): use an always-mounted anchor + hidden.
+  2. Trees detached from the document lose their bindings: mount it on body.
+  3. t()/fmt./rawText created INSIDE a binding do not re-subscribe: hoist the
+     State out of the function.`;
 
 /**
  * Detector of frozen bindings for test suites (runner-agnostic: throws an
@@ -62,12 +62,12 @@ export const expectReactive = async (opts: ExpectReactiveOptions): Promise<void>
 
   if (opts.text !== undefined && after !== opts.text) {
     throw new Error(
-      `expectReactive: texto inesperado.\n  esperado: ${JSON.stringify(opts.text)}\n  recibido: ${JSON.stringify(after)}\n${VAN_BINDING_HINTS}`,
+      `expectReactive: unexpected text.\n  expected: ${JSON.stringify(opts.text)}\n  received: ${JSON.stringify(after)}\n${VAN_BINDING_HINTS}`,
     );
   }
   if (opts.contains !== undefined && !after.includes(opts.contains)) {
     throw new Error(
-      `expectReactive: el árbol no reaccionó (no contiene ${JSON.stringify(opts.contains)}; recibido: ${JSON.stringify(after)}).\n${VAN_BINDING_HINTS}`,
+      `expectReactive: the tree did not react (does not contain ${JSON.stringify(opts.contains)}; received: ${JSON.stringify(after)}).\n${VAN_BINDING_HINTS}`,
     );
   }
 };

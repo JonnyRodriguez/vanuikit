@@ -3,6 +3,11 @@
  * VanUikit — Biblioteca de componentes modulares y reactivos para VanJS.
  */
 import van from "vanjs-core";
+import { guardSingleVan } from "./van-singleton.js";
+
+// Regla de instancia única: si este bundle trae dos copias de vanjs-core,
+// avisa en consola con la solución (ver van-singleton.ts).
+guardSingleVan(van);
 
 export { van };
 

@@ -149,6 +149,7 @@ La pregunta que resuelve todos los casos: **¿qué binding captura esta lectura,
 - Dos copias de `vanjs-core` = dos sistemas de estado que no se hablan: la reactividad se rompe en silencio.
 - Los consumidores la **declaran** en su `package.json` (satisface la peerDep y fija la versión) pero **nunca la importan directo**: toman `van` desde `vanuikit` (`import { van } from "vanuikit"`).
 - El build de la demo verifica el metafile de esbuild (`check-single-vanjs.js`) y **falla** si el bundle contiene más de una copia.
+- **Detección en runtime** (`guardSingleVan`, llamada en `src/index.ts`): si el bundle de un consumidor trae dos copias, la librería lo grita en consola (`[vanuikit] DOS copias…`) con la solución exacta. Al depurar apps que consumen el kit, ese aviso es la primera pista: reescribe los imports a `import { van } from "vanuikit"`.
 
 ---
 

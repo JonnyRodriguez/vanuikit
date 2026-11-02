@@ -15,7 +15,12 @@ versionado SemVer.
 - `Button`: ancho auto por defecto; `block: true` activa `w-full` (antes
   `w-full` fijo, poco estándar para CTAs de fila).
 
-### Added — tokens de estado
+### Added — tokens de estado y guard de instancia única
+
+- Detección en runtime de la regla de instancia única (`guardSingleVan`): si
+  el bundle trae dos copias de `vanjs-core`, la librería avisa en consola con
+  los síntomas y la solución exacta — en vez de romperse en silencio (vía
+  `Symbol.for`, visible para todas las copias del módulo).
 
 - `--vui-info(-fg)`, `--vui-success(-fg)`, `--vui-warning(-fg)` y
   `--vui-destructive-fg` + `--vui-accent-fg`: base (fondos sólidos, dots,

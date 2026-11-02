@@ -152,10 +152,17 @@ provee la única copia — garantizando que no existan dos instancias de VanJS.
 estado que no se hablan (la reactividad se rompe en silencio). El consumidor
 la **declara** en su `package.json` (así fija la versión y satisface el peer)
 pero **nunca la importa directo**: toma `van` desde `vanuikit`
-(`import { van } from "vanuikit"`). El build de la demo lo verifica y falla si
-el bundle contiene más de una copia.
-En demos/monorepos que consumen `vanuikit` por path local (`file:../vanuikit`),
-declara `vanjs-core` también en tu app (es el "host" de la peer).
+(`import { van } from "vanuikit"`). En demos/monorepos que consumen `vanuikit`
+por path local (`file:../vanuikit`), declara `vanjs-core` también en tu app
+(es el "host" de la peer).
+
+> ⚠️ **El error más común** (y el que más tiempo cuesta): seguir los ejemplos
+> de vanjs.org y hacer `import van from "vanjs-core"`. La app "funciona" pero
+> los componentes del kit quedan en otro mundo de estado. Desde 0.2.0 la
+> librería **lo detecta en runtime** y lo grita en consola con la solución —
+> no esperes a depurar una hora: si ves el aviso `[vanuikit] DOS copias…`,
+> cambia los imports. El build de la demo además lo verifica estáticamente
+> (`check-single-vanjs.js`) y falla si el bundle contiene más de una copia.
 
     import { van, Modal, EmailField, PasswordField, Form } from "vanuikit";
 

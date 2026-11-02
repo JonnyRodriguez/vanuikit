@@ -32,30 +32,53 @@ button {
   background-image: none;
   font: inherit;
 }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
 `.trim();
 
-/** Variables del tema por defecto (mismos valores que las clases originales). */
+/** Variables del tema por defecto (mismos valores que las clases originales).
+ *  Paleta alineada a Tailwind CSS (la referencia de shadcn y los kits modernos):
+ *  primary/accent = blue-600 familia (accent acompaña al primario: es el color
+ *  de selección/foco/progreso en Switch, Radio, Wizard, Progress, Nav, fields);
+ *  neutrales = gray; destructive = red-600/500; focus ring = blue-500/400.
+ *  Estados (info/success/warning) = 600 en light / 400 en dark (bases para
+ *  fondos sólidos, dots y tintes al 10%) con sus -fg al nivel legible como
+ *  texto sobre tinte (700 en light / 300 en dark, ≥ 4.5:1). */
 const VUI_THEME = `
 :root{
---vui-primary:#22c55e;
---vui-primary-hover:#16a34a;
---vui-primary-active:#15803d;
+--vui-primary:#2563eb;
+--vui-primary-hover:#1d4ed8;
+--vui-primary-active:#1e40af;
 --vui-primary-fg:#ffffff;
---vui-primary-shadow:rgb(34 197 94 / .5);
---vui-secondary:#d1d5db;
---vui-secondary-hover:#9ca3af;
---vui-secondary-active:#6b7280;
+--vui-primary-shadow:rgb(37 99 235 / .5);
+--vui-secondary:#e5e7eb;
+--vui-secondary-hover:#d1d5db;
+--vui-secondary-active:#9ca3af;
 --vui-secondary-fg:#1f2937;
 --vui-accent:#2563eb;
 --vui-accent-hover:#1d4ed8;
+--vui-accent-fg:#1d4ed8;
 --vui-focus:#3b82f6;
 --vui-background:#ffffff;
 --vui-foreground:#111827;
 --vui-foreground-soft:#374151;
 --vui-muted:#6b7280;
---vui-border:#d1d5db;
+--vui-border:#e5e7eb;
 --vui-overlay:rgb(0 0 0 / .5);
 --vui-destructive:#dc2626;
+--vui-destructive-fg:#b91c1c;
+--vui-info:#2563eb;
+--vui-info-fg:#1d4ed8;
+--vui-success:#16a34a;
+--vui-success-fg:#15803d;
+--vui-warning:#d97706;
+--vui-warning-fg:#b45309;
 --vui-card:#ffffff;
 --vui-radius-md:0.375rem;
 --vui-radius-lg:0.5rem;
@@ -68,25 +91,33 @@ const VUI_THEME = `
 }
 
 :root.dark, [data-theme="dark"]{
---vui-primary:#22c55e;
---vui-primary-hover:#16a34a;
---vui-primary-active:#15803d;
+--vui-primary:#3b82f6;
+--vui-primary-hover:#2563eb;
+--vui-primary-active:#1d4ed8;
 --vui-primary-fg:#ffffff;
---vui-primary-shadow:rgb(34 197 94 / .3);
+--vui-primary-shadow:rgb(59 130 246 / .3);
 --vui-secondary:#374151;
 --vui-secondary-hover:#4b5563;
 --vui-secondary-active:#6b7280;
 --vui-secondary-fg:#f9fafb;
 --vui-accent:#3b82f6;
 --vui-accent-hover:#60a5fa;
+--vui-accent-fg:#93c5fd;
 --vui-focus:#60a5fa;
---vui-background:#1f2937;
+--vui-background:#111827;
 --vui-foreground:#f9fafb;
 --vui-foreground-soft:#e5e7eb;
 --vui-muted:#9ca3af;
 --vui-border:#374151;
 --vui-overlay:rgb(0 0 0 / .75);
 --vui-destructive:#ef4444;
+--vui-destructive-fg:#fca5a5;
+--vui-info:#60a5fa;
+--vui-info-fg:#93c5fd;
+--vui-success:#4ade80;
+--vui-success-fg:#86efac;
+--vui-warning:#fbbf24;
+--vui-warning-fg:#fcd34d;
 --vui-card:color-mix(in srgb, #ffffff 5%, var(--vui-background));
 --vui-shadow-sm:0 1px 2px 0 rgb(0 0 0 / .3);
 --vui-shadow-lg:0 10px 15px -3px rgb(0 0 0 / .5),0 4px 6px -4px rgb(0 0 0 / .5);
@@ -113,7 +144,14 @@ const THEME = {
     "secondary-fg": cm("var(--vui-secondary-fg)"),
     accent: cm("var(--vui-accent)"),
     "accent-hover": cm("var(--vui-accent-hover)"),
+    "accent-fg": cm("var(--vui-accent-fg)"),
     focus: cm("var(--vui-focus)"),
+    info: cm("var(--vui-info)"),
+    "info-fg": cm("var(--vui-info-fg)"),
+    success: cm("var(--vui-success)"),
+    "success-fg": cm("var(--vui-success-fg)"),
+    warning: cm("var(--vui-warning)"),
+    "warning-fg": cm("var(--vui-warning-fg)"),
     background: cm("var(--vui-background)"),
     card: cm("var(--vui-card)"),
     surface: cm("var(--vui-card)"),
@@ -124,6 +162,7 @@ const THEME = {
     border: cm("var(--vui-border)"),
     overlay: cm("var(--vui-overlay)"),
     destructive: cm("var(--vui-destructive)"),
+    "destructive-fg": cm("var(--vui-destructive-fg)"),
   },
   borderRadius: {
     md: "var(--vui-radius-md)",

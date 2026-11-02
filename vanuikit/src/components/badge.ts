@@ -26,13 +26,15 @@ export function Badge(props: BadgeProps) {
   const variant = props.variant ?? "primary";
   const size = props.size ?? "md";
 
+  /** Tokens semánticos del tema (--vui-*): texto con -fg (legible en ambos
+   *  modos, ≥ 4.5:1 sobre el tinte al 10%) y base para fondo/borde/dot. */
   const variantStyles: Record<BadgeVariant, string> = {
-    primary: "bg-blue-500/10 text-blue-400 border border-blue-500/20",
-    secondary: "bg-slate-700/50 text-slate-300 border border-slate-600/30",
-    success: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20",
-    warning: "bg-amber-500/10 text-amber-400 border border-amber-500/20",
-    danger: "bg-rose-500/10 text-rose-400 border border-rose-500/20",
-    outline: "bg-transparent text-slate-300 border border-slate-600",
+    primary: "bg-accent/10 text-accent-fg border border-accent/20",
+    secondary: "bg-secondary/20 text-foreground-soft border border-secondary/30",
+    success: "bg-success/10 text-success-fg border border-success/20",
+    warning: "bg-warning/10 text-warning-fg border border-warning/20",
+    danger: "bg-destructive/10 text-destructive-fg border border-destructive/20",
+    outline: "bg-transparent text-foreground-soft border border-border",
   };
 
   const sizeStyles: Record<BadgeSize, string> = {
@@ -42,12 +44,12 @@ export function Badge(props: BadgeProps) {
   };
 
   const dotColors: Record<BadgeVariant, string> = {
-    primary: "bg-blue-400",
-    secondary: "bg-slate-400",
-    success: "bg-emerald-400",
-    warning: "bg-amber-400",
-    danger: "bg-rose-400",
-    outline: "bg-slate-400",
+    primary: "bg-accent",
+    secondary: "bg-muted",
+    success: "bg-success",
+    warning: "bg-warning",
+    danger: "bg-destructive",
+    outline: "bg-muted",
   };
 
   return span(

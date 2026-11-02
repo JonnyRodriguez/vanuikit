@@ -20,12 +20,13 @@ export interface AlertOptions {
   [key: string]: any;
 }
 
-/** Paleta por variante (mismo esquema que Badge). */
-const VARIANT_STYLES: Record<AlertVariant, { box: string; icon: IconName }> = {
-  info: { box: "bg-blue-500/10 border-blue-500/20", icon: "info" },
-  success: { box: "bg-emerald-500/10 border-emerald-500/20", icon: "check-circle" },
-  warning: { box: "bg-amber-500/10 border-amber-500/20", icon: "alert-triangle" },
-  error: { box: "bg-rose-500/10 border-rose-500/20", icon: "x-circle" },
+/** Paleta por variante (tokens del tema, mismo esquema que Badge):
+ *  caja con tinte al 10% y borde al 20%; ícono con el -fg del estado. */
+const VARIANT_STYLES: Record<AlertVariant, { box: string; fg: string; icon: IconName }> = {
+  info: { box: "bg-info/10 border-info/20", fg: "text-info-fg", icon: "info" },
+  success: { box: "bg-success/10 border-success/20", fg: "text-success-fg", icon: "check-circle" },
+  warning: { box: "bg-warning/10 border-warning/20", fg: "text-warning-fg", icon: "alert-triangle" },
+  error: { box: "bg-destructive/10 border-destructive/20", fg: "text-destructive-fg", icon: "x-circle" },
 };
 
 /**
@@ -51,7 +52,7 @@ export const Alert = (props: AlertOptions = {}, ...children: ChildDom[]) => {
         ),
     },
     props.showIcon !== false
-      ? props.icon ?? Icon({ name: styles.icon, class: "size-4 mt-0.5" })
+      ? props.icon ?? Icon({ name: styles.icon, class: cx("size-4 mt-0.5", styles.fg) })
       : null,
     div(
       { class: "flex-1 space-y-0.5" },

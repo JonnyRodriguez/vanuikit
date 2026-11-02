@@ -20,11 +20,13 @@ export interface ToastOptions {
 
 class ToastManager {
   private items = van.state<ToastItem[]>([]);
-  private containerMounted = false;
+  private containerEl: HTMLElement | null = null;
 
   private ensureContainer() {
-    if (this.containerMounted || typeof document === "undefined") return;
-    this.containerMounted = true;
+    if (typeof document === "undefined") return;
+    // Re-adjunta si algo reemplazó el <body> y el contenedor quedó detached
+    // (suites con happy-dom que hacen replaceChildren, HMR, …).
+    if (this.containerEl?.isConnected) return;
 
     const containerEl = div(
       {
@@ -37,6 +39,7 @@ class ToastManager {
           this.items.val.map((item) => this.renderToast(item)),
         ),
     );
+    this.containerEl = containerEl;
 
     if (document.body) {
       document.body.appendChild(containerEl);
@@ -48,11 +51,13 @@ class ToastManager {
   }
 
   private renderToast(item: ToastItem) {
-    const bgStyles: Record<ToastType, string> = {
-      info: "bg-blue-900/90 border-blue-600/50 text-blue-100",
-      success: "bg-emerald-900/90 border-emerald-600/50 text-emerald-100",
-      warning: "bg-amber-900/90 border-amber-600/50 text-amber-100",
-      error: "bg-rose-900/90 border-rose-600/50 text-rose-100",
+    /** Toast neutro sobre la superficie del tema con ícono en el color del
+     *  estado (patrón sonner/shadcn): legible y re-themable en ambos modos. */
+    const iconColors: Record<ToastType, string> = {
+      info: "text-info-fg",
+      success: "text-success-fg",
+      warning: "text-warning-fg",
+      error: "text-destructive-fg",
     };
 
     const iconNames: Record<ToastType, IconName> = {
@@ -65,27 +70,28 @@ class ToastManager {
     return div(
       {
         id: `toast-${item.id}`,
-        class: `pointer-events-auto flex items-start gap-3 p-3.5 rounded-xl border backdrop-blur shadow-xl transition-all ${bgStyles[item.type]}`,
+        class:
+          "pointer-events-auto flex items-start gap-3 p-3.5 rounded-xl border border-border bg-card text-foreground backdrop-blur shadow-xl transition-all",
       },
       span(
         {
           class:
-            "flex items-center justify-center w-6 h-6 rounded-full bg-white/10 shrink-0 mt-0.5",
+            "flex items-center justify-center w-6 h-6 rounded-full bg-foreground/10 shrink-0 mt-0.5",
         },
-        Icon({ name: iconNames[item.type], class: "size-3.5" }),
+        Icon({ name: iconNames[item.type], class: `size-3.5 ${iconColors[item.type]}` }),
       ),
       div(
         { class: "flex-1 min-w-0" },
         item.title
-          ? div({ class: "font-semibold text-sm leading-tight text-white mb-0.5" }, item.title)
+          ? div({ class: "font-semibold text-sm leading-tight text-foreground mb-0.5" }, item.title)
           : null,
-        div({ class: "text-xs opacity-90 leading-relaxed break-words" }, item.message),
+        div({ class: "text-xs text-foreground-soft leading-relaxed break-words" }, item.message),
       ),
       button(
         {
           type: "button",
           class:
-            "text-white/60 hover:text-white p-1 text-xs rounded transition-colors shrink-0 -mr-1 -mt-1",
+            "text-muted hover:text-foreground p-1 text-xs rounded transition-colors shrink-0 -mr-1 -mt-1",
           onclick: () => this.remove(item.id),
         },
         Icon({ name: "x", class: "size-3.5" }),

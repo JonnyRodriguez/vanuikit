@@ -5,6 +5,7 @@ import { Progress } from "../src/components/progress.js";
 import { Skeleton } from "../src/components/skeleton.js";
 import { EmptyState } from "../src/components/empty-state.js";
 import { Icon } from "../src/components/icon.js";
+import { toast } from "../src/components/toast.js";
 
 const mount = (node: HTMLElement) => {
   document.body.replaceChildren(node);
@@ -20,7 +21,8 @@ describe("Alert", () => {
       Alert({ variant: "success", title: "Guardado" }, "Tus cambios quedaron aplicados.") as HTMLElement,
     );
     expect(el.getAttribute("role")).toBe("alert");
-    expect(el.className).toContain("bg-emerald-500/10");
+    expect(el.className).toContain("bg-success/10");
+    expect(el.className).toContain("border-success/20");
     expect(el.textContent).toContain("Guardado");
     expect(el.textContent).toContain("Tus cambios quedaron aplicados.");
   });
@@ -48,6 +50,44 @@ describe("Alert", () => {
       Alert({ icon: van.tags.span("🚀") }, "Con cohete") as HTMLElement,
     );
     expect(custom.querySelector("span")?.textContent).toBe("🚀");
+  });
+
+  test("cada variante colorea el ícono con el -fg del estado (tokens, sin paleta cruda)", () => {
+    const cases: [Parameters<typeof Alert>[0], string][] = [
+      [{ variant: "info" }, "text-info-fg"],
+      [{ variant: "success" }, "text-success-fg"],
+      [{ variant: "warning" }, "text-warning-fg"],
+      [{ variant: "error" }, "text-destructive-fg"],
+    ];
+    for (const [props, fg] of cases) {
+      const el = mount(Alert({ ...props }, "Mensaje") as HTMLElement);
+      const icon = el.querySelector("svg") as SVGElement;
+      expect(icon.getAttribute("class")).toContain(fg);
+      expect(icon.getAttribute("class")).not.toMatch(/(blue|emerald|rose|amber)-\d/);
+    }
+  });
+});
+
+describe("toast", () => {
+  test("toast neutro sobre bg-card (re-themable, sin fondos de paleta cruda)", async () => {
+    toast.clear();
+    toast.success("Guardado", { durationMs: 0 }); // 0: sin auto-cierre durante el test
+    await tick();
+
+    const el = document.querySelector('[id^="toast-"]') as HTMLElement;
+    expect(el).toBeTruthy();
+    expect(el.className).toContain("bg-card");
+    expect(el.className).toContain("border-border");
+    expect(el.className).not.toMatch(/(blue|emerald|rose|amber)-900/);
+
+    // El ícono lleva el color del estado, el texto tokens del tema.
+    const icon = el.querySelector("svg") as SVGElement;
+    expect(icon.getAttribute("class")).toContain("text-success-fg");
+    expect(el.textContent).toContain("Guardado");
+
+    toast.clear();
+    await tick(); // van remueve los nodos en un microtask
+    expect(document.querySelector('[id^="toast-"]')).toBeNull();
   });
 });
 

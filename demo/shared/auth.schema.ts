@@ -1,6 +1,6 @@
 // demo/shared/auth.schema.ts
 /**
- * Esquemas Zod y tipos compartidos de autenticación (Frontend & Backend).
+ * Shared Zod schemas and authentication types (Frontend & Backend).
  */
 import { z } from "zod";
 

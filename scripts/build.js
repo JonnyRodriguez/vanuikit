@@ -5,19 +5,19 @@ function run(cmd, label, cwd) {
   execSync(cmd, { stdio: "inherit", cwd });
 }
 
-// La raíz es un workspace (vanuikit + demo): node_modules se enlaza con bun/npm
-// install y cada paquete tiene su propio pipeline. Esto solo orquesta el orden.
+// The root is a workspace (vanuikit + demo): node_modules is linked with bun/npm
+// install and each package has its own pipeline. This only orchestrates the order.
 
-// [1/4] Typecheck de la librería
+// [1/4] Library typecheck
 run("npm run typecheck", "[1/4] Typecheck vanuikit...", "vanuikit");
 
-// [2/4] Build de la librería: css + bundles (cliente y server) + tipos .d.ts
+// [2/4] Library build: css + bundles (client and server) + .d.ts types
 run("npm run build", "[2/4] Build vanuikit (css, bundles, tipos)...", "vanuikit");
 
-// [3/4] Typecheck de la demo (resuelve vanuikit desde node_modules, como un consumidor real)
+// [3/4] Demo typecheck (resolves vanuikit from node_modules, like a real consumer)
 run("npm run typecheck", "[3/4] Typecheck demo...", "demo");
 
-// [4/4] Build de la demo: bundle del cliente + estilos
+// [4/4] Demo build: client bundle + styles
 run("npm run build", "[4/4] Build demo (bundle, estilos)...", "demo");
 
 console.log("✅ Build completado exitosamente.");

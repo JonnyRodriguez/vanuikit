@@ -1,12 +1,12 @@
 /**
- * UserRepository — acceso a datos de usuarios (mock en memoria).
+ * UserRepository — user data access (in-memory mock).
  *
- * Patrón store (store/api/src/repositories/user.repository.ts): objeto
- * const con métodos, NO una clase. El controller llama directo a los
- * métodos (UserRepository.findForAuth(...)) sin `new`.
+ * Store pattern (store/api/src/repositories/user.repository.ts): const
+ * object with methods, NOT a class. The controller calls the
+ * methods directly (UserRepository.findForAuth(...)) without `new`.
  *
- * En una aplicación real estos métodos tocarían la BD (SQL/ORM); aquí leen
- * y escriben sobre el arreglo `users` de ../data.
+ * In a real application these methods would hit the DB (SQL/ORM); here they read
+ * and write to the `users` array from ../data.
  */
 import { users, FAIL_EMAIL } from "../data/index.js";
 import type { User, RegisterData } from "../types.js";
@@ -14,17 +14,17 @@ import type { User, RegisterData } from "../types.js";
 const find = (email: string) => users.find((u) => u.email === email) ?? null;
 
 export const UserRepository = {
-  /** Busca por email para login — devuelve el registro completo (incluye password). */
+  /** Finds by email for login — returns the full record (includes password). */
   findForAuth(email: string): (User & { password: string }) | null {
     return find(email);
   },
 
-  /** Busca por email (existe? — para register). */
+  /** Finds by email (exists? — for register). */
   findByEmail(email: string): User | null {
     return find(email);
   },
 
-  /** Crea un usuario (en memoria — en producción iría a la BD). */
+  /** Creates a user (in-memory — in production it would go to the DB). */
   create(data: RegisterData): User {
     const newUser = {
       id: users.length + 1,

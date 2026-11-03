@@ -1,21 +1,21 @@
 /**
- * i18n-fix — codemod asistido que convierte strings de UI detectados por
- * `i18n-scan` en llamadas `t()`/`raw()` inline con llave semántica.
+ * i18n-fix — assisted codemod that converts UI strings detected by
+ * `i18n-scan` into inline `t()`/`raw()` calls with a semantic key.
  *
- * Por cada hallazgo ALTA en demo/**: propone una llave (editable), completa el
- * import de `t`/`raw` desde "vanuikit" y reemplaza el literal por
- * `t("llave", "texto")` (o `raw(...)` en contexto imperativo; los templates
- * interpolados se convierten en parámetros `{ nombre }`). Al terminar ejecuta
- * `i18n:collect` para regenerar es.json; los huecos en/fr los reporta
+ * For each HIGH finding in demo/**: it proposes a key (editable), completes the
+ * import of `t`/`raw` from "vanuikit" and replaces the literal with
+ * `t("key", "text")` (or `raw(...)` in imperative context; interpolated
+ * templates are converted into `{ name }` parameters). When finished it runs
+ * `i18n:collect` to regenerate es.json; the gaps in es/fr are reported by
  * `i18n:check`.
  *
- * Modos:
- *   bun scripts/i18n-fix.ts            → interactivo (confirma llave por llave)
- *   bun scripts/i18n-fix.ts --yes      → acepta todas las propuestas
- *   bun scripts/i18n-fix.ts --dry      → muestra el plan sin escribir
+ * Modes:
+ *   bun scripts/i18n-fix.ts            → interactive (confirms key by key)
+ *   bun scripts/i18n-fix.ts --yes      → accepts all proposals
+ *   bun scripts/i18n-fix.ts --dry      → shows the plan without writing
  *
- * Los archivos de vanuikit/src se excluyen a propósito: sus componentes siguen el
- * patrón de instancia i18n por props y se ajustan a mano.
+ * Files under vanuikit/src are deliberately excluded: their components follow the
+ * per-props i18n instance pattern and are adjusted by hand.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -28,7 +28,7 @@ const DRY = process.argv.includes("--dry");
 
 type Accepted = { finding: Finding; key: string };
 
-/** Llamada del reemplazo: t/raw("llave", "default" [, params]). */
+/** Replacement call: t/raw("key", "default" [, params]). */
 function callText(mode: "t" | "raw", key: string, finding: Finding): string {
   const params = finding.params;
   if (params.length === 0) return `${mode}(${JSON.stringify(key)}, ${JSON.stringify(finding.text)})`;
@@ -55,7 +55,7 @@ function applyToFile(relFile: string, accepted: Accepted[]): void {
     });
   }
 
-  // Import de "vanuikit": completar llaves existentes o crear la declaración.
+  // Import from "vanuikit": complete existing bindings or create the declaration.
   const vanuikitImport = source.statements.find(
     (s): s is ts.ImportDeclaration =>
       ts.isImportDeclaration(s) && s.moduleSpecifier.getText(source).replace(/['"]/g, "") === "vanuikit",
@@ -65,7 +65,7 @@ function applyToFile(relFile: string, accepted: Accepted[]): void {
     const missing = [...needs].filter((n) => !existing.has(n));
     if (missing.length > 0) {
       const bindings = vanuikitImport.importClause.namedBindings;
-      // Insertar tras la primera llave: { t, ...resto } mantiene el orden legible.
+      // Insert after the first binding: { t, ...rest } keeps the order readable.
       const insertAt = bindings.getStart(source) + 1;
       edits.push({ start: insertAt, end: insertAt, text: `${missing.join(", ")},` });
     }
@@ -78,7 +78,7 @@ function applyToFile(relFile: string, accepted: Accepted[]): void {
     edits.push({ start: lastImportEnd, end: lastImportEnd, text: `\nimport { ${names} } from "vanuikit";` });
   }
 
-  // Aplicar de atrás hacia adelante para no invalidar posiciones.
+  // Apply back-to-front so positions aren't invalidated.
   edits.sort((a, b) => b.start - a.start);
   let result = original;
   for (const edit of edits) {
@@ -87,7 +87,7 @@ function applyToFile(relFile: string, accepted: Accepted[]): void {
   fs.writeFileSync(abs, result);
 }
 
-// ── Flujo principal ─────────────────────────────────────────────────────────
+// ── Main flow ──────────────────────────────────────────────────────────────
 const findings = collectFindings().filter((f) => f.confidence === "ALTA" && f.file.startsWith("demo/"));
 
 if (findings.length === 0) {

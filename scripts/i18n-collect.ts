@@ -1,23 +1,23 @@
 /**
- * i18n-collect — extrae los contratos TEXTS ({ key, default }) del código con
- * el compilador de TypeScript y sincroniza los diccionarios JSON de la demo.
+ * i18n-collect — extracts TEXTS contracts ({ key, default }) from code using
+ * the TypeScript compiler and syncs the demo's JSON dictionaries.
  *
- * Los objetos se detectan por su forma (propiedades `key` y `default` con
- * literales de string), sin depender del nombre de la variable ni del archivo.
+ * Objects are detected by their shape (`key` and `default` properties with
+ * string literals), without relying on the variable or file name.
  *
- * Modos:
- *   bun scripts/i18n-collect.ts           → escribe demo/shared/locales/
- *   bun scripts/i18n-collect.ts --check   → CI: no escribe; exit 1 ante conflictos o huecos
- *   bun scripts/i18n-collect.ts --prune   → además elimina llaves obsoletas de es/fr
+ * Modes:
+ *   bun scripts/i18n-collect.ts           → writes demo/shared/locales/
+ *   bun scripts/i18n-collect.ts --check   → CI: does not write; exit 1 on conflicts or gaps
+ *   bun scripts/i18n-collect.ts --prune   → also removes obsolete keys from es/fr
  *
- * Política de diccionarios (desde 0.2.0 los defaults canónicos son INGLÉS):
- *   - en.json se GENERA completo desde los defaults de t()/TEXTS (no editar a
- *     mano: el inglés canónico vive junto al uso en el código).
- *   - es.json / fr.json son editados a mano (traducciones): el script conserva
- *     su contenido, nunca los rellena (las llaves ausentes caen al default en
- *     inglés en runtime); los huecos se reportan y --check falla si existen.
- *   - Las llaves que ya no existen en ningún TEXTS se reportan como obsoletas
- *     y solo se eliminan de es/fr con --prune.
+ * Dictionary policy (since 0.2.0 the canonical defaults are ENGLISH):
+ *   - en.json is fully GENERATED from the t()/TEXTS defaults (don't edit it
+ *     by hand: the canonical English lives next to its use in code).
+ *   - es.json / fr.json are edited by hand (translations): the script preserves
+ *     their content, never fills them in (missing keys fall back to the English
+ *     default at runtime); gaps are reported and --check fails if they exist.
+ *   - Keys that no longer exist in any TEXTS are reported as stale and are only
+ *     removed from es/fr with --prune.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -45,7 +45,7 @@ function* scanSources(): Generator<string> {
   }
 }
 
-/** Objetos con `key` y `default` literales de string, hallados por forma. */
+/** Objects with string-literal `key` and `default`, found by shape. */
 function collectEntries(file: string): Entry[] {
   const source = ts.createSourceFile(
     file,
@@ -66,7 +66,7 @@ function collectEntries(file: string): Entry[] {
       : "";
 
   const visit = (node: ts.Node): void => {
-    // Norma actual: t("llave", "default" [, params]) y raw(...); también i18n.t/i18n.raw.
+    // Current convention: t("key", "default" [, params]) and raw(...); also i18n.t/i18n.raw.
     if (ts.isCallExpression(node)) {
       const callee = calleePath(node.expression);
       if (callee === "t" || callee === "raw" || callee === "i18n.t" || callee === "i18n.raw") {
@@ -76,16 +76,16 @@ function collectEntries(file: string): Entry[] {
           if (ts.isStringLiteral(fallback) || ts.isNoSubstitutionTemplateLiteral(fallback)) {
             add(key.text, fallback.text);
           } else if (ts.isTemplateExpression(fallback)) {
-            // `Mínimo: {min} de {max}` — los placeholders salen de los alias del
-            // objeto de params cuando existen (min: params.monto_min_***REMOVED***),
-            // y si no, del nombre de la expresión.
+            // `Minimum: {min} of {max}` — placeholders come from the aliases of the
+            // params object when they exist (min: params.monto_min_***REMOVED***),
+            // and otherwise from the expression name.
             const aliasByValue = new Map<string, string>();
             const paramsObj = node.arguments[2];
             if (paramsObj && ts.isObjectLiteralExpression(paramsObj)) {
               for (const prop of paramsObj.properties) {
                 if (ts.isPropertyAssignment(prop) && ts.isIdentifier(prop.name)) {
-                  // Whitespace-insensitive: las expresiones multilínea del default
-                  // y del objeto de params pueden formatearse distinto.
+                  // Whitespace-insensitive: multiline expressions in the default
+                  // and in the params object may be formatted differently.
                   const norm = prop.initializer.getText(source).replace(/\s+/g, "");
                   aliasByValue.set(norm, prop.name.text);
                 }
@@ -108,7 +108,7 @@ function collectEntries(file: string): Entry[] {
       }
     }
 
-    // Formato legado (contrato TEXTS): objetos con `key` y `default` literales.
+    // Legacy format (TEXTS contract): objects with `key` and `default` literals.
     if (ts.isObjectLiteralExpression(node)) {
       let key: string | undefined;
       let fallback: string | undefined;
@@ -128,7 +128,7 @@ function collectEntries(file: string): Entry[] {
   return found;
 }
 
-/** Árbol anidado ordenado a partir de llaves punteadas ("a.b.c"). */
+/** Sorted nested tree built from dotted keys ("a.b.c"). */
 function buildTree(entries: Entry[]): Record<string, unknown> {
   const tree: Record<string, any> = {};
   for (const { key, default: fallback } of entries) {
@@ -146,7 +146,7 @@ function buildTree(entries: Entry[]): Record<string, unknown> {
   return sort(tree);
 }
 
-/** Aplana un diccionario anidado a llaves punteadas. */
+/** Flattens a nested dictionary into dotted keys. */
 function flatten(obj: Record<string, unknown>, prefix = ""): string[] {
   return Object.entries(obj).flatMap(([k, v]) => {
     const full = prefix ? `${prefix}.${k}` : k;
@@ -159,7 +159,7 @@ const readJson = (locale: string): Record<string, unknown> => {
   return fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, "utf8")) : {};
 };
 
-// ── 1. Recolección ──────────────────────────────────────────────────────────
+// ── 1. Collection ───────────────────────────────────────────────────────────
 const entries: Entry[] = [];
 for (const file of scanSources()) entries.push(...collectEntries(path.join(ROOT, file)));
 
@@ -176,7 +176,7 @@ for (const entry of entries) {
 
 const allKeys = [...byKey.keys()].sort();
 
-// ── 2. Validación de la librería: claves de vanuikit presentes en es+en ───────
+// ── 2. Library validation: vanuikit keys present in es+en ───────────────────────
 for (const [key, entry] of byKey) {
   if (!entry.file.startsWith("vanuikit/")) continue;
   for (const locale of ["es", "en"]) {
@@ -189,7 +189,7 @@ for (const [key, entry] of byKey) {
   }
 }
 
-// ── 3. Estado de los diccionarios manuales (es/fr) ──────────────────────────
+// ── 3. State of the manual dictionaries (es/fr) ──────────────────────────────
 const handState = new Map<string, { missing: string[]; stale: string[] }>();
 for (const locale of HAND_LOCALES) {
   const dict = readJson(locale);
@@ -199,7 +199,7 @@ for (const locale of HAND_LOCALES) {
   handState.set(locale, { missing, stale });
 }
 
-// ── 4. Reporte ──────────────────────────────────────────────────────────────
+// ── 4. Report ────────────────────────────────────────────────────────────────
 console.log(`TEXTS detectados: ${allKeys.length} llaves en ${new Set(entries.map((e) => e.file)).size} archivos`);
 
 for (const [locale, { missing, stale }] of handState) {
@@ -215,7 +215,7 @@ for (const [locale, { missing, stale }] of handState) {
 
 for (const error of errors) console.error(`ERROR ${error}`);
 
-// ── 5. Escritura ────────────────────────────────────────────────────────────
+// ── 5. Writing ───────────────────────────────────────────────────────────────
 if (!CHECK) {
   fs.mkdirSync(LOCALES_DIR, { recursive: true });
   const enFile = path.join(LOCALES_DIR, "en.json");

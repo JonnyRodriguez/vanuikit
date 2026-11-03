@@ -1,12 +1,12 @@
 /**
- * Verificación de instancia única de VanJS en el bundle de la demo.
+ * Single-instance verification of VanJS in the demo bundle.
  *
- * Dos copias de vanjs-core = dos sistemas de estado que no se hablan: la
- * reactividad se rompe en silencio. El metafile de esbuild dice exactamente
- * cuántos inputs de vanjs-core entraron; si es más de uno, el build falla.
+ * Two copies of vanjs-core = two state systems that don't talk to each other:
+ * reactivity breaks silently. The esbuild metafile says exactly how many
+ * vanjs-core inputs were included; if it's more than one, the build fails.
  *
- * Uso: node scripts/check-single-vanjs.js (requiere --metafile=dist/meta.json
- * en el comando esbuild que lo precede).
+ * Usage: node scripts/check-single-vanjs.js (requires --metafile=dist/meta.json
+ * on the esbuild command that runs before it).
  */
 import fs from "node:fs";
 

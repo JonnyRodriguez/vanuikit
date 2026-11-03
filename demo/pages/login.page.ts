@@ -1,9 +1,9 @@
 // demo/pages/login.page.ts
 /**
- * LoginPage — Vista de inicio de sesión de la SPA.
+ * LoginPage — Sign-in view of the SPA.
  *
- * Utiliza el componente embebido LoginForm y delega la autenticación
- * y persistencia completamente en authState.
+ * Uses the embedded LoginForm component and delegates authentication
+ * and persistence entirely to authState.
  */
 import { van, LoginForm, Link, navigate } from "vanuikit";
 import { authState } from "../app.js";

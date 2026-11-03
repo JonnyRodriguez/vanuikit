@@ -1,8 +1,8 @@
 /**
- * Precomprime los assets de demo/dist en .gz y .br para que el serveStatic
- * de Hono (opción precompressed: true) los sirva según Accept-Encoding.
+ * Precompresses the assets in demo/dist into .gz and .br so that Hono's serveStatic
+ * (precompressed: true option) serves them based on Accept-Encoding.
  *
- * Uso: node scripts/compress.js  (invocado al final de build:client)
+ * Usage: node scripts/compress.js  (invoked at the end of build:client)
  */
 import fs from "node:fs";
 import path from "node:path";

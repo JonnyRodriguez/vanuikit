@@ -1,18 +1,18 @@
-# Guía de Arquitectura, Diseño y Convenciones — VanUikit
+# Architecture, Design, and Conventions Guide — VanUikit
 
-Este documento establece las reglas fundamentales de diseño, arquitectura y convenciones de código para el desarrollo y extensión de **VanUikit** y sus aplicaciones.
+This document establishes the fundamental rules of design, architecture, and code conventions for developing and extending **VanUikit** and its applications.
 
 ---
 
-## 1. Filosofía Central: Focalización y Componentes Embebidos
+## 1. Core Philosophy: Focus and Embedded Components
 
-> **"Un sistema que ayude en la focalización: las cosas que ya conocemos deben estar definidas y embebidas."**
+> **"A system that aids focus: the things we already know must be defined and embedded."**
 
-### Principio de Cero Boilerplate
-1. **Componentes Embebidos de Primer Nivel**: Las piezas comunes de la interfaz (alternadores de tema, selectores de idioma, menús/tarjetas de usuario, diálogos de confirmación, barras de encabezado, tablas de datos, etc.) **deben residir dentro de `vanuikit`** como componentes reutilizables, reactivos y estilizados.
-2. **Prohibido el Boilerplate Ad-Hoc en Páginas o en `app.ts`**:
-   - ❌ **Incorrecto**: Escribir botones manuales con funciones `cycleTheme()`, etiquetas `<select>` nativas sin envolver, o maquetar contenedores de perfil de usuario desde cero en el orquestador de la aplicación.
-   - ✅ **Correcto**: Usar los componentes embebidos de VanUikit:
+### Zero Boilerplate Principle
+1. **First-Class Embedded Components**: Common interface pieces (theme toggles, language selectors, user menus/cards, confirmation dialogs, header bars, data tables, etc.) **must live inside `vanuikit`** as reusable, reactive, styled components.
+2. **Ad-Hoc Boilerplate in Pages or in `app.ts` is Prohibited**:
+   - ❌ **Incorrect**: Writing manual buttons with `cycleTheme()` functions, native unwrapped `<select>` labels, or hand-rolled user profile containers from scratch in the application orchestrator.
+   - ✅ **Correct**: Using VanUikit's embedded components:
      - `ThemeToggle({ theme, variant: "button" | "segmented" })`
      - `LocaleSelector({ i18n, variant: "select" | "buttons" })`
      - `UserBadge({ auth, onLogout })`
@@ -22,13 +22,13 @@ Este documento establece las reglas fundamentales de diseño, arquitectura y con
 
 ---
 
-## 2. Guía de Diseño de Internacionalización (i18n)
+## 2. Internationalization (i18n) Design Guide
 
-### Regla Mandatoria: Cero Strings Quemados (No Hardcoded Strings)
-Todo texto visible para el usuario (etiquetas de botones, títulos de páginas, placeholders de campos, mensajes de error, opciones de navegación) se escribe con las funciones `t()`/`raw()` de vanuikit — **llave semántica + texto por defecto, inline, sin objetos TEXTS**. El idioma canónico de la librería es **inglés**: el default inline se escribe en inglés y el español vive como traducción (diccionarios `es`/`fr` a mano; `en.json` se genera desde los defaults).
+### Mandatory Rule: Zero Hardcoded Strings
+Every user-visible text (button labels, page titles, field placeholders, error messages, navigation options) is written with vanuikit's `t()`/`raw()` functions — **semantic key + default text, inline, without TEXTS objects**. The library's canonical language is **English**: the inline default is written in English and Spanish lives as a translation (hand-maintained `es`/`fr` dictionaries; `en.json` is generated from the defaults).
 
-### Llamada Inline: `t(key, default, params?)`
-La llave es semántica y estable (`sección.propuesta`); el texto por defecto (**en inglés**, es el texto canónico que verán los consumidores sin diccionarios) vive junto al uso, y los parámetros van al final con placeholders `{nombre}`:
+### Inline Call: `t(key, default, params?)`
+The key is semantic and stable (`section.proposal`); the default text (**in English**, is the canonical text that consumers without dictionaries will see) lives next to the usage, and the parameters go at the end with `{name}` placeholders:
 
 ```typescript
 import { t, raw } from "vanuikit";
@@ -39,142 +39,142 @@ toast.info(raw("***REMOVED***.saved", "Changes saved"));
 p(t("***REMOVED***.***REMOVED***With", "Top up with {name}", { name: ***REMOVED***.name }));
 ```
 
-- **`t()` para slots reactivos** (hijos y props de componentes): retorna `State<string>` y el texto muta al cambiar `currentLocale`.
-- **`raw()` SOLO para consumo imperativo** (handlers, toasts, `confirmDialog`): resuelve al instante sin reactividad. **Jamás dentro del render de un contenedor** (una función que se pasa como function-child): `raw()` lee `revision` y `currentLocale`, y esa lectura queda como dependencia del binding contenedor → cada cambio de idioma reconstruye el subárbol COMPLETO. Si el subárbol contiene states con valor nodo (grids, paneles), los bindings internos viejos — anclados a nodos detached — compiten con los nuevos por el nodo vivo y el componente queda vacío o congelado (bug real: DatePicker con calendario vacío tras cambiar de idioma).
-- **Nunca llames `t()` dentro de funciones-hija o props-función de van** (`span(() => t(...).val)`): el derive creado dentro del binding se registra como *setter* del binding contenedor y van **omite suscribir el binding** — el texto queda congelado en el idioma del montaje. Iza el `State` de `t()` fuera de la función.
-- La llave nunca se reescribe: puedes cambiar el default sin romper traducciones. Los diccionarios (`demo/shared/locales/*.json`) son gestionados por el tooling (`i18n:collect` / `i18n:check` / `i18n:scan` / `i18n:fix`).
+- **`t()` for reactive slots** (children and component props): returns `State<string>` and the text mutates when `currentLocale` changes.
+- **`raw()` ONLY for imperative consumption** (handlers, toasts, `confirmDialog`): resolves instantly without reactivity. **Never inside a container's render** (a function passed as a function-child): `raw()` reads `revision` and `currentLocale`, and that read becomes a dependency of the container binding → every locale change rebuilds the ENTIRE subtree. If the subtree contains node-valued states (grids, panels), the old internal bindings — anchored to detached nodes — compete with the new ones for the live node and the component ends up empty or frozen (real bug: DatePicker with an empty calendar after changing language).
+- **Never call `t()` inside van function-children or function-props** (`span(() => t(...).val)`): the derive created inside the binding registers as a *setter* of the container binding and van **omits subscribing the binding** — the text freezes in the mount language. Hoist the `State` from `t()` outside the function.
+- The key is never rewritten: you can change the default without breaking translations. The dictionaries (`demo/shared/locales/*.json`) are managed by the tooling (`i18n:collect` / `i18n:check` / `i18n:scan` / `i18n:fix`).
 
-### Formato locale-aware: `fmt` (fechas, números, moneda)
+### Locale-aware formatting: `fmt` (dates, numbers, currency)
 
-La otra mitad del i18n: mismos dos modos que `t()`/`raw()`, sobre `Intl.*` y atado a
-`currentLocale`. Los formateadores reactivos retornan `State<string>` (crear UNA vez fuera
-de bindings, igual que `t()`); `fmt.raw.*` resuelve al instante.
+The other half of i18n: the same two modes as `t()`/`raw()`, over `Intl.*` and bound to
+`currentLocale`. The reactive formatters return `State<string>` (create them ONCE outside
+bindings, same as `t()`); `fmt.raw.*` resolves instantly.
 
 ```typescript
 import { fmt } from "vanuikit";
 
-span(fmt.date(order.createdAt));              // State, se reformatea al cambiar idioma
+span(fmt.date(order.createdAt));              // State, reformats when the language changes
 span(fmt.currency(item.price, { currency: "EUR" }));
-toast.info(`Total: ${fmt.raw.currency(total)}`); // consumo imperativo
-const miFmt = createFmt(miI18n);              // instancia aislada (opcional)
+toast.info(`Total: ${fmt.raw.currency(total)}`); // imperative consumption
+const miFmt = createFmt(miI18n);              // isolated instance (optional)
 ```
 
-### Consumo y Derivación Reactiva — la regla del contenedor
+### Reactive Consumption and Derivation — the container rule
 
-La pregunta que resuelve todos los casos: **¿qué binding captura esta lectura, y qué reconstruye cuando reaccione?** Un binding de van re-ejecuta su función cuando cambian los estados que leyó; la lectura es barata, la RECONSTRUCCIÓN no siempre.
+The question that solves all cases: **which binding captures this read, and what does it rebuild when it reacts?** A van binding re-executes its function when the states it read change; the read is cheap, the REBUILD is not always.
 
-| Situación | Patrón | Por qué |
+| Situation | Pattern | Why |
 |---|---|---|
-| Texto/locale como **hoja** del árbol | `h1(t("key", "def"))`, `span(fmt.date(x))` | binding de hoja: solo muta el texto |
-| Texto inmediato **fuera del render** | `raw()` en handlers, toasts, `confirmDialog` | sin binding, resuelve al instante |
-| Label **dentro de una función render** (calendario, wizard-step, panel) | iza a derive top-level + consume `() => label.val` | el contenedor queda SIN deps: corre una sola vez |
-| Subárbol desechable que SÍ debe reconstruirse al cambiar X | lee `X.val` directo en el render-fn | rebuild intencional (y sin states con valor nodo adentro) |
+| Text/locale as a **leaf** of the tree | `h1(t("key", "def"))`, `span(fmt.date(x))` | leaf binding: only mutates the text |
+| Immediate text **outside the render** | `raw()` in handlers, toasts, `confirmDialog` | no binding, resolves instantly |
+| Label **inside a render function** (calendar, wizard-step, panel) | hoist to a top-level derive + consume `() => label.val` | the container stays WITHOUT deps: runs only once |
+| Disposable subtree that MUST rebuild when X changes | read `X.val` directly in the render-fn | intentional rebuild (and without node-valued states inside) |
 
-**La regla del contenedor**: una función render pasada como function-child (`() => renderCalendar()`) debe tener **cero lecturas de estado reactivas** — incluido `raw()`, que lee `revision` y `currentLocale`. Si el contenedor reacciona, reconstruye todo el subárbol: los bindings internos viejos quedan anclados a nodos detached, se acumulan en cada cambio y terminan compitiendo por los nodos vivos (van recicla bindings anclados a nodos desconectados en su ciclo de GC de ~1 s — por eso estos bugs son intermitentes y los tests con `flush()` no los reproducen). Ejemplo real y su fix: `DatePicker` (labels como derives top-level).
+**The container rule**: a render function passed as a function-child (`() => renderCalendar()`) must have **zero reactive state reads** — including `raw()`, which reads `revision` and `currentLocale`. If the container reacts, it rebuilds the entire subtree: the old internal bindings stay anchored to detached nodes, accumulate on each change, and end up competing for the live nodes (van recycles bindings anchored to disconnected nodes in its ~1 s GC cycle — that's why these bugs are intermittent and tests using `flush()` don't reproduce them). Real example and its fix: `DatePicker` (labels as top-level derives).
 
-**Nunca guardes nodos DOM en states/derives** (regla de van): si dos bindings consumen el mismo state-con-nodo, ambos hacen `update()` sobre el mismo nodo y "una ocurrencia desaparece".
+**Never store DOM nodes in states/derives** (van rule): if two bindings consume the same node-state, both call `update()` on the same node and "one occurrence disappears".
 
-**Enlace directo en el DOM (Reactivo)** — el caso hoja más común: pasar el `State` devuelto por `t()` como hijo o prop.
+**Direct DOM binding (Reactive)** — the most common leaf case: pass the `State` returned by `t()` as a child or prop.
   ```typescript
   SidebarItem({
     href: "/***REMOVED***",
-    label: t("nav.***REMOVED***", "***REMOVED***s"),
+    label: t("nav.***REMOVED***", "***REMOVED***"),
     icon: "💳",
     current: router.path,
   })
   ```
-**Derive top-level con `raw()` adentro** — seguro: el derive vive fuera de todo binding (nunca es GC'd) y se recalcula al cambiar `currentLocale` o lo que lea.
+**Top-level derive with `raw()` inside** — safe: the derive lives outside any binding (never GC'd) and recalculates when `currentLocale` or anything it reads changes.
   ```typescript
   const getPageTitle = van.derive(() => {
     const p = router.path.val;
     if (p.startsWith("/***REMOVED***")) {
-      return raw("***REMOVED***.title", "Métodos de Transaction y ***REMOVED***");
+      return raw("***REMOVED***.title", "***REMOVED*** Methods and Top-up");
     }
     return "Dashboard";
   });
   ```
-**Tests de regresión i18n**: los switches de idioma deben probarse con esperas reales que crucen el ciclo de GC de van (~1 s) — los `flush()` de microtask nunca lo cruzan y no reproducen estos bugs.
+**i18n regression tests**: language switches must be tested with real waits that cross van's GC cycle (~1 s) — microtask `flush()` never crosses it and doesn't reproduce these bugs.
 
 ---
 
-## 3. Catálogo de Componentes Embebidos en VanUikit
+## 3. Embedded Component Catalog in VanUikit
 
-| Componente | Módulo | Propósito |
+| Component | Module | Purpose |
 |---|---|---|
-| `AppShell` | `vanuikit` | Layout estructural responsive (Sidebar + HeaderBar + Main Content). |
-| `HeaderBar` | `vanuikit` | Barra superior con leading (hamburguesa móvil), título reactivo y zona de acciones. |
-| `Sidebar`, `SidebarGroup`, `SidebarItem` | `vanuikit` | Navegación lateral con soporte para badges, íconos y estados activos. |
-| `Link`, `Nav` | `vanuikit` | Navegación declarativa SPA: anclas sin ***REMOVED*** (`Link`, con variantes) y menú horizontal reactivo (`Nav`) con estado activo por subruta y `aria-current`; ambos respetan Ctrl/Cmd+click, `target` y enlaces externos. |
-| `ThemeToggle` | `vanuikit` | Botón o selector segmentado para alternar Claro / Oscuro / Sistema sincronizado con `<html>`. |
-| `LocaleSelector` | `vanuikit` | Selector o pastillas de idioma con autodetección de diccionarios y banderas. |
-| `UserBadge` | `vanuikit` | Tarjeta de usuario con avatar/iniciales, nombre, email, estado de sesión y botón de cierre. |
-| `DataGrid` / `Table` | `vanuikit` | Tablas de datos con ordenamiento reactivo por columnas, búsqueda y paginación. |
-| `Tabs` | `vanuikit` | Pestañas accesibles con navegación por teclado (←/→/Home/End) y soporte para badges. |
-| `SelectDropdown` / `DropdownMenu` | `vanuikit` | Selectores flotantes accesibles con listbox y menús de acciones contextuales. |
-| `ConfirmDialog` / `confirmDialog` | `vanuikit` | Modal de confirmación imperativo basado en Promises (`async/await`). |
-| `toast` | `vanuikit` | Notificaciones flotantes tipo snackbar con temporizador y tipos (éxito, error, info, advertencia). |
-| `Alert`, `Progress`, `Skeleton`, `EmptyState` | `vanuikit` | Feedback estático y estados de carga: avisos persistentes por variante (dismissible), barra de progreso accesible (determinada/indeterminada, reactiva), placeholders con shimmer y estado vacío con acción. |
-| `Field`, `TextField`, `EmailField`, `PasswordField`, `TextareaField` | `vanuikit` | Campos de formulario reactivos con validaciones en tiempo real y tipado. |
-| `Checkbox`, `Switch`, `RadioGroup` | `vanuikit` | Controles binarios y de elección excluyente, accesibles (Space, flechas, `role="switch"`/`radiogroup`), con `checked`/`value` como `State` bidireccional e integración nativa a `Form` (implementan el contrato `Field`). Usar `.dom()` al insertarlos como hijos. |
-| `Form` | `vanuikit` | Contenedor de formulario con validación automática y prevención de submits inválidos. |
-| `Modal`, `ModalBase`, `SpinModal` | `vanuikit` | Diálogos modales accesibles con backdrop y bloqueo de scroll. |
-| `Tooltip`, `Popover`, `Drawer` | `vanuikit` | Overlay fino sin dependencias: tooltips por hover/focus (off en touch), paneles flotantes con click-outside/Esc y fábrica `content(close)`, drawers por 4 lados con backdrop, focus trap y bloqueo de scroll. |
-| `Combobox` | `vanuikit` | Select con búsqueda estilo WAI-ARIA (input filtra al teclear, ↑/↓/Home/End/Enter/Esc, `aria-activedescendant`), `value` bidireccional e integración a `Form` (`.dom()` como hijo). Con `multiple: true`: chips removibles y `value: State<string[]>` (leer `field.value.val`: `FormData` colapsa repetidos). |
-| `Accordion` | `vanuikit` | Acordeón single/multiple con contenido como fábrica (se reconstruye en cada apertura) y semántica `aria-expanded`/`region`. |
-| `Avatar` | `vanuikit` | Iniciales con fallback automático desde `src` (comparte `getInitials` con UserBadge); 4 tamaños. |
-| `Breadcrumbs` | `vanuikit` | Ruta de navegación con anchors SPA y `aria-current="page"` en el último ítem. |
-| `Card` / `CardTitle` | `vanuikit` | Superficie base sin padding impuesto; `hoverable` para tarjetas clickeables. |
-| `Pagination` | `vanuikit` | Paginación numerada standalone con ellipsis (`pageSlots`), `page` bidireccional y `totalPages` reactivo. |
-| `Kbd` | `vanuikit` | Tecla estilizada semántica (`<kbd>`) para atajos y hints de teclado. |
-| `Spin` | `vanuikit` | Indicador de carga con spinner animado y mensaje opcional. |
-| `Badge` | `vanuikit` | Etiquetas de estado con múltiples variantes de color y tamaño. |
-| `Button`, `PrimaryButton`, `SecondaryButton` | `vanuikit` | Botones accesibles con soporte para tamaños, variantes y estados de carga. |
+| `AppShell` | `vanuikit` | Responsive structural layout (Sidebar + HeaderBar + Main Content). |
+| `HeaderBar` | `vanuikit` | Top bar with leading (mobile hamburger), reactive title, and actions zone. |
+| `Sidebar`, `SidebarGroup`, `SidebarItem` | `vanuikit` | Side navigation with support for badges, icons, and active states. |
+| `Link`, `Nav` | `vanuikit` | Declarative SPA navigation: reload-free anchors (`Link`, with variants) and a reactive horizontal menu (`Nav`) with active state per sub-route and `aria-current`; both respect Ctrl/Cmd+click, `target`, and external links. |
+| `ThemeToggle` | `vanuikit` | Button or segmented selector to toggle Light / Dark / System, synchronized with `<html>`. |
+| `LocaleSelector` | `vanuikit` | Language selector or pills with automatic dictionary detection and flags. |
+| `UserBadge` | `vanuikit` | User card with avatar/initials, name, email, session state, and sign-out button. |
+| `DataGrid` / `Table` | `vanuikit` | Data tables with reactive column sorting, search, and pagination. |
+| `Tabs` | `vanuikit` | Accessible tabs with keyboard navigation (←/→/Home/End) and badge support. |
+| `SelectDropdown` / `DropdownMenu` | `vanuikit` | Accessible floating selectors with listbox and contextual action menus. |
+| `ConfirmDialog` / `confirmDialog` | `vanuikit` | Imperative confirmation modal based on Promises (`async/await`). |
+| `toast` | `vanuikit` | Floating snackbar-style notifications with timer and types (success, error, info, warning). |
+| `Alert`, `Progress`, `Skeleton`, `EmptyState` | `vanuikit` | Static feedback and loading states: persistent notices per variant (dismissible), accessible progress bar (determinate/indeterminate, reactive), shimmer placeholders, and empty state with action. |
+| `Field`, `TextField`, `EmailField`, `PasswordField`, `TextareaField` | `vanuikit` | Reactive form fields with real-time validation and typing. |
+| `Checkbox`, `Switch`, `RadioGroup` | `vanuikit` | Accessible binary and mutually exclusive choice controls (Space, arrows, `role="switch"`/`radiogroup`), with `checked`/`value` as bidirectional `State` and native `Form` integration (they implement the `Field` contract). Use `.dom()` when inserting them as children. |
+| `Form` | `vanuikit` | Form container with automatic validation and prevention of invalid submits. |
+| `Modal`, `ModalBase`, `SpinModal` | `vanuikit` | Accessible modal dialogs with backdrop and scroll lock. |
+| `Tooltip`, `Popover`, `Drawer` | `vanuikit` | Fine overlay without dependencies: tooltips by hover/focus (off on touch), floating panels with click-outside/Esc and the `content(close)` factory, drawers on all 4 sides with backdrop, focus trap, and scroll lock. |
+| `Combobox` | `vanuikit` | Searchable WAI-ARIA-style select (input filters as you type, ↑/↓/Home/End/Enter/Esc, `aria-activedescendant`), bidirectional `value`, and `Form` integration (`.dom()` as child). With `multiple: true`: removable chips and `value: State<string[]>` (read `field.value.val`: `FormData` collapses duplicates). |
+| `Accordion` | `vanuikit` | Single/multiple accordion with content as a factory (rebuilds on each opening) and `aria-expanded`/`region` semantics. |
+| `Avatar` | `vanuikit` | Initials with automatic fallback from `src` (shares `getInitials` with UserBadge); 4 sizes. |
+| `Breadcrumbs` | `vanuikit` | Navigation path with SPA anchors and `aria-current="page"` on the last item. |
+| `Card` / `CardTitle` | `vanuikit` | Base surface without imposed padding; `hoverable` for clickable cards. |
+| `Pagination` | `vanuikit` | Standalone numbered pagination with ellipsis (`pageSlots`), bidirectional `page`, and reactive `totalPages`. |
+| `Kbd` | `vanuikit` | Styled semantic key (`<kbd>`) for shortcuts and keyboard hints. |
+| `Spin` | `vanuikit` | Loading indicator with animated spinner and optional message. |
+| `Badge` | `vanuikit` | Status labels with multiple color and size variants. |
+| `Button`, `PrimaryButton`, `SecondaryButton` | `vanuikit` | Accessible buttons with support for sizes, variants, and loading states. |
 
 ---
 
-## 4. Gestión de Estado y Sesión (`createAuth`)
+## 4. State and Session Management (`createAuth`)
 
-1. **Guardia Asíncrono (`requireAuth`)**:
-   - `requireAuth(auth, redirectUrl)` espera automáticamente a que `auth.boot()` termine si el estado inicial está en proceso de verificación (`idle` o `checking`), evitando redirecciones falsas al ***REMOVED***r la página o acceder por URL directa.
-2. **Doble Persistencia de Token**:
-   - Guardar el token de sesión en `localStorage` además de cookies (`credentials: "include"`) y enviarlo en el encabezado `Authorization: Bearer <token>` para garantizar compatibilidad total en iframes y entornos aislados.
-3. **Deny-by-Default (rutas protegidas por defecto)**:
-   - Cliente: `createRouter({ guard: requireAuth(auth, "/login"), publicRoutes: ["/login", ...] })`. Toda ruta nueva queda protegida sin escribir nada; **solo se declara lo público** (exacto, `"/docs/*"` o RegExp).
-   - Server: `loadRoutes(dir, { auth: requireAuth() })` protege cada `*.route.ts` salvo los que exporten `export const meta = { public: true };` (co-locada junto al sub-app).
-   - Prohibido proteger a mano rutas que ya cubre la política por defecto; el refinamiento interno (p. ej. un endpoint sensible dentro de un archivo público) sí usa `requireAuth()` puntual.
-
----
-
-## 5. Instancia Única de VanJS
-- Dos copias de `vanjs-core` = dos sistemas de estado que no se hablan: la reactividad se rompe en silencio.
-- Los consumidores la **declaran** en su `package.json` (satisface la peerDep y fija la versión) pero **nunca la importan directo**: toman `van` desde `vanuikit` (`import { van } from "vanuikit"`).
-- El build de la demo verifica el metafile de esbuild (`check-single-vanjs.js`) y **falla** si el bundle contiene más de una copia.
-- **Detección en runtime** (`guardSingleVan`, llamada en `src/index.ts`): si el bundle de un consumidor trae dos copias, la librería lo grita en consola (`[vanuikit] TWO copies…`, en inglés: consumidores npm) con la solución exacta. Al depurar apps que consumen el kit, ese aviso es la primera pista: reescribe los imports a `import { van } from "vanuikit"`.
+1. **Async Guard (`requireAuth`)**:
+   - `requireAuth(auth, redirectUrl)` automatically waits for `auth.boot()` to finish if the initial state is being verified (`idle` or `checking`), avoiding false redirects when reloading the page or accessing via a direct URL.
+2. **Dual Token Persistence**:
+   - Store the session token in `localStorage` in addition to cookies (`credentials: "include"`) and send it in the `Authorization: Bearer <token>` header to guarantee full compatibility in iframes and sandboxed environments.
+3. **Deny-by-Default (routes protected by default)**:
+   - Client: `createRouter({ guard: requireAuth(auth, "/login"), publicRoutes: ["/login", ...] })`. Every new route is protected without writing anything; **only the public ones are declared** (exact, `"/docs/*"`, or RegExp).
+   - Server: `loadRoutes(dir, { auth: requireAuth() })` protects every `*.route.ts` except those exporting `export const meta = { public: true };` (co-located next to the sub-app).
+   - Manually protecting routes already covered by the default policy is prohibited; internal refinement (e.g., a sensitive endpoint inside a public file) does use a targeted `requireAuth()`.
 
 ---
 
-### Depuración: `trace`, `expectReactive`, `installVanDebug` y `check:van`
+## 5. Single VanJS Instance
+- Two copies of `vanjs-core` = two state systems that don't talk to each other: reactivity breaks silently.
+- Consumers **declare** it in their `package.json` (satisfies the peerDep and pins the version) but **never import it directly**: they take `van` from `vanuikit` (`import { van } from "vanuikit"`).
+- The demo build verifies the esbuild metafile (`check-single-vanjs.js`) and **fails** if the bundle contains more than one copy.
+- **Runtime detection** (`guardSingleVan`, called in `src/index.ts`): if a consumer's bundle brings two copies, the library calls it out in the console (`[vanuikit] TWO copies…`, in English: npm consumers) with the exact fix. When debugging apps that consume the kit, that notice is the first clue: rewrite the imports to `import { van } from "vanuikit"`.
 
-- `trace(state, "nombre")` — loguea cada cambio del State y lo devuelve para encadenar
-  (solo desarrollo: agrega un listener permanente, no llamar dentro de bindings).
-- `await expectReactive({ render, act, contains })` — detector de bindings congelados para
-  suites: renderiza, muta, espera el microtask de van y lanza Error con pistas de los gotchas
-  (hijos-función null, árboles separados, `t()` dentro de bindings). Agnóstico del runner.
-- `installVanDebug(van)` — instrumentador dev-only (vanuikit/src/debug-graph.ts) que construye
-  el **árbol de dependencias** real (derive → estados) y detecta en el momento de la violación
-  las reglas silenciosas: `van.state()` dentro de `van.derive` (R1), derive que escribe estados
-  durante su cómputo (R2, y ciclos), derive sin lecturas (R3) y contenedores reactivos vía
-  `trackRender` (R4; suprime con `renderIntentional`). Se activa en la demo con localStorage
-  `van-debug=1` o `?van-debug`; no entra al bundle de producción.
-- `bun run check:van` (en vanuikit) — escaneo estático en CI: falla (exit 1) si hay `van.state`/
-  `van.derive` dentro de `van.derive` (versión lexical de R1) y reporta advertencias de
-  `t()`/`raw()`/`fmt.*()` dentro de funciones pasadas como hijos (R4, revisar manualmente).
-- Vista visual del grafo: en la demo, `/debug` (pública, solo visible en modo debug) renderiza
-  el grafo de dependencias como SVG (derives → estados, escrituras en rojo discontinuo) y la
-  lista de diagnósticos con su origen. La api queda expuesta en `window.__vanDebug`.
-- Documentación completa del sistema de debug (reglas, uso, vista y escaneo):
-  ver `DEBUG_REACTIVIDAD.md` en la raíz del repo.
+---
 
-## 6. Pruebas y Calidad de Código
-- Todo componente nuevo debe contar con tests unitarios en `vanuikit/tests/` ejecutables con `bun test`.
-- Mantener la suite de tests 100% en verde antes de dar por finalizada cualquier tarea.
+### Debugging: `trace`, `expectReactive`, `installVanDebug` and `check:van`
+
+- `trace(state, "name")` — logs every change of the State and returns it for chaining
+  (development only: adds a permanent listener, don't call inside bindings).
+- `await expectReactive({ render, act, contains })` — frozen-binding detector for
+  suites: renders, mutates, waits for van's microtask and throws an Error with hints about the gotchas
+  (null function-children, separate trees, `t()` inside bindings). Agnostic to the runner.
+- `installVanDebug(van)` — dev-only instrumenter (vanuikit/src/debug-graph.ts) that builds
+  the real **dependency tree** (derive → states) and detects at the moment of the violation
+  the silent rules: `van.state()` inside `van.derive` (R1), derives that write states
+  during their computation (R2, and cycles), derives without reads (R3) and reactive containers via
+  `trackRender` (R4; suppress with `renderIntentional`). Enabled in the demo with localStorage
+  `van-debug=1` or `?van-debug`; it doesn't enter the production bundle.
+- `bun run check:van` (in vanuikit) — static scan in CI: fails (exit 1) if there is `van.state`/
+  `van.derive` inside `van.derive` (lexical version of R1) and reports warnings about
+  `t()`/`raw()`/`fmt.*()` inside functions passed as children (R4, review manually).
+- Visual graph view: in the demo, `/debug` (public, only visible in debug mode) renders
+  the dependency graph as SVG (derives → states, writes in dashed red) and the
+  list of diagnostics with their source. The api is exposed on `window.__vanDebug`.
+- Full documentation of the debug system (rules, usage, view, and scan):
+  see `DEBUG_REACTIVIDAD.md` at the repo root.
+
+## 6. Testing and Code Quality
+- Every new component must have unit tests in `vanuikit/tests/` runnable with `bun test`.
+- Keep the test suite 100% green before considering any task complete.

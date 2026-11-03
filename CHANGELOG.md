@@ -1,7 +1,7 @@
 # Changelog
 
-Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/);
-versionado SemVer.
+Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
+SemVer versioning.
 
 ## [0.2.0] — 2026-11-02
 
@@ -16,51 +16,50 @@ versionado SemVer.
 
 ### Changed — Tailwind-aligned palette
 
-- `--vui-primary`/`--vui-accent`: verde → familia azul (blue-600 light /
-  blue-500 dark), la referencia de shadcn y los kits modernos. Jerarquía
-  hover/active estándar (600→700→800 / 500→600→700).
+- `--vui-primary`/`--vui-accent`: green → blue family (blue-600 light /
+  blue-500 dark), the shadcn reference and modern kits. Standard hover/active
+  hierarchy (600→700→800 / 500→600→700).
 - `--vui-border` light: gray-300 → gray-200; `--vui-background` dark:
   gray-800 → gray-900; `--vui-secondary` light: gray-300 → gray-200.
-- `Button`: ancho auto por defecto; `block: true` activa `w-full` (antes
-  `w-full` fijo, poco estándar para CTAs de fila).
+- `Button`: auto width by default; `block: true` enables `w-full` (previously
+  fixed `w-full`, non-standard for inline-row CTAs).
 
-### Added — tokens de estado y guard de instancia única
+### Added — state tokens and single-instance guard
 
-- Detección en runtime de la regla de instancia única (`guardSingleVan`): si
-  el bundle trae dos copias de `vanjs-core`, la librería avisa en consola con
-  los síntomas y la solución exacta — en vez de romperse en silencio (vía
-  `Symbol.for`, visible para todas las copias del módulo).
+- Runtime detection of the single-instance rule (`guardSingleVan`): if the
+  bundle carries two copies of `vanjs-core`, the library warns on the console
+  with the symptoms and the exact solution — instead of breaking silently (via
+  `Symbol.for`, visible to all copies of the module).
 
-- `--vui-info(-fg)`, `--vui-success(-fg)`, `--vui-warning(-fg)` y
-  `--vui-destructive-fg` + `--vui-accent-fg`: base (fondos sólidos, dots,
-  tintes al 10%) y variante `-fg` legible como texto sobre tinte en ambos
-  modos (700 en light / 300 en dark, ≥ 4.5:1).
-- `Badge`, `Alert` y `toast` migrados a tokens semánticos (antes usaban
-  clases de paleta cruda `emerald/amber/rose/slate`, ilegibles en modo claro
-  y ajenos al re-theming). `Badge` danger ahora coincide con el botón
-  destructivo (red, no rose); `toast` adopta el patrón estándar (superficie
-  neutra + ícono del color del estado, estilo sonner/shadcn).
-- `prefers-reduced-motion: reduce` en el reset: animaciones y transiciones
-  se desactivan para quien las pide.
+- `--vui-info(-fg)`, `--vui-success(-fg)`, `--vui-warning(-fg)` and
+  `--vui-destructive-fg` + `--vui-accent-fg`: base (solid backgrounds, dots,
+  10% tints) and a `-fg` variant legible as text on tint in both modes
+  (700 in light / 300 in dark, ≥ 4.5:1).
+- `Badge`, `Alert` and `toast` migrated to semantic tokens (previously used raw
+  palette classes `emerald/amber/rose/slate`, unreadable in light mode and
+  alien to re-theming). `Badge` danger now matches the destructive button
+  (red, not rose); `toast` adopts the standard pattern (neutral surface +
+  state-colored icon, sonner/shadcn style).
+- `prefers-reduced-motion: reduce` in the reset: animations and transitions
+  are disabled for those who request it.
 
 ### Fixed
 
-- `toast`: el contenedor se re-adjunta al `<body>` si algo lo reemplazó
-  (suites con happy-dom, HMR) en vez de perderse para siempre.
-- Demo: el build copia `vanuikit.css` del paquete (ya lo hacía el `uno.js` vía
-  `vanuikit/styles.css`); el artefacto viejo en `demo/dist/` seguía sirviendo
-  la paleta anterior hasta re-construir.
+- `toast`: the container is re-attached to `<body>` if something replaced it
+  (happy-dom suites, HMR) instead of being lost forever.
+- Demo: the build copies `vanuikit.css` from the package (as `uno.js` already
+  did via `vanuikit/styles.css`); the old artifact in `demo/dist/` kept serving
+  the previous palette until rebuild.
 
 ### Misc
 
-- Metadata del paquete: `license`, `repository`, `keywords` (npm).
+- Package metadata: `license`, `repository`, `keywords` (npm).
 
 ## [0.1.0] — 2026-10-15
 
-- Primer release del app kit: 40 componentes accesibles (botones, campos con
-  validación, formularios, controles binarios, combobox, datepicker, wizard,
-  tablas, tabs, overlay fino, feedback, AppShell/Sidebar), router SPA con
-  guards deny-by-default, `createAuth`, `createQuery`/`createMutation`,
-  tema claro/oscuro/sistema, i18n reactivo (`t()`/`raw()`) y `fmt`
-  locale-aware, instrumentación de reactividad (`trace`, `expectReactive`,
-  `installVanDebug`).
+- First release of the app kit: 40 accessible components (buttons, validated
+  fields, forms, binary controls, combobox, datepicker, wizard, tables, tabs,
+  fine overlay, feedback, AppShell/Sidebar), SPA router with deny-by-default
+  guards, `createAuth`, `createQuery`/`createMutation`, light/dark/system
+  theme, reactive i18n (`t()`/`raw()`) and locale-aware `fmt`, reactivity
+  instrumentation (`trace`, `expectReactive`, `installVanDebug`).

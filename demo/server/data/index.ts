@@ -1,14 +1,14 @@
 /**
- * Datos de ejemplo para la demo — equivalente a los fixtures/seeders de PHP.
+ * Example data for the demo — equivalent to PHP fixtures/seeders.
  *
- * En una aplicación real estos datos vendrían de una base de datos. Aquí
- * se mantienen en memoria para que el demo funcione sin backend externo.
+ * In a real app this data would come from a database. Here
+ * it is kept in memory so the demo works without an external backend.
  *
- * La estructura (***REMOVED*** con img + url opcional, params con montos) proviene
- * del ejemplo original en demo.js y old/base.js.
+ * The structure (***REMOVED*** with img + optional url, params with amounts) comes
+ * from the original example in demo.js and old/base.js.
  */
 
-/** ***REMOVED***s de transaction disponibles. `url` = transaction externo (redirección). */
+/** Available ***REMOVED*** ***REMOVED***. `url` = external ***REMOVED*** (redirect). */
 export const ***REMOVED*** = [
   {
     id: "PROVIDER-A",
@@ -25,7 +25,7 @@ export const ***REMOVED*** = [
   },
 ];
 
-/** Parámetros de la ***REMOVED*** (límites, tipo de moneda, center_id). */
+/** ***REMOVED*** parameters (limits, currency type, center_id). */
 export const ***REMOVED***Params = {
   id: 1,
   tipo: "USD",
@@ -40,8 +40,8 @@ export const ***REMOVED***Params = {
 };
 
 /**
- * Usuarios registrados (en memoria). La contraseña se almacena en texto
- * plano SOLO para el demo — nunca en producción.
+ * Registered users (in-memory). The password is stored in plain
+ * text ONLY for the demo — never in production.
  */
 export const users = [
   {
@@ -53,7 +53,7 @@ export const users = [
 ];
 
 /**
- * Email que siempre falla — reproduce el comportamiento del mock original
- * (demo.js / login.js / register.js) donde fail@example.com devolvía error.
+ * Email that always fails — reproduces the original mock behavior
+ * (demo.js / login.js / register.js) where fail@example.com returned an error.
  */
 export const FAIL_EMAIL = "fail@example.com";

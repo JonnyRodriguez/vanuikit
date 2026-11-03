@@ -1,15 +1,15 @@
 // demo/pages/debug.page.ts
 /**
- * DebugPage — vista visual del árbol de dependencias reactivas (modo debug).
+ * DebugPage — visual view of the reactive dependency tree (debug mode).
  *
- * Solo está disponible cuando el modo debug está activo (localStorage
- * "van-debug"=1 o ?van-debug en la URL). Renderiza:
- *   · el grafo de dependencias: derives (columna izquierda) → estados
- *     (columna derecha); flechas sólidas = lee, discontinuas rojas = escribe,
- *   · los diagnósticos acumulados de `installVanDebug` con su origen.
+ * Only available when debug mode is active (localStorage
+ * "van-debug"=1 or ?van-debug in the URL). Renders:
+ *   · the dependency graph: derives (left column) → states
+ *     (right column); solid arrows = reads, dashed red = writes,
+ *   · the diagnostics accumulated by `installVanDebug` with their origin.
  *
- * El SVG se genera como string (innerHTML) para respetar el namespace SVG,
- * que los tags de van no garantizan.
+ * The SVG is generated as a string (innerHTML) to respect the SVG namespace,
+ * which van tags do not guarantee.
  */
 import { van } from "vanuikit";
 import type { VanDebugApi, VanDebugDiagnostic, VanDebugGraph } from "vanuikit";
@@ -57,7 +57,7 @@ function buildGraphSvg(g: VanDebugGraph): string {
   const stateIndex = new Map<number, number>();
   g.states.forEach((s, i) => stateIndex.set(s.id, i));
 
-  // Edges detrás de los nodos.
+  // Edges behind the nodes.
   g.derives.forEach((d, i) => {
     for (const depId of d.deps) {
       const j = stateIndex.get(depId);

@@ -1,9 +1,9 @@
 // demo/pages/register.page.ts
 /**
- * RegisterPage — Vista de registro de usuario de la SPA.
+ * RegisterPage — User registration view of the SPA.
  *
- * Utiliza el componente embebido RegisterForm y delega la creación de cuenta
- * y persistencia completamente en authState.
+ * Uses the embedded RegisterForm component and delegates account creation
+ * and persistence entirely to authState.
  */
 import { van, RegisterForm, Link, navigate } from "vanuikit";
 import { authState } from "../app.js";

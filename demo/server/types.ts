@@ -1,22 +1,22 @@
 /**
- * Tipos compartidos entre controladores, repositorios y datos.
+ * Types shared between controllers, repositories and data.
  *
- * Mantener los contratos explícitos (interface/type) es un patrón PHP
- * (DTO — Data Transfer Object) que permite a los controladores validar
- * y a los repositorios trabajar con tipos conocidos en lugar de `unknown`.
+ * Keeping contracts explicit (interface/type) is a PHP pattern
+ * (DTO — Data Transfer Object) that allows controllers to validate
+ * and repositories to work with known types instead of `unknown`.
  */
 
-/** Una ***REMOVED*** de transaction. */
+/** A ***REMOVED*** ***REMOVED***. */
 export interface ***REMOVED*** {
   id: string;
   name: string;
   img: string;
   currency?: string;
-  /** Si existe, al seleccionarla el frontend redirige a esta URL (transaction externo). */
+  /** If present, when selected the frontend redirects to this URL (external ***REMOVED***). */
   url?: string;
 }
 
-/** Parámetros de ***REMOVED*** enviados al frontend para el formulario. */
+/** ***REMOVED*** parameters sent to the frontend for the form. */
 export interface ***REMOVED***Params {
   id: number;
   tipo: string;
@@ -25,14 +25,14 @@ export interface ***REMOVED***Params {
   [key: string]: unknown;
 }
 
-/** Usuario (sin password). */
+/** User (without password). */
 export interface User {
   id: number;
   name: string;
   email: string;
 }
 
-/** Datos de registro. */
+/** Registration data. */
 export interface RegisterData {
   name: string;
   email: string;

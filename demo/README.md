@@ -1,76 +1,75 @@
 # VanUikit Demo
 
-Demo de la librería **vanuikit**, consumida como paquete real (`"vanuikit": "file:../vanuikit"` en `package.json`).
+Demo of the **vanuikit** library, consumed as a real package (`"vanuikit": "file:../vanuikit"` in `package.json`).
 
-SPA de página única construida con VanJS: un router cliente (`router.ts`) registra rutas declarativas (`router.add(path, () => Component)`). `App` (`app.ts`) es el shell principal con cabecera y navegación compartida (`Header`), y monta reactivamente la página resuelta por el router.
+Single-page application (SPA) built with VanJS: a client router (`router.ts`) registers declarative routes (`router.add(path, () => Component)`). `App` (`app.ts`) is the main shell with a shared header and navigation (`Header`), and reactively mounts the page resolved by the router.
 
-## Rutas
+## Routes
 
-| Ruta           | Vista / Página                              | Descripción |
+| Route           | View / Page | Description |
 |----------------|---------------------------------------------|-------------|
-| `/`            | redirige a `/***REMOVED***`                      | Redirección por defecto |
-| `/***REMOVED***`    | `***REMOVED***Page`                              | Flujo de ***REMOVED*** (lista de ***REMOVED***s → modal de monto → QR) |
-| `/login`       | `LoginPage`                                 | Inicio de sesión con validación y redirección |
-| `/register`    | `RegisterPage`                              | Registro de usuario con validación tipada |
-| `/components`  | `ComponentsPage`                            | Catálogo interactivo de componentes VanUikit |
-| `/debug`       | `DebugPage`                                 | Grafo de dependencias y diagnósticos de reactividad (solo con `van-debug=1` o `?van-debug`) |
+| `/`            | redirects to `/***REMOVED***`                      | Default redirect |
+| `/***REMOVED***`    | `***REMOVED***Page`                              | ***REMOVED*** flow (***REMOVED*** list → amount modal → QR) |
+| `/login`       | `LoginPage`                                 | Sign in with validation and redirect |
+| `/register`    | `RegisterPage`                              | User registration with typed validation |
+| `/components`  | `ComponentsPage`                            | Interactive catalog of VanUikit components |
+| `/debug`       | `DebugPage`                                 | Reactivity dependency graph and diagnostics (only with `van-debug=1` or `?van-debug`) |
 
-## Estructura de la Demo
+## Demo Structure
 
 ```text
 demo/
-├── app.ts                 <- Shell global: Router SPA, auth, i18n y tema compartidos
-├── main.ts                <- Entry point cliente (monta App() en #app)
-├── index.html             <- HTML base con contenedor y script bundled
-├── demo.css               <- Variables de tema y estilos base
-├── pages/                 <- Vistas completas de la aplicación (páginas SPA)
-│   ├── ***REMOVED***.page.ts   <- Flujo de ***REMOVED***s y ***REMOVED***s
-│   ├── login.page.ts      <- Página de inicio de sesión
-│   ├── register.page.ts   <- Página de creación de cuenta
-│   ├── components.page.ts <- Catálogo y sandbox de componentes
-│   └── debug.page.ts      <- Grafo de dependencias de van (modo debug)
-├── components/            <- Componentes específicos de la demo
-│   ├── ***REMOVED***-list.component.ts <- Cuadrícula de métodos de transaction
-│   └── qr-generator.component.ts  <- Renderizado reactivo de código QR
-├── server/                <- Backend Hono modular
-│   ├── index.ts           <- Servidor HTTP, middleware CORS y archivos estáticos
-│   ├── router.loader.ts   <- Cargador dinámico de rutas (/api/*)
-│   ├── routes/            <- Definición de endpoints HTTP
-│   ├── actions/           <- Lógica de negocio y validación de esquemas (Zod)
-│   ├── repositories/      <- Acceso a datos en memoria
-│   ├── data/              <- Fixtures iniciales (***REMOVED***s, usuarios, parámetros)
-│   └── types.ts           <- DTOs y tipos del backend
-├── shared/                <- Esquemas de validación Zod compartidos (cliente/servidor)
-├── img/***REMOVED***/           <- Logos e isotipos de las ***REMOVED***s
-└── dist/                  <- Salida compilada (main.js, vanuikit.css, uno.css)
+├── app.ts                 <- Global shell: SPA router, auth, shared i18n and theme
+├── main.ts                <- Client entry point (mounts App() on #app)
+├── index.html             <- Base HTML with container and bundled script
+├── demo.css               <- Theme variables and base styles
+├── pages/                 <- Complete application views (SPA pages)
+│   ├── ***REMOVED***.page.ts   <- ***REMOVED*** and ***REMOVED*** flow
+│   ├── login.page.ts      <- Sign-in page
+│   ├── register.page.ts   <- Account creation page
+│   ├── components.page.ts <- Component catalog and sandbox
+│   └── debug.page.ts      <- Van dependency graph (debug mode)
+├── components/            <- Demo-specific components
+│   ├── ***REMOVED***-list.component.ts <- ***REMOVED*** methods grid
+│   └── qr-generator.component.ts  <- Reactive QR code rendering
+├── server/                <- Modular Hono backend
+│   ├── index.ts           <- HTTP server, CORS middleware, and static files
+│   ├── router.loader.ts   <- Dynamic route loader (/api/*)
+│   ├── routes/            <- HTTP endpoint definitions
+│   ├── actions/           <- Business logic and schema validation (Zod)
+│   ├── repositories/      <- In-memory data access
+│   ├── data/              <- Initial fixtures (***REMOVED***, users, parameters)
+│   └── types.ts           <- Backend DTOs and types
+├── shared/                <- Shared Zod validation schemas (client/server)
+├── img/***REMOVED***/           <- ***REMOVED*** logos and isotypes
+└── dist/                  <- Compiled output (main.js, vanuikit.css, uno.css)
 ```
 
-## Comandos
+## Commands
 
 ```bash
-bun install        # Instala dependencias
-bun run lint       # Validación de tipos con tsc --noEmit
-bun run build      # Compila vanuikit, la demo y los estilos UnoCSS
-bun run dev        # Inicia el servidor de desarrollo en http://localhost:3000
-bun test           # Ejecuta la suite de pruebas unitarias
+bun install        # Installs dependencies
+bun run lint       # Type validation with tsc --noEmit
+bun run build      # Builds vanuikit, the demo, and UnoCSS styles
+bun run dev        # Starts the dev server at http://localhost:3000
+bun test           # Runs the unit test suite
 ```
 
 ## Backend (Hono)
 
-El backend expone una API REST organizada por capas:
-- **`routes/`**: Define los endpoints HTTP (`POST /api/auth/login`, `GET /api/***REMOVED***/***REMOVED***`, etc.).
-- **`actions/`**: Orquesta la validación de entrada con Zod y llama a los repositorios.
-- **`repositories/`**: Gestiona el acceso y persistencia de datos (usuarios, ***REMOVED***s, ***REMOVED***s).
-- **`data/`**: Fixtures iniciales en memoria.
+The backend exposes a REST API organized in layers:
+- **`routes/`**: Defines the HTTP endpoints (`POST /api/auth/login`, `GET /api/***REMOVED***/***REMOVED***`, etc.).
+- **`actions/`**: Orchestrates input validation with Zod and calls the repositories.
+- **`repositories/`**: Manages data access and persistence (users, ***REMOVED***, ***REMOVED***s).
+- **`data/`**: Initial in-memory fixtures.
 
-### Endpoints principales
+### Main endpoints
 
-| Método | Ruta | Controlador / Acción |
+| Method | Route | Controller / Action |
 |--------|------|----------------------|
-| POST | `/api/auth/login` | Login de usuario |
-| POST | `/api/auth/register` | Registro de usuario |
-| GET | `/api/***REMOVED***/***REMOVED***` | Lista de ***REMOVED***s activas |
-| GET | `/api/***REMOVED***/params` | Límites y tasas por divisa |
-| POST | `/api/***REMOVED***/***REMOVED***` | Creación de orden de ***REMOVED*** y datos QR |
-| GET | `/health` | Chequeo de estado del servidor |
-
+| POST | `/api/auth/login` | User login |
+| POST | `/api/auth/register` | User registration |
+| GET | `/api/***REMOVED***/***REMOVED***` | List of active ***REMOVED*** |
+| GET | `/api/***REMOVED***/params` | Limits and rates per currency |
+| POST | `/api/***REMOVED***/***REMOVED***` | Creates a ***REMOVED*** order and QR data |
+| GET | `/health` | Server health check |

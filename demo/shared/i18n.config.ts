@@ -4,8 +4,8 @@ import en from "./locales/en.json";
 import fr from "./locales/fr.json";
 
 /**
- * Nombres de idioma (convención `lang.<code>` que consume LocaleSelector).
- * Ancla TEXTS para que `i18n:collect` los mantenga en los diccionarios.
+ * Language names (`lang.<code>` convention consumed by LocaleSelector).
+ * Anchors TEXTS so that `i18n:collect` keeps them in the dictionaries.
  */
 export const LANGUAGE_NAMES = [
   { key: "lang.es", default: "Español" },
@@ -15,7 +15,7 @@ export const LANGUAGE_NAMES = [
 
 export const locales: Record<string, Record<string, unknown>> = { es, en, fr };
 
-// Se registran las traducciones de la app en el singleton global de i18n
+// Register the app's translations in the global i18n singleton
 i18n.addTranslations(locales);
 
 export { i18n };

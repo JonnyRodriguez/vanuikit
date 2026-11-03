@@ -1,16 +1,16 @@
 /**
- * Punto de entrada SPA demo.
+ * Demo SPA entry point.
  *
- * Inspirado en store/web/src/index.ts: monta `App()` en <div id="app">
- * al cargar el DOM. Todo el JS de la demo (router, pantallas, nav) se
- * empaqueta en un único bundle que este archivo importa.
+ * Inspired by store/web/src/index.ts: mounts `App()` in <div id="app">
+ * once the DOM is loaded. All the demo's JS (router, screens, nav) is
+ * bundled into a single bundle that this file imports.
  */
 import { van } from "vanuikit";
 import { App } from "./app.js";
 
-// Modo debug de VanJS (opcional): detecta violaciones de las reglas
-// reactivas (van.state dentro de derive, contenedores reactivos, ciclos).
-// Se activa con localStorage "van-debug"=1 o el parámetro ?van-debug.
+// VanJS debug mode (optional): detects violations of the reactive rules
+// (van.state inside derive, reactive containers, cycles).
+// Enabled via localStorage "van-debug"=1 or the ?van-debug parameter.
 if (
   typeof localStorage !== "undefined" &&
   (localStorage.getItem("van-debug") === "1" ||

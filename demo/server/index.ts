@@ -1,6 +1,6 @@
 // server/index.ts
 /**
- * Punto de entrada del backend demo (Hono + Node.js / Bun).
+ * Demo backend entry point (Hono + Node.js / Bun).
  */
 import { Hono } from "hono";
 import { cors } from "hono/cors";
@@ -18,7 +18,7 @@ const demoDir = path.resolve(__dirname, "..");
 
 const app = new Hono();
 
-// --- Middleware global CORS ---
+// --- Global CORS middleware ---
 app.use(
   "*",
   cors({
@@ -29,9 +29,9 @@ app.use(
   }),
 );
 
-// --- Carga dinámica de rutas desde server/routes/ (desde la librería) ---
-// Deny-by-default: con `auth`, TODA ruta queda protegida salvo las que
-// exporten `meta = { public: true }` (hoy solo auth.route.ts).
+// --- Dynamic loading of routes from server/routes/ (from the library) ---
+// Deny-by-default: with `auth`, every route is protected except those that
+// export `meta = { public: true }` (currently only auth.route.ts).
 const routesDir = path.join(__dirname, "routes");
 const routesApp = await loadRoutes(routesDir, {
   auth: requireAuth(),
@@ -55,16 +55,16 @@ app.get("/health", (c) => {
 app.use(
   "/*",
   serveStatic({
-    // root es relativo al cwd; `|| "."` cubre el caso cwd === demoDir, donde
-    // path.relative devuelve "" y join("", "/dist/x") produciría /dist/x absoluto.
+    // root is relative to the cwd; `|| ".` covers the case cwd === demoDir, where
+    // path.relative returns "" and join("", "/dist/x") would produce an absolute /dist/x.
     root: path.relative(process.cwd(), demoDir) || ".",
-    // Sirve .br/.gz precomprimidos en build según Accept-Encoding.
+    // Serves precompressed .br/.gz in build based on Accept-Encoding.
     precompressed: true,
   }),
 );
 
 // --- SPA fallback ---
-// Sirve index.html para que el router de VanJS resuelva las rutas cliente
+// Serves index.html so the VanJS router resolves client routes
 app.notFound((c) => {
   const url = new URL(c.req.url);
   if (!url.pathname.startsWith("/api") && !url.pathname.startsWith("/health")) {

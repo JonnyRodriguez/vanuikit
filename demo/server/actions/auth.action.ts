@@ -1,7 +1,7 @@
 // server/actions/auth.action.ts
 /**
- * Auth Actions — Lógica pura de autenticación y registro.
- * Consume esquemas compartidos de demo/shared/auth.schema.ts.
+ * Auth Actions — Pure authentication and registration logic.
+ * Consumes shared schemas from demo/shared/auth.schema.ts.
  */
 import { UserRepository, FAIL_EMAIL } from "../repositories/user.repository.js";
 import {
@@ -24,7 +24,7 @@ export interface ActionResult<T = unknown> {
 }
 
 /**
- * Autentica las credenciales de un usuario.
+ * Authenticates a user's credentials.
  */
 export async function loginAction(input: LoginInput): Promise<ActionResult<AuthResponse>> {
   const { email, password } = input;
@@ -54,7 +54,7 @@ export async function loginAction(input: LoginInput): Promise<ActionResult<AuthR
 }
 
 /**
- * Registra un nuevo usuario en el sistema.
+ * Registers a new user in the system.
  */
 export async function registerAction(input: RegisterInput): Promise<ActionResult<AuthResponse>> {
   const { name, email, password, confirm } = input;

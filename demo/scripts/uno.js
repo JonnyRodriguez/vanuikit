@@ -1,14 +1,14 @@
 /**
- * Estilos de la demo — consumidor puro de vanuikit.
+ * Demo styles — a pure consumer of vanuikit.
  *
- * - Compila con UnoCSS SOLO los fuentes de la demo (pages, components, server,
- *   index.html) a demo/dist/uno.css. Los estilos y el reset de la librería no
- *   se escanean: vienen en su hoja publicada (vanuikit/styles.css).
- * - Copia esa hoja del paquete instalado a demo/dist/vanuikit.css.
+ * - Compiles with UnoCSS ONLY the demo sources (pages, components, server,
+ *   index.html) to demo/dist/uno.css. The library's styles and reset are not
+ *   scanned: they come from its published stylesheet (vanuikit/styles.css).
+ * - Copies that stylesheet from the installed package to demo/dist/vanuikit.css.
  *
- * Las utilidades que referencian el tema (--vui-*) se mapean con el mismo
- * THEME que usa la librería; las variables y el reset los define vanuikit.css,
- * que index.html carga antes que este archivo.
+ * Utilities that reference the theme (--vui-*) are mapped using the same
+ * THEME that the library uses; the variables and reset are defined by vanuikit.css,
+ * which index.html loads before this file.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -24,13 +24,13 @@ const demoDir = path.resolve(__dirname, "..");
 const OUT_UNO = path.join(demoDir, "dist/uno.css");
 const OUT_VANUI = path.join(demoDir, "dist/vanuikit.css");
 
-/** Envuelve un color (var --vui-*) en color-mix con el placeholder %alpha:
- *  así los modificadores de opacidad (bg-secondary/60, text-muted-foreground/70)
- *  resuelven de verdad en vez de descartarse en silencio. Debe espejar el THEME
- *  de vanuikit/scripts/uno.js. */
+/** Wraps a color (var --vui-*) in color-mix with the %alpha placeholder:
+ *  so opacity modifiers (bg-secondary/60, text-muted-foreground/70) actually
+ *  resolve instead of being silently discarded. It must mirror the THEME
+ *  in vanuikit/scripts/uno.js. */
 const cm = (v) => `color-mix(in srgb, ${v} calc(%alpha * 100%), transparent)`;
 
-/** Mapea las clases de color/radio/sombra a las variables del tema --vui-* (definidas por vanuikit/styles.css). */
+/** Maps color/radius/shadow classes to the --vui-* theme variables (defined by vanuikit/styles.css). */
 const THEME = {
   colors: {
     primary: cm("var(--vui-primary)"),
@@ -66,7 +66,7 @@ const THEME = {
     lg: "var(--vui-shadow-lg)",
     xl: "var(--vui-shadow-xl)",
     "2xl": "var(--vui-shadow-2xl)",
-    // Brillo del botón primario (button.ts: shadow-primary-shadow)
+    // Primary button glow (button.ts: shadow-primary-shadow)
     "primary-shadow": "var(--un-shadow-inset) 0 4px 14px 0 var(--vui-primary-shadow)",
   },
 };
@@ -100,13 +100,13 @@ const demoCssPath = path.join(demoDir, "demo.css");
 const demoCustomCss = fs.existsSync(demoCssPath) ? fs.readFileSync(demoCssPath, "utf-8") : "";
 const finalDemoCss = `${css}\n\n/* demo.css */\n${demoCustomCss}`;
 
-// Hoja publicada de la librería, resuelta desde node_modules (consumidor real).
+// Library's published stylesheet, resolved from node_modules (real consumer).
 const require = createRequire(import.meta.url);
 let vanuikitCssPath;
 try {
   vanuikitCssPath = require.resolve("vanuikit/styles.css");
 } catch {
-  // Fallback si el paquete no está enlazado aún (primer bootstrap del repo).
+  // Fallback if the package is not linked yet (first repo bootstrap).
   vanuikitCssPath = path.resolve(demoDir, "../vanuikit/dist/vanuikit.css");
 }
 

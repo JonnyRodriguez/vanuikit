@@ -80,7 +80,7 @@ const WizardDemo = (): HTMLElement =>
       },
     ],
     onSubmit: async (data) => {
-      // Simula el backend: re-valida con el mismo contrato (doble validación).
+      // Simulates the backend: re-validates with the same contract (double validation).
       await new Promise((r) => setTimeout(r, 600));
       if (!data.email || String(data.email).length < 5) {
         return {
@@ -93,8 +93,8 @@ const WizardDemo = (): HTMLElement =>
     },
   }).dom();
 
-// Demo de navegación programática (useWizard): botones externos que saltan de
-// paso, validan sin avanzar y recolectan un borrador con collectStep().
+// Programmatic navigation demo (useWizard): external buttons that jump
+// steps, validate without advancing, and collect a draft with collectStep().
 const WizardProgrammaticDemo = (): HTMLElement => {
   const w = Wizard({
     steps: [
@@ -139,7 +139,7 @@ const WizardProgrammaticDemo = (): HTMLElement => {
     },
   });
 
-  // Barra externa que usa el handle del wizard (useWizard).
+  // External bar that uses the wizard handle (useWizard).
   const bar = div(
     { class: "flex flex-wrap items-center gap-2 pt-4 mt-4 border-t border-border" },
     Button(
@@ -197,12 +197,12 @@ export type ComponentsPageProps = {
 export function ComponentsPage(_props: ComponentsPageProps = {}) {
   const modal = ModalBase();
 
-  // State para SelectDropdown
+  // State for SelectDropdown
   const selectedFramework = van.state("vanjs");
   const selectedCountry = van.state("es");
   const demoDate = van.state<Date | null>(new Date(2026, 0, 15));
 
-  // State para DataGrid
+  // State for DataGrid
   const sampleUsers = van.state<SampleUser[]>([
     { id: "usr_1", name: "Ana Morales", role: "Administrador", status: "active", created: "2026-01-10" },
     { id: "usr_2", name: "Carlos Ramos", role: "Desarrollador", status: "active", created: "2026-02-14" },
@@ -214,12 +214,12 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
 
   const selectedUsers = van.state<SampleUser[]>([]);
 
-  // Controles de formulario (Fase 1 del roadmap)
+  // Form controls (Phase 1 of the roadmap)
   const demoTerms = van.state(false);
   const demoProgress = van.state(65);
   const demoDrawerRight = van.state(false);
   const demoCountry = van.state("");
-  // fmt: States creados UNA vez (sin memoización, igual que t())
+  // fmt: States created ONCE (no memoization, same as t())
   const fmtDate = fmt.date(new Date(2026, 9, 15, 14, 30));
   const fmtTime = fmt.time(new Date(2026, 9, 15, 14, 30));
   const fmtPrice = fmt.currency(49.99, { minimumFractionDigits: 2 });
@@ -314,14 +314,14 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       id: "components-page",
       class: "space-y-12 py-4",
     },
-    // Cabecera Principal
+    // Main header
     div(
       { class: "border-b border-border pb-5" },
       h1({ class: "text-3xl font-extrabold text-foreground" }, i18n.t("components.title", "Component Showcase")),
       p({ class: "text-foreground-soft text-sm mt-1" }, i18n.t("components.subtitle", "Interactive components built with VanJS and VanUikit")),
     ),
 
-    // 1. Theme & i18n Control Section (Componentes Embebidos de VanUikit)
+    // 1. Theme & i18n Control Section (Embedded VanUikit Components)
     section(
       { class: "space-y-5 p-6 rounded-2xl border border-border bg-secondary/10 shadow-sm" },
       div(
@@ -353,7 +353,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       ),
     ),
 
-    // 2. Controles de Formulario (Checkbox / Switch / RadioGroup / Textarea)
+    // 2. Form Controls (Checkbox / Switch / RadioGroup / Textarea)
     section(
       { class: "space-y-4" },
       div(
@@ -418,7 +418,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       ),
     ),
 
-    // 3. Estados y Feedback (Alert / Progress / Skeleton / EmptyState)
+    // 3. States & Feedback (Alert / Progress / Skeleton / EmptyState)
     section(
       { class: "space-y-4" },
       div(
@@ -498,7 +498,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       ),
     ),
 
-    // 4. Overlay fino (Tooltip / Popover / Drawer)
+    // 4. Fine overlays (Tooltip / Popover / Drawer)
     section(
       { class: "space-y-4" },
       div(
@@ -570,7 +570,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
           p({ class: "text-xs text-foreground-soft" }, i18n.t("components.drawerHint", "Esc, the backdrop or the × button close it; focus returns to the opener.")),
         ),
       ),
-      // Drawers (posicionamiento fijo; viven aquí pero cubren la pantalla)
+      // Drawers (fixed positioning; they live here but cover the screen)
       Drawer(
         { open: demoDrawerRight, side: "right", class: "w-96" },
         div(
@@ -597,7 +597,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       ),
     ),
 
-    // 5. Escala y pulido (Avatar / Breadcrumbs / Card / Accordion / Combobox)
+    // 5. Scale & polish (Avatar / Breadcrumbs / Card / Accordion / Combobox)
     section(
       { class: "space-y-4" },
       div(
@@ -681,7 +681,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
           p({ class: "text-xs text-foreground-soft" }, countrySummary),
           p({ class: "text-xs text-muted-foreground" }, i18n.t("components.comboboxHint", "Type to filter; ↑/↓ navigate, Enter selects, Esc closes.")),
         ),
-        // fmt (formato locale-aware)
+        // fmt (locale-aware formatting)
         div(
           { class: "p-4 rounded-xl bg-card border border-border/80 space-y-3" },
           h3({ class: "text-xs font-semibold text-muted-foreground uppercase tracking-wider" }, i18n.t("components.fmtCard", "fmt (locale-aware formatting)")),
@@ -713,7 +713,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
             Kbd({ size: "sm" }, "K"),
           ),
         ),
-        // Combobox multiple
+        // Multiple combobox
         div(
           { class: "p-4 rounded-xl bg-card border border-border/80 space-y-3" },
           h3({ class: "text-xs font-semibold text-muted-foreground uppercase tracking-wider" }, i18n.t("components.langsLabel", "Languages (multiple)")),
@@ -734,7 +734,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       ),
     ),
 
-    // 6. Tabs (Pestañas accesibles y reactivas)
+    // 6. Tabs (accessible and reactive tabs)
     section(
       { class: "space-y-4" },
       div(
@@ -745,7 +745,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       p({ class: "text-sm text-foreground-soft" }, i18n.t("components.tabsDesc", "Organize dense content with keyboard arrow navigation, badges, and multiple variants.")),
       div(
         { class: "p-6 rounded-2xl border border-border bg-background shadow-sm space-y-6" },
-        // Variante Underline
+        // Underline variant
         Tabs({
           id: "demo-tabs-underline",
           variant: "underline",
@@ -793,7 +793,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       ),
     ),
 
-    // 7. Select / Dropdowns Accesibles
+    // 7. Accessible Select / Dropdowns
     section(
       { class: "space-y-4" },
       div(
@@ -804,7 +804,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       p({ class: "text-sm text-foreground-soft" }, i18n.t("components.dropdownsDesc", "Custom selects with full keyboard navigation, integrated search, and contextual action menus.")),
       div(
         { class: "grid grid-cols-1 md:grid-cols-3 gap-6 p-6 rounded-2xl border border-border bg-background shadow-sm" },
-        // Select con búsqueda
+        // Select with search
         div(
           { class: "space-y-2" },
           span({ class: "text-xs font-semibold text-foreground-soft uppercase tracking-wider" }, i18n.t("components.searchSelect", "Select with Search")),
@@ -823,12 +823,12 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
           }),
           p(
             { class: "text-xs text-muted" },
-            // raw() lee currentLocale.val dentro del binding: reacciona al idioma y al valor.
+            // raw() reads currentLocale.val inside the binding: it reacts to the language and the value.
             () => i18n.raw("components.currentValue", "Current value: {val}", { val: selectedFramework.val }),
           ),
         ),
 
-        // Select de Países
+        // Country select
         div(
           { class: "space-y-2" },
           span({ class: "text-xs font-semibold text-foreground-soft uppercase tracking-wider" }, i18n.t("components.countrySelect", "Icon Select")),
@@ -846,7 +846,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
           }),
         ),
 
-        // DropdownMenu contextual
+        // Contextual DropdownMenu
         div(
           { class: "space-y-2" },
           span({ class: "text-xs font-semibold text-foreground-soft uppercase tracking-wider" }, i18n.t("components.actionsMenu", "Action Menu")),
@@ -871,7 +871,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       ),
     ),
 
-    // 8. ConfirmDialog (Diálogos de confirmación)
+    // 8. ConfirmDialog (confirmation dialogs)
     section(
       { class: "space-y-4" },
       div(
@@ -924,7 +924,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       ),
     ),
 
-    // 9. DataGrid / Table con búsqueda, ordenamiento y selección
+    // 9. DataGrid / Table with search, sorting and selection
     section(
       { class: "space-y-4" },
       div(
@@ -965,7 +965,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       ),
     ),
 
-    // 11. Notificaciones Toast
+    // 11. Toast notifications
     section(
       { class: "space-y-4" },
       h2({ class: "text-xl font-bold text-foreground" }, i18n.t("components.toasts", "Notifications (Toast)")),
@@ -1002,7 +1002,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       ),
     ),
 
-    // 12. Modal Clásico & Spinner
+    // 12. Classic Modal & Spinner
     section(
       { class: "space-y-4" },
       h2({ class: "text-xl font-bold text-foreground" }, i18n.t("components.modals", "Modals")),
@@ -1045,7 +1045,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
             i18n.t("components.openModalBtn", "Open Basic Modal"),
           ),
         ),
-        // Spin en su propia franja centrada: junto al botón se veía descolgado.
+        // Spin in its own centered strip: next to the button it looked misaligned.
         div(
           { class: "flex justify-center rounded-xl border border-border/60 bg-secondary/10" },
           Spin(i18n.t("components.spinMsg", "Loading indicator...")),
@@ -1088,7 +1088,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       ),
     ),
 
-    // 14. DatePicker (inspirado en jQuery UI DatePicker)
+    // 14. DatePicker (inspired by jQuery UI DatePicker)
     section(
       { class: "space-y-4" },
       div(
@@ -1102,7 +1102,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
       ),
       div(
         { class: "grid grid-cols-1 md:grid-cols-2 gap-6 p-6 rounded-2xl border border-border bg-background shadow-sm" },
-        // Popup (input read-only + calendario)
+        // Popup (read-only input + calendar)
         div(
           { class: "space-y-2" },
           span({ class: "text-xs font-semibold text-foreground-soft uppercase tracking-wider" }, i18n.t("components.datepickerPopup", "Popup (input)")),
@@ -1113,7 +1113,7 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
             required: true,
           }).dom(),
         ),
-        // Inline con min/max y valor compartido
+        // Inline with min/max and shared value
         div(
           { class: "space-y-2" },
           span({ class: "text-xs font-semibold text-foreground-soft uppercase tracking-wider" }, i18n.t("components.datepickerInline", "Inline with min/max")),
@@ -1125,14 +1125,14 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
           }).dom(),
           p(
             { class: "text-xs text-muted" },
-            // raw() lee currentLocale.val dentro del binding: reacciona al idioma y al valor.
+            // raw() reads currentLocale.val inside the binding: it reacts to the language and the value.
             () => i18n.raw("components.datepickerSelected", "Selected: {val}", { val: fmt.raw.date(demoDate.val ?? new Date()) }),
           ),
         ),
       ),
     ),
 
-    // 15. Wizard (formulario multi-paso)
+    // 15. Wizard (multi-step form)
     section(
       { class: "space-y-4" },
       div(

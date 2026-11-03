@@ -1,10 +1,10 @@
 /**
- * App — orquestador de la SPA de demostración de VanUikit.
+ * App — orchestrator of the VanUikit demo SPA.
  *
- * Configura:
- * - Rutas con guards de autenticación (`requireAuth`)
- * - Estado de autenticación (`createAuth`)
- * - Layout Dashboard / AppShell responsive con Sidebar, HeaderBar y soporte Mobile-First
+ * Configures:
+ * - Routes with authentication guards (`requireAuth`)
+ * - Authentication state (`createAuth`)
+ * - Dashboard / responsive AppShell layout with Sidebar, HeaderBar and Mobile-First support
  */
 import {
   van,
@@ -31,13 +31,13 @@ import { DebugPage } from "./pages/debug.page.js";
 import { i18n } from "./shared/i18n.config.js";
 import { theme } from "./shared/theme.config.js";
 
-// Header Authorization con el token que gestiona createAuth (persistencia centralizada).
+// Authorization header with the token managed by createAuth (centralized persistence).
 const authHeaders = (): Record<string, string> => {
   const token = authState.getToken();
   return token ? { Authorization: `Bearer ${token}` } : {};
 };
 
-// Estado de sesión
+// Session state
 export const authState = createAuth({
   me: async () => {
     try {
@@ -96,10 +96,10 @@ export const authState = createAuth({
   },
 });
 
-// Router Singleton de la aplicación
-// Deny-by-default: con `guard`, TODA ruta queda protegida salvo las de
-// publicRoutes. Agregar una página nueva = protegida sin escribir nada;
-// lo único que se declara es lo público (login, registro, vitrina).
+// Application Router singleton
+// Deny-by-default: with `guard`, EVERY route is protected except those in
+// publicRoutes. Adding a new page = protected without writing anything;
+// the only things declared are the public ones (login, register, showcase).
 export const router = createRouter({
   guard: requireAuth(authState, "/login"),
   publicRoutes: ["/login", "/register", "/components", "/debug"],
@@ -120,7 +120,7 @@ export function App() {
 
   const { span, button } = van.tags;
   const sidebarOpen = van.state(false);
-  // Estado controlado del colapso desktop de la Sidebar (rail de iconos).
+  // Controlled state of the desktop collapse of the Sidebar (icon rail).
   const sidebarCollapsed = van.state(false);
 
   const getPageTitle = van.derive(() => {
@@ -143,8 +143,8 @@ export function App() {
       storageKey: "vanuikit-demo-sidebar-collapsed",
       resizable: true,
       widthStorageKey: "vanuikit-demo-sidebar-width",
-      // Link de vanuikit: navegación SPA embebida; la demo solo aporta su estado
-      // (cerrar el drawer mobile al tocar el logo).
+      // vanuikit Link: embedded SPA navigation; the demo only provides its state
+      // (close the mobile drawer when the logo is clicked).
       header: Link(
         {
           href: "/***REMOVED***",
@@ -211,9 +211,9 @@ export function App() {
               )
             : null,
       ],
-      // Pie de barra lateral usando componente embebido de usuario.
-      // Compacto SOLO en el rail desktop: si el drawer mobile está abierto
-      // (sidebarOpen), la tarjeta se muestra completa con labels.
+      // Sidebar footer using the embedded user component.
+      // Compact ONLY on the desktop rail: if the mobile drawer is open
+      // (sidebarOpen), the card shows complete with labels.
       footer: UserBadge({
         auth: authState,
         i18n,
@@ -236,10 +236,10 @@ export function App() {
       ),
       title: getPageTitle,
       actions: [
-        // Selector de Idioma embebido de VanUikit
+        // Embedded language selector from VanUikit
         LocaleSelector({ i18n }),
 
-        // Selector de Tema embebido de VanUikit
+        // Embedded theme selector from VanUikit
         ThemeToggle({ theme, i18n }),
       ],
     }),

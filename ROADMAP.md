@@ -1,172 +1,171 @@
 # Roadmap — VanUikit
 
-Plan de evolución de la librería. Los principios rectores viven en [AGENTS.md](./AGENTS.md):
-componentes embebidos first-class, cero boilerplate, i18n inline con `t()`/`raw()`, accesibilidad
-y suite de tests 100% verde antes de cerrar cualquier tarea.
+Evolution plan for the library. The guiding principles live in [AGENTS.md](./AGENTS.md):
+first-class embedded components, zero boilerplate, inline i18n with `t()`/`raw()`, accessibility,
+and a 100% green test suite before closing any task.
 
 ---
 
-## Estado actual (2026-10-15)
+## Current state (2026-10-15)
 
-**17 componentes** en `vanuikit/src/components/`: Button (variantes), Badge, Field family
+**17 components** in `vanuikit/src/components/`: Button (variants), Badge, Field family
 (TextField/EmailField/PasswordField), Form, Modal/ModalBase/SpinModal, ConfirmDialog,
 SelectDropdown/DropdownMenu, DataGrid/Table, Tabs, toast, Spin, layout (AppShell/HeaderBar/
 Sidebar/SidebarGroup/SidebarItem), Nav/Link, ThemeToggle, LocaleSelector, UserBadge.
 
-**Infraestructura**: i18n inline (`t(key, default, params?)` + `raw()`) con tooling
-(`i18n:collect`/`i18n:check`/`i18n:scan`/`i18n:fix`), router con guard deny-by-default,
-`createAuth`, theme claro/oscuro/sistema, validators, fetch con autenticación, `loadRoutes`
+**Infrastructure**: inline i18n (`t(key, default, params?)` + `raw()`) with tooling
+(`i18n:collect`/`i18n:check`/`i18n:scan`/`i18n:fix`), router with deny-by-default guard,
+`createAuth`, light/dark/system theme, validators, authenticated fetch, `loadRoutes`
 (server).
 
 ---
 
-## Fase 1 — Controles de formulario binarios ✅ *completada (2026-10-15)*
+## Phase 1 — Binary form controls ✅ *completed (2026-10-15)*
 
-El hueco más sentible: hay Field para texto, pero ningún control binario, y los formularios
-reales necesitan ambos. Los nuevos controles se integran al ecosistema `Form`/validators.
+The most noticeable gap: there are Fields for text, but no binary control, and real forms
+need both. The new controls integrate into the `Form`/validators ecosystem.
 
-- ✅ `Checkbox` — checked/indeterminate, label con soporte reactivo, descripción, disabled.
-- ✅ `Switch` — mismo contrato que Checkbox (`role="switch"`), para páginas de settings.
-- ✅ `Radio` + `RadioGroup` — grupo excluyente con roving tabindex (flechas/Home/End),
-  `role="radiogroup"`, opciones declarativas.
-- ✅ `Textarea` — variante multilínea de Field, misma validación y misma API.
-- ✅ Registro en `Form` como campos de primera clase (contrato `Field` completo vía
-  `checkable.ts`).
+- ✅ `Checkbox` — checked/indeterminate, label with reactive support, description, disabled.
+- ✅ `Switch` — same contract as Checkbox (`role="switch"`), for settings pages.
+- ✅ `Radio` + `RadioGroup` — mutually exclusive group with roving tabindex (arrows/Home/End),
+  `role="radiogroup"`, declarative options.
+- ✅ `Textarea` — multiline variant of Field, same validation and same API.
+- ✅ Registered in `Form` as first-class fields (full `Field` contract via `checkable.ts`).
 
-**Criterio de cierre**: 13 tests nuevos (suite: 105 en verde), demo showcase, locales
-recolectados (es/en/fr).
+**Closing criteria**: 13 new tests (suite: 105 green), demo showcase, locales
+collected (es/en/fr).
 
-## Fase 2 — Feedback estático y estados de carga ✅ *completada (2026-10-15)*
+## Phase 2 — Static feedback and loading states ✅ *completed (2026-10-15)*
 
-`toast` y `Spin` cubren lo transitorio/indeterminado; falta lo persistente y lo determinado.
+`toast` and `Spin` cover the transient/indeterminate; the persistent and the determinate are missing.
 
-- ✅ `Alert` / `Callout` — avisos estáticos (info/success/warning/error), icono, dismissible.
-- ✅ `Progress` — barra determinada/indeterminada con label y porcentaje.
-- ✅ `Skeleton` — placeholders de texto, bloque y avatar con shimmer.
-- ✅ `EmptyState` — icono + título + descripción + acción principal.
+- ✅ `Alert` / `Callout` — static notices (info/success/warning/error), icon, dismissible.
+- ✅ `Progress` — determinate/indeterminate bar with label and percentage.
+- ✅ `Skeleton` — text, block and avatar placeholders with shimmer.
+- ✅ `EmptyState` — icon + title + description + primary action.
 
-**Criterio de cierre**: 12 tests nuevos (suite: 117 en verde), demo showcase "Estados y
-Feedback", locales recolectados (es/en/fr).
+**Closing criteria**: 12 new tests (suite: 117 green), demo showcase "Estados y
+Feedback", locales collected (es/en/fr).
 
-## Fase 3 — Overlay fino ✅ *completada (2026-10-15)*
+## Phase 3 — Fine overlay ✅ *completed (2026-10-15)*
 
-Hoy se resuelve con `title` nativo o divs absolutos ad-hoc: de lo que más boilerplate suelto
-genera.
+Today it is solved with native `title` or ad-hoc absolute divs: one of the things that generates
+the most loose boilerplate.
 
-- ✅ `Tooltip` — posiciones por CSS puro, delay, visible por focus (teclado), desactivado en
+- ✅ `Tooltip` — positions with pure CSS, delay, visible on focus (keyboard), disabled on
   touch (`hover: none`).
-- ✅ `Popover` — panel flotante genérico: click alterna, click-outside y Esc cierran (con
-  retorno de foco), contenido como fábrica `content(close)` que se reconstruye por apertura.
-- ✅ `Drawer` / `Sheet` — paneles deslizantes por 4 lados, backdrop, focus trap (Tab no
-  escapa), bloqueo de scroll (generaliza el patrón responsive del sidebar).
+- ✅ `Popover` — generic floating panel: click toggles, click-outside and Esc close (with
+  focus return), content as `content(close)` factory rebuilt per open.
+- ✅ `Drawer` / `Sheet` — sliding panels on 4 sides, backdrop, focus trap (Tab cannot
+  escape), scroll lock (generalizes the sidebar responsive pattern).
 
-**Criterio de cierre**: 14 tests nuevos (suite: 131 en verde), demo showcase "Overlay fino",
-lint y build de integración en verde. Sin dependencias externas: posicionamiento por CSS
-(limitación documentada: un ancestro con `overflow: hidden` puede recortar el panel).
+**Closing criteria**: 14 new tests (suite: 131 green), demo showcase "Overlay fino",
+lint and integration build green. No external dependencies: positioning with CSS
+(document limitation: an ancestor with `overflow: hidden` may clip the panel).
 
-## Fase 4 — Escala y pulido ✅ *completada (2026-10-15)*
+## Phase 4 — Scale and polish ✅ *completed (2026-10-15)*
 
-- ✅ `Combobox` — patrón WAI-ARIA completo (input que filtra al teclear, ↑/↓/Home/End/Enter/Esc
-  desde el propio input, `aria-activedescendant`), enlace bidireccional y contrato `Field`
-  para `Form` (valor real vía hidden input). Convive con SelectDropdown (select de botón).
-- ✅ `Accordion` — single/multiple, `defaultOpen`, contenido como fábrica (bindings frescos),
+- ✅ `Combobox` — full WAI-ARIA pattern (input that filters while typing, ↑/↓/Home/End/Enter/Esc
+  from the input itself, `aria-activedescendant`), bidirectional binding and `Field`
+  contract for `Form` (real value via hidden input). Coexists with SelectDropdown (button select).
+- ✅ `Accordion` — single/multiple, `defaultOpen`, content as factory (fresh bindings),
   `aria-expanded`/`region`.
-- ✅ `Avatar` — 4 tamaños, iniciales compartidas con UserBadge (refactor), `src` con fallback
-  automático a iniciales.
-- ✅ `Breadcrumbs` — anchors SPA vía el click handler global del Router, `aria-current="page"`.
-- ✅ `Card` + `CardTitle` — superficie base sin padding impuesto (el consumidor decide).
+- ✅ `Avatar` — 4 sizes, initials shared with UserBadge (refactor), `src` with automatic
+  fallback to initials.
+- ✅ `Breadcrumbs` — SPA anchors via the Router global click handler, `aria-current="page"`.
+- ✅ `Card` + `CardTitle` — base surface without imposed padding (the consumer decides).
 
-**Pendiente de Fase 4**: `Pagination` standalone y `Kbd` (se evalúan con la próxima necesidad
-real en la demo).
+**Pending from Phase 4**: standalone `Pagination` and `Kbd` (evaluated with the next real
+need in the demo).
 
-**Criterio de cierre**: 17 tests nuevos (suite: 148 en verde), demo showcase "Escala y pulido",
-locales recolectados (es/en/fr).
+**Closing criteria**: 17 new tests (suite: 148 green), demo showcase "Escala y pulido",
+locales collected (es/en/fr).
 
-## Fase 5 — `fmt`: la otra mitad del i18n ✅ *completada (2026-10-15)*
+## Phase 5 — `fmt`: the other half of i18n ✅ *completed (2026-10-15)*
 
-- ✅ `fmt.date/datetime/time/number/currency/percent/relative` sobre `Intl.*`, con el mismo
-  espíritu que `t()`: reactivos al cambiar `currentLocale` (hijos/props, crear una vez fuera
-  de los bindings) y `fmt.raw.*` para consumo imperativo estilo `raw()`.
-- ✅ `createFmt(i18n)` para instancias aisladas + singleton global `fmt` atado a `i18n`.
-- Valores aceptan `Date | number | ISO string`; fechas inválidas → `""` sin excepciones.
+- ✅ `fmt.date/datetime/time/number/currency/percent/relative` over `Intl.*`, with the same
+  spirit as `t()`: reactive to `currentLocale` changes (children/props, create once outside
+  of bindings) and `fmt.raw.*` for imperative consumption like `raw()`.
+- ✅ `createFmt(i18n)` for isolated instances + global `fmt` singleton tied to `i18n`.
+- Values accept `Date | number | ISO string`; invalid dates → `""` without exceptions.
 
-**Criterio de cierre**: 12 tests nuevos (suite: 160 en verde), tarjeta de demo con
-reformateo en vivo al cambiar de idioma.
-
----
-
-## 🎉 Roadmap original completado
-
-Las 5 fases están entregadas el mismo día (2026-10-15), con la suite siempre en verde:
-**21 componentes + fmt**, cero dependencias de runtime más allá de `vanjs-core` (Ciclo 2 suma Pagination, Kbd, Combobox multiple y la capa debug).
-
-**Candidatos para un próximo ciclo** (sin fecha, embebidos cuando la demo los pida):
-`Pagination` standalone y `Kbd` (aplazados de Fase 4), `Combobox` multi-selección,
-capa de debug (`trace`/`expectReactive`), y re-evaluar `DatePicker` si aparece una página
-que lo necesite de verdad.
+**Closing criteria**: 12 new tests (suite: 160 green), demo card with live
+re-formatting when switching language.
 
 ---
 
-## Ciclo 2 ✅ *completado (2026-10-15)*
+## 🎉 Original roadmap completed
 
-Los candidatos del próximo ciclo, menos `DatePicker` (sigue sin página que lo pida):
+All 5 phases were delivered the same day (2026-10-15), with the suite always green:
+**21 components + fmt**, zero runtime dependencies beyond `vanjs-core` (Cycle 2 adds Pagination, Kbd, Combobox multiple and the debug layer).
 
-- ✅ `debug.ts` — `trace(state)` (log de cambios encadenable) y `expectReactive({ render, act,
-  contains })` (detector de bindings congelados/detached para suites de test, agnóstico del
-  runner; lanza Error con pistas de los gotchas).
-- ✅ `Kbd` — tecla estilizada semántica (`<kbd>`).
-- ✅ `Pagination` standalone — numerada con ellipsis (`pageSlots` exportada), `page`
-  bidireccional, `totalPages` reactivo; convive con la paginación simple del DataGrid.
-- ✅ `Combobox` `multiple` — chips removibles (click en × y Backspace con input vacío), el
-  panel no se cierra al seleccionar, toggle al re-elegir; `value: State<string[]>`. Limitación
-  documentada: `FormData` colapsa repetidos (leer `field.value.val`).
+**Candidates for a next cycle** (no date, embedded when the demo asks for them):
+standalone `Pagination` and `Kbd` (deferred from Phase 4), `Combobox` multi-selection,
+debug layer (`trace`/`expectReactive`), and re-evaluating `DatePicker` if a page
+appears that truly needs it.
 
 ---
 
-## Backlog anotado — hallazgos del ecosistema (2026-10-27)
+## Cycle 2 ✅ *completed (2026-10-15)*
 
-Del review de vanjs.org y del ecosistema oficial (decisión: **anotado, sin fecha** — se
-embeben cuando una página real los pida, misma filosofía de siempre):
+The next-cycle candidates, minus `DatePicker` (still no page that asks for it):
 
-- **Nombre — decisión: quedarse con `vanuikit`.** Verificado en npm (2026-10-27): `vanuikit` está
-  LIBRE (el VanUikit oficial se publica como `vanjs-ui`, vanjs.org/vanuikit). Rechazado `vanuikitx`:
-  la marca "X" pertenece a VanX (oficial) — implicaría afiliación doble que no existe.
-  Posicionamiento frente a `vanjs-ui`: es ~10 widgets sin ARIA ni focus management
-  documentados; el nuestro es un app kit (componentes accesibles + i18n/fmt + router
-  deny-by-default + auth + debug). La brecha de accesibilidad es la bandera.
-- **`Await`** (idea de `vanjs-ui`) — render declarativo desde cualquier `Promise` (no solo
-  fetch) con slots `Pending`/`Error`/success. Azúcar sobre un patrón que ya existe
-  (`createQuery` cubre fetch; `Await` cubre promesas sueltas). Esfuerzo estimado: S.
-- **`chooseDialog`** (idea de `choose` de `vanjs-ui`) — picker modal que resuelve
-  `Promise<valor | null>`, sobre `Modal` + `Combobox` (con teclado y focus trap: más
-  accesible que el de ellos). Complementa `confirmDialog`. Esfuerzo estimado: M.
-- **Docs DX** (lejano) — cuando vanuikit tenga sitio/docs: preview vivo por componente
-  (CodeSandbox/jsfiddle), tabla de props con defaults, formato por-componente como vanjs.org.
-- **No adoptar**: bolsas de `styleOverrides` de `vanjs-ui` (nuestro modelo de tokens UnoCSS +
-  props `class` ya lo cubre), `FloatingWindow` (niche, solo-mouse).
+- ✅ `debug.ts` — `trace(state)` (chainable change logging) and `expectReactive({ render, act,
+  contains })` (detector of frozen/detached bindings for test suites, runner-agnostic;
+  throws Error with hints about the gotchas).
+- ✅ `Kbd` — semantic styled key (`<kbd>`).
+- ✅ standalone `Pagination` — numbered with ellipsis (`pageSlots` exported), `page`
+  bidirectional, `totalPages` reactive; coexists with DataGrid's simple pagination.
+- ✅ `Combobox` `multiple` — removable chips (click on × and Backspace with empty input), the
+  panel doesn't close when selecting, toggle when re-selecting; `value: State<string[]>`. Documented
+  limitation: `FormData` collapses duplicates (read `field.value.val`).
 
 ---
 
-## Explícitamente fuera (por ahora)
+## Annotated backlog — ecosystem findings (2026-10-27)
 
-- **DatePicker/Calendar** — alcance enorme (reglas de locale, teclado); merece etapa propia.
-- **FileUpload** — drag-drop + a11y + progreso: proyecto aparte.
-- **TreeView, CommandPalette** — niche hasta que una página real los pida.
+From the review of vanjs.org and the official ecosystem (decision: **annotated, no date** — they
+get embedded when a real page asks for them, same philosophy as always):
 
-La filosofía embedded funciona en ambos sentidos: se embebe lo que ya se repite en la demo,
-no lo que *podría* repetirse.
+- **Name — decision: keep `vanuikit`.** Verified on npm (2026-10-27): `vanuikit` is
+  FREE (the official VanUikit is published as `vanjs-ui`, vanjs.org/vanuikit). `vanuikitx` rejected:
+  the "X" brand belongs to VanX (official) — it would imply a double affiliation that doesn't exist.
+  Positioning vs `vanjs-ui`: it's ~10 widgets without documented ARIA or focus management;
+  ours is an app kit (accessible components + i18n/fmt + deny-by-default router + auth + debug).
+  The accessibility gap is the flagship.
+- **`Await`** (idea from `vanjs-ui`) — declarative rendering from any `Promise` (not only
+  fetch) with `Pending`/`Error`/success slots. Sugar over a pattern that already exists
+  (`createQuery` covers fetch; `Await` covers loose promises). Estimated effort: S.
+- **`chooseDialog`** (idea from `choose` in `vanjs-ui`) — modal picker that resolves
+  `Promise<value | null>`, on `Modal` + `Combobox` (with keyboard and focus trap: more
+  accessible than theirs). Complements `confirmDialog`. Estimated effort: M.
+- **Docs DX** (distant) — when vanuikit has a site/docs: live preview per component
+  (CodeSandbox/jsfiddle), props table with defaults, per-component format like vanjs.org.
+- **Not adopting**: `vanjs-ui`'s bags of `styleOverrides` (our UnoCSS token model +
+  `class` props already cover it), `FloatingWindow` (niche, mouse-only).
 
 ---
 
-## Definición de Done (por componente)
+## Explicitly out (for now)
 
-1. Implementación en `vanuikit/src/components/<name>.ts` con API reactiva (acepta `State` en
-   props visuales, mismo contrato que el resto del catálogo).
-2. i18n: todo texto visible con `t()`/`raw()`, sin strings quemados; locales recolectados con
+- **DatePicker/Calendar** — huge scope (locale rules, keyboard); deserves its own stage.
+- **FileUpload** — drag-drop + a11y + progress: separate project.
+- **TreeView, CommandPalette** — niche until a real page asks for them.
+
+The embedded philosophy works both ways: what is already repeated in the demo gets embedded,
+not what *could* be repeated.
+
+---
+
+## Definition of Done (per component)
+
+1. Implementation in `vanuikit/src/components/<name>.ts` with a reactive API (accepts `State` in
+   visual props, same contract as the rest of the catalog).
+2. i18n: all visible text with `t()`/`raw()`, no hardcoded strings; locales collected with
    `i18n:collect`.
-3. Tests unitarios en `vanuikit/tests/` ejecutables con `bun test`.
-4. Demo showcase en `demo/pages` (uso real, no screenshot).
-5. Estilos vía tokens de los dos `uno.js` (sin colores hardcodeados; mismos tokens en vanuikit y
+3. Unit tests in `vanuikit/tests/` runnable with `bun test`.
+4. Demo showcase in `demo/pages` (real usage, not a screenshot).
+5. Styles via tokens from both `uno.js` (no hardcoded colors; same tokens in vanuikit and
    demo).
-6. Suite `bun test` 100% verde.
-7. Exportado desde `vanuikit` (index.ts) y documentado en el catálogo de AGENTS.md.
+6. `bun test` suite 100% green.
+7. Exported from `vanuikit` (index.ts) and documented in the AGENTS.md catalog.

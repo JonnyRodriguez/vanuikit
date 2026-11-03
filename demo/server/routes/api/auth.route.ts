@@ -1,12 +1,12 @@
 // server/routes/api/auth.route.ts
 /**
- * Auth Route — Capa HTTP para autenticación, registro y control de sesión.
+ * Auth Route — HTTP layer for authentication, registration and session control.
  *
  * Endpoints:
- *   POST /api/auth/login     -> Iniciar sesión (crea sesión y cookie)
- *   POST /api/auth/register  -> Crear cuenta (crea sesión y cookie)
- *   GET  /api/auth/me        -> Obtiene el usuario autenticado actual
- *   POST /api/auth/logout    -> Cierra sesión (invalida sesión y cookie)
+ *   POST /api/auth/login     -> Log in (creates a session and cookie)
+ *   POST /api/auth/register  -> Create account (creates a session and cookie)
+ *   GET  /api/auth/me        -> Gets the current authenticated user
+ *   POST /api/auth/logout    -> Log out (invalidates session and cookie)
  */
 import { Hono } from "hono";
 import { setCookie, deleteCookie, getCookie } from "hono/cookie";
@@ -44,13 +44,13 @@ authRoute.post("/login", async (c) => {
     return c.json({ error: result.error }, (result.status || 401) as any);
   }
 
-  // Crear sesión en el servidor y configurar cookie HTTP-Only segura
+  // Create a session on the server and set a secure HTTP-Only cookie
   const session = SessionRepository.create(result.data.user);
   setCookie(c, SESSION_COOKIE_NAME, session.token, {
     path: "/",
     httpOnly: true,
     sameSite: "Lax",
-    maxAge: 24 * 60 * 60, // 24 horas
+    maxAge: 24 * 60 * 60, // 24 hours
   });
 
   return c.json({
@@ -81,7 +81,7 @@ authRoute.post("/register", async (c) => {
     return c.json({ error: result.error }, (result.status || 400) as any);
   }
 
-  // Crear sesión automáticamente para el nuevo usuario registrado
+  // Automatically create a session for the newly registered user
   const session = SessionRepository.create(result.data.user);
   setCookie(c, SESSION_COOKIE_NAME, session.token, {
     path: "/",
@@ -101,7 +101,7 @@ authRoute.post("/register", async (c) => {
 
 /**
  * GET /api/auth/me
- * Endpoint protegido para consultar el estado actual de autenticación.
+ * Protected endpoint to query the current authentication state.
  */
 authRoute.get("/me", requireAuth(), (c) => {
   const user = c.get("user");
@@ -117,7 +117,7 @@ authRoute.get("/me", requireAuth(), (c) => {
 
 /**
  * POST /api/auth/logout
- * Destruye la sesión en servidor y borra la cookie en el cliente.
+ * Destroys the session on the server and deletes the cookie on the client.
  */
 authRoute.post("/logout", (c) => {
   const token = getCookie(c, SESSION_COOKIE_NAME);
@@ -137,6 +137,6 @@ authRoute.post("/logout", (c) => {
 
 export default authRoute;
 
-// Deny-by-default: este archivo se declara PÚBLICO (login/register no pueden
-// pedir sesión). El refinamiento fino sigue vivo dentro: /me usa requireAuth().
+// Deny-by-default: this file is declared PUBLIC (login/register cannot
+// ask for a session). Fine-grained refinement stays alive inside: /me uses requireAuth().
 export const meta = { public: true };

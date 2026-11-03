@@ -385,7 +385,11 @@ Full API reference and guides ship with the package under `docs/`:
   - [Session, theme & i18n](./docs/api/session-theme-i18n.md) — theme toggle/locale selector/user badge, `createTheme`, `createI18n`, `fmt`.
   - [Core infrastructure](./docs/api/core-infrastructure.md) — auth, router, query/mutation, validators, single-instance provenance, debug tools, `vanuikit/server`.
 - **[Consumer & AI onboarding guide](./docs/AI-GUIDE.md)** — the must-read before writing code: single VanJS instance, reactivity rules, i18n contract, deny-by-default routing.
+- **[Recipes](./docs/recipes.md)** — real composed usage patterns (auth shell, form+modal+confirm, DataGrid, DatePicker, locale switcher).
+- **[Theming](./docs/theming.md)** — `--vui-*` token reference and re-theming.
+- **[Server](./docs/server.md)** — `vanuikit/server` guide: `loadRoutes`, `createAuthRoutes`, session stores.
 - [Documentation index](./docs/README.md).
+- [Changelog](./CHANGELOG.md).
 
 ## Commands (Bun)
 

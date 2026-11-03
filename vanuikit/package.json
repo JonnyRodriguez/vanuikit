@@ -14,7 +14,9 @@
     "components",
     "reactive",
     "typescript",
-    "frontend"
+    "frontend",
+    "hono",
+    "documentation"
   ],
   "type": "module",
   "main": "./dist/index.js",
@@ -34,7 +36,8 @@
   },
   "files": [
     "dist",
-    "docs"
+    "docs",
+    "CHANGELOG.md"
   ],
   "sideEffects": false,
   "scripts": {

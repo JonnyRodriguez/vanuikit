@@ -13,8 +13,12 @@ Reference and guides for building with the `vanuikit` component library.
 | [`api/session-theme-i18n.md`](./api/session-theme-i18n.md) | ThemeToggle, LocaleSelector, UserBadge, createTheme, createI18n/t/raw, createFmt/fmt. |
 | [`api/core-infrastructure.md`](./api/core-infrastructure.md) | createAuth/requireAuth, Router, createQuery/createMutation, validators, cx, single-instance provenance, debug tools, server (`vanuikit/server`). |
 | [`AI-GUIDE.md`](./AI-GUIDE.md) | Consumer/AI onboarding: single VanJS instance, reactivity rules, i18n, deny-by-default auth/routing. |
+| [`recipes.md`](./recipes.md) | Real composed usage patterns (auth shell, form+modal+confirm, DataGrid, DatePicker, locale switcher). |
+| [`theming.md`](./theming.md) | `--vui-*` CSS token reference, dark mode, re-theming. |
+| [`server.md`](./server.md) | Server guide (`vanuikit/server`): `loadRoutes`, `createAuthRoutes`, `createAuthMiddleware`, session stores. |
 
 ## Also see
 
 - `README.md` (package root) — quick start, SPA foundation, theming, commands.
+- `CHANGELOG.md` (package root) — release history.
 - `DEBUG_REACTIVIDAD.md` (repo root) — the full reactivity debug system.

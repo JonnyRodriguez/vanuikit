@@ -72,3 +72,28 @@ The built-in palette is aligned with Tailwind (the shadcn reference):
 - Focus is visible via `--vui-focus` on all interactive elements.
 - `prefers-reduced-motion: reduce` disables animations and transitions for
   users who request it (included in the reset).
+
+## Prevent the light→dark flash (FOUC)
+
+`createTheme` applies the theme when your JS runs. If the app boots in dark
+mode (stored preference or system), there can be a brief flash of light before
+paint. Add this inline snippet to `<head>` (before your stylesheet/app) to set
+`.dark` pre-paint:
+
+```html
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("vanuikit-theme");
+      var dark =
+        saved === "dark" ||
+        ((!saved || saved === "system") &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches);
+      if (dark) document.documentElement.classList.add("dark");
+    } catch (e) {}
+  })();
+</script>
+```
+
+If you pass a custom `storageKey` to `createTheme`, mirror it here
+(e.g. `localStorage.getItem("my-app-theme")`).

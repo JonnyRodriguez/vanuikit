@@ -135,6 +135,9 @@ export {
   type MutationResult,
 } from "./fetch.js";
 
+// Async declarative rendering (from any Promise)
+export { Await, type AwaitProps } from "./components/await.js";
+
 // Validators
 export {
   Required,

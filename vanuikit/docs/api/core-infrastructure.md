@@ -423,6 +423,45 @@ await del.mutate({ id: "42" }); // POST /api/***REMOVED*** with JSON body
 - When a string URL is used, `mutate` performs a `POST` with `Content-Type: application/json` and `credentials: "include"`.
 - If `urlOrFn` is an async function of arity 1, it is called directly and its return value is stored as `data`.
 
+## `Await`
+
+Declarative rendering from any `Promise` with `Pending`/`Error`/success slots.
+Complements `createQuery` (fetch) for loose promises.
+
+### Signature
+
+```ts
+Await<T>(props: AwaitProps<T>): HTMLElement
+```
+
+### Props
+
+| Name | Type | Description |
+|---|---|---|
+| `promise` | `Promise<T> \| (() => Promise<T>)` | Promise (or factory) to render; resolved once on mount. |
+| `loading?` | `() => ChildDom \| null` | Pending/first-render slot (default renders nothing). |
+| `error?` | `(error: unknown) => ChildDom \| null` | Error slot; receives the rejection reason. |
+| `success` | `(data: T) => ChildDom` | Required success slot; receives the resolved value. |
+
+### Usage
+
+```ts
+import { Await, Skeleton, span } from "vanuikit";
+
+Await({
+  promise: fetchUser(id),
+  loading: () => Skeleton(),
+  error: (e) => span(`Failed: ${e}`),
+  success: (user) => UserCard(user),
+});
+```
+
+### Notes
+
+- No user-facing text of its own — slots are fully consumer-owned (no i18n
+  keys needed).
+- Recreate the element to re-run the promise.
+
 ## `Required`
 
 Validator factory: fails when the value is empty/whitespace-only.

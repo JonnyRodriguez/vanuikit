@@ -48,6 +48,7 @@
     "css": "node scripts/uno.js",
     "typecheck": "tsc --noEmit",
     "check:van": "bun scripts/check-van-rules.ts",
+    "size": "bun scripts/size-check.mjs",
     "test": "bun test"
   },
   "peerDependencies": {

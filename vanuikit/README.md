@@ -373,6 +373,20 @@ as text over the tint in both modes (700 in light, 300 in dark). `Badge`,
 `Alert` and `toast` consume them — when you re-theme, those components
 follow your palette.
 
+## Documentation
+
+Full API reference and guides ship with the package under `docs/`:
+
+- **API reference by family** — [`docs/api/`](./docs/api/):
+  - [Form controls](./docs/api/form-controls.md) — buttons, fields, binary controls, Form, Wizard.
+  - [Overlays & feedback](./docs/api/overlays-feedback.md) — modal, confirm dialog, toast, alerts, tooltip, popover, drawer, dropdown.
+  - [Navigation & layout](./docs/api/navigation-layout.md) — AppShell, sidebar, nav, tabs, accordion, card.
+  - [Data & selection](./docs/api/data-selection.md) — table/grid, pagination, combobox, date picker, avatar, badge, icon.
+  - [Session, theme & i18n](./docs/api/session-theme-i18n.md) — theme toggle/locale selector/user badge, `createTheme`, `createI18n`, `fmt`.
+  - [Core infrastructure](./docs/api/core-infrastructure.md) — auth, router, query/mutation, validators, single-instance provenance, debug tools, `vanuikit/server`.
+- **[Consumer & AI onboarding guide](./docs/AI-GUIDE.md)** — the must-read before writing code: single VanJS instance, reactivity rules, i18n contract, deny-by-default routing.
+- [Documentation index](./docs/README.md).
+
 ## Commands (Bun)
 
     bun install        # installs devDeps (vanjs-core, happy-dom, typescript, @unocss/*)

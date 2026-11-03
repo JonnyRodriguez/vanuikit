@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Checks (typecheck · tests · size · build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: vanuikit/vanuikit
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install workspace dependencies
+        run: bun install
+        working-directory: .
+
+      - name: Typecheck
+        run: bun run typecheck
+
+      - name: Tests
+        run: bun test
+
+      - name: Van reactivity scan (check:van)
+        run: bun run check:van
+
+      - name: Size budget (bun run size)
+        run: bun run size
+
+      - name: Production build
+        run: bun run build

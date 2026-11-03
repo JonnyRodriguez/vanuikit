@@ -26,6 +26,7 @@
  */
 
 import type { State } from "vanjs-core";
+import { isForeignState } from "./van-singleton.js";
 
 // ---------------------------------------------------------------------------
 // Public types
@@ -36,7 +37,8 @@ export type ViolationKind =
   | "derive-writes-state"
   | "derive-cycle"
   | "derive-no-deps"
-  | "container-reactive-reads";
+  | "container-reactive-reads"
+  | "foreign-state";
 
 export interface VanDebugDiagnostic {
   kind: ViolationKind;
@@ -271,6 +273,63 @@ function installVanDebug(van: VanLike): VanDebugApi {
 
     return derived;
   }) as VanLike["derive"];
+
+  // --- Foreign-state detection (two copies of vanjs-core) ---
+  // A State coming from another copy silently breaks reactivity here; catch it
+  // at the DOM boundary (children of `add`/tags, prop values) while debugging.
+  const scanForForeign = (value: unknown, where: string, depth: number): void => {
+    if (depth < 0) return;
+    if (Array.isArray(value)) {
+      for (const v of value) scanForForeign(v, where, depth - 1);
+      return;
+    }
+    if (value && typeof value === "object") {
+      if (isForeignState(value)) {
+        report(
+          "foreign-state",
+          `A State from another copy of vanjs-core was passed to vanuikit ${where} — reactivity silently breaks (frozen bindings, empty components). Import van from "vanuikit"; never import "vanjs-core" directly.`,
+          captureCallSite(),
+        );
+      }
+      // Recurse into plain objects (prop bags); never into DOM nodes or states.
+      const nodeCtor = (globalThis as any).Node;
+      if (!nodeCtor || !(value instanceof nodeCtor)) {
+        for (const k of Object.keys(value as object)) {
+          scanForForeign((value as Record<string, unknown>)[k], where, depth - 1);
+        }
+      }
+    }
+  };
+
+  const origAdd = (van as { add?: unknown }).add;
+  if (typeof origAdd === "function") {
+    (van as unknown as Record<string, unknown>).add = function (this: unknown, dom: unknown, ...children: unknown[]) {
+      try {
+        for (const c of children) scanForForeign(c, "as a child", 3);
+      } catch {
+        /* diagnostics must never break rendering */
+      }
+      return (origAdd as (...a: unknown[]) => unknown).call(this, dom, ...children);
+    };
+  }
+
+  const origTags = (van as { tags?: unknown }).tags;
+  if (origTags && (typeof origTags === "object" || typeof origTags === "function")) {
+    (van as unknown as Record<string, unknown>).tags = new Proxy(origTags as object, {
+      get(t, name) {
+        const original = (t as Record<PropertyKey, unknown>)[name];
+        if (typeof original !== "function") return original;
+        return function (this: unknown, ...args: unknown[]) {
+          try {
+            args.forEach((a, i) => scanForForeign(a, i === 0 ? "as props" : "as a child", 3));
+          } catch {
+            /* ignore */
+          }
+          return (original as (...a: unknown[]) => unknown).apply(this, args);
+        };
+      },
+    });
+  }
 
   api = {
     dump() {

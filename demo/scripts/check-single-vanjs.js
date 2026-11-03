@@ -17,12 +17,12 @@ const copies = Object.entries(meta.inputs).filter(([p]) => p.includes("vanjs-cor
 fs.rmSync(metaFile);
 
 if (copies.length > 1) {
-  console.error(`❌ El bundle contiene ${copies.length} copias de vanjs-core (debe ser exactamente 1):`);
+  console.error(`❌ The bundle contains ${copies.length} copies of vanjs-core (must be exactly 1):`);
   for (const [p, i] of copies) console.error(`   ${((i.bytes ?? 0) / 1024).toFixed(1)}KB ${p}`);
-  console.error("Pista: versiones divergentes entre package.json de la app y vanuikit, o un import directo de vanjs-core (usar `van` desde vanuikit).");
+  console.error("Hint: divergent versions between the app's package.json and vanuikit, or a direct import of vanjs-core (use `van` from vanuikit).");
   process.exit(1);
 }
 
 console.log(
-  `✓ vanjs-core: instancia única en el bundle (${((copies[0]?.[1].bytes ?? 0) / 1024).toFixed(1)}KB)`,
+  `✓ vanjs-core: single instance in the bundle (${((copies[0]?.[1].bytes ?? 0) / 1024).toFixed(1)}KB)`,
 );

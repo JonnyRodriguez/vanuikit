@@ -3,13 +3,24 @@
  * VanUikit — Library of modular, reactive components for VanJS.
  */
 import van from "vanjs-core";
-import { guardSingleVan } from "./van-singleton.js";
+import {
+  guardSingleVan,
+  captureOwnStateProto,
+  isOwnState,
+  isForeignState,
+  warnForeignState,
+} from "./van-singleton.js";
 
 // Single-instance rule: if this bundle ships two copies of vanjs-core,
 // warn in console with the solution (see van-singleton.ts).
 guardSingleVan(van);
 
+// Capture the prototype of OUR copy's states so the library can detect a
+// State coming from another copy (the silent two-copies failure).
+captureOwnStateProto(van);
+
 export { van };
+export { isOwnState, isForeignState, warnForeignState };
 
 // Basic Components
 export { Button, PrimaryButton, SecondaryButton, type ButtonVariant, type ButtonSize } from "./components/button.js";

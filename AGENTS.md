@@ -150,6 +150,7 @@ The question that solves all cases: **which binding captures this read, and what
 - Consumers **declare** it in their `package.json` (satisfies the peerDep and pins the version) but **never import it directly**: they take `van` from `vanuikit` (`import { van } from "vanuikit"`).
 - The demo build verifies the esbuild metafile (`check-single-vanjs.js`) and **fails** if the bundle contains more than one copy.
 - **Runtime detection** (`guardSingleVan`, called in `src/index.ts`): if a consumer's bundle brings two copies, the library calls it out in the console (`[vanuikit] TWO copies…`, in English: npm consumers) with the exact fix. When debugging apps that consume the kit, that notice is the first clue: rewrite the imports to `import { van } from "vanuikit"`.
+- **State provenance** (also ships in `dist/index.js`): the library captures the prototype of its own `van.state()` and exports `isOwnState`/`isForeignState` to spot a `State` coming from another copy. `installVanDebug` reports a `foreign-state` diagnostic whenever such a foreign `State` flows into the UI (as a prop or child). Note: this is the only runtime detection that catches a consumer's *direct* `import van from "vanjs-core"` — the `guardSingleVan` registry only sees copies that pass through vanuikit.
 
 ---
 

@@ -32,3 +32,66 @@ export function guardSingleVan(van: unknown): void {
   }
   g[INSTANCE_KEY] = van;
 }
+
+// ---------------------------------------------------------------------------
+// State provenance
+// ---------------------------------------------------------------------------
+//
+// Instead of relying on a second copy registering itself (which a direct
+// `import van from "vanjs-core"` in a consumer never does), we detect foreign
+// states by prototype identity: every state created by a given copy of
+// vanjs-core shares that copy's module-local `stateProto`. A state that flows
+// into vanuikit (as a prop or a child) and is NOT backed by our own
+// `stateProto` comes from another copy — the silent "two copies" failure.
+
+let ownStateProto: object | null = null;
+let warnedForeign = new WeakSet<object>();
+
+/** Captures the prototype of the states created by the given van instance. */
+export function captureOwnStateProto(van: { state?: (init?: unknown) => unknown }): void {
+  if (!ownStateProto && van?.state) {
+    ownStateProto = Object.getPrototypeOf(van.state()) as object;
+  }
+}
+
+/** True if `x` is a state created by this van instance (our copy). */
+export function isOwnState(x: unknown): boolean {
+  return (
+    ownStateProto !== null &&
+    !!x &&
+    typeof x === "object" &&
+    Object.getPrototypeOf(x) === ownStateProto
+  );
+}
+
+/**
+ * True if `x` has the shape of a vanjs-core state but is NOT backed by our own
+ * `stateProto` — i.e. it comes from another copy of vanjs-core.
+ * Uses the plain-data marker `_bindings` (an array present on every state), so
+ * it never triggers accessors and never flags plain objects or DOM nodes.
+ */
+export function isForeignState(x: unknown): boolean {
+  return (
+    !!x &&
+    typeof x === "object" &&
+    Array.isArray((x as { _bindings?: unknown })._bindings) &&
+    !isOwnState(x)
+  );
+}
+
+/**
+ * Emits a single, targeted console warning (per state) when a foreign state is
+ * found flowing into vanuikit. `hint` prefixes the message to say where.
+ */
+export function warnForeignState(x: unknown, hint?: string): void {
+  if (!isForeignState(x)) return;
+  if (warnedForeign.has(x as object)) return;
+  warnedForeign.add(x as object);
+  const where = hint ? ` in ${hint}` : "";
+  console.warn(
+    [
+      `[vanuikit] A State created by ANOTHER copy of vanjs-core was passed to vanuikit${where}: reactivity silently breaks (frozen bindings, empty components).`,
+      '  Fix: import van from "vanuikit" (import { van } from "vanuikit"); never import "vanjs-core" directly. Align versions and dedupe.',
+    ].join("\n"),
+  );
+}

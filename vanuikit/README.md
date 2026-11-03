@@ -159,12 +159,21 @@ your app too (it is the peer's "host").
 
 > ⚠️ **The most common mistake** (and the most time-consuming): following the
 > vanjs.org examples and doing `import van from "vanjs-core"`. The app
-> "works" but the kit's components live in another state universe. Since
-> 0.2.0 the library **detects it at runtime** and shouts in the console with
-> the fix — don't spend an hour debugging: if you see the
-> `[vanuikit] TWO copies…` warning, change your imports. The demo build also
-> verifies it statically (`check-single-vanjs.js`) and fails if the bundle
-> contains more than one copy.
+> "works" but the kit's components live in another state universe — bindings
+> freeze and components go empty.
+>
+> Two safety nets catch it:
+> - **Runtime guard**: if a second copy of `vanuikit` (any path that runs
+>   through it) registers after the first, the library shouts
+>   `[vanuikit] TWO copies…` in the console with the fix.
+> - **Dev-time provenance check**: while developing, enable `installVanDebug(van)`.
+>   Whenever a `State` created by *another* copy is passed to the UI (as a
+>   prop or child), a targeted `foreign-state` diagnostic pinpoints it — no
+>   code changes needed in your components. Custom checks can use the exported
+>   `isOwnState`/`isForeignState`.
+> Don't spend an hour debugging: if you see either warning, change your imports.
+> The demo build additionally verifies it statically
+> (`check-single-vanjs.js`) and fails if the bundle contains more than one copy.
 
     import { van, Modal, EmailField, PasswordField, Form } from "vanuikit";
 

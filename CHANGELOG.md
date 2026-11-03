@@ -3,6 +3,15 @@
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 SemVer versioning.
 
+## [Unreleased]
+
+### Added
+
+- `Await` component — declarative rendering from any `Promise` with
+  pending/error/success slots (complements `createQuery`).
+- `bun run size` — size budget check (gzip limit) over `dist/index.js`.
+- Docs: `theming.md` gains a "Prevent the light→dark flash (FOUC)" snippet.
+
 ## [0.2.0] — 2026-11-02
 
 ### Changed — English as the canonical language

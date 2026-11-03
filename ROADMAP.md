@@ -64,6 +64,8 @@ shipped inside the npm package (`docs/`), `CHANGELOG.md`, English canonical lang
 - **Docs shipped in the npm package** — `docs/`: API reference by family (6 files),
   `recipes.md`, `theming.md`, `server.md`, `AI-GUIDE.md` (consumer/AI onboarding),
   `README.md` index, plus `CHANGELOG.md`.
+- **Tooling & docs hardening** — `Await` component (declarative Promise rendering),
+  size budget (`bun run size`, 45 kB gzip), anti-FOUC snippet in `theming.md`.
 
 ---
 
@@ -80,8 +82,6 @@ Keeping the philosophy: embed what repeats, not what *could* repeat.
   accessibility claim.
 
 **Components** (from the annotated backlog):
-- **`Await`** (S) — declarative rendering from any `Promise` with
-  `Pending`/`Error`/success slots (complements `createQuery`).
 - **`chooseDialog`** (M) — modal picker resolving `Promise<value | null>`; complements
   `confirmDialog`.
 

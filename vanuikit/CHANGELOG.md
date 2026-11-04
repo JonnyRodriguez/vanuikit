@@ -3,6 +3,18 @@
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 SemVer versioning.
 
+## [0.3.1] — 2026-11-03
+
+### Fixed
+
+- `SelectDropdown` — clicking the chevron (▼/▲) arrow now toggles the menu
+  reliably. The outside-click handler listened on `click`, but the chevron
+  and label are function-children: when `isOpen` flips, van re-renders the
+  trigger and detaches the original event-target node, so `el.contains(e.target)`
+  returned `false` and the menu closed the instant it opened. Switched the
+  outside-click detection to `pointerdown` (no state has changed yet, so the
+  target is still attached and the containment check is reliable).
+
 ## [0.3.0] — 2026-11-03
 
 ### Added

@@ -54,6 +54,35 @@ describe("SelectDropdown", () => {
     expect(changedValue).toBe("en");
     expect(btn.getAttribute("aria-expanded")).toBe("false");
   });
+
+  test("clicking the chevron span keeps the listbox open (regression)", async () => {
+    const selected = van.state("es");
+    const el = SelectDropdown({
+      options: [
+        { value: "es", label: "Español" },
+        { value: "en", label: "English" },
+      ],
+      value: selected,
+    });
+
+    document.body.appendChild(el);
+    await tick();
+
+    const btn = el.querySelector('[role="combobox"]') as HTMLButtonElement;
+    const chevron = [...btn.querySelectorAll("span")].find(
+      (s) => s.textContent?.trim() === "▼",
+    );
+    expect(chevron).toBeDefined();
+
+    // Click exactly on the chevron glyph. The chevron is a function-child: when
+    // `isOpen` flips, van re-renders it and detaches the node that received the
+    // click. The outside-click handler must not interpret that as a click
+    // outside the control and immediately close the menu.
+    (chevron as HTMLElement).click();
+    await tick();
+
+    expect(btn.getAttribute("aria-expanded")).toBe("true");
+  });
 });
 
 describe("DropdownMenu", () => {

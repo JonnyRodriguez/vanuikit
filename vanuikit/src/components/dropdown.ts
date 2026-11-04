@@ -89,13 +89,21 @@ export function SelectDropdown<T = string | number>(props: SelectDropdownProps<T
   };
 
   if (typeof window !== "undefined") {
-    const handleDocumentClick = (e: MouseEvent) => {
+    // Use `pointerdown` (not `click`) to detect outside clicks. The chevron
+    // and label are function-children: when `isOpen` flips, van re-renders
+    // the trigger and DETACHES the original event-target node, so by the time
+    // a `click` event reaches `document` the target is already removed from
+    // the DOM and `el.contains(e.target)` wrongly returns false — closing the
+    // menu the instant it opens (the “click on the ▼ arrow does nothing” bug).
+    // On `pointerdown` no state has changed yet, so the target is still
+    // attached and the containment check is reliable.
+    const handleDocumentPointerDown = (e: PointerEvent) => {
       const el = document.getElementById(containerId);
       if (el && !el.contains(e.target as Node) && isOpen.val) {
         closeMenu();
       }
     };
-    document.addEventListener("click", handleDocumentClick);
+    document.addEventListener("pointerdown", handleDocumentPointerDown);
   }
 
   const handleKeyDown = (e: KeyboardEvent, filteredOpts: SelectOption<T>[]) => {

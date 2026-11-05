@@ -14,6 +14,12 @@ export interface DrawerOptions {
   onClose?: () => void;
   /** × button in the corner (default true; uses the modal.close key). */
   showClose?: boolean;
+  /**
+   * Modal (default true): backdrop + focus trap + body scroll lock and
+   * `aria-modal="true"`. Set false for a non-blocking floating panel that
+   * lets you keep operating the page behind it (chat widgets, inspectors).
+   */
+  modal?: boolean;
   /** Extra panel classes (e.g. w-96 to widen it). */
   class?: string;
   [key: string]: any;
@@ -39,6 +45,8 @@ export const Drawer = (props: DrawerOptions, ...content: ChildDom[]): ChildDom =
   const side = SIDE_PANEL[props.side ?? "right"];
   const dismissible = props.dismissible !== false;
   const showClose = props.showClose !== false;
+  // Modal por defecto; modal:false → panel flotante no bloqueante.
+  const modal = props.modal !== false;
 
   let panelEl: HTMLElement | null = null;
   let lastFocused: HTMLElement | null = null;
@@ -55,8 +63,8 @@ export const Drawer = (props: DrawerOptions, ...content: ChildDom[]): ChildDom =
         e.preventDefault();
         close();
       }
-    } else if (e.key === "Tab" && panelEl) {
-      // Focus trap: Tab cannot leave the panel while it is open.
+    } else if (e.key === "Tab" && panelEl && modal) {
+      // Focus trap (solo modal): Tab no puede salir del panel abierto.
       const focusables = panelEl.querySelectorAll<HTMLElement>(FOCUSABLE);
       if (!focusables.length) {
         e.preventDefault();
@@ -83,7 +91,7 @@ export const Drawer = (props: DrawerOptions, ...content: ChildDom[]): ChildDom =
   van.derive(() => {
     if (typeof document === "undefined") return;
     if (props.open.val) {
-      lastFocused = document.activeElement as HTMLElement | null;
+      lastFocused = modal ? (document.activeElement as HTMLElement | null) : null;
       document.addEventListener("keydown", onKeydown);
       // When created with open=true the panel does not exist yet: defer focus.
       panelEl ? panelEl.focus() : setTimeout(() => panelEl?.focus(), 0);
@@ -95,7 +103,7 @@ export const Drawer = (props: DrawerOptions, ...content: ChildDom[]): ChildDom =
       }
     }
   });
-  useScrollLock(props.open);
+  if (modal) useScrollLock(props.open);
 
   const backdrop = div({
     class: () =>
@@ -110,10 +118,10 @@ export const Drawer = (props: DrawerOptions, ...content: ChildDom[]): ChildDom =
     {
       tabindex: "-1",
       role: "dialog",
-      "aria-modal": "true",
+      "aria-modal": modal ? "true" : "false",
       class: () =>
         cx(
-          "absolute flex flex-col overflow-y-auto bg-background shadow-2xl outline-none transition-transform duration-300",
+          `${modal ? "absolute" : "fixed"} flex flex-col overflow-y-auto bg-background shadow-2xl outline-none transition-transform duration-300${modal ? "" : " z-50"}`,
           side.base,
           props.open.val ? side.open : side.closed,
           props.class,
@@ -145,5 +153,10 @@ export const Drawer = (props: DrawerOptions, ...content: ChildDom[]): ChildDom =
   );
 
   panelEl = panel;
+  if (!modal) {
+    // No-modal: panel flotante sin backdrop ni overlay de pantalla completa; el
+    // resto de la página sigue operable. El panel mismo es el nodo raíz.
+    return panel;
+  }
   return overlay;
 };

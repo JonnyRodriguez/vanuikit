@@ -281,4 +281,49 @@ describe("Drawer", () => {
     await tick();
     expect(panel.className).toContain("translate-y-0");
   });
+
+  test("modal: false → panel flotante no bloqueante (sin backdrop, sin scroll lock, sin focus trap)", async () => {
+    const open = van.state(true);
+    const dom = Drawer(
+      { open, modal: false, showClose: false },
+      van.tags.div(
+        van.tags.button({ id: "nm-a" }, "A"),
+        van.tags.button({ id: "nm-b" }, "B"),
+      ),
+    ) as HTMLElement;
+    mount(dom);
+
+    // En modo no-modal el panel es el nodo raíz (no hay wrapper ni backdrop).
+    const panel = dom;
+    expect(panel.getAttribute("role")).toBe("dialog");
+    expect(panel.getAttribute("aria-modal")).toBe("false");
+    expect(dom.className).not.toContain("bg-overlay");
+    expect(dom.classList.contains("fixed")).toBe(true);
+    // Sin bloqueo de scroll mientras está abierto.
+    expect(document.body.style.overflow).toBe("");
+    // Sin focus trap: Tab no envuelve al llegar al último elemento.
+    const last = panel.querySelector("#nm-b") as HTMLButtonElement;
+    const first = panel.querySelector("#nm-a") as HTMLButtonElement;
+    last.focus();
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Tab" }));
+    expect(document.activeElement).toBe(last);
+    first.focus();
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Tab", shiftKey: true }));
+    expect(document.activeElement).toBe(first);
+  });
+
+  test("modal: false conserva Esc para cerrar si dismissible", async () => {
+    const open = van.state(true);
+    let closes = 0;
+    const dom = Drawer(
+      { open, modal: false, onClose: () => closes++ },
+      van.tags.p("Hola"),
+    ) as HTMLElement;
+    mount(dom);
+
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+    await tick();
+    expect(open.val).toBe(false);
+    expect(closes).toBe(1);
+  });
 });

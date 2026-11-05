@@ -555,6 +555,7 @@ Drawer({ open, side: "right" }, div("Panel content"));
 | `dismissible` | `boolean` | `true` | Esc and backdrop click close the drawer. |
 | `onClose` | `() => void` | — | Called when the drawer closes. |
 | `showClose` | `boolean` | `true` | Shows a × button in the corner (uses `modal.close` key). |
+| `modal` | `boolean` | `true` | `false` renders a non-blocking floating panel: no backdrop, no focus trap, no body scroll lock and `aria-modal="false"`, so the page behind stays operable (chat widgets, inspectors). |
 | `class` | `string` | — | Extra panel classes (e.g. `w-96` to widen it). |
 | `[key: string]` | `any` | — | Forwarded to the overlay element. |
 

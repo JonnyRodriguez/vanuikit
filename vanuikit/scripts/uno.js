@@ -245,8 +245,21 @@ const LAYOUT_CSS = `
 }
 `.trim();
 
+// El nav del sidebar scrollea internamente (overflow-y-auto) cuando hay más
+// ítems de los que caben, pero la barra de scroll nativa se oculta: en el rail
+// colapsado (angosto) la barra empuja/descentra los iconos y añade ruido
+// visual. Se mantiene el scroll funcional (rueda, teclado, arrastre).
+const SIDEBAR_CSS = `
+.vui-sb-nav {
+  scrollbar-width: none;
+}
+.vui-sb-nav::-webkit-scrollbar {
+  display: none;
+}
+`.trim();
+
 fs.mkdirSync(path.dirname(OUT), { recursive: true });
-fs.writeFileSync(OUT, `${css}\n${LAYOUT_CSS}\n`, "utf-8");
+fs.writeFileSync(OUT, `${css}\n${LAYOUT_CSS}\n${SIDEBAR_CSS}\n`, "utf-8");
 console.log(
   `vanuikit.css generated (${files.length} files scanned, ${css.length} bytes)`,
 );

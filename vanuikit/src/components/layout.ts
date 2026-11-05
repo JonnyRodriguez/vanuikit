@@ -299,7 +299,7 @@ export function Sidebar(props: SidebarProps) {
     },
     // Top section: header + navigation (internal scroll, the footer stays fixed).
     div(
-      { class: "flex flex-col gap-4 overflow-y-auto flex-1 pr-1" },
+      { class: "vui-sb-nav flex flex-col gap-4 overflow-y-auto flex-1 pr-1" },
       props.header || props.onClose || collapseToggle
         ? div(
             {

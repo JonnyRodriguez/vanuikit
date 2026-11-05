@@ -169,20 +169,27 @@ export type IconProps = {
  * Icon — <svg> with a real namespace and currentColor stroke (tinted by the text).
  */
 export function Icon(props: IconProps) {
+  const userClass = () =>
+    typeof props.class === "function"
+      ? props.class()
+      : typeof props.class === "object" && props.class !== null && "val" in props.class
+        ? (props.class as State<string>).val
+        : props.class;
+
   return Svg(
     {
       viewBox: "0 0 24 24",
       style:
         "fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round",
-      class: () =>
-        cx(
-          "shrink-0 select-none size-4",
-          typeof props.class === "function"
-            ? props.class()
-            : typeof props.class === "object" && props.class !== null && "val" in props.class
-              ? (props.class as State<string>).val
-              : props.class,
-        ),
+      class: () => {
+        const uc = userClass() ?? "";
+        // Si el consumidor ya fija un tamaño (size-/w-/h-), respetarlo y no
+        // superponer el default `size-4`: ambos caen sobre el mismo <svg> y el
+        // resultado depende del orden de cascada (terminaba en 16px en vez del
+        // tamaño pedido, p. ej. size-[18px]).
+        const hasSize = /(^|\s)(size|w|h)-/.test(uc);
+        return cx("shrink-0 select-none", !hasSize && "size-4", uc);
+      },
       "aria-hidden": "true",
     },
     ...PATHS[props.name].map((d) => SvgPath({ d })),

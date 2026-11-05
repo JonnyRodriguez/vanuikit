@@ -22,6 +22,15 @@ describe("Icon", () => {
     expect(cls).toContain("text-primary");
   });
 
+  test("respects the consumer size over the default size-4", () => {
+    const host = document.createElement("div");
+    van.add(host, Icon({ name: "sun", class: "size-[18px]" }));
+    const svg = host.querySelector("svg") as HTMLElement;
+    const cls = svg.getAttribute("class") ?? "";
+    expect(cls).toContain("size-[18px]");
+    expect(cls).not.toContain("size-4");
+  });
+
   test("reactive class: function and State", async () => {
     const collapsed = van.state(false);
     const host = document.createElement("div");

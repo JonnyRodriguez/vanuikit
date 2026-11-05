@@ -430,7 +430,11 @@ export function AppShell(props: AppShellProps) {
         // No overflow-x-hidden at the root: an ancestor with overflow != visible
         // breaks the sidebar's position:sticky on desktop (the mobile drawer is
         // fixed, it does not overflow the document, not needed).
-        "min-h-screen flex bg-background text-foreground transition-colors relative",
+        // vui-app-shell: hook de estabilidad. La librería fija el posicionamiento
+        // del sidebar bajo este hook con especificidad propia, para que un
+        // consumidor que regenere utilidades (p. ej. el .fixed de una hoja
+        // UnoCSS propia) no pueda romper el layout del shell.
+        "vui-app-shell min-h-screen flex bg-background text-foreground transition-colors relative",
         props.class,
       ),
     },

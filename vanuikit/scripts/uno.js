@@ -226,8 +226,27 @@ const generator = await createGenerator({
 });
 const { css } = await generator.generate(source, { id: "vanuikit", minify: true });
 
+// Hardening del layout: el `sticky` desktop del sidebar es parte del contrato
+// de la librería. Un consumidor que recompileleCSS regenera la utilidad base
+// `.fixed` que — misma especificidad, orden de carga posterior — pisaría el
+// `lg:sticky` del sidebar (la barra flotaría sobre el contenido). Se fijan
+// ambos estados (drawer fijo en móvil, sticky en desktop) bajo un hook estable
+// del shell (`.vui-app-shell > .app-shell-sidebar`), con especificidad propia
+// (0,2,0) que gana a cualquier `.fixed` regenerado por el consumidor, sin
+// importar el orden de las hojas.
+const LAYOUT_CSS = `
+.vui-app-shell > .app-shell-sidebar {
+  position: fixed;
+}
+@media (min-width: 1024px) {
+  .vui-app-shell > .app-shell-sidebar {
+    position: sticky;
+  }
+}
+`.trim();
+
 fs.mkdirSync(path.dirname(OUT), { recursive: true });
-fs.writeFileSync(OUT, css, "utf-8");
+fs.writeFileSync(OUT, `${css}\n${LAYOUT_CSS}\n`, "utf-8");
 console.log(
   `vanuikit.css generated (${files.length} files scanned, ${css.length} bytes)`,
 );

@@ -12,7 +12,7 @@ concurrency:
 jobs:
   checks:
     name: Checks (typecheck · tests · size · build)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     defaults:
       run:
         working-directory: vanuikit
@@ -30,6 +30,9 @@ jobs:
       - name: Typecheck
         run: bun run typecheck
 
+      - name: Production build
+        run: bun run build
+
       - name: Tests
         run: bun test
 
@@ -38,6 +41,3 @@ jobs:
 
       - name: Size budget (bun run size)
         run: bun run size
-
-      - name: Production build
-        run: bun run build

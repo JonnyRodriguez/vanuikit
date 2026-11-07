@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: vanuikit/vanuikit
+        working-directory: vanuikit
     steps:
       - uses: actions/checkout@v4
 

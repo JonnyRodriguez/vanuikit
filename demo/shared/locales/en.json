@@ -5,6 +5,15 @@
   "breadcrumbs": {
     "ariaLabel": "Breadcrumb"
   },
+  "chat": {
+    "emptyDesc": "Write a message to see the simulated assistant stream its reply.",
+    "emptyTitle": "No messages yet",
+    "inputLabel": "Message",
+    "placeholder": "Write a message…",
+    "send": "Send",
+    "subtitle": "Embedded reactive chat — hook + component, agnostic of the AI transport.",
+    "title": "Chat"
+  },
   "checkbox": {
     "required": "You must check this option"
   },
@@ -373,6 +382,7 @@
   "nav": {
     "account": "Account",
     "ariaLabel": "Main navigation",
+    "chat": "Chat",
     "components": "Components",
     "dashboard": "Dashboard",
     "***REMOVED***": "***REMOVED***",

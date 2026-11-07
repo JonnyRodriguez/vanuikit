@@ -108,6 +108,49 @@ export function Table<T extends Record<string, any> = any>(props: TableProps<T>)
     }
   };
 
+  // La barra de búsqueda vive FUERA del contenedor reactivo y el input es
+  // DESCONTROLADO (sin binding `value`): VanJS nunca escribe sobre el campo, así
+  // que solo el DOM es dueño del texto y del caret (nadie puede re-crearlo ni
+  // interferir con el foco al filtrar). El filtro solo LEE `searchQuery`, que se
+  // actualiza vía `oninput`. El cuerpo de la tabla + paginación se re-renderizan
+  // al filtrar, pero la searchbar queda intacta.
+  const searchBar = props.searchable
+    ? div(
+        {
+          class:
+            "flex items-center justify-between gap-3 p-3.5 border-b border-border bg-secondary/5",
+        },
+        div(
+          { class: "relative flex-1 max-w-sm" },
+          input({
+            type: "text",
+            placeholder:
+              props.searchPlaceholder ??
+              t("table.searchPlaceholder", "Search the table..."),
+            class:
+              "w-full pl-8 pr-3 py-1.5 text-xs rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-focus transition-all",
+            oninput: (e: Event) => {
+              searchQuery.val = (e.target as HTMLInputElement).value;
+              currentPage.val = 1;
+            },
+          }),
+          span(
+            { class: "absolute left-2.5 top-1/2 -translate-y-1/2 text-muted pointer-events-none" },
+            Icon({ name: "search", class: "size-3.5" }),
+          ),
+        ),
+        props.selectable
+          ? () =>
+              selectedRows.val.length > 0
+                ? span(
+                    { class: "text-xs text-primary font-semibold" },
+                    t("table.selectedCount", "{count} selected", { count: selectedRows.val.length }),
+                  )
+                : null
+          : null,
+      )
+    : null;
+
   return div(
     {
       ...(props.id ? { id: props.id } : {}),
@@ -115,6 +158,7 @@ export function Table<T extends Record<string, any> = any>(props: TableProps<T>)
         props.class ?? ""
       }`,
     },
+    searchBar,
     () => {
       let rows = [...getData()];
 
@@ -177,41 +221,6 @@ export function Table<T extends Record<string, any> = any>(props: TableProps<T>)
 
       return div(
         { class: "flex flex-col w-full" },
-        // Top search bar (if searchable = true)
-        props.searchable
-          ? div(
-              {
-                class:
-                  "flex items-center justify-between gap-3 p-3.5 border-b border-border bg-secondary/5",
-              },
-              div(
-                { class: "relative flex-1 max-w-sm" },
-                input({
-                  type: "text",
-                  placeholder:
-                    props.searchPlaceholder ??
-                    t("table.searchPlaceholder", "Search the table..."),
-                  value: searchQuery.val,
-                  class:
-                    "w-full pl-8 pr-3 py-1.5 text-xs rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-focus transition-all",
-                  oninput: (e: Event) => {
-                    searchQuery.val = (e.target as HTMLInputElement).value;
-                    currentPage.val = 1;
-                  },
-                }),
-                span(
-                  { class: "absolute left-2.5 top-1/2 -translate-y-1/2 text-muted pointer-events-none" },
-                  Icon({ name: "search", class: "size-3.5" }),
-                ),
-              ),
-              props.selectable && selectedRows.val.length > 0
-                ? span(
-                    { class: "text-xs text-primary font-semibold" },
-                    t("table.selectedCount", "{count} selected", { count: selectedRows.val.length }),
-                  )
-                : null,
-            )
-          : null,
         // Table with responsive horizontal scroll
         div(
           { class: "w-full overflow-x-auto" },

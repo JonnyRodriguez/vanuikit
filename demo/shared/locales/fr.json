@@ -9,7 +9,17 @@
     "register": "Créer un compte",
     "ariaLabel": "Navigation principale",
     "dashboard": "Tableau de bord",
-    "menuOpen": "Ouvrir le menu"
+    "menuOpen": "Ouvrir le menu",
+    "chat": "Discussion"
+  },
+  "chat": {
+    "title": "Discussion",
+    "subtitle": "Chat réactif intégré — hook + composant, agnostique du transport d'IA.",
+    "emptyTitle": "Pas encore de messages",
+    "emptyDesc": "Écrivez un message pour voir l'assistant simulé diffuser sa réponse.",
+    "send": "Envoyer",
+    "placeholder": "Écrivez un message…",
+    "inputLabel": "Message"
   },
   "theme": {
     "light": "Clair",

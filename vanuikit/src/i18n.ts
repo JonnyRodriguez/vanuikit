@@ -84,6 +84,11 @@ export const defaultLocales: Record<string, Record<string, any>> = {
     combobox: {
       remove: "Quitar {name}",
     },
+    chat: {
+      send: "Enviar",
+      placeholder: "Escribe un mensaje…",
+      inputLabel: "Mensaje",
+    },
     datepicker: {
       placeholder: "Seleccionar fecha",
       prevMonth: "Mes anterior",
@@ -234,6 +239,11 @@ export const defaultLocales: Record<string, Record<string, any>> = {
     },
     combobox: {
       remove: "Remove {name}",
+    },
+    chat: {
+      send: "Send",
+      placeholder: "Write a message…",
+      inputLabel: "Message",
     },
     datepicker: {
       placeholder: "Select a date",

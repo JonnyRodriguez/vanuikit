@@ -27,6 +27,7 @@ import { LoginPage } from "./pages/login.page.js";
 import { RegisterPage } from "./pages/register.page.js";
 import { ***REMOVED***Page } from "./pages/***REMOVED***.page.js";
 import { ComponentsPage } from "./pages/components.page.js";
+import { ChatPage } from "./pages/chat.page.js";
 import { DebugPage } from "./pages/debug.page.js";
 import { i18n } from "./shared/i18n.config.js";
 import { theme } from "./shared/theme.config.js";
@@ -110,6 +111,7 @@ router
   .add("/register", () => RegisterPage())
   .add("/***REMOVED***", () => ***REMOVED***Page())
   .add("/components", () => ComponentsPage())
+  .add("/chat", () => ChatPage())
   .add("/debug", () => DebugPage())
   .redirect("/", "/***REMOVED***");
 
@@ -127,6 +129,7 @@ export function App() {
     const p = router.path.val;
     if (p.startsWith("/***REMOVED***")) return i18n.raw("***REMOVED***.title", "***REMOVED*** & Top-up Methods");
     if (p.startsWith("/components")) return i18n.raw("components.title", "Component Showcase");
+    if (p.startsWith("/chat")) return i18n.raw("chat.title", "Chat");
     if (p.startsWith("/login")) return i18n.raw("login.title", "Sign In");
     if (p.startsWith("/register")) return i18n.raw("register.title", "Create Account");
     return i18n.raw("nav.dashboard", "Dashboard");
@@ -180,6 +183,15 @@ export function App() {
             icon: Icon({ name: "puzzle", class: "size-[18px]" }),
             badge: "17",
             badgeVariant: "secondary",
+            current: router.path,
+            onclick: () => {
+              sidebarOpen.val = false;
+            },
+          }),
+          SidebarItem({
+            href: "/chat",
+            label: i18n.t("nav.chat", "Chat"),
+            icon: Icon({ name: "inbox", class: "size-[18px]" }),
             current: router.path,
             onclick: () => {
               sidebarOpen.val = false;

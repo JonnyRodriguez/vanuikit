@@ -1,4 +1,5 @@
 import { describe, test, expect } from "bun:test";
+import van from "vanjs-core";
 import { Table, DataGrid } from "../src/components/table.js";
 
 const tick = () => new Promise((r) => setTimeout(r, 0));
@@ -80,5 +81,66 @@ describe("Table / DataGrid", () => {
     const rows = el.querySelectorAll("tbody tr");
     expect(rows.length).toBe(1);
     expect(rows[0].textContent).toContain("Alice");
+  });
+
+  test("keeps the search input element while typing (no re-creation → no lost focus)", async () => {
+    const el = DataGrid({
+      columns: [
+        { key: "name", header: "Nombre" },
+        { key: "score", header: "Puntaje" },
+      ],
+      data: sampleData,
+      searchable: true,
+    }) as HTMLElement;
+
+    document.body.appendChild(el);
+    await tick();
+
+    const input = el.querySelector('input[type="text"]') as HTMLInputElement;
+    expect(input).not.toBeNull();
+    input.focus();
+
+    for (const val of ["a", "al", "ali"]) {
+      input.value = val;
+      input.dispatchEvent(new Event("input"));
+      await tick();
+      // The same node must remain mounted (re-creation would drop focus).
+      expect(el.contains(input)).toBe(true);
+      expect(el.querySelector('input[type="text"]')).toBe(input);
+    }
+  });
+
+  test("search input survives typing inside a reactive loading container (page pattern)", async () => {
+    const loading = van.state(true);
+    const el = van.tags.div(() => {
+      if (loading.val) return van.tags.span("loading");
+      return DataGrid({
+        columns: [
+          { key: "name", header: "Nombre" },
+          { key: "score", header: "Puntaje" },
+        ],
+        data: sampleData,
+        searchable: true,
+      });
+    }) as HTMLElement;
+
+    document.body.appendChild(el);
+    await tick();
+    expect(el.textContent).toContain("loading");
+
+    loading.val = false;
+    await tick();
+
+    const input = el.querySelector('input[type="text"]') as HTMLInputElement;
+    expect(input).not.toBeNull();
+    input.focus();
+
+    for (const val of ["a", "al", "ali"]) {
+      input.value = val;
+      input.dispatchEvent(new Event("input"));
+      await tick();
+      expect(el.contains(input)).toBe(true);
+      expect(el.querySelector('input[type="text"]')).toBe(input);
+    }
   });
 });

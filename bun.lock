@@ -31,7 +31,7 @@
     },
     "vanuikit": {
       "name": "vanuikit",
-      "version": "0.1.0",
+      "version": "0.3.1",
       "devDependencies": {
         "@happy-dom/global-registrator": "^20.11.6",
         "@types/node": "^22.13.10",
@@ -198,7 +198,7 @@
 
     "undici-types": ["undici-types@6.21.0", "", {}, "sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ=="],
 
-    "vanjs-core": ["vanjs-core@1.6.1", "", {}, "sha512-CPUteb4/iW3hB7TLTKI9A9YMRTAQFpPz5n1/+vfnPxNs2wOI9HvSg6K3B/9x+uycX8eefqopBcakr2vJeHgIgw=="],
+    "vanjs-core": ["vanjs-core@1.6.2", "", {}, "sha512-Scc6y3l8/5b4zq67rslr4PA6RHqgJt84S8FLzHm1efPJkPMl22szOFXZWPAkGswm2GE+sMTkXKcR5UbTRg4BZQ=="],
 
     "vanuikit": ["vanuikit@workspace:vanuikit"],
 

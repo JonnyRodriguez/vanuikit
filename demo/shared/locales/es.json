@@ -11,6 +11,15 @@
   "combobox": {
     "remove": "Quitar {name}"
   },
+  "chat": {
+    "title": "Chat",
+    "subtitle": "Chat reactivo integrado — hook + componente, agnóstico del transporte de IA.",
+    "emptyTitle": "Aún no hay mensajes",
+    "emptyDesc": "Escribe un mensaje para ver al asistente simulado transmitir su respuesta.",
+    "send": "Enviar",
+    "placeholder": "Escribe un mensaje…",
+    "inputLabel": "Mensaje"
+  },
   "components": {
     "acc1Body": "Una librería de componentes reactivos para VanJS: cero boilerplate, i18n inline y baterías incluidas.",
     "acc1Title": "¿Qué es VanUikit?",
@@ -374,6 +383,7 @@
     "account": "Cuenta",
     "ariaLabel": "Navegación principal",
     "components": "Componentes",
+    "chat": "Chat",
     "dashboard": "Dashboard",
     "***REMOVED***": "***REMOVED***s",
     "login": "Iniciar sesión",

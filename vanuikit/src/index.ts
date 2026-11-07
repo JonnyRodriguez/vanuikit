@@ -77,11 +77,28 @@ export { Avatar, getInitials, type AvatarOptions, type AvatarSize } from "./comp
 export { Breadcrumbs, type BreadcrumbsOptions, type BreadcrumbItem } from "./components/breadcrumbs.js";
 export { Card, CardTitle, type CardOptions, type CardTitleOptions } from "./components/card.js";
 export { Accordion, type AccordionOptions, type AccordionItem } from "./components/accordion.js";
+export { Tree, type TreeOptions, type TreeNode } from "./components/tree.js";
 export { Combobox, type ComboboxOptions, type ComboboxOption, type ComboboxField } from "./components/combobox.js";
 export { Pagination, pageSlots, type PaginationOptions } from "./components/pagination.js";
 export { DatePicker, type DatePickerOptions, type DatePickerField } from "./components/datepicker.js";
 export { Kbd, type KbdOptions } from "./components/kbd.js";
+export {
+  createChat,
+  ChatWindow,
+  type ChatMessage,
+  type ChatRole,
+  type CreateChatOptions,
+  type ChatApi,
+  type ChatStreamSink,
+  type ChatWindowProps,
+} from "./components/chat.js";
 export { trace, expectReactive, type ExpectReactiveOptions } from "./debug.js";
+export {
+  openAIStream,
+  createOpenAIChat,
+  type OpenAIChatOptions,
+  type CreateOpenAIChatOptions,
+} from "./ai-chat.js";
 export { installVanDebug, type VanDebugApi, type VanDebugGraph, type VanDebugDiagnostic, type ViolationKind } from "./debug-graph.js";
 export {
   ThemeToggle,

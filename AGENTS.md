@@ -121,6 +121,7 @@ The question that solves all cases: **which binding captures this read, and what
 | `Tooltip`, `Popover`, `Drawer` | `vanuikit` | Fine overlay without dependencies: tooltips by hover/focus (off on touch), floating panels with click-outside/Esc and the `content(close)` factory, drawers on all 4 sides with backdrop, focus trap, and scroll lock. |
 | `Combobox` | `vanuikit` | Searchable WAI-ARIA-style select (input filters as you type, ↑/↓/Home/End/Enter/Esc, `aria-activedescendant`), bidirectional `value`, and `Form` integration (`.dom()` as child). With `multiple: true`: removable chips and `value: State<string[]>` (read `field.value.val`: `FormData` collapses duplicates). |
 | `Accordion` | `vanuikit` | Single/multiple accordion with content as a factory (rebuilds on each opening) and `aria-expanded`/`region` semantics. |
+| `Tree` | `vanuikit` | Hierarchical tree of nested nodes with recursive indentation, expand/collapse (starts expanded, manual collapse persists), `role="tree"`/`aria-expanded`, a per-node `actions` slot, and an inline add-child mode (`onAddChild`) with input below the row, no modal. |
 | `Avatar` | `vanuikit` | Initials with automatic fallback from `src` (shares `getInitials` with UserBadge); 4 sizes. |
 | `Breadcrumbs` | `vanuikit` | Navigation path with SPA anchors and `aria-current="page"` on the last item. |
 | `Card` / `CardTitle` | `vanuikit` | Base surface without imposed padding; `hoverable` for clickable cards. |

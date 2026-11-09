@@ -25,6 +25,16 @@ const zone = (v: unknown): ModalZone => {
   return typeof v === "function" ? (v as ModalZone) : () => v as ValidChildDomValue;
 };
 
+/** Modal width variants. Default is `md`. */
+export type ModalSize = "sm" | "md" | "lg" | "xl";
+
+const MODAL_SIZES: Record<ModalSize, string> = {
+  sm: "max-w-sm",
+  md: "max-w-md",
+  lg: "max-w-2xl",
+  xl: "max-w-4xl",
+};
+
 /**
  * ModalBase — the most basic brick: overlay + three zones (header, body,
  * footer) filled with set() or the individual setters.
@@ -32,6 +42,7 @@ const zone = (v: unknown): ModalZone => {
 export const ModalBase = (
   initialContent: ModalContent | null = null,
   initialVisible = false,
+  size: ModalSize = "md",
 ) => {
   const header = van.state<ModalZone>(null);
   const body = van.state<ModalZone>(null);
@@ -73,7 +84,7 @@ export const ModalBase = (
       },
       div(
         {
-          class: "bg-background rounded-lg shadow-xl p-6 w-full max-w-md",
+          class: `bg-background rounded-lg shadow-xl p-6 w-full ${MODAL_SIZES[size]}`,
           onclick: (e: MouseEvent) => e.stopPropagation(),
         },
         () => (header.val ? header.val() : div()),
@@ -153,6 +164,7 @@ export type ModalProps = ModalContent & { title?: string | State<string> };
 export const Modal = (
   initialContent: ModalProps | null = null,
   initialVisible = false,
+  size: ModalSize = "md",
 ) => {
   const title = van.state<string | State<string> | undefined>(
     initialContent?.title,
@@ -168,6 +180,7 @@ export const Modal = (
       body: initialContent?.body,
     },
     initialVisible,
+    size,
   );
 
   const setTitle = (newTitle: string | State<string>) => (title.val = newTitle);

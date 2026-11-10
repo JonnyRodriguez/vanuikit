@@ -164,7 +164,7 @@ export class Router {
   }
 
   /**
-   * "System" navigation — THE single ***REMOVED*** for redirects. The origin route
+   * "System" navigation — THE single entry point for redirects. The origin route
    * never got to render (alias of `.redirect()`, verdict of a guard), so it
    * REPLACES its history entry instead of stacking: only user-initiated
    * navigation (Link, spaClick, navigate) stacks. Any future router redirect

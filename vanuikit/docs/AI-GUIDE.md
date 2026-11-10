@@ -75,8 +75,8 @@ npm add vanuikit vanjs-core
 ```ts
 import { t, raw, fmt, toast } from "vanuikit";
 
-span(t("***REMOVED***.qrAlt", "QR code"));                 // reactive
-toast.success(raw("***REMOVED***.saved", "Changes saved")); // imperative
+span(t("docs.copy", "Copy"));                          // reactive
+toast.success(raw("settings.saved", "Changes saved"));  // imperative
 span(fmt.date(order.createdAt));
 ```
 

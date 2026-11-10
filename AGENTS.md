@@ -33,10 +33,10 @@ The key is semantic and stable (`section.proposal`); the default text (**in Engl
 ```typescript
 import { t, raw } from "vanuikit";
 
-span(t("***REMOVED***.qrAlt", "QR code"));
+span(t("docs.copy", "Copy"));
 Button({}, t("components.modal.openBtn", "Open Basic Modal"));
-toast.info(raw("***REMOVED***.saved", "Changes saved"));
-p(t("***REMOVED***.***REMOVED***With", "Top up with {name}", { name: ***REMOVED***.name }));
+toast.info(raw("settings.saved", "Changes saved"));
+p(t("greeting.withName", "Hello {name}", { name: user.name }));
 ```
 
 - **`t()` for reactive slots** (children and component props): returns `State<string>` and the text mutates when `currentLocale` changes.
@@ -77,9 +77,9 @@ The question that solves all cases: **which binding captures this read, and what
 **Direct DOM binding (Reactive)** — the most common leaf case: pass the `State` returned by `t()` as a child or prop.
   ```typescript
   SidebarItem({
-    href: "/***REMOVED***",
-    label: t("nav.***REMOVED***", "***REMOVED***"),
-    icon: "💳",
+    href: "/dashboard",
+    label: t("nav.dashboard", "Dashboard"),
+    icon: "📊",
     current: router.path,
   })
   ```
@@ -87,8 +87,8 @@ The question that solves all cases: **which binding captures this read, and what
   ```typescript
   const getPageTitle = van.derive(() => {
     const p = router.path.val;
-    if (p.startsWith("/***REMOVED***")) {
-      return raw("***REMOVED***.title", "***REMOVED*** Methods and Top-up");
+    if (p.startsWith("/dashboard")) {
+      return raw("dashboard.title", "Dashboard");
     }
     return "Dashboard";
   });

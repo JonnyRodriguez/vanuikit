@@ -332,31 +332,15 @@
       "required": "Ingresa tu contraseña"
     }
   },
-  "***REMOVED***": {
-    "amountLabel": "Monto a ***REMOVED***r ({tipo})",
-    "amountRequired": "Ingresa un monto",
-    "errorTitle": "Error al cargar datos",
-    "goToLogin": "Ir al Login",
-    "invalidAmount": "Ingresa un monto válido",
-    "loading": "Cargando ***REMOVED***s...",
-    "maxAmountErr": "El monto debe ser inferior a {max} {tipo}",
-    "minAmountErr": "El monto debe ser superior a {min} {tipo}",
-    "minMaxHelp": "Mínimo: {min} {tipo} · Máximo: {max} {tipo}",
-    "qrAlt": "Código QR",
-    "qrClickText": "Haz clic aquí para abrir la plataforma",
-    "qrNoticeText": "Tu saldo se actualizará automáticamente.",
-    "qrScanText": "o escanea el código QR con tu app móvil",
-    "qrTitle": "Código QR",
-    "restrictedMsg": "Debes iniciar sesión para acceder a las ***REMOVED***s de transaction y ***REMOVED***s.",
-    "restrictedTitle": "Acceso Restringido",
-    "retry": "Reintentar",
-    "select***REMOVED***": "Selecciona una ***REMOVED***",
-    "title": "Métodos de Transaction y ***REMOVED***",
-    "urlGenErr": "No se pudo generar la URL de ***REMOVED***",
-    "wizardStepAmount": "Monto",
-    "wizardStep***REMOVED***": "***REMOVED***",
-    "change***REMOVED***": "Cambiar",
-    "selected***REMOVED***": "***REMOVED*** seleccionada"
+  "dashboard": {
+    "active": "Activa",
+    "noSession": "Sin sesión activa",
+    "noSessionHint": "Inicia sesión para ver tu perfil.",
+    "sessionHint": "Validada contra el almacén de sesiones del servidor.",
+    "sessionLabel": "Sesión",
+    "signedInAs": "Sesión iniciada como",
+    "subtitle": "Una vista protegida respaldada por la API de sesión.",
+    "title": "Dashboard"
   },
   "lang": {
     "en": "English",
@@ -373,7 +357,7 @@
     "noAccount": "¿No tienes una cuenta?",
     "signupLink": "Regístrate aquí",
     "submit": "Iniciar sesión",
-    "subtitle": "Ingresa a tu cuenta para gestionar tus ***REMOVED***s",
+    "subtitle": "Ingresa a tu cuenta",
     "title": "Iniciar sesión"
   },
   "modal": {
@@ -385,7 +369,6 @@
     "components": "Componentes",
     "chat": "Chat",
     "dashboard": "Dashboard",
-    "***REMOVED***": "***REMOVED***s",
     "login": "Iniciar sesión",
     "logout": "Cerrar sesión",
     "menuOpen": "Abrir menú",
@@ -406,7 +389,7 @@
     "loading": "Creando cuenta...",
     "loginLink": "Inicia sesión",
     "submit": "Crear cuenta",
-    "subtitle": "Ingresa tus datos para comenzar a operar",
+    "subtitle": "Ingresa tus datos para crear tu cuenta",
     "title": "Crear una cuenta"
   },
   "router": {

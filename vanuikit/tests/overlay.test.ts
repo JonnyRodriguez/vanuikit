@@ -95,12 +95,12 @@ describe("Popover", () => {
     const el = mount(build() as HTMLElement);
     const panel = () => el.querySelector('[role="dialog"]') as HTMLElement;
     expect(panel().className).toContain("hidden");
-    expect(el.querySelector('[aria-haspopup="dialog"]')!.getAttribute("aria-expanded")).toBe("false");
+    expect(el.querySelector('#pop-trigger[aria-expanded]')!.getAttribute("aria-expanded")).toBe("false");
 
     (el.querySelector("#pop-trigger") as HTMLButtonElement).click();
     await tick();
     expect(panel().className).not.toContain("hidden");
-    expect(el.querySelector('[aria-haspopup="dialog"]')!.getAttribute("aria-expanded")).toBe("true");
+    expect(el.querySelector('#pop-trigger[aria-expanded]')!.getAttribute("aria-expanded")).toBe("true");
 
     (el.querySelector("#pop-trigger") as HTMLButtonElement).click();
     await tick();

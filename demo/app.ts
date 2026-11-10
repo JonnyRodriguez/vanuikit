@@ -25,7 +25,7 @@ import {
 } from "vanuikit";
 import { LoginPage } from "./pages/login.page.js";
 import { RegisterPage } from "./pages/register.page.js";
-import { ***REMOVED***Page } from "./pages/***REMOVED***.page.js";
+import { DashboardPage } from "./pages/dashboard.page.js";
 import { ComponentsPage } from "./pages/components.page.js";
 import { ChatPage } from "./pages/chat.page.js";
 import { DebugPage } from "./pages/debug.page.js";
@@ -109,11 +109,11 @@ export const router = createRouter({
 router
   .add("/login", () => LoginPage())
   .add("/register", () => RegisterPage())
-  .add("/***REMOVED***", () => ***REMOVED***Page())
+  .add("/dashboard", () => DashboardPage())
   .add("/components", () => ComponentsPage())
   .add("/chat", () => ChatPage())
   .add("/debug", () => DebugPage())
-  .redirect("/", "/***REMOVED***");
+  .redirect("/", "/dashboard");
 
 export function App() {
   void authState.boot().then(() => {
@@ -127,7 +127,7 @@ export function App() {
 
   const getPageTitle = van.derive(() => {
     const p = router.path.val;
-    if (p.startsWith("/***REMOVED***")) return i18n.raw("***REMOVED***.title", "***REMOVED*** & Top-up Methods");
+    if (p.startsWith("/dashboard")) return i18n.raw("dashboard.title", "Dashboard");
     if (p.startsWith("/components")) return i18n.raw("components.title", "Component Showcase");
     if (p.startsWith("/chat")) return i18n.raw("chat.title", "Chat");
     if (p.startsWith("/login")) return i18n.raw("login.title", "Sign In");
@@ -150,7 +150,7 @@ export function App() {
       // (close the mobile drawer when the logo is clicked).
       header: Link(
         {
-          href: "/***REMOVED***",
+          href: "/dashboard",
           class: "flex items-center gap-2.5 font-bold text-foreground tracking-tight text-lg no-underline",
           onclick: () => {
             sidebarOpen.val = false;
@@ -160,7 +160,7 @@ export function App() {
         span(
           {
             class:
-              "text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20",
+              "text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-primary/10 text-accent-fg border border-primary/20",
           },
           i18n.t("nav.dashboard", "Dashboard"),
         ),
@@ -169,9 +169,9 @@ export function App() {
         SidebarGroup(
           { title: i18n.t("nav.platform", "Platform") },
           SidebarItem({
-            href: "/***REMOVED***",
-            label: i18n.t("nav.***REMOVED***", "***REMOVED***"),
-            icon: Icon({ name: "credit-card", class: "size-[18px]" }),
+            href: "/dashboard",
+            label: i18n.t("nav.dashboard", "Dashboard"),
+            icon: Icon({ name: "monitor", class: "size-[18px]" }),
             current: router.path,
             onclick: () => {
               sidebarOpen.val = false;

@@ -126,7 +126,7 @@ export function LocaleSelector(props: LocaleSelectorProps = {}) {
                 "inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-lg transition-all cursor-pointer select-none",
                 isActive.val
                   ? "bg-card text-foreground shadow-xs border border-border/60"
-                  : "text-muted-foreground hover:text-foreground hover:bg-secondary/40 border border-transparent",
+                  : "text-foreground-soft hover:text-foreground hover:bg-secondary/40 border border-transparent",
               ),
             onclick: () => i18n.setLocale(code),
           },

@@ -15,12 +15,12 @@ export const RegisterPage = () => {
   return div(
     { class: "max-w-md mx-auto my-8 p-6 bg-background rounded-xl border border-border shadow-sm" },
     h1({ class: "text-2xl font-bold text-foreground text-center mb-1" }, i18n.t("register.title", "Create Account")),
-    p({ class: "text-sm text-foreground-soft text-center mb-6" }, i18n.t("register.subtitle", "Sign up to access the ***REMOVED*** ***REMOVED***")),
+    p({ class: "text-sm text-foreground-soft text-center mb-6" }, i18n.t("register.subtitle", "Sign up to manage your account")),
     RegisterForm({
       handleRegister: async (data) => {
         try {
           await authState.register(data);
-          navigate("/***REMOVED***");
+          navigate("/dashboard");
           return {};
         } catch (err: any) {
           return { error: err.message || i18n.raw("register.errGeneric", "Error creating account") };

@@ -77,7 +77,7 @@ function collectEntries(file: string): Entry[] {
             add(key.text, fallback.text);
           } else if (ts.isTemplateExpression(fallback)) {
             // `Minimum: {min} of {max}` — placeholders come from the aliases of the
-            // params object when they exist (min: params.monto_min_***REMOVED***),
+            // params object when they exist (min: params.monto_minimo),
             // and otherwise from the expression name.
             const aliasByValue = new Map<string, string>();
             const paramsObj = node.arguments[2];

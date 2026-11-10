@@ -63,6 +63,7 @@ export const Popover = (props: PopoverOptions): ChildDom => {
   const setOpen = (v: boolean) => {
     if (open.val === v) return;
     open.val = v;
+    triggerEl?.setAttribute?.("aria-expanded", v ? "true" : "false");
     if (typeof document === "undefined") return;
     if (v) {
       document.addEventListener("click", onDocClick);
@@ -73,19 +74,24 @@ export const Popover = (props: PopoverOptions): ChildDom => {
     }
   };
 
+  // El trigger es el control interactivo real: lleva `aria-expanded` y el
+  // toggle. Un span sin rol no puede portar `aria-expanded` (viola
+  // aria-allowed-attr), así que el estado se comunica sobre el propio botón.
+  const triggerEl = (typeof props.trigger === "function" ? null : props.trigger) as
+    | HTMLElement
+    | null;
+  triggerEl?.setAttribute?.("aria-expanded", "false");
+  triggerEl?.addEventListener?.("click", (e) => {
+    e.stopPropagation();
+    setOpen(!open.val);
+  });
+
   const containerEl = div(
     {
       id,
       class: () => cx("relative inline-block", props.class),
     },
-    span(
-      {
-        "aria-haspopup": "dialog",
-        "aria-expanded": () => (open.val ? "true" : "false"),
-        onclick: () => setOpen(!open.val),
-      },
-      props.trigger,
-    ),
+    props.trigger,
     // Panel always mounted (real anchor): a function-child returning null
     // would die on the first toggle (keepConnected discards _dom null). The
     // content is indeed rebuilt on each open via the factory.

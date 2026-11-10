@@ -125,7 +125,12 @@ export function ThemeToggle(props: ThemeToggleProps = {}) {
         "inline-flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-border bg-card hover:bg-secondary text-foreground text-xs font-medium cursor-pointer transition-colors shadow-xs select-none",
         props.class,
       ),
-      "aria-label": i18n.t("theme.toggleLabel", "Toggle visual theme (Light / Dark / System)"),
+      // Solo la variante icon-only necesita aria-label: si hay texto visible
+      // (showLabel), el nombre accesible debe venir del contenido para no
+      // romper label-content-name-mismatch.
+      ...(showLabel
+        ? {}
+        : { "aria-label": i18n.t("theme.toggleLabel", "Toggle visual theme (Light / Dark / System)") }),
       title: i18n.t("theme.toggleTitle", "Toggle theme (Light / Dark / System)"),
       onclick: cycle,
     },

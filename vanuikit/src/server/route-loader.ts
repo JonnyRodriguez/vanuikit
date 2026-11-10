@@ -7,7 +7,7 @@
  * respecting the folder hierarchy:
  *
  *   routes/api/auth.route.ts     ->  /api/auth
- *   routes/api/***REMOVED***.route.ts  ->  /api/***REMOVED***
+ *   routes/api/users.route.ts    ->  /api/users
  *
  * Each file exports a Hono sub-app as default (or as the named `route`).
  *

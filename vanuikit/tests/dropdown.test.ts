@@ -18,7 +18,7 @@ describe("SelectDropdown", () => {
     document.body.appendChild(el);
     await tick();
 
-    const btn = el.querySelector('[role="combobox"]') as HTMLButtonElement;
+    const btn = el.querySelector('button[aria-haspopup="listbox"]') as HTMLButtonElement;
     expect(btn.textContent).toContain("Español");
     expect(btn.getAttribute("aria-expanded")).toBe("false");
   });
@@ -39,7 +39,7 @@ describe("SelectDropdown", () => {
     document.body.appendChild(el);
     await tick();
 
-    const btn = el.querySelector('[role="combobox"]') as HTMLButtonElement;
+    const btn = el.querySelector('button[aria-haspopup="listbox"]') as HTMLButtonElement;
     btn.click();
     await tick();
 
@@ -68,7 +68,7 @@ describe("SelectDropdown", () => {
     document.body.appendChild(el);
     await tick();
 
-    const btn = el.querySelector('[role="combobox"]') as HTMLButtonElement;
+    const btn = el.querySelector('button[aria-haspopup="listbox"]') as HTMLButtonElement;
     const chevron = [...btn.querySelectorAll("span")].find(
       (s) => s.textContent?.trim() === "▼",
     );

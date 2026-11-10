@@ -76,7 +76,7 @@ const VUI_THEME = `
 --vui-info:#2563eb;
 --vui-info-fg:#1d4ed8;
 --vui-success:#16a34a;
---vui-success-fg:#15803d;
+--vui-success-fg:#166534;
 --vui-warning:#d97706;
 --vui-warning-fg:#b45309;
 --vui-card:#ffffff;
@@ -258,8 +258,65 @@ const SIDEBAR_CSS = `
 }
 `.trim();
 
+// El handle de resize del sidebar depende de "oculto en móvil / visible en
+// desktop" y de "oculto al colapsar". Usar las utilidades `hidden lg:block`
+// es frágil: un consumidor que recompileleCSS regenera `.hidden` (misma
+// especificidad, carga posterior) y pisa el `lg:block`, dejando el handle
+// invisible (y con él, la función de redimensionar). Estas reglas propias de
+// la librería fijan la visibilidad sin depender del orden de hojas del
+// consumidor, igual que el `sticky` desktop del shell (LAYOUT_CSS).
+const RESIZER_CSS = `
+.vui-sb-resizer {
+  display: none;
+}
+@media (min-width: 1024px) {
+  .vui-sb-resizer:not(.vui-sb-collapsed) {
+    display: block;
+  }
+}
+.vui-sb-resizer.vui-sb-collapsed {
+  display: none;
+}
+
+/* El handle es una franja invisible de 6px: se muestra una línea fina al
+ * pasar el mouse / enfocar con teclado (y mientras se arrastra) para que su
+ * presencia y la acción de redimensionar sean descubribles. El estado de
+ * arrastre (is-dragging, set desde el componente) también pinta un fondo
+ * suave, igual que el bg-primary/40 anterior, pero ahora sin depender de
+ * que el consumidor regenere utilidades de color. */
+.vui-sb-resizer::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  transform: translateX(-50%);
+  border-radius: var(--vui-radius-full);
+  background: transparent;
+  transition: background-color 150ms ease;
+}
+.vui-sb-resizer:hover::after,
+.vui-sb-resizer:focus-visible::after,
+.vui-sb-resizer.is-dragging::after {
+  background: var(--vui-primary);
+  opacity: 0.5;
+}
+.vui-sb-resizer.is-dragging {
+  background-color: color-mix(in srgb, var(--vui-primary) 40%, transparent);
+}
+.vui-sb-resizer:focus-visible {
+  outline: 2px solid var(--vui-focus);
+  outline-offset: -1px;
+}
+`.trim();
+
 fs.mkdirSync(path.dirname(OUT), { recursive: true });
-fs.writeFileSync(OUT, `${css}\n${LAYOUT_CSS}\n${SIDEBAR_CSS}\n`, "utf-8");
+fs.writeFileSync(
+  OUT,
+  `${css}\n${LAYOUT_CSS}\n${SIDEBAR_CSS}\n${RESIZER_CSS}\n`,
+  "utf-8",
+);
 console.log(
   `vanuikit.css generated (${files.length} files scanned, ${css.length} bytes)`,
 );

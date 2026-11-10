@@ -192,8 +192,8 @@ describe("Router deny-by-default", () => {
   test("redirect replaces its history entry: back returns to the origin", async () => {
     const router = new Router();
     router
-      .redirect("/", "/***REMOVED***")
-      .add("/***REMOVED***", () => div("***REMOVED***-page"))
+      .redirect("/", "/dashboard")
+      .add("/dashboard", () => div("dashboard-page"))
       .add("/components", () => div("components-page"));
     const host = mount(router);
 
@@ -201,13 +201,13 @@ describe("Router deny-by-default", () => {
     const lenAtComponents = history.length;
 
     // Click on a link to "/" (alias): push "/" and the redirect replaces
-    // that entry with "/***REMOVED***" — a single push in total.
+    // that entry with "/dashboard" — a single push in total.
     await router.navigate("/");
-    expect(router.path.val).toBe("/***REMOVED***");
-    expect(window.location.pathname).toBe("/***REMOVED***");
+    expect(router.path.val).toBe("/dashboard");
+    expect(window.location.pathname).toBe("/dashboard");
     expect(history.length).toBe(lenAtComponents + 1);
 
-    // BACK: returns to components (without the fix, "/" bounced back to /***REMOVED***).
+    // BACK: returns to components (without the fix, "/" bounced back to /dashboard).
     history.back();
     await new Promise((r) => setTimeout(r, 0));
     await new Promise((r) => setTimeout(r, 0));
@@ -217,15 +217,15 @@ describe("Router deny-by-default", () => {
 
   test("the guard's redirect also replaces: back returns to the origin without bouncing", async () => {
     // Breadcrumb scenario with a NOT authenticated user: "/" → alias to
-    // /***REMOVED*** (protected) → the guard sends to /login. Both hops must
+    // /dashboard (protected) → the guard sends to /login. Both hops must
     // replace the entry so back returns to /components.
     const router = new Router({
       guard: () => "/login",
       publicRoutes: ["/login", "/components"],
     });
     router
-      .redirect("/", "/***REMOVED***")
-      .add("/***REMOVED***", () => div("***REMOVED***-page"))
+      .redirect("/", "/dashboard")
+      .add("/dashboard", () => div("dashboard-page"))
       .add("/components", () => div("components-page"))
       .add("/login", () => div("login-page"));
     const host = mount(router);

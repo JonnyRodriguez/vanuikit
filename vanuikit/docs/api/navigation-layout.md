@@ -108,9 +108,9 @@ A single navigation row rendered as an `<a>` (when `href` is given) or `<button>
 import { SidebarItem } from "vanuikit";
 
 SidebarItem({
-  href: "/***REMOVED***",
-  label: t("nav.***REMOVED***", "***REMOVED***"),
-  icon: "💳",
+  href: "/dashboard",
+  label: t("nav.dashboard", "Dashboard"),
+  icon: "📊",
   badge: "New",
   current: router.path,
 });
@@ -229,7 +229,7 @@ import { Nav } from "vanuikit";
 Nav(
   [
     { href: "/dashboard", label: t("nav.dashboard", "Dashboard") },
-    { href: "/***REMOVED***", label: t("nav.***REMOVED***", "***REMOVED***") },
+    { href: "/components", label: t("nav.components", "Components") },
   ],
   { current: router.path },
 );

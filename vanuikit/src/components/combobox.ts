@@ -274,7 +274,7 @@ export const Combobox = (props: ComboboxOptions): ComboboxField => {
                 return span(
                   {
                     class:
-                      "flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary",
+                      "flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-accent-fg",
                   },
                   label,
                   button(
@@ -361,7 +361,7 @@ export const Combobox = (props: ComboboxOptions): ComboboxField => {
                       !enabled
                         ? "opacity-40 cursor-not-allowed"
                         : isSelected
-                          ? "bg-primary/10 text-primary font-semibold"
+                          ? "bg-primary/10 text-accent-fg font-semibold"
                           : isFocused
                             ? "bg-secondary/20 text-foreground"
                             : "text-foreground hover:bg-secondary/15",

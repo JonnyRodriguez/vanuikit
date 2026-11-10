@@ -29,14 +29,14 @@ const componentPrevents = (el: HTMLElement, init: MouseEventInit = {}) => {
 };
 
 const LINKS = [
-  { href: "./index.html", label: "***REMOVED***" },
+  { href: "./index.html", label: "Inicio" },
   { href: "./login.html", label: "Login" },
   { href: "./register.html", label: "Registro" },
   { href: "./components.html", label: "Componentes" },
 ];
 
 const ROUTE_LINKS = [
-  { href: "/***REMOVED***", label: "***REMOVED***s" },
+  { href: "/dashboard", label: "Dashboard" },
   { href: "/components", label: "Componentes" },
 ];
 
@@ -69,18 +69,18 @@ describe("Nav", () => {
     expect(actives).toHaveLength(1);
   });
 
-  test("marks active by subroute: /***REMOVED***/abc activates /***REMOVED***", () => {
-    const nav = Nav(ROUTE_LINKS, { current: "/***REMOVED***/abc" });
+  test("marks active by subroute: /dashboard/config activates /dashboard", () => {
+    const nav = Nav(ROUTE_LINKS, { current: "/dashboard/config" });
     document.body.replaceChildren(nav);
     const active = document.body.querySelector('[aria-current="page"]');
-    expect(active?.textContent).toBe("***REMOVED***s");
+    expect(active?.textContent).toBe("Dashboard");
   });
 
   test("the active item updates reactively when current changes", async () => {
-    const current = state("/***REMOVED***");
+    const current = state("/dashboard");
     const nav = Nav(ROUTE_LINKS, { current });
     document.body.replaceChildren(nav);
-    expect(document.querySelector('[aria-current="page"]')?.textContent).toBe("***REMOVED***s");
+    expect(document.querySelector('[aria-current="page"]')?.textContent).toBe("Dashboard");
 
     current.val = "/components";
     await flush();
@@ -99,7 +99,7 @@ describe("Nav", () => {
   });
 
   test("clicks navigate embedded: preventDefault only on internal routes", () => {
-    const nav = Nav([{ href: "/***REMOVED***", label: "***REMOVED***s" }], { current: "/other" });
+    const nav = Nav([{ href: "/dashboard", label: "Dashboard" }], { current: "/other" });
     document.body.replaceChildren(nav);
     const internal = nav.querySelector("a") as HTMLElement;
     expect(componentPrevents(internal)).toBe(true);
@@ -113,10 +113,10 @@ describe("Nav", () => {
 
 describe("Link", () => {
   test("renders an anchor with href, accent variant by default and extra class", () => {
-    const link = Link({ href: "/***REMOVED***", class: "my-extra" }, "Ver ***REMOVED***s");
+    const link = Link({ href: "/dashboard", class: "my-extra" }, "Ver dashboard");
     document.body.replaceChildren(link);
-    expect(link.getAttribute("href")).toBe("/***REMOVED***");
-    expect(link.textContent).toBe("Ver ***REMOVED***s");
+    expect(link.getAttribute("href")).toBe("/dashboard");
+    expect(link.textContent).toBe("Ver dashboard");
     expect(link.className).toContain("text-accent");
     expect(link.className).toContain("my-extra");
   });
@@ -129,7 +129,7 @@ describe("Link", () => {
   });
 
   test("internal click delegates to the router; with Ctrl or external href navigates natively", () => {
-    const link = Link({ href: "/***REMOVED***" }, "x");
+    const link = Link({ href: "/dashboard" }, "x");
     document.body.replaceChildren(link);
     expect(componentPrevents(link)).toBe(true);
     expect(componentPrevents(link, { ctrlKey: true })).toBe(false);
@@ -146,12 +146,12 @@ describe("Link", () => {
     const explicit = Link({ href: "https://example.com", target: "_blank", rel: "external" }, "x");
     expect(explicit.getAttribute("rel")).toBe("external");
 
-    const internal = Link({ href: "/***REMOVED***" }, "x");
+    const internal = Link({ href: "/dashboard" }, "x");
     expect(internal.getAttribute("rel")).toBeNull();
   });
 
   test("a consumer preventDefault cancels the SPA navigation", () => {
-    const link = Link({ href: "/***REMOVED***", onclick: (e) => e.preventDefault() }, "x");
+    const link = Link({ href: "/dashboard", onclick: (e) => e.preventDefault() }, "x");
     document.body.replaceChildren(link);
     // Already prevented by the consumer: spaClick respects the decision and does not navigate.
     expect(click(link)).toBe(false);

@@ -234,11 +234,15 @@ export function Table<T extends Record<string, any> = any>(props: TableProps<T>)
               tr(
                 props.selectable
                   ? th(
-                      { class: "w-10 px-4 py-3.5 text-center" },
+                      {
+                        class: "w-10 px-4 py-3.5 text-center",
+                        "aria-label": t("table.selectAll", "Select all rows"),
+                      },
                       input({
                         type: "checkbox",
                         checked: isAllSelected,
                         class: "rounded border-border text-primary cursor-pointer",
+                        "aria-label": t("table.selectAll", "Select all rows"),
                         onchange: () => toggleSelectAll(displayRows),
                       }),
                     )
@@ -327,6 +331,9 @@ export function Table<T extends Record<string, any> = any>(props: TableProps<T>)
                               type: "checkbox",
                               checked: isSelected,
                               class: "rounded border-border text-primary cursor-pointer",
+                              "aria-label": t("table.selectRow", "Select row {index}", {
+                                index: String(index + 1),
+                              }),
                               onchange: () => toggleSelectRow(row),
                             }),
                           )

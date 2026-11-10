@@ -13,7 +13,7 @@ export const LoginPage = () => {
   const { div, h1, p } = van.tags;
 
   const urlParams = new URLSearchParams(window.location.search);
-  const redirectTo = urlParams.get("redirect") || "/***REMOVED***";
+  const redirectTo = urlParams.get("redirect") || "/dashboard";
 
   return div(
     { class: "max-w-md mx-auto my-8 p-6 bg-background rounded-xl border border-border shadow-sm" },

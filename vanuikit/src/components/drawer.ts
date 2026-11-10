@@ -145,7 +145,10 @@ export const Drawer = (props: DrawerOptions, ...content: ChildDom[]): ChildDom =
   const overlay = div(
     {
       class: () =>
-        cx("fixed inset-0 z-50", props.open.val ? "" : "pointer-events-none"),
+        cx(
+          "fixed inset-0 z-50",
+          props.open.val ? "" : "pointer-events-none invisible",
+        ),
       "aria-hidden": () => (props.open.val ? "false" : "true"),
     },
     backdrop,

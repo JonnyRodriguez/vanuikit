@@ -260,8 +260,8 @@ if (ok) publish();
 A singleton snackbar-style notification manager. It owns a fixed container appended to `document.body` and exposes imperative methods per type. All text is provided by the caller.
 
 ```ts
-toast.success(raw("***REMOVED***.saved", "Changes saved"));
-toast.error(raw("***REMOVED***.err", "Something went wrong"), { durationMs: 6000 });
+toast.success(raw("settings.saved", "Changes saved"));
+toast.error(raw("settings.err", "Something went wrong"), { durationMs: 6000 });
 ```
 
 ### Methods
@@ -416,9 +416,9 @@ Centered empty-state layout for a view or section: icon, title, description, and
 
 ```ts
 EmptyState({
-  title: t("***REMOVED***.empty", "No ***REMOVED*** methods yet"),
-  description: t("***REMOVED***.emptyHint", "Add your first card to get started."),
-  action: PrimaryButton({ onclick }, t("***REMOVED***.add", "Add method")),
+  title: t("users.empty", "No users yet"),
+  description: t("users.emptyHint", "Add your first user to get started."),
+  action: PrimaryButton({ onclick }, t("users.add", "Add user")),
 });
 ```
 

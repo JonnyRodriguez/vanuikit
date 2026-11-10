@@ -246,10 +246,10 @@ export const Wizard = (options: WizardOptions): WizardHandle => {
             class:
               "text-xs px-3 py-1 rounded-full border " +
               (active
-                ? "border-accent bg-accent/10 text-accent"
+                ? "border-accent bg-accent/10 text-accent-fg"
                 : done
                   ? "border-border text-foreground-soft"
-                  : "border-border text-foreground-soft opacity-60"),
+                  : "border-border text-muted-foreground"),
           },
           `${i + 1}. `,
           s.title,

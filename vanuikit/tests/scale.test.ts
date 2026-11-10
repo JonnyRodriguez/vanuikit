@@ -68,7 +68,7 @@ describe("Breadcrumbs", () => {
       Breadcrumbs({
         items: [
           { label: "Inicio", href: "/" },
-          { label: "***REMOVED***", href: "/***REMOVED***" },
+          { label: "Dashboard", href: "/dashboard" },
           { label: "Detalle" },
         ],
       }) as HTMLElement,

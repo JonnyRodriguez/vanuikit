@@ -80,8 +80,9 @@ extra `class`.
 | **Async** | `Await` | Declarative rendering from a Promise with loading/error/success slots. |
 
 **Public API of `pages/`:** `LoginForm` and `RegisterForm` (reusable
-forms/views). The top-up flow (`***REMOVED***`, `qr`, `***REMOVED***`) lives in the
-demo (`../demo/pages/` and `../demo/components/`), consumed only by it.
+forms/views). The demo (`../demo/pages/`) builds a small SPA with a
+protected Dashboard that fetches a server-protected endpoint
+(`/api/auth/me`), without tying the kit to any vertical domain.
 
 ## SPA foundation
 

@@ -36,7 +36,7 @@ const GUARD = async (_c: any, next: () => Promise<void>) => next();
 
 describe("loadRoutes (deny-by-default)", () => {
   test("with auth, a file WITHOUT meta is protected: the guard runs before the handler", async () => {
-    const dir = makeRoutesDir({ "api/***REMOVED***.route.ts": APP_BODY });
+    const dir = makeRoutesDir({ "api/foo.route.ts": APP_BODY });
     let guardRuns = 0;
     const guard = async (_c: any, next: () => Promise<void>) => {
       guardRuns++;
@@ -44,7 +44,7 @@ describe("loadRoutes (deny-by-default)", () => {
     };
 
     const app = await loadRoutes(dir, { auth: guard });
-    const res = await app.request("/api/***REMOVED***");
+    const res = await app.request("/api/foo");
 
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({ ok: true });
@@ -85,7 +85,7 @@ export const meta = { public: true };`,
 
   test("respects the folder hierarchy and reports via onLoad", async () => {
     const dir = makeRoutesDir({
-      "api/***REMOVED***.route.ts": APP_BODY,
+      "api/foo.route.ts": APP_BODY,
       "api/auth.route.ts": APP_BODY.replace("export default app;", "export default app;\nexport const meta = { public: true };"),
     });
     const loaded: LoadedRouteInfo[] = [];
@@ -94,12 +94,12 @@ export const meta = { public: true };`,
       auth: GUARD,
       onLoad: (i) => loaded.push(i),
     });
-    const res = await app.request("/api/***REMOVED***");
+    const res = await app.request("/api/foo");
 
     expect(res.status).toBe(200);
     expect(loaded).toEqual([
       { path: "/api/auth", file: "api/auth.route.ts", protected: false },
-      { path: "/api/***REMOVED***", file: "api/***REMOVED***.route.ts", protected: true },
+      { path: "/api/foo", file: "api/foo.route.ts", protected: true },
     ]);
   });
 

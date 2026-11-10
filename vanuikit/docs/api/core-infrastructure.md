@@ -364,7 +364,7 @@ createQuery<T>(url: string | (() => string), options?: QueryOptions<T>): QueryRe
 ```ts
 import { createQuery } from "vanuikit";
 
-const q = createQuery<***REMOVED***[]>("/api/***REMOVED***");
+const q = createQuery<User[]>("/api/users");
 span(q.loading.val ? "Loading…" : q.data.val?.map(g => g.name).join(", "));
 ```
 
@@ -414,8 +414,8 @@ createMutation<TData = any, TVariables = any>(
 ```ts
 import { createMutation } from "vanuikit";
 
-const del = createMutation("/api/***REMOVED***");
-await del.mutate({ id: "42" }); // POST /api/***REMOVED*** with JSON body
+const del = createMutation("/api/users");
+await del.mutate({ id: "42" }); // POST /api/users with JSON body
 ```
 
 ### Notes

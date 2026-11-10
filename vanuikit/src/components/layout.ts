@@ -52,13 +52,17 @@ export function SidebarItem(props: SidebarItemProps) {
     return span({ class: "shrink-0 flex items-center justify-center w-6 h-6" }, props.icon);
   };
 
-  const renderBadge = () => {
+  // Sobre el ítem activo (fondo `bg-primary` sólido), el badge necesita
+  // texto claro para mantener el contraste (≥ 4.5:1); las variantes de
+  // sombra del kit están pensadas para fondos claros.
+  const renderBadge = (isActive: boolean) => {
     if (props.badge === undefined || props.badge === null) return null;
+    const activeOverrides = isActive ? "!bg-white !text-primary !border-transparent" : "";
     const badgeNode =
       typeof props.badge === "string" || typeof props.badge === "number"
-        ? Badge({ text: props.badge, variant: (props.badgeVariant as any) ?? "primary", size: "sm" })
+        ? Badge({ text: props.badge, variant: (props.badgeVariant as any) ?? "primary", size: "sm", class: activeOverrides })
         : typeof props.badge === "object" && "val" in props.badge
-          ? () => Badge({ text: (props.badge as any)?.val, variant: (props.badgeVariant as any) ?? "primary", size: "sm" })
+          ? () => Badge({ text: (props.badge as any)?.val, variant: (props.badgeVariant as any) ?? "primary", size: "sm", class: activeOverrides })
           : props.badge;
     // Wrapper with semantic gain: the Sidebar rail mode hides it.
     return van.tags.span({ class: "vui-sb-badge shrink-0" }, badgeNode as Node);
@@ -95,7 +99,7 @@ export function SidebarItem(props: SidebarItemProps) {
         renderIcon(),
         span({ class: "vui-sb-label truncate" }, props.label),
       ),
-      renderBadge(),
+      renderBadge(isActive),
     );
   };
 }
@@ -112,7 +116,7 @@ export function SidebarGroup(props: SidebarGroupProps, ...children: (Node | (() 
     props.title
       ? h3(
           {
-            class: "vui-sb-group-title px-3.5 pb-1 text-xs font-bold text-muted-foreground/70 uppercase tracking-wider select-none",
+            class: "vui-sb-group-title px-3.5 pb-1 text-xs font-bold text-muted-foreground uppercase tracking-wider select-none",
           },
           props.title,
         )
@@ -221,9 +225,9 @@ export function Sidebar(props: SidebarProps) {
     ? div({
         class: van.derive(() =>
           cx(
-            "vui-sb-resizer absolute top-0 bottom-0 right-0 w-1.5 cursor-col-resize touch-none select-none hidden lg:block",
-            collapsed.val && "hidden",
-            dragging.val && "bg-primary/40",
+            "vui-sb-resizer absolute top-0 bottom-0 right-0 w-1.5 cursor-col-resize touch-none select-none",
+            collapsed.val && "vui-sb-collapsed",
+            dragging.val && "is-dragging",
           ),
         ),
         role: "separator",

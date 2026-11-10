@@ -205,7 +205,7 @@ createI18n<T extends Record<string, any>>(options?: I18nOptions<T>): I18nInstanc
 
 ### `t()` vs `raw()`
 
-- **`t(key, default, params?)`** returns a reactive `State<string>`. Use it in DOM slots and component props — the text mutates when `currentLocale` changes. The parameters go at the end as `{name}` placeholders: `t("***REMOVED***.***REMOVED***With", "Top up with {name}", { name: ***REMOVED***.name })`.
+- **`t(key, default, params?)`** returns a reactive `State<string>`. Use it in DOM slots and component props — the text mutates when `currentLocale` changes. The parameters go at the end as `{name}` placeholders: `t("greeting.withName", "Hello {name}", { name: user.name })`.
 - **`raw(key, default, params?)`** resolves instantly and is only for imperative contexts (handlers, toasts, `confirmDialog`). **Never** call `raw()` (or `t()` inside a function-child) inside a render function passed as a child — that read becomes a dependency of the container binding and rebuilds the whole subtree on every locale change.
 - Keys are nested, e.g. `"field.email.label"`; when a key is missing in the active locale, it falls back to `defaultLocale`, then to `defaultVal`, then to the key itself. Missing `{placeholder}` tokens are left as-is.
 

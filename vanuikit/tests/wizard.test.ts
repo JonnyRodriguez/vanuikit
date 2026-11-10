@@ -263,32 +263,32 @@ describe("Wizard — programmatic navigation (useWizard)", () => {
     const w = Wizard({
       steps: [
         {
-          title: "***REMOVED***",
+          title: "Paso 1",
           collect: () => ({}),
           content: [() => (items.val.length ? div(items.val.map((i) => p(i))) : "")],
         },
-        { title: "Monto", fields: [] },
+        { title: "Paso 2", fields: [] },
       ],
       onSubmit: () => ({ ok: true }),
     });
     const el = mount(w.dom());
     await flush();
-    expect(el.textContent).not.toContain("Provider-A");
-    items.val = ["Provider-A", "Providers-B"];
+    expect(el.textContent).not.toContain("Frutas");
+    items.val = ["Frutas", "Verduras"];
     await flush();
-    expect(el.textContent).toContain("Provider-A");
-    expect(el.textContent).toContain("Providers-B");
+    expect(el.textContent).toContain("Frutas");
+    expect(el.textContent).toContain("Verduras");
   });
 
-  test("***REMOVED***: createQuery + reactive content list the ***REMOVED***", async () => {
-    const ***REMOVED*** = [
-      { id: "PROVIDER-A", name: "Provider-A", img: "/img/provider-a.svg" },
-      { id: "PROVIDERS-B", name: "Providers-B", img: "/img/providers-b.svg" },
+  test("catalog: createQuery + reactive content lists the categories", async () => {
+    const categories = [
+      { id: "A", name: "Frutas" },
+      { id: "B", name: "Verduras" },
     ];
     const realFetch = globalThis.fetch;
     globalThis.fetch = (async (url: any) => {
-      if (String(url).includes("/api/***REMOVED***/***REMOVED***")) {
-        return new Response(JSON.stringify({ status: "ok", data: ***REMOVED*** }), {
+      if (String(url).includes("/api/categories")) {
+        return new Response(JSON.stringify({ status: "ok", data: categories }), {
           status: 200,
           headers: { "Content-Type": "application/json" },
         });
@@ -299,22 +299,22 @@ describe("Wizard — programmatic navigation (useWizard)", () => {
       });
     }) as typeof fetch;
 
-    const q = createQuery<any[]>("/api/***REMOVED***/***REMOVED***", {
+    const q = createQuery<any[]>("/api/categories", {
       transform: (j: any) => j.data,
     });
     const { div, p } = van.tags;
     const w = Wizard({
       steps: [
-        { title: "***REMOVED***", content: [() => div((q.data.val || []).map((g) => p(g.name)))] },
-        { title: "Monto", fields: [] },
+        { title: "Categoría", content: [() => div((q.data.val || []).map((g) => p(g.name)))] },
+        { title: "Detalle", fields: [] },
       ],
       onSubmit: () => ({ ok: true }),
     });
     const el = mount(w.dom());
     await flush();
     await flush();
-    expect(el.textContent).toContain("Provider-A");
-    expect(el.textContent).toContain("Providers-B");
+    expect(el.textContent).toContain("Frutas");
+    expect(el.textContent).toContain("Verduras");
     globalThis.fetch = realFetch;
   });
 

@@ -2,7 +2,7 @@
   "name": "vanuikit-demo",
   "private": true,
   "version": "0.1.0",
-  "description": "Demo de vanuikit: flujo de ***REMOVED***, login, registro y catálogo de componentes. Consume vanuikit exclusivamente como paquete (workspace), sin rutas al fuente.",
+  "description": "Demo de vanuikit: login, registro, dashboard y catálogo de componentes. Consume vanuikit exclusivamente como paquete (workspace), sin rutas al fuente.",
   "type": "module",
   "scripts": {
     "clean": "node -e \"import('node:fs').then(fs => fs.rmSync('dist', { recursive: true, force: true }))\"",
@@ -12,23 +12,24 @@
     "uno": "node scripts/uno.js",
     "dev": "npm run build:client && tsx server/index.ts",
     "start": "tsx server/index.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.8",
     "hono": "^4.13.2",
-    "qrcode": "^1.5.4",
     "vanjs-core": "^1.6.0",
     "vanuikit": "workspace:*",
     "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/node": "^22.13.8",
-    "@types/qrcode": "^1.5.5",
     "@unocss/core": "^66.7.5",
     "@unocss/preset-uno": "^66.7.5",
     "esbuild": "^0.25.0",
     "tsx": "^4.19.3",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.2",
+    "@playwright/test": "^1.65.0",
+    "@axe-core/playwright": "^4.9.1"
   }
 }

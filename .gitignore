@@ -17,3 +17,8 @@ ssg-poc/dist/
 
 # Herramientas locales (asistente)
 asistente/.grok/
+
+# Playwright (artefactos generados)
+.playwright-mcp/
+test-results/
+demo/test-results/

@@ -1,6 +1,5 @@
 {
   "nav": {
-    "***REMOVED***": "***REMOVED***s",
     "components": "Composants",
     "platform": "Plateforme",
     "account": "Compte",
@@ -34,31 +33,15 @@
     "en": "English",
     "fr": "Français"
   },
-  "***REMOVED***": {
-    "title": "Méthodes de Paiement et ***REMOVED***",
-    "loading": "Chargement des ***REMOVED***s...",
-    "restrictedTitle": "Accès Restreint",
-    "restrictedMsg": "Vous devez vous connecter pour accéder aux ***REMOVED***s de paiement.",
-    "errorTitle": "Erreur lors du chargement",
-    "goToLogin": "Se Connecter",
-    "retry": "Réessayer",
-    "amountLabel": "Montant à ***REMOVED***r ({tipo})",
-    "minMaxHelp": "Minimum : {min} {tipo} · Maximum : {max} {tipo}",
-    "qrTitle": "Code QR",
-    "qrClickText": "Cliquez ici pour ouvrir la plateforme",
-    "qrScanText": "ou scannez le code QR avec votre application mobile",
-    "qrNoticeText": "Votre solde sera mis à jour automatiquement.",
-    "invalidAmount": "Veuillez saisir un montant valide",
-    "minAmountErr": "Le montant doit être supérieur à {min} {tipo}",
-    "maxAmountErr": "Le montant doit être inférieur à {max} {tipo}",
-    "urlGenErr": "Impossible de générer l'URL de ***REMOVED***",
-    "qrAlt": "Code QR",
-    "wizardStep***REMOVED***": "***REMOVED***",
-    "wizardStepAmount": "Montant",
-    "select***REMOVED***": "Sélectionnez une ***REMOVED***",
-    "amountRequired": "Saisissez un montant",
-    "change***REMOVED***": "Changer",
-    "selected***REMOVED***": "***REMOVED*** sélectionnée"
+  "dashboard": {
+    "active": "Active",
+    "noSession": "Aucune session active",
+    "noSessionHint": "Connectez-vous pour voir votre profil.",
+    "sessionHint": "Validée contre le stock de sessions du serveur.",
+    "sessionLabel": "Session",
+    "signedInAs": "Connecté en tant que",
+    "subtitle": "Une vue protégée soutenue par l'API de session.",
+    "title": "Tableau de bord"
   },
   "components": {
     "title": "Catalogue de Composants",
@@ -332,7 +315,7 @@
   },
   "register": {
     "title": "Créer un Compte",
-    "subtitle": "Inscrivez-vous pour accéder aux ***REMOVED***s de paiement",
+    "subtitle": "Inscrivez-vous pour gérer votre compte",
     "haveAccount": "Vous avez déjà un compte ?",
     "loginLink": "Connectez-vous ici",
     "errGeneric": "Erreur de création du compte",

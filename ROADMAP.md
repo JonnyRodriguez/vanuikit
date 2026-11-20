@@ -85,6 +85,10 @@ Keeping the philosophy: embed what repeats, not what *could* repeat.
 - **`chooseDialog`** (M) — modal picker resolving `Promise<value | null>`; complements
   `confirmDialog`.
 
+- **Demo i18n error codes** (S) — server/API validation errors currently return
+  English inline strings; move to error codes translated client-side via i18n so
+  Spanish/French users see localized form and API errors.
+
 **Docs DX** (distant):
 - Hosted docs site with per-component props tables and live previews
   (CodeSandbox-style).

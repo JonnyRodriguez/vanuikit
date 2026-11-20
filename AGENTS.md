@@ -175,8 +175,12 @@ The question that solves all cases: **which binding captures this read, and what
   the dependency graph as SVG (derives → states, writes in dashed red) and the
   list of diagnostics with their source. The api is exposed on `window.__vanDebug`.
 - Full documentation of the debug system (rules, usage, view, and scan):
-  see `DEBUG_REACTIVIDAD.md` at the repo root.
+  see `DEBUG_REACTIVITY.md` at the repo root.
 
 ## 6. Testing and Code Quality
 - Every new component must have unit tests in `vanuikit/tests/` runnable with `bun test`.
 - Keep the test suite 100% green before considering any task complete.
+- **Language gates**: English is the canonical language. `bun run check:spell`
+  (cspell, en-only dictionaries — Spanish lives only in the translation dicts),
+  `bun run i18n:check` and `bun run i18n:scan -- --check` must all pass in CI.
+- **Commit messages in English** (repo convention for the international audience).

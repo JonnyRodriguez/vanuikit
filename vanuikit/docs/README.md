@@ -21,4 +21,4 @@ Reference and guides for building with the `vanuikit` component library.
 
 - `README.md` (package root) — quick start, SPA foundation, theming, commands.
 - `CHANGELOG.md` (package root) — release history.
-- `DEBUG_REACTIVIDAD.md` (repo root) — the full reactivity debug system.
+- `DEBUG_REACTIVITY.md` (repo root) — the full reactivity debug system.

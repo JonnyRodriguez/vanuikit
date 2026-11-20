@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Monorepo de desarrollo: vanuikit (librería de componentes VanJS) + demo (app de ejemplo). Cada paquete se construye y publica por separado.",
+  "description": "VanUikit monorepo: the VanJS component library + demo app. Each package builds and publishes separately.",
   "workspaces": [
     "vanuikit",
     "demo"
@@ -14,13 +14,15 @@
     "dev": "npm run dev --workspace demo",
     "start": "npm run start --workspace demo",
     "test": "npm run test --workspace vanuikit",
-    "lint": "cd vanuikit && bun run typecheck && cd ../demo && bun run typecheck && cd .. && bun run i18n:check && bun run i18n:scan -- --check",
+    "lint": "cd vanuikit && bun run typecheck && cd ../demo && bun run typecheck && cd .. && bun run i18n:check && bun run i18n:scan -- --check && bun run check:spell",
+    "check:spell": "cspell --no-progress --no-summary .",
     "i18n:collect": "bun scripts/i18n-collect.ts",
     "i18n:check": "bun scripts/i18n-collect.ts --check",
     "i18n:scan": "bun scripts/i18n-scan.ts",
     "i18n:fix": "bun scripts/i18n-fix.ts"
   },
   "devDependencies": {
+    "cspell": "^10.5.2",
     "typescript": "^5.8.2"
   }
 }

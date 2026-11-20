@@ -39,5 +39,9 @@ jobs:
       - name: Van reactivity scan (check:van)
         run: bun run check:van
 
+      - name: Language gates (cspell · i18n dicts · UI strings)
+        run: bun run check:spell && bun run i18n:check && bun run i18n:scan -- --check
+        working-directory: .
+
       - name: Size budget (bun run size)
         run: bun run size

@@ -41,6 +41,9 @@ function starlightPage(source, filename) {
   if (!text.startsWith("---\n")) {
     const heading = text.match(/^#\s+(.+)$/m)?.[1] ?? filename.replace(/\.md$/, "");
     const title = heading.replace(/`/g, "").trim();
+    // Starlight renders the frontmatter title as the page H1, so drop the
+    // source document's leading H1 from the body to avoid a duplicate heading.
+    text = text.replace(/^#\s+.+\n+/, "");
     text = `---\ntitle: ${JSON.stringify(title)}\n---\n\n${text}`;
   }
 

@@ -2,8 +2,15 @@ import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
 
 export default defineConfig({
-  // Cloudflare Pages exposes CF_PAGES_URL; override with SITE_URL for a custom domain.
-  site: process.env.CF_PAGES_URL || process.env.SITE_URL || "https://vanuikit.pages.dev",
+  // SITE_URL wins (custom domain). Production (main) uses the stable pages.dev
+  // URL; preview branches use their deployment URL (CF_PAGES_URL). This avoids
+  // baking a per-deploy hash into canonical, og:url, and sitemap links.
+  site:
+    process.env.SITE_URL ||
+    (process.env.CF_PAGES_BRANCH === "main"
+      ? "https://vanuikit.pages.dev"
+      : process.env.CF_PAGES_URL) ||
+    "https://vanuikit.pages.dev",
   integrations: [
     starlight({
       title: "VanUikit",

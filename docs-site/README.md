@@ -44,9 +44,11 @@ Astro's `dev` and `build` call `sync` automatically via `predev` / `prebuild`.
    | `NODE_VERSION` | `22` | Astro 7 needs Node 20.19+ |
    | `BUN_VERSION` | `1.4.4` | optional pin; already the v3 build image default |
    | `SKIP_DEPENDENCY_INSTALL` | `1` | optional; skips the root workspace install |
-   | `SITE_URL` | `https://your-domain.example` | only when using a custom domain |
+   | `SITE_URL` | `https://your-domain.example` | canonical/sitemap base for a custom domain (highest priority) |
 
-   Without `SITE_URL`, Astro uses `CF_PAGES_URL`, which Pages sets automatically.
+   Without `SITE_URL`, production builds on `main` use `https://vanuikit.pages.dev`
+   and preview builds use the deployment URL (`CF_PAGES_URL`), so canonical and
+   sitemap links stay stable in production.
 5. Save and deploy. Every push to `main` publishes; other branches get preview URLs.
    The Pagefind search index is produced during the build, so no service or API key
    is needed. Bun 1.4.4 and Node 22 are preinstalled in the v3 build image.

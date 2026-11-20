@@ -19,6 +19,9 @@ docs-site/src/content/docs/
 docs-site/.astro/
 docs-site/dist/
 
+# Cloudflare local build output (cf deploy --dry-run)
+.cloudflare/
+
 # POCs (build artifacts)
 ssg-poc/dist/
 

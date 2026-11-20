@@ -31,9 +31,11 @@ dates/numbers/currency), light/dark/system theme, **deny-by-default** `Router` +
 debug layer (`trace`, `expectReactive`, `installVanDebug`). Prebuilt screens:
 `LoginForm`, `RegisterForm`. Server helpers under `vanuikit/server` (Hono).
 
-**Quality & product**: 263 tests green (`bun test`), typecheck, `check:van`,
+**Quality & product**: 295 tests green (`bun test`), typecheck, `check:van`,
 Tailwind-aligned palette (primary **blue**), full API reference + AI onboarding guide
 shipped inside the npm package (`docs/`), `CHANGELOG.md`, English canonical language.
+The public docs portal (`docs-site/`, Starlight on Astro) is generated from the same
+`vanuikit/docs/` sources and validated in CI; Cloudflare Pages deployment is pending.
 
 ---
 

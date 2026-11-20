@@ -1,0 +1,20 @@
+{
+  "name": "vanuikit-docs",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Public documentation portal for VanUikit (Starlight on Astro)",
+  "scripts": {
+    "sync": "node scripts/sync-docs.mjs",
+    "predev": "bun run sync",
+    "dev": "astro dev",
+    "prebuild": "bun run sync",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "devDependencies": {
+    "@astrojs/markdown-remark": "^7.3.0",
+    "@astrojs/starlight": "^0.43.1",
+    "astro": "^7.4.13"
+  }
+}

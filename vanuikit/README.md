@@ -409,4 +409,4 @@ The demo is managed in `../demo/` (bun workspace, depends on
 
 The reactivity debug system (`trace`, `expectReactive`, `installVanDebug`,
 the `/debug` view and the `check:van` scan) is documented in
-[`DEBUG_REACTIVITY.md`](../DEBUG_REACTIVITY.md) at the repo root.
+[`DEBUG_REACTIVITY.md`](./docs/DEBUG_REACTIVITY.md), shipped with the package.

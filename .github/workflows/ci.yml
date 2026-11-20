@@ -45,3 +45,19 @@ jobs:
 
       - name: Size budget (bun run size)
         run: bun run size
+
+  docs:
+    name: Docs portal (Starlight build)
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install docs dependencies
+        run: bun install --cwd docs-site
+
+      - name: Build docs (sync + Starlight)
+        run: bun run docs:build

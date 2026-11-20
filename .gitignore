@@ -14,6 +14,11 @@ demo/dist/
 .zed/
 .zcode/
 
+# Docs portal (generated from vanuikit/docs/ by docs:sync)
+docs-site/src/content/docs/
+docs-site/.astro/
+docs-site/dist/
+
 # POCs (build artifacts)
 ssg-poc/dist/
 

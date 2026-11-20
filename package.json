@@ -19,7 +19,10 @@
     "i18n:collect": "bun scripts/i18n-collect.ts",
     "i18n:check": "bun scripts/i18n-collect.ts --check",
     "i18n:scan": "bun scripts/i18n-scan.ts",
-    "i18n:fix": "bun scripts/i18n-fix.ts"
+    "i18n:fix": "bun scripts/i18n-fix.ts",
+    "docs:sync": "cd docs-site && bun run sync",
+    "docs:dev": "cd docs-site && bun run dev",
+    "docs:build": "cd docs-site && bun run build"
   },
   "devDependencies": {
     "cspell": "^10.5.2",

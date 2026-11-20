@@ -6,11 +6,11 @@ the single-instance guarantee, and a 100% green test suite before closing any ta
 
 ---
 
-## Current state (2026-11-03)
+## Current state (2026-11-10)
 
-Production-ready npm package **`vanuikit@0.2.0`** (MIT, published with documentation).
+Production-ready npm package **`vanuikit@0.3.1`** (MIT, published with documentation).
 
-**Catalog — 40 components** in `vanuikit/src/components/`:
+**Catalog — 41 components** in `vanuikit/src/components/`:
 
 - **Form controls**: `Button`/`PrimaryButton`/`SecondaryButton`, `Field` family
   (`TextField`/`EmailField`/`PasswordField`/`TextareaField`), `Checkbox`, `Switch`,
@@ -20,7 +20,7 @@ Production-ready npm package **`vanuikit@0.2.0`** (MIT, published with documenta
   `Popover`, `Drawer`, `SelectDropdown`/`DropdownMenu`, `Kbd`.
 - **Layout & navigation**: `AppShell`, `Sidebar`(+`Item`/`Group`), `HeaderBar`, `Nav`/
   `Link`, `Breadcrumbs`, `Tabs`, `Accordion`, `Card`/`CardTitle`.
-- **Data**: `Table`/`DataGrid`, `Pagination`.
+- **Data**: `Table`/`DataGrid`, `Pagination`, `Tree`.
 - **Session & preferences**: `UserBadge`, `ThemeToggle`, `LocaleSelector`, `Avatar`,
   `Badge`, `Icon`, `Svg`/`SvgPath`.
 
@@ -94,9 +94,10 @@ Keeping the philosophy: embed what repeats, not what *could* repeat.
 ## Explicitly out (for now)
 
 - **FileUpload** — drag-drop + a11y + progress: separate project.
-- **TreeView, CommandPalette** — niche until a real page asks for them.
+- **CommandPalette** — niche until a real page asks for it.
 
-*Updated:* `DatePicker` was previously deferred; it is now part of the catalog.
+*Updated:* `DatePicker` was previously deferred; it is now part of the catalog. `Tree`
+  was also built and is part of the catalog, so it no longer belongs here.
 
 ---
 

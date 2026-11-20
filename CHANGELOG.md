@@ -3,6 +3,32 @@
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 SemVer versioning.
 
+## [Unreleased]
+
+### Added
+
+- `Tree` component — hierarchical tree with recursive indentation, expand/collapse
+  (starts expanded, manual collapse persists), `role="tree"`/`aria-expanded`, a
+  per-node `actions` slot, and an inline add-child mode (`onAddChild`).
+- `Modal`/`ModalBase`: size variants `sm`/`md`/`lg`/`xl`.
+- `Drawer`: non-modal mode (`modal: false`).
+- Demo: new `Dashboard` page consuming `/api/auth/me` (protected client route + protected
+  server data).
+
+### Fixed
+
+- `Sidebar`: the nav overflow scrollbar is hidden while keeping scroll functional; the
+  panel is positioned under the `vui-app-shell` hook, immune to utilities regenerated
+  by the consumer.
+- `Icon`: respects the consumer's size over the default `size-4`.
+- `SelectDropdown`: keeps the menu open when clicking the chevron arrow.
+
+### CI
+
+- Checks workflow: build the kit before running tests (dist needed to resolve
+  `vanuikit`); bump `actions/checkout` to v5; fix the duplicated `working-directory`
+  path.
+
 ## [0.3.0] — 2026-11-03
 
 ### Added

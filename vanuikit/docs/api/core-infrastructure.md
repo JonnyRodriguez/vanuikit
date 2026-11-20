@@ -462,6 +462,63 @@ Await({
   keys needed).
 - Recreate the element to re-run the promise.
 
+## Chat (`createChat`, `ChatWindow`, `openAIStream`)
+
+Transport-agnostic chat stack: `createChat` owns the conversation state,
+`ChatWindow` renders it, and the optional `openAIStream`/`createOpenAIChat`
+helpers talk to any OpenAI-compatible `POST /chat/completions` endpoint.
+
+### Signatures
+
+```ts
+createChat(opts: CreateChatOptions): ChatApi
+ChatWindow(props: ChatWindowProps): HTMLElement
+openAIStream(messages: ChatMessage[], send: ChatStreamSink, opts: OpenAIChatOptions): Promise<void>
+createOpenAIChat(opts: CreateOpenAIChatOptions): ChatApi
+```
+
+### `ChatApi`
+
+| Name | Type | Description |
+|---|---|---|
+| `messages` | `State<ChatMessage[]>` | Committed messages (`user`/`assistant`). |
+| `streamingText` | `State<string>` | In-flight assistant text, not committed yet. |
+| `isLoading` | `State<boolean>` | True while the transport promise is pending. |
+| `error` | `State<string>` | Last transport error, or `""`. |
+| `send` | `(input: string) => Promise<void>` | Commits the user message, then streams the reply via `onStream`. |
+| `reset` | `() => void` | Clears messages, streaming text and error. |
+
+`ChatWindowProps` accepts `chat`, plus optional `extra`, `emptyState`, `disabled`,
+`autoScroll` (default `true`), `onSend` and `class`. All visible labels are
+translated with `t()` internally.
+
+### Usage
+
+```ts
+import { ChatWindow, createChat, EmptyState, openAIStream, t } from "vanuikit";
+
+const chat = createChat({
+  onStream: async (send) => {
+    await openAIStream(chat.messages.val, send, {
+      url: "/api/chat",
+      model: "demo",
+      apiKey: "demo",
+    });
+  },
+});
+
+ChatWindow({ chat, emptyState: EmptyState({ title: t("chat.empty", "No messages yet") }) });
+```
+
+### Notes
+
+- `createChat` knows nothing about LLMs: wire `onStream` to `fetch`, SSE or any
+  other transport. `openAIStream` decodes SSE deltas from OpenAI-compatible
+  endpoints and is zero-dependency (`fetch` + `ReadableStream`).
+- Keep provider API keys on your server and point `url` at your own backend;
+  `createOpenAIChat` is a convenience shortcut that wires `openAIStream` into
+  `createChat` for you.
+
 ## `Required`
 
 Validator factory: fails when the value is empty/whitespace-only.

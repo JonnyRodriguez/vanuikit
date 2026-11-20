@@ -117,6 +117,8 @@ The question that solves all cases: **which binding captures this read, and what
 | `Field`, `TextField`, `EmailField`, `PasswordField`, `TextareaField` | `vanuikit` | Reactive form fields with real-time validation and typing. |
 | `Checkbox`, `Switch`, `RadioGroup` | `vanuikit` | Accessible binary and mutually exclusive choice controls (Space, arrows, `role="switch"`/`radiogroup`), with `checked`/`value` as bidirectional `State` and native `Form` integration (they implement the `Field` contract). Use `.dom()` when inserting them as children. |
 | `Form` | `vanuikit` | Form container with automatic validation and prevention of invalid submits. |
+| `Await` | `vanuikit` | Declarative rendering from a Promise with loading/error/success slots; complements `createQuery` for loose promises. |
+| `ChatWindow`, `createChat` | `vanuikit` | Transport-agnostic chat UI and state hook (messages, streaming text, loading/error); wire `onStream` to any transport. `openAIStream`/`createOpenAIChat` are optional helpers for OpenAI-compatible endpoints. |
 | `Modal`, `ModalBase`, `SpinModal` | `vanuikit` | Accessible modal dialogs with backdrop and scroll lock. |
 | `Tooltip`, `Popover`, `Drawer` | `vanuikit` | Fine overlay without dependencies: tooltips by hover/focus (off on touch), floating panels with click-outside/Esc and the `content(close)` factory, drawers on all 4 sides with backdrop, focus trap, and scroll lock. |
 | `Combobox` | `vanuikit` | Searchable WAI-ARIA-style select (input filters as you type, ↑/↓/Home/End/Enter/Esc, `aria-activedescendant`), bidirectional `value`, and `Form` integration (`.dom()` as child). With `multiple: true`: removable chips and `value: State<string[]>` (read `field.value.val`: `FormData` collapses duplicates). |

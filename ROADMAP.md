@@ -10,7 +10,7 @@ the single-instance guarantee, and a 100% green test suite before closing any ta
 
 npm package **`vanuikit@0.4.0`** (MIT).
 
-**Catalog — 41 components** in `vanuikit/src/components/`:
+**Catalog — 43 component modules** in `vanuikit/src/components/` (exported from the package root):
 
 - **Form controls**: `Button`/`PrimaryButton`/`SecondaryButton`, `Field` family
   (`TextField`/`EmailField`/`PasswordField`/`TextareaField`), `Checkbox`, `Switch`,
@@ -23,6 +23,9 @@ npm package **`vanuikit@0.4.0`** (MIT).
 - **Data**: `Table`/`DataGrid`, `Pagination`, `Tree`.
 - **Session & preferences**: `UserBadge`, `ThemeToggle`, `LocaleSelector`, `Avatar`,
   `Badge`, `Icon`, `Svg`/`SvgPath`.
+- **Async & chat**: `Await`, `ChatWindow`/`createChat` (transport-agnostic chat UI and
+  state hook), plus the optional `openAIStream`/`createOpenAIChat` transport for
+  OpenAI-compatible endpoints.
 
 **Foundation** (`src/` root): single-instance provenance (`guardSingleVan`,
 `isOwnState`/`isForeignState`), reactive i18n (`t()`/`raw()`) + `fmt` (locale-aware
@@ -38,7 +41,8 @@ The public docs portal (`docs-site/`, Starlight on Astro) is generated from
 `vanuikit/docs/` and deployed on Cloudflare Pages (`https://vanuikit.pages.dev`)
 with a static client-only component playground at `/playground/`. CI runs checks
 and docs/playground builds; a tag-driven release workflow automates npm publishing
-(requires repository secrets/configuration).
+via npm trusted publishing (configured on npmjs.com for this repository; no npm
+token is stored in the repository).
 
 ---
 
@@ -81,7 +85,7 @@ Keeping the philosophy: embed what repeats, not what *could* repeat.
 **Infrastructure / release** (before wider adoption):
 - **Release pipeline hardening** — CI already runs `bun test` + typecheck +
   `check:van` + build/docs on PRs/pushes and a tag workflow publishes on `v*`;
-  keep improving provenance, changelog/release notes, and npm token/trusted-publishing setup.
+  keep improving provenance, changelog/release notes, and the trusted-publishing setup.
 - **Size budget** — continue enforcing and tuning the bundle budget (`bun run size`)
   to prevent regressions.
 - **Dark-mode FOUC snippet** — keep the documented inline snippet up to date and

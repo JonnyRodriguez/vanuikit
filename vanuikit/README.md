@@ -77,7 +77,7 @@ extra `class`.
 | **Overlay** | `Modal`/`ModalBase`, `ConfirmDialog`/`confirmDialog`, `Tooltip`, `Popover`, `Drawer`, `DropdownMenu` | Accessible modals with backdrop and focus management; imperative confirmation (`await confirmDialog(...)`); hover/focus tooltips; floating panels with click-outside/Esc; 4-side drawers with focus trap; action menus. |
 | **Session & preferences** | `UserBadge`, `ThemeToggle`, `LocaleSelector`, `Avatar` | User card with logout, theme toggle (button/segmented), language selector (select/buttons), initials avatar. |
 | **Foundation** | `Icon`, `Svg`/`SvgPath` | Lucide-style SVG icons with `currentColor` stroke (tinted by the theme); SVG primitives. |
-| **Async** | `Await` | Declarative rendering from a Promise with loading/error/success slots. |
+| **Async & chat** | `Await`, `ChatWindow` (+ `createChat`) | Declarative rendering from a Promise with loading/error/success slots; transport-agnostic chat window and state hook, with `openAIStream` as an optional OpenAI-compatible transport. |
 
 **Public API of `pages/`:** `LoginForm` and `RegisterForm` (reusable
 forms/views). The demo (`../demo/pages/`) builds a small SPA with a

@@ -411,7 +411,9 @@
     "next": "Siguiente →",
     "prev": "← Anterior",
     "searchPlaceholder": "Buscar en la tabla...",
+    "selectAll": "Seleccionar todas las filas",
     "selectedCount": "{count} seleccionados",
+    "selectRow": "Seleccionar fila {index}",
     "showing": "Mostrando {start} - {end} de {total}"
   },
   "theme": {
@@ -422,14 +424,22 @@
     "toggleLabel": "Alternar tema visual (Claro / Oscuro / Sistema)",
     "toggleTitle": "Alternar tema (Claro / Oscuro / Sistema)"
   },
+  "tree": {
+    "addChildAria": "Añadir hijo",
+    "addChildLabel": "Añadir hijo a {name}",
+    "addChildPlaceholder": "Nombre del nuevo hijo",
+    "cancelAdd": "Cancelar",
+    "confirmAdd": "Confirmar",
+    "empty": "Sin elementos"
+  },
   "user": {
     "sessionActive": "Sesión activa"
   },
   "wizard": {
     "back": "Atrás",
-    "checkSteps": "Revisa el paso {pasos}",
+    "checkSteps": "Revisa el paso {steps}",
     "next": "Siguiente",
-    "step": "Paso {actual} de {total}",
+    "step": "Paso {current} de {total}",
     "submit": "Enviar"
   }
 }

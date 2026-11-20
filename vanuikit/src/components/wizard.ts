@@ -176,7 +176,7 @@ export const Wizard = (options: WizardOptions): WizardHandle => {
     try {
       result = await options.onSubmit(store.val);
     } catch (err) {
-      result = { ok: false, error: err instanceof Error ? err.message : "Error inesperado" };
+      result = { ok: false, error: err instanceof Error ? err.message : "Unexpected error" };
     } finally {
       submitting.val = false;
     }
@@ -212,8 +212,8 @@ export const Wizard = (options: WizardOptions): WizardHandle => {
       if (otherSteps.length) {
         general =
           general ??
-          raw("wizard.checkSteps", "Check step {pasos}", {
-            pasos: otherSteps.map((i) => i + 1).join(", "),
+          raw("wizard.checkSteps", "Check step {steps}", {
+            steps: otherSteps.map((i) => i + 1).join(", "),
           });
       } else if (unmapped !== undefined && general === undefined) {
         general = unmapped;
@@ -229,8 +229,8 @@ export const Wizard = (options: WizardOptions): WizardHandle => {
   });
 
   const stepLine = van.derive(() =>
-    raw("wizard.step", "Step {actual} of {total}", {
-      actual: stepIndex.val + 1,
+    raw("wizard.step", "Step {current} of {total}", {
+      current: stepIndex.val + 1,
       total: steps.length,
     }),
   );

@@ -411,6 +411,8 @@
     "next": "Next →",
     "prev": "← Previous",
     "searchPlaceholder": "Search the table...",
+    "selectAll": "Select all rows",
+    "selectRow": "Select row {index}",
     "selectedCount": "{count} selected",
     "showing": "Showing {start} - {end} of {total}"
   },
@@ -422,14 +424,22 @@
     "toggleLabel": "Toggle visual theme (Light / Dark / System)",
     "toggleTitle": "Toggle theme (Light / Dark / System)"
   },
+  "tree": {
+    "addChildAria": "Add child",
+    "addChildLabel": "Add child to {name}",
+    "addChildPlaceholder": "New child name",
+    "cancelAdd": "Cancel",
+    "confirmAdd": "Confirm",
+    "empty": "No items"
+  },
   "user": {
     "sessionActive": "Active session"
   },
   "wizard": {
     "back": "Back",
-    "checkSteps": "Check step {pasos}",
+    "checkSteps": "Check step {steps}",
     "next": "Next",
-    "step": "Step {actual} of {total}",
+    "step": "Step {current} of {total}",
     "submit": "Submit"
   }
 }

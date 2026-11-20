@@ -30,6 +30,7 @@ export interface I18nInstance<T extends Record<string, any> = Record<string, any
 
 /** Global default dictionary for VanUikit */
 export const defaultLocales: Record<string, Record<string, any>> = {
+  // cSpell:disable — `es` is the hand-maintained Spanish translation (by design)
   es: {
     field: {
       email: {
@@ -100,8 +101,8 @@ export const defaultLocales: Record<string, Record<string, any>> = {
       back: "Atrás",
       next: "Siguiente",
       submit: "Enviar",
-      step: "Paso {actual} de {total}",
-      checkSteps: "Revisa el paso {pasos}",
+      step: "Paso {current} de {total}",
+      checkSteps: "Revisa el paso {steps}",
     },
     nav: {
       logout: "Cerrar sesión",
@@ -153,6 +154,16 @@ export const defaultLocales: Record<string, Record<string, any>> = {
       showing: "Mostrando {start} - {end} de {total}",
       prev: "← Anterior",
       next: "Siguiente →",
+      selectAll: "Seleccionar todas las filas",
+      selectRow: "Seleccionar fila {index}",
+    },
+    tree: {
+      addChildAria: "Añadir hijo",
+      addChildLabel: "Añadir hijo a {name}",
+      addChildPlaceholder: "Nombre del nuevo hijo",
+      cancelAdd: "Cancelar",
+      confirmAdd: "Confirmar",
+      empty: "Sin elementos",
     },
     auth: {
       email: "Correo electrónico",
@@ -186,6 +197,7 @@ export const defaultLocales: Record<string, Record<string, any>> = {
       nameRequired: "Ingresa tu nombre",
     },
   },
+  // cSpell:enable
   en: {
     field: {
       email: {
@@ -256,8 +268,8 @@ export const defaultLocales: Record<string, Record<string, any>> = {
       back: "Back",
       next: "Next",
       submit: "Submit",
-      step: "Step {actual} of {total}",
-      checkSteps: "Check step {pasos}",
+      step: "Step {current} of {total}",
+      checkSteps: "Check step {steps}",
     },
     nav: {
       logout: "Sign out",
@@ -309,6 +321,16 @@ export const defaultLocales: Record<string, Record<string, any>> = {
       showing: "Showing {start} - {end} of {total}",
       prev: "← Previous",
       next: "Next →",
+      selectAll: "Select all rows",
+      selectRow: "Select row {index}",
+    },
+    tree: {
+      addChildAria: "Add child",
+      addChildLabel: "Add child to {name}",
+      addChildPlaceholder: "New child name",
+      cancelAdd: "Cancel",
+      confirmAdd: "Confirm",
+      empty: "No items",
     },
     auth: {
       email: "Email address",

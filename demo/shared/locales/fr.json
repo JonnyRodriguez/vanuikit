@@ -381,7 +381,9 @@
     "next": "Suivant →",
     "prev": "← Précédent",
     "searchPlaceholder": "Rechercher dans le tableau...",
+    "selectAll": "Sélectionner toutes les lignes",
     "selectedCount": "{count} sélectionnés",
+    "selectRow": "Sélectionner la ligne {index}",
     "showing": "Affichage {start} - {end} sur {total}"
   },
   "router": {
@@ -430,7 +432,15 @@
     "back": "Retour",
     "next": "Suivant",
     "submit": "Envoyer",
-    "step": "Étape {actual} sur {total}",
-    "checkSteps": "Vérifiez l'étape {pasos}"
+    "step": "Étape {current} sur {total}",
+    "checkSteps": "Vérifiez l'étape {steps}"
+  },
+  "tree": {
+    "addChildAria": "Ajouter un enfant",
+    "addChildLabel": "Ajouter un enfant à {name}",
+    "addChildPlaceholder": "Nom du nouvel enfant",
+    "cancelAdd": "Annuler",
+    "confirmAdd": "Confirmer",
+    "empty": "Aucun élément"
   }
 }

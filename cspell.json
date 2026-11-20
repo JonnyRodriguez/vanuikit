@@ -25,6 +25,7 @@
     "**/.zcode/**",
     ".zed/**",
     "bun.lock",
+    "docs-site/public/google*.html",
     "demo/shared/locales/es.json",
     "demo/shared/locales/fr.json"
   ],

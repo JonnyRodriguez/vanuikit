@@ -32,7 +32,7 @@
     },
     "vanuikit": {
       "name": "vanuikit",
-      "version": "0.3.1",
+      "version": "0.4.0",
       "devDependencies": {
         "@happy-dom/global-registrator": "^20.11.6",
         "@types/node": "^22.13.10",

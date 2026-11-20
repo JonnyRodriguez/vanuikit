@@ -6,9 +6,9 @@ the single-instance guarantee, and a 100% green test suite before closing any ta
 
 ---
 
-## Current state (2026-11-10)
+## Current state (2026-11-20)
 
-Production-ready npm package **`vanuikit@0.3.1`** (MIT, published with documentation).
+npm package **`vanuikit@0.4.0`** (MIT).
 
 **Catalog — 41 components** in `vanuikit/src/components/`:
 
@@ -34,8 +34,11 @@ debug layer (`trace`, `expectReactive`, `installVanDebug`). Prebuilt screens:
 **Quality & product**: 295 tests green (`bun test`), typecheck, `check:van`,
 Tailwind-aligned palette (primary **blue**), full API reference + AI onboarding guide
 shipped inside the npm package (`docs/`), `CHANGELOG.md`, English canonical language.
-The public docs portal (`docs-site/`, Starlight on Astro) is generated from the same
-`vanuikit/docs/` sources and validated in CI; Cloudflare Pages deployment is pending.
+The public docs portal (`docs-site/`, Starlight on Astro) is generated from
+`vanuikit/docs/` and deployed on Cloudflare Pages (`https://vanuikit.pages.dev`)
+with a static client-only component playground at `/playground/`. CI runs checks
+and docs/playground builds; a tag-driven release workflow automates npm publishing
+(requires repository secrets/configuration).
 
 ---
 
@@ -76,10 +79,13 @@ The public docs portal (`docs-site/`, Starlight on Astro) is generated from the 
 Keeping the philosophy: embed what repeats, not what *could* repeat.
 
 **Infrastructure / release** (before wider adoption):
-- **CI + release pipeline** — GitHub Actions running `bun test` + typecheck +
-  `check:van` + build on PRs; `npm publish` on `v*` tags.
-- **Size budget** — `@size-limit` against `dist/index.js` to prevent regressions.
-- **Dark-mode FOUC snippet** — documented inline script to avoid the light→dark flash.
+- **Release pipeline hardening** — CI already runs `bun test` + typecheck +
+  `check:van` + build/docs on PRs/pushes and a tag workflow publishes on `v*`;
+  keep improving provenance, changelog/release notes, and npm token/trusted-publishing setup.
+- **Size budget** — continue enforcing and tuning the bundle budget (`bun run size`)
+  to prevent regressions.
+- **Dark-mode FOUC snippet** — keep the documented inline snippet up to date and
+  easy to discover.
 - **a11y axe harness** — run axe-core per component in the test suite to back the
   accessibility claim.
 
@@ -92,8 +98,8 @@ Keeping the philosophy: embed what repeats, not what *could* repeat.
   Spanish/French users see localized form and API errors.
 
 **Docs DX** (distant):
-- Hosted docs site with per-component props tables and live previews
-  (CodeSandbox-style).
+- Per-component props tables and embedded live previews in the hosted docs site
+  (beyond the standalone `/playground/` showcase).
 
 ---
 

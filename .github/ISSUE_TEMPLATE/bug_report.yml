@@ -1,0 +1,51 @@
+name: Bug report
+description: Report a problem with VanUikit
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for reporting a bug. Please search existing issues first.
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What happened? What did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Steps to reproduce, or a minimal example/repo/stackblitz link.
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: VanUikit version
+      placeholder: e.g. 0.4.0
+    validations:
+      required: false
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Browser, OS, bundler/runtime, VanJS version, etc.
+      placeholder: |
+        Browser:
+        OS:
+        Bundler:
+        vanjs-core:
+    validations:
+      required: false
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Logs, screenshots, or anything else relevant.
+    validations:
+      required: false

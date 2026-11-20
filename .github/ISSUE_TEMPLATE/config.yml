@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Documentation
+    url: https://vanuikit.pages.dev/
+    about: Read the docs and try the component playground.
+  - name: Questions / Discussions
+    url: https://github.com/JonnyRodriguez/vanuikit/discussions
+    about: Ask questions and share ideas (enable Discussions in repo settings if needed).

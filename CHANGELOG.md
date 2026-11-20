@@ -3,17 +3,28 @@
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 SemVer versioning.
 
-## [Unreleased]
+## [0.4.0] - 2026-11-20
 
 ### Added
 
-- `Tree` component — hierarchical tree with recursive indentation, expand/collapse
+- `Tree` component - hierarchical tree with recursive indentation, expand/collapse
   (starts expanded, manual collapse persists), `role="tree"`/`aria-expanded`, a
   per-node `actions` slot, and an inline add-child mode (`onAddChild`).
 - `Modal`/`ModalBase`: size variants `sm`/`md`/`lg`/`xl`.
 - `Drawer`: non-modal mode (`modal: false`).
 - Demo: new `Dashboard` page consuming `/api/auth/me` (protected client route + protected
   server data).
+- Public documentation portal (Starlight, generated from `vanuikit/docs/`) with
+  integrated search, deployed on Cloudflare Pages, plus a static client-only
+  component playground at `/playground/`.
+- Open source project files: root `LICENSE`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`,
+  `SECURITY.md`, and GitHub issue/PR templates.
+- Release automation workflow for publishing tagged releases to npm.
+
+### Changed
+
+- Documentation and deployment pipeline updated to build and publish the
+  standalone component playground alongside the docs site.
 
 ### Fixed
 
@@ -27,9 +38,21 @@ SemVer versioning.
 
 - Checks workflow: build the kit before running tests (dist needed to resolve
   `vanuikit`); bump `actions/checkout` to v5; fix the duplicated `working-directory`
-  path.
+  path; build docs and the component playground in CI.
 
-## [0.3.0] — 2026-11-03
+## [0.3.1] - 2026-11-03
+
+### Fixed
+
+- `SelectDropdown` - clicking the chevron (▼/▲) arrow now toggles the menu
+  reliably. The outside-click handler listened on `click`, but the chevron
+  and label are function-children: when `isOpen` flips, van re-renders the
+  trigger and detaches the original event-target node, so `el.contains(e.target)`
+  returned `false` and the menu closed the instant it opened. Switched the
+  outside-click detection to `pointerdown` (no state has changed yet, so the
+  target is still attached and the containment check is reliable).
+
+## [0.3.0] - 2026-11-03
 
 ### Added
 

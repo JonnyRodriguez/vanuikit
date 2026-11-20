@@ -6,7 +6,7 @@ no runtime dependencies beyond `vanjs-core`.
 
 ## Documentation
 
-- **Public docs portal:** https://vanuikit.pages.dev (Starlight; source in `vanuikit/docs/`)
+- **Public docs portal:** https://vanuikit.pages.dev (Starlight; source in `vanuikit/docs/`), with a static component playground at https://vanuikit.pages.dev/playground/
 - **Library README and quick start:** [`vanuikit/README.md`](./vanuikit/README.md)
 - **Consumer & AI onboarding guide:** [`vanuikit/docs/AI-GUIDE.md`](./vanuikit/docs/AI-GUIDE.md)
 - **Changelog:** [`CHANGELOG.md`](./CHANGELOG.md)
@@ -31,8 +31,10 @@ To work on the public documentation:
 
     bun install --cwd docs-site
     bun run docs:dev       # local Starlight server
-    bun run docs:build     # synced static site in docs-site/dist/
+    bun run docs:build     # synced static site + component playground in docs-site/dist/
 
 `vanuikit/docs/**` is the single source of truth: it ships in the npm tarball and
-is copied into the portal automatically. See [`docs-site/README.md`](./docs-site/README.md)
-for deployment instructions (Cloudflare Pages or GitHub Pages).
+is copied into the portal automatically. The production docs build also bundles the
+standalone component showcase at `/playground/` (client-only, no backend). See
+[`docs-site/README.md`](./docs-site/README.md) for deployment instructions (Cloudflare
+Pages or GitHub Pages).

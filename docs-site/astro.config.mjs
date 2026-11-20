@@ -32,6 +32,7 @@ export default defineConfig({
           label: "Start here",
           items: [
             { label: "Overview", link: "/" },
+            { label: "Component playground", link: "/playground/" },
             { label: "Consumer & AI guide", link: "/ai-guide/" },
             { label: "Recipes", link: "/recipes/" },
             { label: "Reactivity debugging", link: "/debug-reactivity/" },

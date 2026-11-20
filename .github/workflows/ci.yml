@@ -47,7 +47,7 @@ jobs:
         run: bun run size
 
   docs:
-    name: Docs portal (Starlight build)
+    name: Docs portal (Starlight build + playground)
     runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v5
@@ -56,8 +56,11 @@ jobs:
         with:
           bun-version: latest
 
+      - name: Install workspace dependencies
+        run: bun install
+
       - name: Install docs dependencies
         run: bun install --cwd docs-site
 
-      - name: Build docs (sync + Starlight)
+      - name: Build docs and component playground
         run: bun run docs:build

@@ -16,12 +16,17 @@ rewrites relative `*.md` links into clean routes (`/api/form-controls/`, etc.).
 
 From the repo root:
 
+    bun install                   # workspace deps (vanuikit + demo, needed for the playground)
     bun install --cwd docs-site   # one time, installs Astro + Starlight here
-    bun run docs:dev              # local dev server
-    bun run docs:build            # sync + production build -> docs-site/dist/
+    bun run docs:dev              # local dev server (docs only)
+    bun run docs:build            # sync + Starlight build + static component playground -> docs-site/dist/
     bun run docs:sync             # only regenerate the content copy
 
-Astro's `dev` and `build` call `sync` automatically via `predev` / `prebuild`.
+Astro's `dev` and `build` call `sync` automatically via `predev` / `prebuild`. The
+production build also compiles the standalone component showcase and copies it to
+`docs-site/dist/playground/`, so it requires the library and demo dependencies. The
+dev server does not build the playground; for that, run `docs:build` or
+`cd docs-site && bun run build:playground` after an `astro build`.
 
 ## Deploy to Cloudflare Pages (Git integration)
 
@@ -34,7 +39,7 @@ Astro's `dev` and `build` call `sync` automatically via `predev` / `prebuild`.
    | Setting | Value |
    |---|---|
    | Root directory (advanced) | leave empty (repository root) |
-   | Build command | `bun install --cwd docs-site && bun run docs:build` |
+   | Build command | `bun install && bun install --cwd docs-site && bun run docs:build` |
    | Build output directory | `docs-site/dist` |
 
 4. Add environment variables under **Settings → Environment variables**:
@@ -43,12 +48,14 @@ Astro's `dev` and `build` call `sync` automatically via `predev` / `prebuild`.
    |---|---|---|
    | `NODE_VERSION` | `22` | Astro 7 needs Node 20.19+ |
    | `BUN_VERSION` | `1.4.4` | optional pin; already the v3 build image default |
-   | `SKIP_DEPENDENCY_INSTALL` | `1` | optional; skips the root workspace install |
+   | `SKIP_DEPENDENCY_INSTALL` | `1` | skips the default install (the build command installs workspaces and `docs-site` explicitly) |
    | `SITE_URL` | `https://your-domain.example` | canonical/sitemap base for a custom domain (highest priority) |
 
    Without `SITE_URL`, production builds on `main` use `https://vanuikit.pages.dev`
    and preview builds use the deployment URL (`CF_PAGES_URL`), so canonical and
-   sitemap links stay stable in production.
+   sitemap links stay stable in production. The build also compiles the static
+   component playground and publishes it at `/playground/`, so it needs the
+   workspace dependencies (vanuikit + demo) in addition to `docs-site`.
 5. Save and deploy. Every push to `main` publishes; other branches get preview URLs.
    The Pagefind search index is produced during the build, so no service or API key
    is needed. Bun 1.4.4 and Node 22 are preinstalled in the v3 build image.

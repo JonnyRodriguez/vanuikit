@@ -10,6 +10,8 @@
     "dev": "astro dev",
     "prebuild": "bun run sync",
     "build": "astro build",
+    "build:playground": "node scripts/build-playground.mjs",
+    "build:full": "astro build && node scripts/build-playground.mjs",
     "preview": "astro preview"
   },
   "devDependencies": {

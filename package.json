@@ -22,7 +22,7 @@
     "i18n:fix": "bun scripts/i18n-fix.ts",
     "docs:sync": "cd docs-site && bun run sync",
     "docs:dev": "cd docs-site && bun run dev",
-    "docs:build": "cd docs-site && bun run build"
+    "docs:build": "cd docs-site && bun run build:full"
   },
   "devDependencies": {
     "cspell": "^10.5.2",

@@ -9,12 +9,17 @@
  * on the esbuild command that runs before it).
  */
 import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const metaFile = new URL("../dist/meta.json", import.meta.url);
+const arg = process.argv[2];
+const metaFile = arg
+  ? path.resolve(arg)
+  : fileURLToPath(new URL("../dist/meta.json", import.meta.url));
 const meta = JSON.parse(fs.readFileSync(metaFile, "utf8"));
 const copies = Object.entries(meta.inputs).filter(([p]) => p.includes("vanjs-core"));
 
-fs.rmSync(metaFile);
+fs.rmSync(metaFile, { force: true });
 
 if (copies.length > 1) {
   console.error(`❌ The bundle contains ${copies.length} copies of vanjs-core (must be exactly 1):`);

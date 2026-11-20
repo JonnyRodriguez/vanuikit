@@ -21,8 +21,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const demoDir = path.resolve(__dirname, "..");
 
-const OUT_UNO = path.join(demoDir, "dist/uno.css");
-const OUT_VANUIKIT = path.join(demoDir, "dist/vanuikit.css");
+const outDir = process.env.OUT_DIR
+  ? path.resolve(process.cwd(), process.env.OUT_DIR)
+  : path.join(demoDir, "dist");
+const OUT_UNO = path.join(outDir, "uno.css");
+const OUT_VANUIKIT = path.join(outDir, "vanuikit.css");
 
 /** Wraps a color (var --vui-*) in color-mix with the %alpha placeholder:
  *  so opacity modifiers (bg-secondary/60, text-muted-foreground/70) actually
@@ -77,7 +80,12 @@ function getFiles(dir) {
   const files = [];
   for (const entry of entries) {
     const res = path.join(dir, entry.name);
-    if (entry.isDirectory() && entry.name !== "node_modules" && entry.name !== "dist") {
+    if (
+      entry.isDirectory() &&
+      entry.name !== "node_modules" &&
+      entry.name !== "dist" &&
+      entry.name !== "dist-playground"
+    ) {
       files.push(...getFiles(res));
     } else if (entry.isFile() && (res.endsWith(".ts") || res.endsWith(".html") || res.endsWith(".js"))) {
       files.push(res);
@@ -115,5 +123,5 @@ fs.writeFileSync(OUT_UNO, finalDemoCss, "utf-8");
 fs.copyFileSync(vanuikitCssPath, OUT_VANUIKIT);
 
 console.log(
-  `demo CSS generated (${files.length} files scanned, ${finalDemoCss.length} bytes) + vanuikit.css copied from ${path.relative(demoDir, vanuikitCssPath)}`,
+  `demo CSS generated (${files.length} files scanned, ${finalDemoCss.length} bytes) -> ${path.relative(demoDir, outDir)} + vanuikit.css copied from ${path.relative(demoDir, vanuikitCssPath)}`,
 );

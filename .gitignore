@@ -4,6 +4,7 @@ node_modules/
 # Builds
 vanuikit/dist/
 demo/dist/
+demo/dist-playground/
 
 # Logs
 *.log

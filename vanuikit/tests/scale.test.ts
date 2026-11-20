@@ -22,26 +22,26 @@ afterEach(() => {
 
 describe("Avatar", () => {
   test("getInitials: two words, one word, empty", () => {
-    expect(getInitials("Ana Morales")).toBe("AM");
-    expect(getInitials("  Chavo ")).toBe("CH");
+    expect(getInitials("Ann Morris")).toBe("AM");
+    expect(getInitials("  Charlie ")).toBe("CH");
     expect(getInitials("", "U")).toBe("U");
     expect(getInitials("x", "U")).toBe("X");
   });
 
   test("renders initials and the name's aria-label (including State)", async () => {
-    const name = van.state("Lucía Fernández");
+    const name = van.state("Lucy Fern");
     const el = mount(Avatar({ name, size: "sm" }) as HTMLElement);
     await tick();
     expect(el.textContent).toBe("LF");
-    expect(el.getAttribute("aria-label")).toBe("Lucía Fernández");
+    expect(el.getAttribute("aria-label")).toBe("Lucy Fern");
 
-    name.val = "Beto";
+    name.val = "Ben";
     await tick();
     expect(el.textContent).toBe("BE");
   });
 
   test("src falls back to initials when the image fails", async () => {
-    const el = mount(Avatar({ name: "Ana Morales", src: "inexistente.png" }) as HTMLElement);
+    const el = mount(Avatar({ name: "Ann Morris", src: "nonexistent.png" }) as HTMLElement);
     const img = el.querySelector("img")!;
     expect(img).toBeTruthy();
 
@@ -52,13 +52,13 @@ describe("Avatar", () => {
   });
 });
 
-describe("UserBadge + Avatar compartido", () => {
+describe("UserBadge + Avatar shared initials", () => {
   test("keeps showing the user's initials", () => {
     const el = mount(
-      van.tags.div({}, UserBadge({ user: { name: "Carla Ruiz", email: "carla@x.co" } } as any)) as HTMLElement,
+      van.tags.div({}, UserBadge({ user: { name: "Carla Reed", email: "carla@x.co" } } as any)) as HTMLElement,
     );
     expect(el.textContent).toContain("CR");
-    expect(el.textContent).toContain("Carla Ruiz");
+    expect(el.textContent).toContain("Carla Reed");
   });
 });
 
@@ -67,9 +67,9 @@ describe("Breadcrumbs", () => {
     const el = mount(
       Breadcrumbs({
         items: [
-          { label: "Inicio", href: "/" },
+          { label: "Home", href: "/" },
           { label: "Dashboard", href: "/dashboard" },
-          { label: "Detalle" },
+          { label: "Detail" },
         ],
       }) as HTMLElement,
     );
@@ -77,7 +77,7 @@ describe("Breadcrumbs", () => {
     expect(links.length).toBe(2);
     expect(links[0].getAttribute("href")).toBe("/");
     const current = el.querySelector('[aria-current="page"]')!;
-    expect(current.textContent).toBe("Detalle");
+    expect(current.textContent).toBe("Detail");
     expect(el.textContent).toContain("/");
     expect(el.tagName).toBe("NAV");
     expect(el.getAttribute("aria-label")).toBeTruthy();
@@ -101,10 +101,10 @@ describe("Breadcrumbs", () => {
 
 describe("Card", () => {
   test("base surface + hoverable + CardTitle", () => {
-    const el = mount(Card({ hoverable: true }, CardTitle({}, "Hola"), "cuerpo") as HTMLElement);
+    const el = mount(Card({ hoverable: true }, CardTitle({}, "Hello"), "body") as HTMLElement);
     expect(el.className).toContain("bg-card");
     expect(el.className).toContain("hover:shadow-md");
-    expect(el.querySelector("h3")?.textContent).toBe("Hola");
+    expect(el.querySelector("h3")?.textContent).toBe("Hello");
   });
 });
 
@@ -112,8 +112,8 @@ describe("Accordion", () => {
   const build = (extra = {}) =>
     Accordion({
       items: [
-        { id: "a", title: "Primera", content: () => van.tags.p("Contenido A") },
-        { id: "b", title: "Segunda", content: () => van.tags.p("Contenido B") },
+        { id: "a", title: "First", content: () => van.tags.p("Content A") },
+        { id: "b", title: "Second", content: () => van.tags.p("Content B") },
       ],
       ...extra,
     }) as HTMLElement;
@@ -126,7 +126,7 @@ describe("Accordion", () => {
     buttons[0].click();
     await tick();
     expect(buttons[0].getAttribute("aria-expanded")).toBe("true");
-    expect(el.textContent).toContain("Contenido A");
+    expect(el.textContent).toContain("Content A");
     const region = el.querySelector('[role="region"]:not([class*="hidden"])')!;
     expect(region.getAttribute("aria-labelledby")).toBe(buttons[0].id);
 
@@ -134,8 +134,8 @@ describe("Accordion", () => {
     await tick();
     expect(buttons[0].getAttribute("aria-expanded")).toBe("false");
     expect(buttons[1].getAttribute("aria-expanded")).toBe("true");
-    expect(el.textContent).toContain("Contenido B");
-    expect(el.textContent).not.toContain("Contenido A");
+    expect(el.textContent).toContain("Content B");
+    expect(el.textContent).not.toContain("Content A");
   });
 
   test("multiple: several open at once; re-click closes", async () => {
@@ -144,13 +144,13 @@ describe("Accordion", () => {
     buttons[0].click();
     buttons[1].click();
     await tick();
-    expect(el.textContent).toContain("Contenido A");
-    expect(el.textContent).toContain("Contenido B");
+    expect(el.textContent).toContain("Content A");
+    expect(el.textContent).toContain("Content B");
 
     buttons[1].click();
     await tick();
-    expect(el.textContent).not.toContain("Contenido B");
-    expect(el.textContent).toContain("Contenido A");
+    expect(el.textContent).not.toContain("Content B");
+    expect(el.textContent).toContain("Content A");
   });
 
   test("defaultOpen and content factory invoked on each open", async () => {
@@ -303,7 +303,7 @@ describe("Combobox", () => {
       called = true;
       data = d;
     });
-    form.add(Combobox({ name: "pais", required: true, options: [{ value: "ar", label: "Argentina" }] }));
+    form.add(Combobox({ name: "country", required: true, options: [{ value: "ar", label: "Argentina" }] }));
 
     const el = mount(form.dom() as HTMLFormElement);
     el.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
@@ -319,6 +319,6 @@ describe("Combobox", () => {
     el.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
     await tick();
     expect(called).toBe(true);
-    expect(data).toEqual({ pais: "ar" });
+    expect(data).toEqual({ country: "ar" });
   });
 });

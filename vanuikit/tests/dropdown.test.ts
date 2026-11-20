@@ -89,11 +89,11 @@ describe("DropdownMenu", () => {
   test("expands items on trigger click and runs the callback", async () => {
     let clicked = false;
     const el = DropdownMenu({
-      trigger: () => van.tags.button("Acciones"),
+      trigger: () => van.tags.button("Actions"),
       items: [
-        { label: "Editar", onClick: () => (clicked = true) },
+        { label: "Edit", onClick: () => (clicked = true) },
         { type: "divider" },
-        { label: "Eliminar", destructive: true },
+        { label: "Delete", destructive: true },
       ],
     });
 

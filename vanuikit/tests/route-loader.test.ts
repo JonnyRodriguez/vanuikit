@@ -104,8 +104,8 @@ export const meta = { public: true };`,
   });
 
   test("missing directory: empty app without throwing", async () => {
-    const app = await loadRoutes("/tmp/no-existe-vanuikit-routes-xyz");
-    const res = await app.request("/cualquiera");
+    const app = await loadRoutes("/tmp/nonexistent-vanuikit-routes-xyz");
+    const res = await app.request("/any");
     expect(res.status).toBe(404);
   });
 });

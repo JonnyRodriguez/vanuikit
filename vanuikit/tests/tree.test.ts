@@ -17,18 +17,18 @@ const mount = (props: Record<string, unknown> = {}) => {
 const sample = () => [
   {
     id: 1,
-    label: "Categoría principal",
-    children: [{ id: 2, label: "Hijo" }],
+    label: "Main category",
+    children: [{ id: 2, label: "Child" }],
   },
-  { id: 3, label: "Otra" },
+  { id: 3, label: "Other" },
 ];
 
 describe("Tree", () => {
   test("renders all root nodes with their labels", () => {
     const host = mount({ nodes: sample() });
     expect(host.querySelector('[role="tree"]')).not.toBeNull();
-    expect(host.textContent).toContain("Categoría principal");
-    expect(host.textContent).toContain("Otra");
+    expect(host.textContent).toContain("Main category");
+    expect(host.textContent).toContain("Other");
   });
 
   test("expanded by default: children visible until manually collapsed", async () => {
@@ -79,12 +79,12 @@ describe("Tree", () => {
         actions: (node: { id: string | number }) =>
           button({ class: "row-act", onclick: () => {
             editedId = node.id;
-          } }, "Editar"),
+          } }, "Edit"),
       })),
     });
     const edits = host.querySelectorAll(".row-act");
     expect(edits.length).toBe(2);
-    expect(host.textContent).toContain("Editar");
+    expect(host.textContent).toContain("Edit");
     (edits[0] as HTMLButtonElement).click();
     await tick();
     expect(editedId).toBe(1);
@@ -128,22 +128,22 @@ describe("Tree", () => {
     (host.querySelector('button[aria-label="Add child"]') as HTMLButtonElement).click();
     await tick();
     const inputEl = host.querySelector('input[type="text"]') as HTMLInputElement;
-    inputEl.value = "Hijo B";
+    inputEl.value = "Child B";
     const confirmBtn = Array.from(host.querySelectorAll("button")).find((b) => b.getAttribute("aria-label") === "Confirm") as HTMLButtonElement;
     confirmBtn.click();
     await tick();
-    expect(added).toEqual({ id: 1, name: "Hijo B" });
+    expect(added).toEqual({ id: 1, name: "Child B" });
     expect(host.querySelector('input[type="text"]')).toBeNull();
 
     // Escape cancels without calling the callback
     (host.querySelector('button[aria-label="Add child"]') as HTMLButtonElement).click();
     await tick();
     const input2 = host.querySelector('input[type="text"]') as HTMLInputElement;
-    input2.value = "No debe llegar";
+    input2.value = "Should not arrive";
     input2.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
     await tick();
     expect(host.querySelector('input[type="text"]')).toBeNull();
-    expect(added).toEqual({ id: 1, name: "Hijo B" }); // unchanged
+    expect(added).toEqual({ id: 1, name: "Child B" }); // unchanged
   });
 
   test("empty nodes render an empty hint", () => {
@@ -157,12 +157,12 @@ describe("Tree", () => {
   test("reactive nodes: rebuilds when the State changes", async () => {
     const nodes = van.state<any[]>(sample());
     const host = mount({ nodes });
-    expect(host.textContent).toContain("Categoría principal");
+    expect(host.textContent).toContain("Main category");
 
-    nodes.val = [{ id: 9, label: "Nueva raíz" }];
+    nodes.val = [{ id: 9, label: "New root" }];
     await tick();
-    expect(host.textContent).toContain("Nueva raíz");
-    expect(host.textContent).not.toContain("Categoría principal");
-    expect(host.textContent).not.toContain("Otra");
+    expect(host.textContent).toContain("New root");
+    expect(host.textContent).not.toContain("Main category");
+    expect(host.textContent).not.toContain("Other");
   });
 });

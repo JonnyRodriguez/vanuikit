@@ -52,9 +52,9 @@ export function SidebarItem(props: SidebarItemProps) {
     return span({ class: "shrink-0 flex items-center justify-center w-6 h-6" }, props.icon);
   };
 
-  // Sobre el ítem activo (fondo `bg-primary` sólido), el badge necesita
-  // texto claro para mantener el contraste (≥ 4.5:1); las variantes de
-  // sombra del kit están pensadas para fondos claros.
+  // On the active item (solid `bg-primary` background), the badge needs
+  // light text to keep contrast (≥ 4.5:1); the kit's shadow variants are
+  // designed for light backgrounds.
   const renderBadge = (isActive: boolean) => {
     if (props.badge === undefined || props.badge === null) return null;
     const activeOverrides = isActive ? "!bg-white !text-primary !border-transparent" : "";
@@ -434,10 +434,10 @@ export function AppShell(props: AppShellProps) {
         // No overflow-x-hidden at the root: an ancestor with overflow != visible
         // breaks the sidebar's position:sticky on desktop (the mobile drawer is
         // fixed, it does not overflow the document, not needed).
-        // vui-app-shell: hook de estabilidad. La librería fija el posicionamiento
-        // del sidebar bajo este hook con especificidad propia, para que un
-        // consumidor que regenere utilidades (p. ej. el .fixed de una hoja
-        // UnoCSS propia) no pueda romper el layout del shell.
+        // vui-app-shell: stability hook. The library pins the sidebar
+        // positioning under this hook with its own specificity, so that a
+        // consumer regenerating utilities (e.g. the .fixed of their own
+        // UnoCSS sheet) cannot break the shell layout.
         "vui-app-shell min-h-screen flex bg-background text-foreground transition-colors relative",
         props.class,
       ),

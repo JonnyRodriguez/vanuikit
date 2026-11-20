@@ -4,15 +4,15 @@ import { SpinModal } from "../src/components/spin-modal.js";
 
 describe("Spin", () => {
   test("shows the message and the spinning ring", () => {
-    const node = Spin("Cargando...");
-    expect(node.textContent).toContain("Cargando...");
+    const node = Spin("Loading...");
+    expect(node.textContent).toContain("Loading...");
     expect(node.querySelector(".animate-spin")).not.toBeNull();
   });
 });
 
 describe("SpinModal", () => {
   test("null footer so no Close button is shown", () => {
-    const content = SpinModal("Procesando");
+    const content = SpinModal("Processing");
     expect(content.footer).toBeNull();
     expect(content.body).not.toBeNull();
   });

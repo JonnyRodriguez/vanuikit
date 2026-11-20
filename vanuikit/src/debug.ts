@@ -44,9 +44,9 @@ const VAN_BINDING_HINTS = `Hints (van gotchas):
  * and verifies that the tree mutated to the expected text.
  *
  *   await expectReactive({
- *     render: () => span(miState),
- *     act: () => (miState.val = "nuevo"),
- *     contains: "nuevo",
+ *     render: () => span(myState),
+ *     act: () => (myState.val = "new"),
+ *     contains: "new",
  *   });
  */
 export const expectReactive = async (opts: ExpectReactiveOptions): Promise<void> => {

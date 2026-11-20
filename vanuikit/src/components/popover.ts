@@ -74,9 +74,9 @@ export const Popover = (props: PopoverOptions): ChildDom => {
     }
   };
 
-  // El trigger es el control interactivo real: lleva `aria-expanded` y el
-  // toggle. Un span sin rol no puede portar `aria-expanded` (viola
-  // aria-allowed-attr), así que el estado se comunica sobre el propio botón.
+  // The trigger is the real interactive control: it carries `aria-expanded`
+  // and the toggle. A span without a role cannot carry `aria-expanded` (violates
+  // aria-allowed-attr), so the state is communicated on the button itself.
   const triggerEl = (typeof props.trigger === "function" ? null : props.trigger) as
     | HTMLElement
     | null;

@@ -39,8 +39,8 @@ describe("Button", () => {
   });
 
   test("extra class merges at the end", () => {
-    const btn = mount(Button({ class: "mi-clase" }));
-    expect(btn.className).toContain("mi-clase");
+    const btn = mount(Button({ class: "my-class" }));
+    expect(btn.className).toContain("my-class");
   });
 
   test("compatibility wrappers delegate to Button", () => {

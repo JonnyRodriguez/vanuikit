@@ -79,7 +79,7 @@ describe("fmt — locale resolution", () => {
   });
 
   test("invalid date: empty string, no exceptions", () => {
-    expect(fmt.raw.date("no-es-fecha")).toBe("");
+    expect(fmt.raw.date("not-a-date")).toBe("");
     expect(fmt.raw.datetime("2026-13-45")).toBe("");
   });
 });

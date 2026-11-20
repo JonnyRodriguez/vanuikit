@@ -22,7 +22,7 @@ describe("EmailField — typed unit", () => {
     const email = EmailField();
     expect(email.validate("")).toBe(false);
     expect(email.error.val).toContain("email");
-    expect(email.validate("mal-formato")).toBe(false);
+    expect(email.validate("bad-format")).toBe(false);
     expect(email.validate("a@b.co")).toBe(true);
     expect(email.error.val).toBe("");
   });
@@ -37,7 +37,7 @@ describe("PasswordField — typed unit", () => {
   });
 
   test("min customizable", () => {
-    const pass = PasswordField("Contraseña", "password", "••", 8);
+    const pass = PasswordField("Password", "password", "••", 8);
     expect(pass.validate("1234567")).toBe(false);
     expect(pass.validate("12345678")).toBe(true);
   });
@@ -45,31 +45,31 @@ describe("PasswordField — typed unit", () => {
 
 describe("TextField — required", () => {
   test("rejects empty, accepts text", () => {
-    const name = TextField("Nombre", "name");
+    const name = TextField("Name", "name");
     expect(name.validate("  ")).toBe(false);
-    expect(name.validate("Ana")).toBe(true);
+    expect(name.validate("Ann")).toBe(true);
   });
 });
 
 describe("Proxy: addValidator without losing the type's own validators", () => {
   test("EmailField + extra validation still checks the format", () => {
     const email = EmailField();
-    email.addValidator(MinLength(20, "Muy corto"));
+    email.addValidator(MinLength(20, "Too short"));
     // invalid format -> type error (the extra one does not run first)
     expect(email.validate("abc")).toBe(false);
     expect(email.error.val).toBe("Invalid email address");
     // valid but short format -> extra error
     expect(email.validate("a@b.co")).toBe(false);
-    expect(email.error.val).toBe("Muy corto");
+    expect(email.error.val).toBe("Too short");
     // both pass
-    expect(email.validate("nombre.largo@ejemplo.com")).toBe(true);
+    expect(email.validate("long.name@example.com")).toBe(true);
   });
 
   test("base field built from scratch", () => {
-    const monto = Field({ label: "Monto", name: "monto", inputType: "number" });
-    monto.addValidator(Required("Ingresa un monto"));
-    expect(monto.validate("")).toBe(false);
-    expect(monto.validate("50")).toBe(true);
+    const amount = Field({ label: "Amount", name: "amount", inputType: "number" });
+    amount.addValidator(Required("Enter an amount"));
+    expect(amount.validate("")).toBe(false);
+    expect(amount.validate("50")).toBe(true);
   });
 });
 
@@ -110,8 +110,8 @@ describe("Form — runs the default validations", () => {
     const form = Form(() => {
       called = true;
     });
-    const confirm = PasswordField("Confirmar", "confirm");
-    confirm.addValidator(Match("password", "Las contraseñas no coinciden"));
+    const confirm = PasswordField("Confirm", "confirm");
+    confirm.addValidator(Match("password", "Passwords do not match"));
     form.add(EmailField(), PasswordField(), confirm);
 
     const el = mount(form.dom()) as HTMLFormElement;
@@ -121,6 +121,6 @@ describe("Form — runs the default validations", () => {
     await submit(el);
 
     expect(called).toBe(false);
-    expect(el.textContent).toContain("Las contraseñas no coinciden");
+    expect(el.textContent).toContain("Passwords do not match");
   });
 });

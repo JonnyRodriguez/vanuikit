@@ -84,7 +84,7 @@ export function createAuthRoutes<TUser extends BaseUser = BaseUser>(
       const user = await options.onLogin(body, c);
 
       if (!user) {
-        return c.json({ error: "Credenciales incorrectas" }, 401);
+        return c.json({ error: "Invalid credentials" }, 401);
       }
 
       const session = await options.sessionStore.create(user);

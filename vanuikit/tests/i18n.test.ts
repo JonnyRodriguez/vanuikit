@@ -33,7 +33,9 @@ describe("createI18n", () => {
   test("resolves nested translations and interpolation", () => {
     const i18n = createI18n({ defaultLocale: "es", locales });
     expect(i18n.raw("common.save")).toBe("Guardar");
+    // cSpell:disable — test-local es dictionary values, asserted verbatim.
     expect(i18n.raw("greeting", undefined, { name: "Mundo" })).toBe("Hola Mundo");
+    // cSpell:enable
   });
 
   test("reactive derivation with t() updates on language change", async () => {
@@ -50,6 +52,7 @@ describe("createI18n", () => {
   });
 
   test("falls back to the default locale when the key is missing in the secondary one", () => {
+    // cSpell:disable — test-local es dictionary values, asserted verbatim.
     const localesWithMissing = {
       es: { missingInEn: "Disponible en español" },
       en: {},
@@ -57,6 +60,7 @@ describe("createI18n", () => {
     const i18n = createI18n({ defaultLocale: "es", locales: localesWithMissing });
     i18n.setLocale("en");
     expect(i18n.raw("missingInEn")).toBe("Disponible en español");
+    // cSpell:enable
   });
 
   test("createI18n without options defaults to English with the library dictionaries", () => {
@@ -95,10 +99,12 @@ describe("i18n — singleton (library defaults)", () => {
   });
 
   test("the same dictionary resolves in Spanish", () => {
+    // cSpell:disable — asserted strings come from the builtin es dictionary.
     globalI18n.setLocale("es");
     expect(globalI18n.raw("dialog.confirm")).toBe("Confirmar");
     expect(globalI18n.raw("table.prev")).toBe("← Anterior");
     expect(globalI18n.raw("field.email.label")).toBe("Correo electrónico");
+    // cSpell:enable
   });
 });
 

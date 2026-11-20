@@ -203,7 +203,9 @@ describe("DatePicker — locale reactivity", () => {
 
     i18n.setLocale("es");
     await new Promise((r) => setTimeout(r, 20));
+    // cSpell:disable — asserted string comes from the builtin es dictionary.
     expect(document.body.textContent).toContain("Enero");
+    // cSpell:enable
   });
 });
 

@@ -1,18 +1,18 @@
 /**
- * check-van-rules.ts — escaneo estático de las reglas reactivas de VanUikit.
+ * check-van-rules.ts — static scan of VanUikit's reactivity rules.
  *
- * Complementa el detector en runtime (debug-graph.ts) con la versión
- * **lexical** de las reglas: no necesita ejecutar la app.
+ * Complements the runtime detector (debug-graph.ts) with the **lexical**
+ * version of the rules: it doesn't need to run the app.
  *
- *  RULE A (falla el CI): `van.state()` / `van.derive()` DENTRO de un
- *    `van.derive(...)` — el estado se recrea en cada recálculo; el derive
- *    anidado se registra como setter del contenedor.
+ *  RULE A (fails CI): `van.state()` / `van.derive()` INSIDE a
+ *    `van.derive(...)` — the state is recreated on every recomputation; the
+ *    nested derive registers as the container's setter.
  *
- *  RULE B (advertencia): `t()` / `raw()` / `fmt.*()` dentro de una función
- *    pasada como argumento de una llamada (función-hija / render). Si el
- *    contenedor reacciona, reconstruye todo el subárbol.
+ *  RULE B (warning): `t()` / `raw()` / `fmt.*()` inside a function
+ *    passed as a call argument (function-child / render). If the
+ *    container reacts, it rebuilds the whole subtree.
  *
- * Uso: `bun run check:van` (exit 1 si hay violaciones RULE A).
+ * Usage: `bun run check:van` (exit 1 on RULE A violations).
  */
 
 import ts from "typescript";
@@ -64,7 +64,7 @@ function scanFile(file: string): void {
   const sf = ts.createSourceFile(file, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
   const rel = relative(HERE, file);
 
-  // 1) RULE A: van.state / van.derive dentro de van.derive.
+  // 1) RULE A: van.state / van.derive inside van.derive.
   const visitForA = (node: ts.Node, deriveDepth: number): void => {
     if (ts.isCallExpression(node)) {
       const callee = node.expression.getText(sf);
@@ -94,7 +94,7 @@ function scanFile(file: string): void {
     ts.forEachChild(node, (c) => visitForA(c, deriveDepth));
   };
 
-  // 2) RULE B: t/raw/fmt dentro de funciones pasadas como argumento.
+  // 2) RULE B: t/raw/fmt inside functions passed as arguments.
   const renderFns: ts.FunctionLikeDeclaration[] = [];
   const collectRenderFns = (node: ts.Node): void => {
     if (ts.isCallExpression(node)) {
@@ -109,7 +109,7 @@ function scanFile(file: string): void {
   collectRenderFns(sf);
   for (const fn of renderFns) {
     const visitB = (node: ts.Node): void => {
-      if (ts.isFunctionLike(node) && node !== fn) return; // handlers anidados: no bajar
+      if (ts.isFunctionLike(node) && node !== fn) return; // nested handlers: don't descend
       if (ts.isCallExpression(node)) {
         const callee = node.expression.getText(sf);
         if (CALLEE_I18N.test(callee)) {
@@ -168,9 +168,9 @@ for (const v of violations) {
   console.error(`    ${v.snippet}`);
 }
 for (const w of warnings) {
-  console.warn(`⚠️  RULE B (revisar) — ${w.file}:${w.line}:${w.col} — ${w.msg}`);
+  console.warn(`⚠️  RULE B (review) — ${w.file}:${w.line}:${w.col} — ${w.msg}`);
   console.warn(`    ${w.snippet}`);
 }
 
-console.log(`\n✔ check-van-rules: ${files.length} archivos, ${violations.length} violaciones, ${warnings.length} advertencias.`);
+console.log(`\n✔ check-van-rules: ${files.length} files, ${violations.length} violations, ${warnings.length} warnings.`);
 if (violations.length > 0) process.exit(1);

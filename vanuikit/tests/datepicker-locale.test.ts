@@ -33,7 +33,7 @@ describe("DatePicker × language switch (empty calendar regression)", () => {
   test("popup: the grid survives language switches crossing GC cycles", async () => {
     i18n.setLocale("es");
     const value = van.state<Date | null>(null);
-    const popup = DatePicker({ name: "venc", value, required: true }).dom() as HTMLElement;
+    const popup = DatePicker({ name: "due", value, required: true }).dom() as HTMLElement;
     document.body.replaceChildren(popup);
     await flush();
 
@@ -60,13 +60,15 @@ describe("DatePicker × language switch (empty calendar regression)", () => {
     expect(popupEl.className).not.toContain("hidden");
     expect(headers(popupEl)).toBe(7);
     expect(dayButtons(popupEl)).toBeGreaterThan(27);
+    // cSpell:disable — asserted string comes from the builtin es dictionary.
     expect(popupEl.querySelectorAll("button[aria-label='Mes anterior']").length).toBe(1);
+    // cSpell:enable
   });
 
   test("popup + inline sharing a value: both grids survive", async () => {
     i18n.setLocale("es");
     const value = van.state<Date | null>(null);
-    const popup = DatePicker({ name: "venc", value }).dom() as HTMLElement;
+    const popup = DatePicker({ name: "due", value }).dom() as HTMLElement;
     const inline = DatePicker({
       inline: true,
       value,

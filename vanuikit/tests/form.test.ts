@@ -70,7 +70,7 @@ describe("Form v3 — contract", () => {
 
   test("schema: on failure, does not call onSubmit and paints per-field errors", async () => {
     let called = false;
-    const schema = makeSchema([{ path: "email", message: "Correo requerido" }]);
+    const schema = makeSchema([{ path: "email", message: "Email is required" }]);
     const form = Form({
       schema,
       onSubmit: () => {
@@ -86,13 +86,13 @@ describe("Form v3 — contract", () => {
     await submit(el);
 
     expect(called).toBe(false);
-    expect(email.error.val).toBe("Correo requerido");
-    expect(form.fieldErrors.val).toEqual({ email: "Correo requerido" });
+    expect(email.error.val).toBe("Email is required");
+    expect(form.fieldErrors.val).toEqual({ email: "Email is required" });
     expect(form.error.val).toBe("");
   });
 
   test("schema: errors without a registered field fall into the general line", async () => {
-    const schema = makeSchema([{ path: "foo", message: "Falta el término" }]);
+    const schema = makeSchema([{ path: "foo", message: "Missing the term" }]);
     const form = Form({
       schema,
       onSubmit: () => ({ ok: true }),
@@ -100,7 +100,7 @@ describe("Form v3 — contract", () => {
     form.add(EmailField(), PasswordField());
     const el = mount(form.dom()) as HTMLFormElement;
     await submit(el);
-    expect(form.error.val).toBe("Falta el término");
+    expect(form.error.val).toBe("Missing the term");
   });
 
   test("schema: on success, calls onSubmit with the data", async () => {
@@ -124,7 +124,7 @@ describe("Form v3 — contract", () => {
     const form = Form({
       onSubmit: () => ({
         ok: false,
-        fieldErrors: { email: "Ya existe una cuenta con ese correo", foo: "Algo falló" },
+        fieldErrors: { email: "An account with that email already exists", foo: "Something failed" },
       }),
     });
     const email = EmailField();
@@ -134,14 +134,14 @@ describe("Form v3 — contract", () => {
     setValue(el, "password", "123456");
     await submit(el);
 
-    expect(email.error.val).toBe("Ya existe una cuenta con ese correo");
-    expect(form.error.val).toBe("Algo falló");
+    expect(email.error.val).toBe("An account with that email already exists");
+    expect(form.error.val).toBe("Something failed");
   });
 
   test("backend general error: shown in the general line", async () => {
     let onErrorCalled = false;
     const form = Form({
-      onSubmit: () => ({ ok: false, error: "Credenciales inválidas" }),
+      onSubmit: () => ({ ok: false, error: "Invalid credentials" }),
       onError: () => {
         onErrorCalled = true;
       },
@@ -151,7 +151,7 @@ describe("Form v3 — contract", () => {
     setValue(el, "email", "a@b.co");
     setValue(el, "password", "123456");
     await submit(el);
-    expect(form.error.val).toBe("Credenciales inválidas");
+    expect(form.error.val).toBe("Invalid credentials");
     expect(onErrorCalled).toBe(true);
   });
 
@@ -174,14 +174,14 @@ describe("Form v3 — contract", () => {
 
   test("legacy handler: { error } is normalized to the general line", async () => {
     const form = Form(async () => {
-      return { error: "Falló" };
+      return { error: "Failed" };
     });
     form.add(EmailField(), PasswordField());
     const el = mount(form.dom()) as HTMLFormElement;
     setValue(el, "email", "a@b.co");
     setValue(el, "password", "123456");
     await submit(el);
-    expect(form.error.val).toBe("Falló");
+    expect(form.error.val).toBe("Failed");
   });
 
   test("legacy handler: void is treated as success", async () => {

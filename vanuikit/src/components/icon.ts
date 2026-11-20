@@ -3,7 +3,7 @@ import { cx } from "../util.js";
 import { Svg, SvgPath } from "./svg.js";
 
 /**
- * Icon — collection of SVG icons from vankit (Lucide style, 24×24, stroked
+ * Icon — collection of SVG icons from vanuikit (Lucide style, 24×24, stroked
  * with `currentColor`). Replaces emojis: they get tinted by the theme and look
  * identical on every platform. Every icon in the catalog must come from here.
  */
@@ -183,10 +183,10 @@ export function Icon(props: IconProps) {
         "fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round",
       class: () => {
         const uc = userClass() ?? "";
-        // Si el consumidor ya fija un tamaño (size-/w-/h-), respetarlo y no
-        // superponer el default `size-4`: ambos caen sobre el mismo <svg> y el
-        // resultado depende del orden de cascada (terminaba en 16px en vez del
-        // tamaño pedido, p. ej. size-[18px]).
+        // If the consumer already sets a size (size-/w-/h-), respect it and
+        // don't layer the default `size-4` on top: both land on the same
+        // <svg> and the result depends on cascade order (it ended up 16px
+        // instead of the requested size, e.g. size-[18px]).
         const hasSize = /(^|\s)(size|w|h)-/.test(uc);
         return cx("shrink-0 select-none", !hasSize && "size-4", uc);
       },

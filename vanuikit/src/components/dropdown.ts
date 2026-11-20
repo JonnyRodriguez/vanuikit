@@ -163,9 +163,9 @@ export function SelectDropdown<T = string | number>(props: SelectDropdownProps<T
       {
         id: `${containerId}-btn`,
         type: "button",
-        // Listbox popup button (discrete select, no editable combobox): sin
-        // role="combobox" el nombre accesible sale del texto visible y evita
-        // button-name. Ver APG disclosure/select patterns.
+        // Listbox popup button (discrete select, not an editable combobox):
+        // without role="combobox" the accessible name comes from the visible
+        // text and avoids button-name. See APG disclosure/select patterns.
         "aria-haspopup": "listbox",
         "aria-expanded": () => (isOpen.val ? "true" : "false"),
         "aria-controls": listboxId,

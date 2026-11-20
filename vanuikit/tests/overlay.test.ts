@@ -19,14 +19,14 @@ afterEach(() => {
 describe("Tooltip", () => {
   test("hidden by default; focusin shows it instantly and focusout hides it", async () => {
     const el = mount(
-      Tooltip({ content: "Mensaje de ayuda" }, van.tags.button("Disparador")) as HTMLElement,
+      Tooltip({ content: "Help message" }, van.tags.button("Trigger")) as HTMLElement,
     );
     const bubble = el.querySelector('[role="tooltip"]') as HTMLElement;
     expect(bubble.className).toContain("hidden");
 
     el.dispatchEvent(new FocusEvent("focusin"));
     await tick();
-    expect(bubble.textContent).toBe("Mensaje de ayuda");
+    expect(bubble.textContent).toBe("Help message");
     expect(bubble.className).not.toContain("hidden");
     expect(bubble.className).toContain("z-50");
 
@@ -37,12 +37,12 @@ describe("Tooltip", () => {
 
   test("mouseenter shows (delay 0) and mouseleave hides", async () => {
     const el = mount(
-      Tooltip({ content: "Hola", delay: 0, position: "left" }, van.tags.button("X")) as HTMLElement,
+      Tooltip({ content: "Hello", delay: 0, position: "left" }, van.tags.button("X")) as HTMLElement,
     );
     el.dispatchEvent(new MouseEvent("mouseenter"));
     await tick();
     const bubble = el.querySelector('[role="tooltip"]') as HTMLElement;
-    expect(bubble.textContent).toBe("Hola");
+    expect(bubble.textContent).toBe("Hello");
     expect(bubble.className).toContain("-translate-y-1/2"); // left position
     expect(bubble.className).toContain("mr-2");
     expect(bubble.className).not.toContain("hidden");
@@ -54,7 +54,7 @@ describe("Tooltip", () => {
 
   test("disabled blocks hover and focus", async () => {
     const el = mount(
-      Tooltip({ content: "Nada", delay: 0, disabled: true }, van.tags.button("X")) as HTMLElement,
+      Tooltip({ content: "Nothing", delay: 0, disabled: true }, van.tags.button("X")) as HTMLElement,
     );
     el.dispatchEvent(new MouseEvent("mouseenter"));
     el.dispatchEvent(new FocusEvent("focusin"));
@@ -65,29 +65,29 @@ describe("Tooltip", () => {
   });
 
   test("reactive content (State) reaches the bubble", async () => {
-    const msg = van.state("Uno");
+    const msg = van.state("One");
     const el = mount(
       Tooltip({ content: msg, delay: 0 }, van.tags.button("X")) as HTMLElement,
     );
     el.dispatchEvent(new FocusEvent("focusin"));
     await tick();
-    expect((el.querySelector('[role="tooltip"]') as HTMLElement).textContent).toBe("Uno");
+    expect((el.querySelector('[role="tooltip"]') as HTMLElement).textContent).toBe("One");
 
-    msg.val = "Dos";
+    msg.val = "Two";
     await tick();
-    expect((el.querySelector('[role="tooltip"]') as HTMLElement).textContent).toBe("Dos");
+    expect((el.querySelector('[role="tooltip"]') as HTMLElement).textContent).toBe("Two");
   });
 });
 
 describe("Popover", () => {
   const build = () =>
     Popover({
-      trigger: van.tags.button({ id: "pop-trigger" }, "Opciones"),
-      ariaLabel: "Acciones",
+      trigger: van.tags.button({ id: "pop-trigger" }, "Options"),
+      ariaLabel: "Actions",
       content: (close) =>
         van.tags.div(
-          van.tags.button({ id: "pop-action" }, "Acción"),
-          van.tags.button({ id: "pop-close", onclick: close }, "Cerrar"),
+          van.tags.button({ id: "pop-action" }, "Action"),
+          van.tags.button({ id: "pop-close", onclick: close }, "Close"),
         ),
     });
 
@@ -163,9 +163,9 @@ describe("Drawer", () => {
         onClose: () => closes++,
       },
       van.tags.div(
-        van.tags.h2("Título del panel"),
-        van.tags.p("Contenido del drawer."),
-        van.tags.button({ id: "drawer-first" }, "Primera acción"),
+        van.tags.h2("Panel title"),
+        van.tags.p("Drawer content."),
+        van.tags.button({ id: "drawer-first" }, "First action"),
       ),
     );
     return { open, dom: dom as HTMLElement, getCloses: () => closes };
@@ -195,7 +195,7 @@ describe("Drawer", () => {
     const { open, dom, getCloses } = build("left");
     mount(dom);
     // The opener must exist AFTER the mount (replaceChildren would wipe it).
-    const opener = van.tags.button("Abrir");
+    const opener = van.tags.button("Open");
     document.body.append(opener);
     opener.focus();
 
@@ -235,7 +235,7 @@ describe("Drawer", () => {
     const open = van.state(true);
     const dom = Drawer(
       { open, dismissible: false, showClose: false },
-      van.tags.p("Fijo"),
+      van.tags.p("Fixed"),
     ) as HTMLElement;
     mount(dom);
 
@@ -282,7 +282,7 @@ describe("Drawer", () => {
     expect(panel.className).toContain("translate-y-0");
   });
 
-  test("modal: false → panel flotante no bloqueante (sin backdrop, sin scroll lock, sin focus trap)", async () => {
+  test("modal: false → non-blocking floating panel (no backdrop, no scroll lock, no focus trap)", async () => {
     const open = van.state(true);
     const dom = Drawer(
       { open, modal: false, showClose: false },
@@ -293,15 +293,15 @@ describe("Drawer", () => {
     ) as HTMLElement;
     mount(dom);
 
-    // En modo no-modal el panel es el nodo raíz (no hay wrapper ni backdrop).
+    // In non-modal mode the panel is the root node (no wrapper or backdrop).
     const panel = dom;
     expect(panel.getAttribute("role")).toBe("dialog");
     expect(panel.getAttribute("aria-modal")).toBe("false");
     expect(dom.className).not.toContain("bg-overlay");
     expect(dom.classList.contains("fixed")).toBe(true);
-    // Sin bloqueo de scroll mientras está abierto.
+    // No scroll lock while open.
     expect(document.body.style.overflow).toBe("");
-    // Sin focus trap: Tab no envuelve al llegar al último elemento.
+    // No focus trap: Tab does not wrap when reaching the last element.
     const last = panel.querySelector("#nm-b") as HTMLButtonElement;
     const first = panel.querySelector("#nm-a") as HTMLButtonElement;
     last.focus();
@@ -312,12 +312,12 @@ describe("Drawer", () => {
     expect(document.activeElement).toBe(first);
   });
 
-  test("modal: false conserva Esc para cerrar si dismissible", async () => {
+  test("modal: false still closes on Esc when dismissible", async () => {
     const open = van.state(true);
     let closes = 0;
     const dom = Drawer(
       { open, modal: false, onClose: () => closes++ },
-      van.tags.p("Hola"),
+      van.tags.p("Hello"),
     ) as HTMLElement;
     mount(dom);
 

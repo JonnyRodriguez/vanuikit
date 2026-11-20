@@ -28,7 +28,7 @@ const check = (input: HTMLInputElement, checked: boolean) => {
 
 describe("Checkbox — standalone", () => {
   test("toggles the state and paints the box accordingly", async () => {
-    const cb = Checkbox({ name: "news", label: "Novedades" });
+    const cb = Checkbox({ name: "news", label: "News" });
     const el = mount(cb.dom() as HTMLElement);
     const input = el.querySelector("input[type=checkbox]") as HTMLInputElement;
 
@@ -93,7 +93,7 @@ describe("Checkbox — Form integration", () => {
       called = true;
       data = d;
     });
-    form.add(Checkbox({ name: "terms", label: "Términos", required: true }));
+    form.add(Checkbox({ name: "terms", label: "Terms", required: true }));
 
     const el = mount(form.dom() as HTMLFormElement);
     await submit(el);
@@ -111,7 +111,7 @@ describe("Checkbox — Form integration", () => {
 
 describe("Switch", () => {
   test("role=switch, toggles and paints the track", async () => {
-    const sw = Switch({ name: "notif", label: "Notificaciones" });
+    const sw = Switch({ name: "notif", label: "Notifications" });
     const el = mount(sw.dom() as HTMLElement);
     const input = el.querySelector('input[role="switch"]') as HTMLInputElement;
 
@@ -146,9 +146,9 @@ describe("RadioGroup", () => {
       name: "plan",
       ariaLabel: "Plan",
       options: [
-        { value: "basic", label: "Básico" },
+        { value: "basic", label: "Basic" },
         { value: "pro", label: "Pro" },
-        { value: "business", label: "Empresarial", disabled: true },
+        { value: "business", label: "Business", disabled: true },
       ],
     });
 
@@ -223,7 +223,7 @@ describe("TextareaField", () => {
   test("renders <textarea> and validates required", () => {
     const ta = TextareaField({ name: "msg" });
     expect(ta.validate("")).toBe(false);
-    expect(ta.validate("hola")).toBe(true);
+    expect(ta.validate("hello")).toBe(true);
 
     const el = mount(ta.dom() as HTMLElement);
     expect(el.querySelector("textarea")).toBeTruthy();
@@ -237,10 +237,10 @@ describe("TextareaField", () => {
     form.add(TextareaField({ name: "msg" }), Checkbox({ name: "ok", required: true }));
 
     const el = mount(form.dom() as HTMLFormElement);
-    (el.querySelector("textarea") as HTMLTextAreaElement).value = "contenido";
+    (el.querySelector("textarea") as HTMLTextAreaElement).value = "content";
     check(el.querySelector("input[name=ok]") as HTMLInputElement, true);
     await submit(el);
 
-    expect(data).toEqual({ msg: "contenido", ok: "on" });
+    expect(data).toEqual({ msg: "content", ok: "on" });
   });
 });

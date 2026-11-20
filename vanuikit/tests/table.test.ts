@@ -14,8 +14,8 @@ describe("Table / DataGrid", () => {
   test("renders headers and rows with data", async () => {
     const el = Table({
       columns: [
-        { key: "name", header: "Nombre" },
-        { key: "score", header: "Puntaje", align: "right" },
+        { key: "name", header: "Name" },
+        { key: "score", header: "Score", align: "right" },
       ],
       data: sampleData,
     });
@@ -23,8 +23,8 @@ describe("Table / DataGrid", () => {
     document.body.appendChild(el);
     await tick();
 
-    expect(el.textContent).toContain("Nombre");
-    expect(el.textContent).toContain("Puntaje");
+    expect(el.textContent).toContain("Name");
+    expect(el.textContent).toContain("Score");
     expect(el.textContent).toContain("Alice");
     expect(el.textContent).toContain("Bob");
     expect(el.textContent).toContain("Charlie");
@@ -33,8 +33,8 @@ describe("Table / DataGrid", () => {
   test("sorts columns when clicking a sortable header", async () => {
     const el = DataGrid({
       columns: [
-        { key: "name", header: "Nombre", sortable: true },
-        { key: "score", header: "Puntaje", sortable: true },
+        { key: "name", header: "Name", sortable: true },
+        { key: "score", header: "Score", sortable: true },
       ],
       data: sampleData,
     });
@@ -61,8 +61,8 @@ describe("Table / DataGrid", () => {
   test("filters by search when searchable=true", async () => {
     const el = DataGrid({
       columns: [
-        { key: "name", header: "Nombre" },
-        { key: "score", header: "Puntaje" },
+        { key: "name", header: "Name" },
+        { key: "score", header: "Score" },
       ],
       data: sampleData,
       searchable: true,
@@ -86,8 +86,8 @@ describe("Table / DataGrid", () => {
   test("keeps the search input element while typing (no re-creation → no lost focus)", async () => {
     const el = DataGrid({
       columns: [
-        { key: "name", header: "Nombre" },
-        { key: "score", header: "Puntaje" },
+        { key: "name", header: "Name" },
+        { key: "score", header: "Score" },
       ],
       data: sampleData,
       searchable: true,
@@ -116,8 +116,8 @@ describe("Table / DataGrid", () => {
       if (loading.val) return van.tags.span("loading");
       return DataGrid({
         columns: [
-          { key: "name", header: "Nombre" },
-          { key: "score", header: "Puntaje" },
+          { key: "name", header: "Name" },
+          { key: "score", header: "Score" },
         ],
         data: sampleData,
         searchable: true,

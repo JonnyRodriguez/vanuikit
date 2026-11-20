@@ -29,15 +29,15 @@ const componentPrevents = (el: HTMLElement, init: MouseEventInit = {}) => {
 };
 
 const LINKS = [
-  { href: "./index.html", label: "Inicio" },
+  { href: "./index.html", label: "Home" },
   { href: "./login.html", label: "Login" },
-  { href: "./register.html", label: "Registro" },
-  { href: "./components.html", label: "Componentes" },
+  { href: "./register.html", label: "Register" },
+  { href: "./components.html", label: "Components" },
 ];
 
 const ROUTE_LINKS = [
   { href: "/dashboard", label: "Dashboard" },
-  { href: "/components", label: "Componentes" },
+  { href: "/components", label: "Components" },
 ];
 
 describe("Nav", () => {
@@ -57,7 +57,7 @@ describe("Nav", () => {
       '[aria-current="page"]',
     ) as HTMLElement;
     expect(active).not.toBeNull();
-    expect(active.textContent).toBe("Registro");
+    expect(active.textContent).toBe("Register");
     expect(active.className).toContain("text-accent");
     expect(active.className).toContain("font-bold");
   });
@@ -84,7 +84,7 @@ describe("Nav", () => {
 
     current.val = "/components";
     await flush();
-    expect(document.querySelector('[aria-current="page"]')?.textContent).toBe("Componentes");
+    expect(document.querySelector('[aria-current="page"]')?.textContent).toBe("Components");
   });
 
   test("default aria-label via i18n, overridable by prop", () => {
@@ -93,9 +93,9 @@ describe("Nav", () => {
     // The singleton boots in "en": resolves from the dictionary, not the Spanish default.
     expect(nav.getAttribute("aria-label")).toBe("Main navigation");
 
-    const navCustom = Nav(LINKS, { current: "./index.html", ariaLabel: "Menú principal" });
+    const navCustom = Nav(LINKS, { current: "./index.html", ariaLabel: "Main menu" });
     document.body.replaceChildren(navCustom);
-    expect(navCustom.getAttribute("aria-label")).toBe("Menú principal");
+    expect(navCustom.getAttribute("aria-label")).toBe("Main menu");
   });
 
   test("clicks navigate embedded: preventDefault only on internal routes", () => {
@@ -104,7 +104,7 @@ describe("Nav", () => {
     const internal = nav.querySelector("a") as HTMLElement;
     expect(componentPrevents(internal)).toBe(true);
 
-    const navExt = Nav([{ href: "https://example.com", label: "Externo" }], { current: "/other" });
+    const navExt = Nav([{ href: "https://example.com", label: "External" }], { current: "/other" });
     document.body.replaceChildren(navExt);
     const external = navExt.querySelector("a") as HTMLElement;
     expect(componentPrevents(external)).toBe(false);
@@ -113,16 +113,16 @@ describe("Nav", () => {
 
 describe("Link", () => {
   test("renders an anchor with href, accent variant by default and extra class", () => {
-    const link = Link({ href: "/dashboard", class: "my-extra" }, "Ver dashboard");
+    const link = Link({ href: "/dashboard", class: "my-extra" }, "View dashboard");
     document.body.replaceChildren(link);
     expect(link.getAttribute("href")).toBe("/dashboard");
-    expect(link.textContent).toBe("Ver dashboard");
+    expect(link.textContent).toBe("View dashboard");
     expect(link.className).toContain("text-accent");
     expect(link.className).toContain("my-extra");
   });
 
   test("button variant shares the primary button tokens", () => {
-    const link = Link({ href: "/login", variant: "button" }, "Entrar");
+    const link = Link({ href: "/login", variant: "button" }, "Enter");
     document.body.replaceChildren(link);
     expect(link.className).toContain("bg-primary");
     expect(link.className).toContain("text-primary-fg");

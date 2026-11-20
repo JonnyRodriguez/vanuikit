@@ -45,7 +45,7 @@ export const Drawer = (props: DrawerOptions, ...content: ChildDom[]): ChildDom =
   const side = SIDE_PANEL[props.side ?? "right"];
   const dismissible = props.dismissible !== false;
   const showClose = props.showClose !== false;
-  // Modal por defecto; modal:false → panel flotante no bloqueante.
+  // Modal by default; modal:false → non-blocking floating panel.
   const modal = props.modal !== false;
 
   let panelEl: HTMLElement | null = null;
@@ -64,7 +64,7 @@ export const Drawer = (props: DrawerOptions, ...content: ChildDom[]): ChildDom =
         close();
       }
     } else if (e.key === "Tab" && panelEl && modal) {
-      // Focus trap (solo modal): Tab no puede salir del panel abierto.
+      // Focus trap (modal only): Tab cannot leave the open panel.
       const focusables = panelEl.querySelectorAll<HTMLElement>(FOCUSABLE);
       if (!focusables.length) {
         e.preventDefault();
@@ -157,8 +157,8 @@ export const Drawer = (props: DrawerOptions, ...content: ChildDom[]): ChildDom =
 
   panelEl = panel;
   if (!modal) {
-    // No-modal: panel flotante sin backdrop ni overlay de pantalla completa; el
-    // resto de la página sigue operable. El panel mismo es el nodo raíz.
+    // No-modal: floating panel without backdrop or full-screen overlay; the
+    // rest of the page stays operable. The panel itself is the root node.
     return panel;
   }
   return overlay;

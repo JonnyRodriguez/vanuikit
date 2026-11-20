@@ -44,14 +44,14 @@ describe("openAIStream", () => {
   });
 
   test("handles multi-byte deltas split across chunk boundaries", async () => {
-    // The 'ó' encodes as c3 b3 in UTF-8; split the SSE frame so a raw byte
-    // boundary lands between those two bytes. The
+    // The '你' encodes as e4 bd a0 in UTF-8; split the SSE frame so a raw byte
+    // boundary lands inside that multi-byte sequence. The
     // TextDecoder({ stream: true }) must reassemble it correctly.
-    const frame = 'data: {"choices":[{"delta":{"content":"ó"}}]}\n\n';
+    const frame = 'data: {"choices":[{"delta":{"content":"你"}}]}\n\n';
     const full = new TextEncoder().encode(
       'data: {"choices":[{"delta":{"content":"Hol"}}]}\n\n' + frame,
     );
-    const splitAt = full.indexOf(0xc3) + 1; // after the c3 byte, before b3
+    const splitAt = full.indexOf(0xe4) + 1; // after the e4 lead byte, before bd a0
 
     const chunks: Array<string | Uint8Array> = [
       full.subarray(0, splitAt),
@@ -67,7 +67,7 @@ describe("openAIStream", () => {
     } finally {
       globalThis.fetch = original;
     }
-    expect(got.join("")).toBe("Holó");
+    expect(got.join("")).toBe("Hol你");
   });
 
   test("throws on non-OK response", async () => {
@@ -95,7 +95,7 @@ describe("openAIStream", () => {
 describe("createOpenAIChat", () => {
   test("produces a working ChatApi backed by the SSE transport", async () => {
     const chunks = [
-      'data: {"choices":[{"delta":{"content":"Sí"}}]}\n\n',
+      'data: {"choices":[{"delta":{"content":"Yes"}}]}\n\n',
       'data: {"choices":[{"delta":{"content":"."}}]}\n\n',
       "data: [DONE]\n\n",
     ];
@@ -104,14 +104,14 @@ describe("createOpenAIChat", () => {
 
     const chat = createOpenAIChat({ ...OR_OPTS });
     try {
-      await chat.send("¿Tienes tickets?");
+      await chat.send("Do you have tickets?");
     } finally {
       globalThis.fetch = original;
     }
 
     expect(chat.messages.val.map((m) => [m.role, m.content])).toEqual([
-      ["user", "¿Tienes tickets?"],
-      ["assistant", "Sí."],
+      ["user", "Do you have tickets?"],
+      ["assistant", "Yes."],
     ]);
   });
 });

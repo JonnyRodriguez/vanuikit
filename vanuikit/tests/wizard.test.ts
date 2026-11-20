@@ -66,7 +66,7 @@ const titleSchema: SchemaLike = {
       : {
           success: false,
           error: {
-            issues: [{ path: ["title"], message: "El título es requerido" }],
+            issues: [{ path: ["title"], message: "Title is required" }],
           },
         },
 };
@@ -74,8 +74,8 @@ const titleSchema: SchemaLike = {
 const twoStepWizard = (overrides: Partial<WizardOptions> = {}) =>
   Wizard({
     steps: [
-      { title: "Básico", schema: makeSchema(), fields: [TextField({ name: "title" })] },
-      { title: "Contacto", schema: makeSchema(), fields: [EmailField()] },
+      { title: "Basic", schema: makeSchema(), fields: [TextField({ name: "title" })] },
+      { title: "Contact", schema: makeSchema(), fields: [EmailField()] },
     ],
     onSubmit: () => ({ ok: true }),
     ...overrides,
@@ -83,7 +83,7 @@ const twoStepWizard = (overrides: Partial<WizardOptions> = {}) =>
 
 describe("Wizard — multi-step", () => {
   test("blocks advancing when the current step is invalid", async () => {
-    const failing = makeSchema([{ path: "title", message: "El título es requerido" }]);
+    const failing = makeSchema([{ path: "title", message: "Title is required" }]);
     const w = Wizard({
       steps: [
         { title: "B", schema: failing, fields: [TextField({ name: "title" })] },
@@ -96,33 +96,33 @@ describe("Wizard — multi-step", () => {
     clickLast(el);
     await flush();
     expect(w.step.val).toBe(0);
-    expect(el.textContent).toContain("El título es requerido");
+    expect(el.textContent).toContain("Title is required");
   });
 
   test("accumulates values in the store and submits the merge", async () => {
     let submitted: Record<string, unknown> | null = null;
     const w = twoStepWizard({ onSubmit: (data) => { submitted = data; return { ok: true }; } });
     const el = mount(w.dom());
-    setValue(el, "title", "Anuncio");
+    setValue(el, "title", "Announcement");
     clickLast(el);
     await flush();
     expect(w.step.val).toBe(1);
     setValue(el, "email", "a@b.co");
     clickLast(el);
     await flush();
-    expect(submitted).toEqual({ title: "Anuncio", email: "a@b.co" });
+    expect(submitted).toEqual({ title: "Announcement", email: "a@b.co" });
   });
 
   test("going back preserves values seeded from the store", async () => {
     const w = twoStepWizard();
     const el = mount(w.dom());
-    setValue(el, "title", "Anuncio");
+    setValue(el, "title", "Announcement");
     clickLast(el);
     await flush();
     clickBack(el);
     await flush();
     expect(w.step.val).toBe(0);
-    expect((el.querySelector('input[name="title"]') as HTMLInputElement).value).toBe("Anuncio");
+    expect((el.querySelector('input[name="title"]') as HTMLInputElement).value).toBe("Announcement");
   });
 
   test("onSuccess is called on success and leaves the general line clean", async () => {
@@ -145,7 +145,7 @@ describe("Wizard — multi-step", () => {
         { title: "A", fields: [] },
         { title: "B", fields: [EmailField()] },
       ],
-      onSubmit: () => ({ ok: false, fieldErrors: { email: "Ya existe" } }),
+      onSubmit: () => ({ ok: false, fieldErrors: { email: "Already exists" } }),
     });
     const el = mount(w.dom());
     clickLast(el);
@@ -153,7 +153,7 @@ describe("Wizard — multi-step", () => {
     setValue(el, "email", "a@b.co");
     clickLast(el);
     await flush();
-    expect(el.textContent).toContain("Ya existe");
+    expect(el.textContent).toContain("Already exists");
     expect(w.error.val).toBe("");
   });
 
@@ -163,7 +163,7 @@ describe("Wizard — multi-step", () => {
         { title: "A", fields: [EmailField()] },
         { title: "B", fields: [] },
       ],
-      onSubmit: () => ({ ok: false, fieldErrors: { email: "Ya existe" } }),
+      onSubmit: () => ({ ok: false, fieldErrors: { email: "Already exists" } }),
     });
     const el = mount(w.dom());
     setValue(el, "email", "a@b.co");
@@ -171,7 +171,9 @@ describe("Wizard — multi-step", () => {
     await flush();
     clickLast(el);
     await flush();
+    // cSpell:disable — asserted string comes from the builtin es dictionary.
     expect(w.error.val).toBe("Revisa el paso 1");
+    // cSpell:enable
   });
 
   test("submitting blocks double submit", async () => {
@@ -225,7 +227,7 @@ describe("Wizard — programmatic navigation (useWizard)", () => {
   test("back() goes back without validating", async () => {
     const w = twoStepWizard();
     const el = mount(w.dom());
-    setValue(el, "title", "Anuncio");
+    setValue(el, "title", "Announcement");
     expect(w.next()).toBe(true);
     w.back();
     expect(w.step.val).toBe(0);
@@ -241,20 +243,20 @@ describe("Wizard — programmatic navigation (useWizard)", () => {
       onSubmit: () => ({ ok: true }),
     });
     const el = mount(w.dom());
-    setValue(el, "title", "Anuncio");
+    setValue(el, "title", "Announcement");
     expect(w.next()).toBe(true); // commits title and moves to B
     w.goTo(2); // jumps to C, without validating B
     expect(w.step.val).toBe(2);
     w.goTo(0); // back to A
     await flush();
-    expect((el.querySelector('input[name="title"]') as HTMLInputElement).value).toBe("Anuncio");
+    expect((el.querySelector('input[name="title"]') as HTMLInputElement).value).toBe("Announcement");
   });
 
   test("collectStep() merges the store with the step's values", async () => {
     const w = twoStepWizard();
     const el = mount(w.dom());
-    setValue(el, "title", "Anuncio");
-    expect(w.collectStep(0)).toEqual({ title: "Anuncio" });
+    setValue(el, "title", "Announcement");
+    expect(w.collectStep(0)).toEqual({ title: "Announcement" });
   });
 
   test("step content rebuilds when a state changes (reactive function child)", async () => {
@@ -263,27 +265,27 @@ describe("Wizard — programmatic navigation (useWizard)", () => {
     const w = Wizard({
       steps: [
         {
-          title: "Paso 1",
+          title: "Step 1",
           collect: () => ({}),
           content: [() => (items.val.length ? div(items.val.map((i) => p(i))) : "")],
         },
-        { title: "Paso 2", fields: [] },
+        { title: "Step 2", fields: [] },
       ],
       onSubmit: () => ({ ok: true }),
     });
     const el = mount(w.dom());
     await flush();
-    expect(el.textContent).not.toContain("Frutas");
-    items.val = ["Frutas", "Verduras"];
+    expect(el.textContent).not.toContain("Fruits");
+    items.val = ["Fruits", "Vegetables"];
     await flush();
-    expect(el.textContent).toContain("Frutas");
-    expect(el.textContent).toContain("Verduras");
+    expect(el.textContent).toContain("Fruits");
+    expect(el.textContent).toContain("Vegetables");
   });
 
   test("catalog: createQuery + reactive content lists the categories", async () => {
     const categories = [
-      { id: "A", name: "Frutas" },
-      { id: "B", name: "Verduras" },
+      { id: "A", name: "Fruits" },
+      { id: "B", name: "Vegetables" },
     ];
     const realFetch = globalThis.fetch;
     globalThis.fetch = (async (url: any) => {
@@ -305,16 +307,16 @@ describe("Wizard — programmatic navigation (useWizard)", () => {
     const { div, p } = van.tags;
     const w = Wizard({
       steps: [
-        { title: "Categoría", content: [() => div((q.data.val || []).map((g) => p(g.name)))] },
-        { title: "Detalle", fields: [] },
+        { title: "Category", content: [() => div((q.data.val || []).map((g) => p(g.name)))] },
+        { title: "Detail", fields: [] },
       ],
       onSubmit: () => ({ ok: true }),
     });
     const el = mount(w.dom());
     await flush();
     await flush();
-    expect(el.textContent).toContain("Frutas");
-    expect(el.textContent).toContain("Verduras");
+    expect(el.textContent).toContain("Fruits");
+    expect(el.textContent).toContain("Vegetables");
     globalThis.fetch = realFetch;
   });
 

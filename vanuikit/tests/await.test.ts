@@ -19,13 +19,13 @@ describe("Await", () => {
       Await({
         promise: p,
         loading: () => document.createTextNode("…"),
-        success: (d) => document.createTextNode(`Hola ${d}`),
+        success: (d) => document.createTextNode(`Hello ${d}`),
       }),
     );
     expect(el.textContent).toBe("…");
-    resolve("mundo");
+    resolve("world");
     await tick();
-    expect(el.textContent).toBe("Hola mundo");
+    expect(el.textContent).toBe("Hello world");
   });
 
   test("renders the error slot on rejection", async () => {

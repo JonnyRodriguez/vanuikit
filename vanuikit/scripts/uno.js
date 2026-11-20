@@ -226,14 +226,14 @@ const generator = await createGenerator({
 });
 const { css } = await generator.generate(source, { id: "vanuikit", minify: true });
 
-// Hardening del layout: el `sticky` desktop del sidebar es parte del contrato
-// de la librería. Un consumidor que recompileleCSS regenera la utilidad base
-// `.fixed` que — misma especificidad, orden de carga posterior — pisaría el
-// `lg:sticky` del sidebar (la barra flotaría sobre el contenido). Se fijan
-// ambos estados (drawer fijo en móvil, sticky en desktop) bajo un hook estable
-// del shell (`.vui-app-shell > .app-shell-sidebar`), con especificidad propia
-// (0,2,0) que gana a cualquier `.fixed` regenerado por el consumidor, sin
-// importar el orden de las hojas.
+// Layout hardening: the sidebar's desktop `sticky` is part of the library's
+// contract. A consumer that rebuilds CSS regenerates the base `.fixed`
+// utility — same specificity, later load order — which would override the
+// sidebar's `lg:sticky` (the bar would float over the content). Both states
+// (fixed drawer on mobile, sticky on desktop) are pinned under a stable shell
+// hook (`.vui-app-shell > .app-shell-sidebar`) with its own specificity
+// (0,2,0) that beats any consumer-regenerated `.fixed`, regardless of the
+// stylesheet order.
 const LAYOUT_CSS = `
 .vui-app-shell > .app-shell-sidebar {
   position: fixed;
@@ -245,10 +245,10 @@ const LAYOUT_CSS = `
 }
 `.trim();
 
-// El nav del sidebar scrollea internamente (overflow-y-auto) cuando hay más
-// ítems de los que caben, pero la barra de scroll nativa se oculta: en el rail
-// colapsado (angosto) la barra empuja/descentra los iconos y añade ruido
-// visual. Se mantiene el scroll funcional (rueda, teclado, arrastre).
+// The sidebar nav scrolls internally (overflow-y-auto) when there are more
+// items than fit, but the native scrollbar is hidden: in the collapsed rail
+// (narrow) the bar pushes/off-centers the icons and adds visual noise.
+// Scrolling stays functional (wheel, keyboard, drag).
 const SIDEBAR_CSS = `
 .vui-sb-nav {
   scrollbar-width: none;
@@ -258,13 +258,13 @@ const SIDEBAR_CSS = `
 }
 `.trim();
 
-// El handle de resize del sidebar depende de "oculto en móvil / visible en
-// desktop" y de "oculto al colapsar". Usar las utilidades `hidden lg:block`
-// es frágil: un consumidor que recompileleCSS regenera `.hidden` (misma
-// especificidad, carga posterior) y pisa el `lg:block`, dejando el handle
-// invisible (y con él, la función de redimensionar). Estas reglas propias de
-// la librería fijan la visibilidad sin depender del orden de hojas del
-// consumidor, igual que el `sticky` desktop del shell (LAYOUT_CSS).
+// The sidebar resize handle depends on "hidden on mobile / visible on
+// desktop" and on "hidden when collapsed". Using the `hidden lg:block`
+// utilities is fragile: a consumer that rebuilds CSS regenerates `.hidden`
+// (same specificity, later load) and overrides the `lg:block`, leaving the
+// handle invisible (and with it, the resize feature). These library-owned
+// rules pin the visibility without depending on the consumer's stylesheet
+// order, just like the shell's desktop `sticky` (LAYOUT_CSS).
 const RESIZER_CSS = `
 .vui-sb-resizer {
   display: none;
@@ -278,12 +278,11 @@ const RESIZER_CSS = `
   display: none;
 }
 
-/* El handle es una franja invisible de 6px: se muestra una línea fina al
- * pasar el mouse / enfocar con teclado (y mientras se arrastra) para que su
- * presencia y la acción de redimensionar sean descubribles. El estado de
- * arrastre (is-dragging, set desde el componente) también pinta un fondo
- * suave, igual que el bg-primary/40 anterior, pero ahora sin depender de
- * que el consumidor regenere utilidades de color. */
+/* The handle is an invisible 6px strip: a thin line is shown on hover /
+ * keyboard focus (and while dragging) so its presence and the resize action
+ * are discoverable. The dragging state (is-dragging, set from the component)
+ * also paints a soft background, like the previous bg-primary/40, but now
+ * without depending on the consumer regenerating color utilities. */
 .vui-sb-resizer::after {
   content: "";
   position: absolute;

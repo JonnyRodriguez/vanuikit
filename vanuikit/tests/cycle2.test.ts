@@ -42,23 +42,23 @@ describe("debug — trace", () => {
 
 describe("debug — expectReactive", () => {
   test("passes when the binding reacts", async () => {
-    const s = van.state("uno");
+    const s = van.state("one");
     await expectReactive({
       render: () => van.tags.span(s),
-      act: () => (s.val = "dos"),
-      text: "dos",
+      act: () => (s.val = "two"),
+      text: "two",
     });
   });
 
   test("fails with gotcha hints when the binding is frozen", async () => {
-    const s = van.state("uno");
+    const s = van.state("one");
     let error: Error | null = null;
     try {
       await expectReactive({
         // Static text: no binding to react (frozen case).
-        render: () => van.tags.span("texto fijo"),
-        act: () => (s.val = "dos"),
-        contains: "dos",
+        render: () => van.tags.span("fixed text"),
+        act: () => (s.val = "two"),
+        contains: "two",
       });
     } catch (e) {
       error = e as Error;
@@ -69,11 +69,11 @@ describe("debug — expectReactive", () => {
   });
 
   test("validates exact text and contains", async () => {
-    const s = van.state("Hola");
+    const s = van.state("Hello");
     await expectReactive({
       render: () => van.tags.span(s),
-      act: () => (s.val = "Hola mundo"),
-      contains: "mundo",
+      act: () => (s.val = "Hello world"),
+      contains: "world",
     });
 
     let failed = false;
@@ -182,9 +182,9 @@ describe("Combobox multiple", () => {
       multiple: true,
       value: values,
       options: [
-        { value: "es", label: "Español" },
-        { value: "en", label: "Inglés" },
-        { value: "fr", label: "Francés" },
+        { value: "es", label: "Spanish" },
+        { value: "en", label: "English" },
+        { value: "fr", label: "French" },
       ],
     });
     const dom = field.dom() as HTMLElement;
@@ -206,12 +206,12 @@ describe("Combobox multiple", () => {
     input().focus();
     await tick();
 
-    key(input(), "Enter"); // selects the first one (Español)
+    key(input(), "Enter"); // selects the first one (Spanish)
     await tick();
     expect(values.val).toEqual(["es"]);
     expect(panel().classList.contains("hidden")).toBe(false); // stays open
     expect(input().value).toBe(""); // query cleared
-    expect(dom.textContent).toContain("Español"); // chip visible
+    expect(dom.textContent).toContain("Spanish"); // chip visible
   });
 
   test("re-choosing a chipped option removes it (toggle)", async () => {
@@ -234,7 +234,7 @@ describe("Combobox multiple", () => {
     key(input(), "Enter");
     await tick();
 
-    const removeBtn = dom.querySelector('button[aria-label*="Español"]') as HTMLButtonElement;
+    const removeBtn = dom.querySelector('button[aria-label*="Spanish"]') as HTMLButtonElement;
     expect(removeBtn).toBeTruthy();
     removeBtn.click();
     await tick();
@@ -246,7 +246,7 @@ describe("Combobox multiple", () => {
     mount(dom);
     input().focus();
     await tick();
-    key(input(), "Enter"); // focus is already on Español
+    key(input(), "Enter"); // focus is already on Spanish
     await tick();
     key(input(), "ArrowDown"); // English
     key(input(), "Enter");

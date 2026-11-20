@@ -18,7 +18,7 @@ describe("Layout & Dashboard Components", () => {
   test("SidebarItem > renders link or button with label, icon and badge", () => {
     const item = SidebarItem({
       href: "/dashboard",
-      label: "Tablero",
+      label: "Board",
       icon: "📊",
       badge: "3",
       current: "/dashboard",
@@ -31,29 +31,29 @@ describe("Layout & Dashboard Components", () => {
     expect(anchor).not.toBeNull();
     expect(anchor?.getAttribute("href")).toBe("/dashboard");
     expect(anchor?.getAttribute("aria-current")).toBe("page");
-    expect(anchor?.textContent).toContain("Tablero");
+    expect(anchor?.textContent).toContain("Board");
     expect(anchor?.textContent).toContain("📊");
     expect(anchor?.textContent).toContain("3");
   });
 
   test("SidebarGroup > renders title and groups child items", () => {
     const group = SidebarGroup(
-      { title: "Gestión" },
-      SidebarItem({ href: "/items", label: "Artículos" }),
-      SidebarItem({ href: "/orders", label: "Pedidos" }),
+      { title: "Management" },
+      SidebarItem({ href: "/items", label: "Articles" }),
+      SidebarItem({ href: "/orders", label: "Orders" }),
     );
 
     const host = document.createElement("div");
     van.add(host, group);
 
-    expect(host.querySelector("h3")?.textContent).toBe("Gestión");
+    expect(host.querySelector("h3")?.textContent).toBe("Management");
     expect(host.querySelectorAll("a").length).toBe(2);
   });
 
   test("HeaderBar > renders leading, title and actions", () => {
     const header = HeaderBar({
       leading: button({ class: "menu-btn" }, "☰"),
-      title: "Panel Principal",
+      title: "Main Panel",
       actions: span({ class: "user-pill" }, "Admin"),
     });
 
@@ -61,7 +61,7 @@ describe("Layout & Dashboard Components", () => {
     van.add(host, header);
 
     expect(host.querySelector(".menu-btn")?.textContent).toBe("☰");
-    expect(host.querySelector("h1")?.textContent).toBe("Panel Principal");
+    expect(host.querySelector("h1")?.textContent).toBe("Main Panel");
     expect(host.querySelector(".user-pill")?.textContent).toBe("Admin");
   });
 
@@ -72,21 +72,21 @@ describe("Layout & Dashboard Components", () => {
       sidebarOpen: isOpen,
       sidebar: Sidebar({
         header: div("Logo Brand"),
-        content: SidebarItem({ href: "/home", label: "Inicio" }),
+        content: SidebarItem({ href: "/home", label: "Home" }),
       }),
       header: HeaderBar({
         title: "Dashboard",
       }),
-      content: div("Contenido Principal"),
+      content: div("Main Content"),
     });
 
     const host = document.createElement("div");
     van.add(host, shell);
 
     expect(host.textContent).toContain("Logo Brand");
-    expect(host.textContent).toContain("Inicio");
+    expect(host.textContent).toContain("Home");
     expect(host.textContent).toContain("Dashboard");
-    expect(host.textContent).toContain("Contenido Principal");
+    expect(host.textContent).toContain("Main Content");
 
     // Toggle sidebar state
     isOpen.val = true;
@@ -118,7 +118,7 @@ describe("Collapsible Sidebar (desktop rail mode)", () => {
       host,
       Sidebar({
         header: div("Logo"),
-        content: SidebarItem({ href: "/a", label: "Artículos", icon: "📦" }),
+        content: SidebarItem({ href: "/a", label: "Articles", icon: "📦" }),
         collapsible: true,
         storageKey: key,
       }),
@@ -131,7 +131,7 @@ describe("Collapsible Sidebar (desktop rail mode)", () => {
     expect(toggle.getAttribute("aria-expanded")).toBe("true");
     // Item's accessible name intact even though the label hides in rail
     const item = aside.querySelector(".vui-sb-item") as HTMLElement;
-    expect(item.getAttribute("aria-label")).toBe("Artículos");
+    expect(item.getAttribute("aria-label")).toBe("Articles");
     expect(aside.querySelector(".vui-sb-label")).not.toBeNull();
 
     toggle.click();

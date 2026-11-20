@@ -86,22 +86,22 @@ describe("ChatWindow", () => {
   test("renders messages with user/assistant bubbles", () => {
     const chat = createChat({ onStream: async () => {} });
     chat.messages.val = [
-      { id: "1", role: "user", content: "hola" },
-      { id: "2", role: "assistant", content: "qué tal" },
+      { id: "1", role: "user", content: "hello" },
+      { id: "2", role: "assistant", content: "how's it going" },
     ];
     const el = mount(ChatWindow({ chat, autoScroll: false }) as HTMLElement);
 
-    expect(el.textContent).toContain("hola");
-    expect(el.textContent).toContain("qué tal");
+    expect(el.textContent).toContain("hello");
+    expect(el.textContent).toContain("how's it going");
     expect(el.querySelectorAll("[class*='rounded-2xl']").length).toBe(2);
   });
 
   test("composer sends via clicking Send and clears the box", async () => {
-    const chat = createChat({ onStream: async (send) => send("respuesta") });
+    const chat = createChat({ onStream: async (send) => send("reply") });
     const el = mount(ChatWindow({ chat, autoScroll: false }) as HTMLElement);
 
     const ta = el.querySelector("textarea") as HTMLTextAreaElement;
-    ta.value = "pregunta";
+    ta.value = "question";
     ta.dispatchEvent(new Event("input", { bubbles: true }));
     await flush();
 
@@ -113,8 +113,8 @@ describe("ChatWindow", () => {
     await flush();
 
     expect(chat.messages.val.map((m) => [m.role, m.content])).toEqual([
-      ["user", "pregunta"],
-      ["assistant", "respuesta"],
+      ["user", "question"],
+      ["assistant", "reply"],
     ]);
     expect((el.querySelector("textarea") as HTMLTextAreaElement).value).toBe("");
   });
@@ -124,14 +124,14 @@ describe("ChatWindow", () => {
     const el = mount(ChatWindow({ chat, autoScroll: false }) as HTMLElement);
     const ta = el.querySelector("textarea") as HTMLTextAreaElement;
 
-    ta.value = "con enter";
+    ta.value = "with enter";
     ta.dispatchEvent(new Event("input", { bubbles: true }));
     await flush();
 
     ta.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
     await flush();
     expect(chat.messages.val.length).toBe(1);
-    expect(chat.messages.val[0].content).toBe("con enter");
+    expect(chat.messages.val[0].content).toBe("with enter");
 
     ta.dispatchEvent(
       new KeyboardEvent("keydown", { key: "Enter", shiftKey: true, bubbles: true }),
@@ -151,7 +151,7 @@ describe("ChatWindow", () => {
     expect(sendBtn().disabled).toBe(true);
 
     const ta = el.querySelector("textarea") as HTMLTextAreaElement;
-    ta.value = "texto";
+    ta.value = "text";
     ta.dispatchEvent(new Event("input", { bubbles: true }));
     await flush();
     expect(sendBtn().disabled).toBe(false);

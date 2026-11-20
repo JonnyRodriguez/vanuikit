@@ -23,7 +23,7 @@ describe("Svg (real namespace)", () => {
 
   test("Checkbox renders its SVG with the real namespace", () => {
     const host = document.createElement("div");
-    van.add(host, Checkbox({ label: "Acepto" }).dom());
+    van.add(host, Checkbox({ label: "I agree" }).dom());
     const svg = host.querySelector("svg");
     expect(svg).toBeInstanceOf(SVGSVGElement);
     expect(typeof (svg as SVGSVGElement).getBBox).toBe("function");

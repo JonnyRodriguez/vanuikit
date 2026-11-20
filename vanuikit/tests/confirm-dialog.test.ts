@@ -8,8 +8,8 @@ describe("ConfirmDialog", () => {
   test("renders the dialog closed and shows it on open", async () => {
     let confirmed = false;
     const dialog = ConfirmDialog({
-      title: "Eliminar elemento",
-      message: "¿Estás seguro?",
+      title: "Delete item",
+      message: "Are you sure?",
       variant: "danger",
       onConfirm: () => {
         confirmed = true;
@@ -26,8 +26,8 @@ describe("ConfirmDialog", () => {
     await tick();
 
     expect(dom.className).not.toContain("hidden");
-    expect(dom.textContent).toContain("Eliminar elemento");
-    expect(dom.textContent).toContain("¿Estás seguro?");
+    expect(dom.textContent).toContain("Delete item");
+    expect(dom.textContent).toContain("Are you sure?");
 
     const buttons = Array.from(dom.querySelectorAll("button"));
     // Find the confirm button
@@ -42,17 +42,17 @@ describe("ConfirmDialog", () => {
 
   test("imperative confirmDialog returns true on confirm", async () => {
     const promise = confirmDialog({
-      title: "¿Continuar?",
-      message: "Por favor confirme",
-      confirmText: "Sí, continuar",
+      title: "Continue?",
+      message: "Please confirm",
+      confirmText: "Yes, continue",
     });
 
     await tick();
     const overlay = document.body.lastElementChild as HTMLElement;
-    expect(overlay.textContent).toContain("¿Continuar?");
+    expect(overlay.textContent).toContain("Continue?");
 
     const buttons = Array.from(overlay.querySelectorAll("button"));
-    const confirmBtn = buttons.find((b) => b.textContent?.includes("Sí, continuar")) as HTMLButtonElement;
+    const confirmBtn = buttons.find((b) => b.textContent?.includes("Yes, continue")) as HTMLButtonElement;
     expect(confirmBtn).toBeDefined();
     confirmBtn.click();
 

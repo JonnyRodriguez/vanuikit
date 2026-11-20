@@ -22,18 +22,18 @@ describe("ModalBase", () => {
   test("set() fills the zones and shows with show=true", async () => {
     const modal = ModalBase();
     modal.mount(document.body);
-    modal.set({ header: "Hola", body: "Mundo" }, true);
+    modal.set({ header: "Hello", body: "World" }, true);
     await tick();
     const overlay = document.body.lastElementChild as HTMLElement;
-    expect(overlay.textContent).toContain("Hola");
-    expect(overlay.textContent).toContain("Mundo");
+    expect(overlay.textContent).toContain("Hello");
+    expect(overlay.textContent).toContain("World");
     expect(overlay.className).toContain("bg-overlay");
   });
 
   test("footer zone: null hides it", async () => {
     const modal = ModalBase();
     modal.mount(document.body);
-    modal.set({ footer: null, body: "solo cuerpo" }, true);
+    modal.set({ footer: null, body: "body only" }, true);
     await tick();
     const overlay = document.body.lastElementChild as HTMLElement;
     expect(overlay.textContent).not.toContain("Close");
@@ -44,11 +44,11 @@ describe("Modal", () => {
   test("brings title, close button and a footer with Close", async () => {
     const modal = Modal();
     modal.mount(document.body);
-    modal.set({ title: "Editar", body: "contenido" }, true);
+    modal.set({ title: "Edit", body: "content" }, true);
     await tick();
     const overlay = document.body.lastElementChild as HTMLElement;
-    expect(overlay.textContent).toContain("Editar");
-    expect(overlay.textContent).toContain("contenido");
+    expect(overlay.textContent).toContain("Edit");
+    expect(overlay.textContent).toContain("content");
     expect(overlay.textContent).toContain("Close");
 
     const closeBtn = overlay.querySelector('[aria-label="Close"]') as HTMLElement;

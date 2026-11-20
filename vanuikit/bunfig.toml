@@ -1,3 +1,3 @@
-# Registra el DOM mínimo (happy-dom) antes de correr cada archivo de tests.
+# Registers the minimal DOM (happy-dom) before running each test file.
 [test]
 preload = ["./tests/setup.ts"]

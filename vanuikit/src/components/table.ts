@@ -108,12 +108,12 @@ export function Table<T extends Record<string, any> = any>(props: TableProps<T>)
     }
   };
 
-  // La barra de búsqueda vive FUERA del contenedor reactivo y el input es
-  // DESCONTROLADO (sin binding `value`): VanJS nunca escribe sobre el campo, así
-  // que solo el DOM es dueño del texto y del caret (nadie puede re-crearlo ni
-  // interferir con el foco al filtrar). El filtro solo LEE `searchQuery`, que se
-  // actualiza vía `oninput`. El cuerpo de la tabla + paginación se re-renderizan
-  // al filtrar, pero la searchbar queda intacta.
+  // The search bar lives OUTSIDE the reactive container and the input is
+  // UNCONTROLLED (no `value` binding): VanJS never writes to the field, so
+  // only the DOM owns the text and the caret (nobody can re-create it or
+  // interfere with focus while filtering). The filter only READS `searchQuery`,
+  // which is updated via `oninput`. The table body + pagination re-render on
+  // filtering, but the search bar stays intact.
   const searchBar = props.searchable
     ? div(
         {

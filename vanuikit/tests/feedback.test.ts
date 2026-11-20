@@ -18,19 +18,19 @@ const tick = () => new Promise((r) => setTimeout(r, 0));
 describe("Alert", () => {
   test("paints the variant, title, content and role=alert", () => {
     const el = mount(
-      Alert({ variant: "success", title: "Guardado" }, "Tus cambios quedaron aplicados.") as HTMLElement,
+      Alert({ variant: "success", title: "Saved" }, "Your changes have been applied.") as HTMLElement,
     );
     expect(el.getAttribute("role")).toBe("alert");
     expect(el.className).toContain("bg-success/10");
     expect(el.className).toContain("border-success/20");
-    expect(el.textContent).toContain("Guardado");
-    expect(el.textContent).toContain("Tus cambios quedaron aplicados.");
+    expect(el.textContent).toContain("Saved");
+    expect(el.textContent).toContain("Your changes have been applied.");
   });
 
   test("dismissible: the button hides the alert and notifies via onDismiss", async () => {
     let dismissed = false;
     const el = mount(
-      Alert({ dismissible: true, onDismiss: () => (dismissed = true) }, "Atención") as HTMLElement,
+      Alert({ dismissible: true, onDismiss: () => (dismissed = true) }, "Warning") as HTMLElement,
     );
     const button = el.querySelector("button") as HTMLButtonElement;
     expect(button.getAttribute("aria-label")).toBe("Dismiss alert");
@@ -43,11 +43,11 @@ describe("Alert", () => {
   });
 
   test("showIcon: false omits the icon; a custom icon replaces it", () => {
-    const plain = mount(Alert({ showIcon: false }, "Sin ícono") as HTMLElement);
+    const plain = mount(Alert({ showIcon: false }, "No icon") as HTMLElement);
     expect(plain.querySelector("svg")).toBeNull();
 
     const custom = mount(
-      Alert({ icon: van.tags.span("🚀") }, "Con cohete") as HTMLElement,
+      Alert({ icon: van.tags.span("🚀") }, "With rocket") as HTMLElement,
     );
     expect(custom.querySelector("span")?.textContent).toBe("🚀");
   });
@@ -60,7 +60,7 @@ describe("Alert", () => {
       [{ variant: "error" }, "text-destructive-fg"],
     ];
     for (const [props, fg] of cases) {
-      const el = mount(Alert({ ...props }, "Mensaje") as HTMLElement);
+      const el = mount(Alert({ ...props }, "Message") as HTMLElement);
       const icon = el.querySelector("svg") as SVGElement;
       expect(icon.getAttribute("class")).toContain(fg);
       expect(icon.getAttribute("class")).not.toMatch(/(blue|emerald|rose|amber)-\d/);
@@ -71,7 +71,7 @@ describe("Alert", () => {
 describe("toast", () => {
   test("neutral toast on bg-card (re-themable, no raw palette backgrounds)", async () => {
     toast.clear();
-    toast.success("Guardado", { durationMs: 0 }); // 0: no auto-dismiss during the test
+    toast.success("Saved", { durationMs: 0 }); // 0: no auto-dismiss during the test
     await tick();
 
     const el = document.querySelector('[id^="toast-"]') as HTMLElement;
@@ -83,7 +83,7 @@ describe("toast", () => {
     // The icon carries the state color, the text uses theme tokens.
     const icon = el.querySelector("svg") as SVGElement;
     expect(icon.getAttribute("class")).toContain("text-success-fg");
-    expect(el.textContent).toContain("Guardado");
+    expect(el.textContent).toContain("Saved");
 
     toast.clear();
     await tick(); // van removes the nodes in a microtask
@@ -94,12 +94,12 @@ describe("toast", () => {
 describe("Progress", () => {
   test("reactive aria-valuenow and width driven by the State", async () => {
     const value = van.state(25);
-    const el = mount(Progress({ value, label: "Subida" }) as HTMLElement);
+    const el = mount(Progress({ value, label: "Upload" }) as HTMLElement);
     const track = el.querySelector('[role="progressbar"]') as HTMLElement;
     const fill = track.firstElementChild as HTMLElement;
 
     expect(track.getAttribute("aria-valuenow")).toBe("25");
-    expect(el.textContent).toContain("Subida");
+    expect(el.textContent).toContain("Upload");
     expect(el.textContent).toContain("25%");
 
     value.val = 80;
@@ -122,14 +122,14 @@ describe("Progress", () => {
   });
 
   test("indeterminate: pulses, hides the percentage and does not set width", async () => {
-    const el = mount(Progress({ indeterminate: true, label: "Cargando" }) as HTMLElement);
+    const el = mount(Progress({ indeterminate: true, label: "Loading" }) as HTMLElement);
     const track = el.querySelector('[role="progressbar"]') as HTMLElement;
     const fill = track.firstElementChild as HTMLElement;
 
     expect(fill.className).toContain("animate-pulse");
     expect(fill.className).toContain("w-1/3");
     expect(fill.style.width).toBe("");
-    expect(el.textContent).toContain("Cargando");
+    expect(el.textContent).toContain("Loading");
     const valueSpan = el.querySelector(".progress-value") as HTMLElement;
     expect(valueSpan.className).toContain("hidden");
   });
@@ -173,18 +173,18 @@ describe("EmptyState", () => {
   test("renders the default icon (SVG inbox), title, description and action", () => {
     const el = mount(
       EmptyState(
-        { title: "Sin datos", description: "Aún no hay registros", action: van.tags.button("Crear") },
+        { title: "No data", description: "No records yet", action: van.tags.button("Create") },
       ) as HTMLElement,
     );
     const svg = el.querySelector("svg");
     expect(svg).toBeInstanceOf(SVGSVGElement);
-    expect(el.textContent).toContain("Sin datos");
-    expect(el.textContent).toContain("Aún no hay registros");
-    expect(el.querySelector("button")?.textContent).toBe("Crear");
+    expect(el.textContent).toContain("No data");
+    expect(el.textContent).toContain("No records yet");
+    expect(el.querySelector("button")?.textContent).toBe("Create");
   });
 
   test("a custom icon replaces the default one", () => {
-    const el = mount(EmptyState({ icon: Icon({ name: "search" }), title: "Sin resultados" }) as HTMLElement);
+    const el = mount(EmptyState({ icon: Icon({ name: "search" }), title: "No results" }) as HTMLElement);
     expect(el.querySelectorAll("svg").length).toBe(1);
     expect(el.querySelector("svg")).toBeInstanceOf(SVGSVGElement);
   });

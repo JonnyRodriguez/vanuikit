@@ -37,7 +37,7 @@ const routesApp = await loadRoutes(routesDir, {
   auth: requireAuth(),
   onLoad: (i) =>
     console.log(
-      `[RouterLoader] ${i.path} <- ${i.file}${i.protected ? "" : " (pública)"}`,
+      `[RouterLoader] ${i.path} <- ${i.file}${i.protected ? "" : " (public)"}`,
     ),
 });
 app.route("/", routesApp);
@@ -74,7 +74,7 @@ app.notFound((c) => {
       return c.html(html);
     }
   }
-  return c.json({ error: "Ruta no encontrada" }, 404);
+  return c.json({ error: "Route not found" }, 404);
 });
 
 const port = Number(process.env.PORT ?? 3000);
@@ -84,4 +84,4 @@ serve({
   hostname: "0.0.0.0",
 });
 
-console.log(`Servidor Hono (demo) -> http://0.0.0.0:${port}`);
+console.log(`Hono server (demo) -> http://0.0.0.0:${port}`);

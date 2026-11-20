@@ -204,12 +204,12 @@ export function ComponentsPage(_props: ComponentsPageProps = {}) {
 
   // State for DataGrid
   const sampleUsers = van.state<SampleUser[]>([
-    { id: "usr_1", name: "Ana Morales", role: "Administrador", status: "active", created: "2026-01-10" },
-    { id: "usr_2", name: "Carlos Ramos", role: "Desarrollador", status: "active", created: "2026-02-14" },
-    { id: "usr_3", name: "Lucía Fernández", role: "Diseñadora", status: "pending", created: "2026-03-01" },
-    { id: "usr_4", name: "David Ruiz", role: "Auditor", status: "suspended", created: "2026-03-12" },
-    { id: "usr_5", name: "Elena Gómez", role: "Soporte", status: "active", created: "2026-04-05" },
-    { id: "usr_6", name: "Marcos Varela", role: "DevOps", status: "active", created: "2026-05-20" },
+    { id: "usr_1", name: "Ann Morris", role: "Administrator", status: "active", created: "2026-01-10" },
+    { id: "usr_2", name: "Charles Ramsey", role: "Developer", status: "active", created: "2026-02-14" },
+    { id: "usr_3", name: "Lucy Fern", role: "Designer", status: "pending", created: "2026-03-01" },
+    { id: "usr_4", name: "David Rivers", role: "Auditor", status: "suspended", created: "2026-03-12" },
+    { id: "usr_5", name: "Elena Vance", role: "Support", status: "active", created: "2026-04-05" },
+    { id: "usr_6", name: "Marcus Vale", role: "DevOps", status: "active", created: "2026-05-20" },
   ]);
 
   const selectedUsers = van.state<SampleUser[]>([]);

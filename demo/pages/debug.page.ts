@@ -15,11 +15,11 @@ import { van } from "vanuikit";
 import type { VanDebugApi, VanDebugDiagnostic, VanDebugGraph } from "vanuikit";
 
 const KIND_STYLE: Record<string, { label: string; cls: string }> = {
-  "state-in-derive": { label: "ESTADO EN DERIVE", cls: "bg-red-100 text-red-700 border-red-300" },
-  "derive-writes-state": { label: "DERIVE ESCRIBE", cls: "bg-orange-100 text-orange-700 border-orange-300" },
-  "derive-cycle": { label: "CICLO", cls: "bg-red-100 text-red-700 border-red-300" },
-  "derive-no-deps": { label: "SIN DEPS", cls: "bg-yellow-100 text-yellow-700 border-yellow-300" },
-  "container-reactive-reads": { label: "CONTENEDOR REACTIVO", cls: "bg-amber-100 text-amber-800 border-amber-300" },
+  "state-in-derive": { label: "STATE IN DERIVE", cls: "bg-red-100 text-red-700 border-red-300" },
+  "derive-writes-state": { label: "DERIVE WRITES", cls: "bg-orange-100 text-orange-700 border-orange-300" },
+  "derive-cycle": { label: "CYCLE", cls: "bg-red-100 text-red-700 border-red-300" },
+  "derive-no-deps": { label: "NO DEPS", cls: "bg-yellow-100 text-yellow-700 border-yellow-300" },
+  "container-reactive-reads": { label: "REACTIVE CONTAINER", cls: "bg-amber-100 text-amber-800 border-amber-300" },
 };
 
 const GRAPH_W = 980;
@@ -48,7 +48,7 @@ function buildGraphSvg(g: VanDebugGraph): string {
   );
   parts.push(
     `<text x="${COL_DERIVE_X}" y="24" font-weight="700" fill="#334155">DERIVES</text>`,
-    `<text x="${COL_STATE_X}" y="24" font-weight="700" fill="#334155">ESTADOS</text>`,
+    `<text x="${COL_STATE_X}" y="24" font-weight="700" fill="#334155">STATES</text>`,
   );
 
   const deriveY = (i: number) => HEADER_H + i * ROW_H + ROW_H / 2;
@@ -112,7 +112,7 @@ function buildGraphSvg(g: VanDebugGraph): string {
 
 function diagnosticCard(d: VanDebugDiagnostic): string {
   const st = KIND_STYLE[d.kind] ?? { label: d.kind, cls: "bg-slate-100 text-slate-700 border-slate-300" };
-  const origin = d.origin ? `<div class="text-xs text-slate-500 mt-1 font-mono">en ${esc(d.origin)}</div>` : "";
+  const origin = d.origin ? `<div class="text-xs text-slate-500 mt-1 font-mono">at ${esc(d.origin)}</div>` : "";
   return (
     `<div class="border rounded-lg p-3 ${st.cls}">` +
     `<div class="text-[10px] font-bold uppercase tracking-wide">${esc(st.label)}</div>` +
@@ -135,19 +135,19 @@ export const DebugPage = (): Node => {
   const render = () => {
     if (!dbg) {
       root.replaceChildren(
-        h1({ class: "text-xl font-bold" }, "Debug de reactividad"),
-        p({ class: "text-slate-600" }, "Modo debug no activo. Recargá la página con ?van-debug o activá localStorage van-debug=1."),
+        h1({ class: "text-xl font-bold" }, "Reactivity debug"),
+        p({ class: "text-slate-600" }, "Debug mode is not active. Reload the page with ?van-debug or set localStorage van-debug=1."),
       );
       return;
     }
     const g = dbg.dump();
     graphBox.innerHTML = buildGraphSvg(g);
-    diagBox.innerHTML = g.diagnostics.length ? g.diagnostics.map(diagnosticCard).join("") : "<p class='text-green-700 text-sm'>Sin violaciones detectadas ✅</p>";
-    statsLine.textContent = `${g.derives.length} derives · ${g.states.length} estados · ${g.diagnostics.length} diagnósticos`;
+    diagBox.innerHTML = g.diagnostics.length ? g.diagnostics.map(diagnosticCard).join("") : "<p class='text-green-700 text-sm'>No violations detected ✅</p>";
+    statsLine.textContent = `${g.derives.length} derives · ${g.states.length} states · ${g.diagnostics.length} diagnostics`;
   };
 
   root.append(
-    h1({ class: "text-xl font-bold" }, "Debug de reactividad (VanJS)"),
+    h1({ class: "text-xl font-bold" }, "Reactivity debug (VanJS)"),
     div(
       { class: "flex items-center gap-3 flex-wrap" },
       button(
@@ -155,7 +155,7 @@ export const DebugPage = (): Node => {
           class: "px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-sm hover:bg-indigo-700 cursor-pointer",
           onclick: () => render(),
         },
-        "Refrescar grafo",
+        "Refresh graph",
       ),
       dbg
         ? button(
@@ -166,14 +166,14 @@ export const DebugPage = (): Node => {
                 render();
               },
             },
-            "Limpiar diagnósticos",
+            "Clear diagnostics",
           )
         : null,
     ),
     statsLine,
     graphBox,
-    div({ class: "text-xs text-slate-400" }, "Flechas sólidas = lee · discontinuas rojas = escribe (feedback) · nodos naranjas = derive con escrituras · amarillos = sin deps"),
-    div({ class: "text-sm font-semibold mt-2" }, "Diagnósticos"),
+    div({ class: "text-xs text-slate-400" }, "Solid arrows = reads · dashed red = writes (feedback) · orange nodes = derive with writes · yellow = no deps"),
+    div({ class: "text-sm font-semibold mt-2" }, "Diagnostics"),
     diagBox,
   );
 

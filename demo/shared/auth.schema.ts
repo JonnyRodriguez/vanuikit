@@ -5,17 +5,17 @@
 import { z } from "zod";
 
 export const loginSchema = z.object({
-  email: z.string().email("Correo electrónico inválido"),
-  password: z.string().min(1, "La contraseña es requerida"),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(1, "Password is required"),
 });
 
 export type LoginInput = z.infer<typeof loginSchema>;
 
 export const registerSchema = z.object({
-  name: z.string().min(1, "El nombre es requerido"),
-  email: z.string().email("Correo electrónico inválido"),
-  password: z.string().min(1, "La contraseña es requerida"),
-  confirm: z.string().min(1, "Confirma la contraseña"),
+  name: z.string().min(1, "Name is required"),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(1, "Password is required"),
+  confirm: z.string().min(1, "Confirm the password"),
 });
 
 export type RegisterInput = z.infer<typeof registerSchema>;

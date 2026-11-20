@@ -22,7 +22,7 @@ const __dirname = path.dirname(__filename);
 const demoDir = path.resolve(__dirname, "..");
 
 const OUT_UNO = path.join(demoDir, "dist/uno.css");
-const OUT_VANUI = path.join(demoDir, "dist/vanuikit.css");
+const OUT_VANUIKIT = path.join(demoDir, "dist/vanuikit.css");
 
 /** Wraps a color (var --vui-*) in color-mix with the %alpha placeholder:
  *  so opacity modifiers (bg-secondary/60, text-muted-foreground/70) actually
@@ -112,8 +112,8 @@ try {
 
 fs.mkdirSync(path.dirname(OUT_UNO), { recursive: true });
 fs.writeFileSync(OUT_UNO, finalDemoCss, "utf-8");
-fs.copyFileSync(vanuikitCssPath, OUT_VANUI);
+fs.copyFileSync(vanuikitCssPath, OUT_VANUIKIT);
 
 console.log(
-  `CSS demo generado (${files.length} archivos escaneados, ${finalDemoCss.length} bytes) + vanuikit.css copiado desde ${path.relative(demoDir, vanuikitCssPath)}`,
+  `demo CSS generated (${files.length} files scanned, ${finalDemoCss.length} bytes) + vanuikit.css copied from ${path.relative(demoDir, vanuikitCssPath)}`,
 );

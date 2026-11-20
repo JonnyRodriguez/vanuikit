@@ -34,7 +34,7 @@ authRoute.post("/login", async (c) => {
   const parsed = loginSchema.safeParse(body);
   if (!parsed.success) {
     return c.json(
-      { error: "Datos inválidos", details: parsed.error.flatten() },
+      { error: "Invalid data", details: parsed.error.flatten() },
       400,
     );
   }
@@ -71,7 +71,7 @@ authRoute.post("/register", async (c) => {
   const parsed = registerSchema.safeParse(body);
   if (!parsed.success) {
     return c.json(
-      { error: "Datos inválidos", details: parsed.error.flatten() },
+      { error: "Invalid data", details: parsed.error.flatten() },
       400,
     );
   }
@@ -131,7 +131,7 @@ authRoute.post("/logout", (c) => {
 
   return c.json({
     status: "ok",
-    message: "Sesión cerrada correctamente",
+    message: "Signed out successfully",
   });
 });
 

@@ -19,7 +19,7 @@ if (
   const { installVanDebug } = await import("vanuikit");
   const debug = installVanDebug(van);
   (window as unknown as { __vanDebug: typeof debug }).__vanDebug = debug;
-  console.info("[vanuikit:debug] modo debug activado — localStorage van-debug=1 o ?van-debug (vista: /debug)");
+  console.info("[vanuikit:debug] debug mode on — localStorage van-debug=1 or ?van-debug (view: /debug)");
 }
 
 const mount = () => {

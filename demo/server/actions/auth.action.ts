@@ -33,7 +33,7 @@ export async function loginAction(input: LoginInput): Promise<ActionResult<AuthR
     return {
       success: false,
       status: 401,
-      error: "Credenciales inválidas para ese correo",
+      error: "Invalid credentials for that email",
     };
   }
 
@@ -42,7 +42,7 @@ export async function loginAction(input: LoginInput): Promise<ActionResult<AuthR
     return {
       success: false,
       status: 401,
-      error: "Credenciales inválidas",
+      error: "Invalid credentials",
     };
   }
 
@@ -63,7 +63,7 @@ export async function registerAction(input: RegisterInput): Promise<ActionResult
     return {
       success: false,
       status: 409,
-      error: "Ya existe una cuenta con ese correo",
+      error: "An account with that email already exists",
     };
   }
 
@@ -71,7 +71,7 @@ export async function registerAction(input: RegisterInput): Promise<ActionResult
     return {
       success: false,
       status: 400,
-      error: "Las contraseñas no coinciden",
+      error: "Passwords do not match",
     };
   }
 

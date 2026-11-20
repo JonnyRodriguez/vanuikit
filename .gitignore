@@ -1,4 +1,4 @@
-# Dependencias
+# Dependencies
 node_modules/
 
 # Builds
@@ -8,17 +8,17 @@ demo/dist/
 # Logs
 *.log
 
-# Herramientas locales
+# Local tooling
 .atl/
 .zcodeignore
 
-# POCs (artefactos de build)
+# POCs (build artifacts)
 ssg-poc/dist/
 
-# Herramientas locales (asistente)
+# Local tooling (assistant)
 asistente/.grok/
 
-# Playwright (artefactos generados)
+# Playwright (generated artifacts)
 .playwright-mcp/
 test-results/
 demo/test-results/

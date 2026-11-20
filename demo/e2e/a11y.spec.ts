@@ -5,7 +5,7 @@ const TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "best-practice"];
 
 function summarize(violations: { id: string; impact?: string; nodes: unknown[] }[]) {
   return violations
-    .map((v) => `${v.impact ?? "?"} ${v.id} (${v.nodes.length} nodos)`)
+    .map((v) => `${v.impact ?? "?"} ${v.id} (${v.nodes.length} nodes)`)
     .join("\n");
 }
 
@@ -22,7 +22,7 @@ test.describe("a11y axe harness", () => {
     );
 
     if (serious.length > 0) {
-      console.log("Violaciones críticas/graves encontradas:");
+      console.log("Critical/serious violations found:");
       console.log(summarize(serious));
     }
 

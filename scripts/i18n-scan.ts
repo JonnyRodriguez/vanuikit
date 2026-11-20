@@ -85,7 +85,7 @@ const IGNORE_MEMBERS = new Set([
 /** Brands and proper nouns that aren't translated. */
 const BRANDS = new Set(["VanUikit", "VanJS", "VanJS core", "React", "Vue", "Svelte"]);
 
-export type Confidence = "ALTA" | "MEDIA";
+export type Confidence = "HIGH" | "MEDIUM";
 export type I18nMode = "t" | "raw";
 export type TemplateParam = { name: string; valueText: string };
 
@@ -122,7 +122,7 @@ function slugFile(relFile: string): string {
 const paramName = (expr: ts.Expression): string => {
   if (ts.isIdentifier(expr)) return expr.text;
   if (ts.isPropertyAccessExpression(expr)) return expr.name.text;
-  return expr.getText().replace(/[^$\w]/g, "").slice(0, 12) || "valor";
+  return expr.getText().replace(/[^$\w]/g, "").slice(0, 12) || "value";
 };
 
 export function collectFindings(): Finding[] {
@@ -244,7 +244,7 @@ function scanFile(relFile: string, findings: Finding[]): void {
       if (name === "toast" || name === "confirmDialog") {
         for (const arg of node.arguments) {
           if (ts.isObjectLiteralExpression(arg)) visit(arg, true);
-          else if (isText(arg)) record("ALTA", arg, { mode: "raw", context: node.getText(source) });
+          else if (isText(arg)) record("HIGH", arg, { mode: "raw", context: node.getText(source) });
           else visit(arg, true);
         }
         ts.forEachChild(node, (child) => { if (!node.arguments.includes(child)) visit(child, rawCtx); });
@@ -255,7 +255,7 @@ function scanFile(relFile: string, findings: Finding[]): void {
       if (TEXT_CALLEES.has(name) || name === "van.tags") {
         for (const arg of node.arguments) {
           if (ts.isObjectLiteralExpression(arg)) visit(arg, rawCtx);
-          else if (isText(arg)) record("ALTA", arg, { mode: rawCtx ? "raw" : "t", context: node.getText(source) });
+          else if (isText(arg)) record("HIGH", arg, { mode: rawCtx ? "raw" : "t", context: node.getText(source) });
           else visit(arg, rawCtx);
         }
         ts.forEachChild(node, (child) => { if (!node.arguments.includes(child)) visit(child, rawCtx); });
@@ -264,7 +264,7 @@ function scanFile(relFile: string, findings: Finding[]): void {
 
       // Unknown call: top-level loose strings are MEDIUM.
       for (const arg of node.arguments) {
-        if (isText(arg)) record("MEDIA", arg, { mode: "raw", context: node.getText(source) });
+        if (isText(arg)) record("MEDIUM", arg, { mode: "raw", context: node.getText(source) });
         else visit(arg, rawCtx);
       }
       ts.forEachChild(node, (child) => { if (!node.arguments.includes(child)) visit(child, rawCtx); });
@@ -284,7 +284,7 @@ function scanFile(relFile: string, findings: Finding[]): void {
         // TEXTS contract: its values are defaults, not loose text.
         if (hasTextsShape && (propName === "key" || propName === "default")) continue;
         if (propName && TEXT_PROPS.has(propName) && isText(prop.initializer)) {
-          record("ALTA", prop.initializer, { prop: propName, mode: rawCtx ? "raw" : "t", context: prop.getText(source) });
+          record("HIGH", prop.initializer, { prop: propName, mode: rawCtx ? "raw" : "t", context: prop.getText(source) });
         } else if (propName && IGNORE_PROPS.has(propName)) {
           continue;
         } else {
@@ -302,25 +302,25 @@ function scanFile(relFile: string, findings: Finding[]): void {
 
 if (import.meta.main) {
   const findings = collectFindings();
-  const high = findings.filter((f) => f.confidence === "ALTA");
-  const medium = findings.filter((f) => f.confidence === "MEDIA");
+  const high = findings.filter((f) => f.confidence === "HIGH");
+  const medium = findings.filter((f) => f.confidence === "MEDIUM");
   const CHECK = process.argv.includes("--check");
 
   const print = (title: string, group: Finding[]): void => {
     console.log(`\n${title} (${group.length}):`);
     for (const f of group) {
       console.log(`  ${f.file}:${f.line}  "${f.text}"`);
-      console.log(`    llave sugerida: ${f.suggestedKey}`);
+      console.log(`    suggested key: ${f.suggestedKey}`);
       if (f.context) console.log(`    > ${f.context}`);
     }
   };
 
-  print("ALTA — texto de UI sin internacionalizar", high);
-  print("MEDIA — revisar (llamada desconocida)", medium);
-  console.log(`\nTotal: ${high.length} altas, ${medium.length} medias`);
+  print("HIGH — UI text not internationalized", high);
+  print("MEDIUM — review (unknown call)", medium);
+  console.log(`\nTotal: ${high.length} high, ${medium.length} medium`);
 
   if (CHECK && high.length > 0) {
-    console.error(`i18n:scan FALLÓ (${high.length} textos ALTA sin internacionalizar)`);
+    console.error(`i18n:scan FAILED (${high.length} HIGH texts not internationalized)`);
     process.exit(1);
   }
 }

@@ -1,10 +1,10 @@
 /**
- * Playwright e2e + a11y harness para el demo de VanUikit.
+ * Playwright e2e + a11y harness for the VanUikit demo.
  *
- * - Corré contra el servidor del demo (por defecto :3000).
- * - `reuseExistingServer: true` reutiliza un servidor ya levantado (dev local);
- *   en CI, Playwright levanta uno nuevo con `npm run start` sobre el dist
- *   previamente construido.
+ * - Run against the demo server (default :3000).
+ * - `reuseExistingServer: true` reuses an already-running server (local dev);
+ *   in CI, Playwright starts a new one with `npm run start` over the
+ *   previously built dist.
  */
 import { defineConfig } from "@playwright/test";
 

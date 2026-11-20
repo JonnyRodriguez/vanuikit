@@ -1,5 +1,5 @@
 /**
- * Precompresses the assets in demo/dist into .gz and .br so that Hono's serveStatic
+ * Pre-compresses the assets in demo/dist into .gz and .br so that Hono's serveStatic
  * (precompressed: true option) serves them based on Accept-Encoding.
  *
  * Usage: node scripts/compress.js  (invoked at the end of build:client)
@@ -38,6 +38,6 @@ for (const file of files) {
 }
 
 console.log(
-  `Precomprimidos ${files.length} assets (.gz + .br): ` +
-    `${(savedOriginal / 1024).toFixed(0)}KB -> ${(savedCompressed / 1024).toFixed(0)}KB en el peor caso (gzip)`,
+  `Precompressed ${files.length} assets (.gz + .br): ` +
+    `${(savedOriginal / 1024).toFixed(0)}KB -> ${(savedCompressed / 1024).toFixed(0)}KB worst case (gzip)`,
 );

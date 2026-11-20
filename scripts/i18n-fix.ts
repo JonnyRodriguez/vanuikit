@@ -88,19 +88,19 @@ function applyToFile(relFile: string, accepted: Accepted[]): void {
 }
 
 // ── Main flow ──────────────────────────────────────────────────────────────
-const findings = collectFindings().filter((f) => f.confidence === "ALTA" && f.file.startsWith("demo/"));
+const findings = collectFindings().filter((f) => f.confidence === "HIGH" && f.file.startsWith("demo/"));
 
 if (findings.length === 0) {
-  console.log("i18n:fix — no hay textos ALTA pendientes en demo/. Nada que hacer.");
+  console.log("i18n:fix — no pending HIGH texts in demo/. Nothing to do.");
   process.exit(0);
 }
 
 if (!YES && !DRY && !process.stdin.isTTY) {
-  console.error("stdin no interactivo: usa --yes (aceptar todo) o --dry (solo plan).");
+  console.error("stdin is not interactive: use --yes (accept all) or --dry (plan only).");
   process.exit(1);
 }
 
-console.log(`i18n:fix — ${findings.length} candidatos en demo/\n`);
+console.log(`i18n:fix — ${findings.length} candidates in demo/\n`);
 
 const plan = new Map<string, Accepted[]>();
 let quit = false;
@@ -112,17 +112,17 @@ for (const finding of findings) {
   if (!YES) {
     console.log(`${finding.file}:${finding.line}  "${finding.text}"`);
     console.log(`  modo: ${finding.mode}${finding.params.length ? ` (params: ${finding.params.map((p) => `{${p.name}}`).join(", ")})` : ""}`);
-    console.log(`  llave propuesta: ${key}`);
-    const answer = prompt("  ¿aplicar? [s/n/e(ditar llave)/a(cepta todas)/q(uitar)] ");
+    console.log(`  proposed key: ${key}`);
+    const answer = prompt("  apply? [y/n/e(edit key)/a(accept all)/q(uit)] ");
     const option = (answer ?? "n").trim().toLowerCase();
     if (option === "q") { quit = true; break; }
     if (option === "a") { apply = true; }
     else if (option === "e") {
-      const custom = prompt(`  llave [${key}]: `);
+      const custom = prompt(`  key [${key}]: `);
       key = (custom ?? "").trim() || key;
       apply = true;
     } else {
-      apply = option === "s";
+      apply = option === "y";
     }
   }
 
@@ -132,7 +132,7 @@ for (const finding of findings) {
   plan.set(finding.file, list);
 }
 
-if (quit) console.log("\nInterrumpido: los cambios ya aceptados se aplican igual.");
+if (quit) console.log("\nInterrupted: already-accepted changes are applied anyway.");
 
 let total = 0;
 for (const [file, list] of plan) {
@@ -144,14 +144,14 @@ for (const [file, list] of plan) {
   if (!DRY) applyToFile(file, list);
 }
 
-console.log(`\n${DRY ? "Plan (dry):" : "Aplicado:"} ${total} sustituciones en ${plan.size} archivo(s).`);
+console.log(`\n${DRY ? "Plan (dry):" : "Applied:"} ${total} substitutions in ${plan.size} file(s).`);
 
 if (!DRY && total > 0) {
-  console.log("\nRegenerando diccionarios (i18n:collect)...");
+  console.log("\nRegenerating dictionaries (i18n:collect)...");
   const proc = Bun.spawnSync(["bun", path.join(ROOT, "scripts", "i18n-collect.ts")], { cwd: ROOT, stdout: "inherit", stderr: "inherit" });
   if (proc.exitCode !== 0) {
-    console.error("i18n:collect falló — revisa los conflictos arriba.");
+    console.error("i18n:collect failed — review the conflicts above.");
     process.exit(proc.exitCode ?? 1);
   }
-  console.log('Siguiente paso: bun run i18n:check para ver los huecos de traducción en en/fr.');
+  console.log('Next step: bun run i18n:check to see translation gaps in es/fr.');
 }

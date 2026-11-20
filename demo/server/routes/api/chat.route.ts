@@ -5,7 +5,7 @@
  * The demo serves an OpenAI-compatible SSE stream (same wire format the
  * client's `openAIStream` consumes). When `OPENROUTER_API_KEY` is configured,
  * it proxies to OpenRouter's `/chat/completions` with `stream: true`;
- * otherwise it emits a simulated reply so the demo works without creds.
+ * otherwise it emits a simulated reply so the demo works without credentials.
  *
  * Swap the provider here (OpenRouter → DeepInfra/…) by pointing `PROVIDER_URL`
  * and `MODEL` at another OpenAI-compatible endpoint — the client code does
@@ -24,11 +24,11 @@ const MODEL = process.env.OPENROUTER_CHAT_MODEL ?? "liquid/lfm-2.5-24b-a2b";
 
 const sseFrame = (payload: unknown) => `data: ${JSON.stringify(payload)}\n\n`;
 
-/** Simulated assistant reply, streamed chunk by chunk (no creds). */
+/** Simulated assistant reply, streamed chunk by chunk (no credentials). */
 function* simulatedReply(question: string): Generator<string> {
   const reply =
-    `Simulated assistant reply to “${question}”. Configura OPENROUTER_API_KEY ` +
-    "en el `.env` del server para recibir respuestas reales (OpenRouter/DeepInfra).";
+    `Simulated assistant reply to “${question}”. ` +
+    "Set OPENROUTER_API_KEY in the server .env to receive real responses (OpenRouter/DeepInfra).";
   for (const ch of reply) yield ch;
 }
 

@@ -77,7 +77,7 @@ function collectEntries(file: string): Entry[] {
             add(key.text, fallback.text);
           } else if (ts.isTemplateExpression(fallback)) {
             // `Minimum: {min} of {max}` — placeholders come from the aliases of the
-            // params object when they exist (min: params.monto_minimo),
+            // params object when they exist (min: params.minimum_amount),
             // and otherwise from the expression name.
             const aliasByValue = new Map<string, string>();
             const paramsObj = node.arguments[2];
@@ -96,7 +96,7 @@ function collectEntries(file: string): Entry[] {
               if (alias) return alias;
               if (ts.isIdentifier(expr)) return expr.text;
               if (ts.isPropertyAccessExpression(expr)) return expr.name.text;
-              return "valor";
+              return "value";
             };
             const parts = [fallback.head.text];
             for (const span of fallback.templateSpans) {
@@ -168,7 +168,7 @@ const byKey = new Map<string, Entry>();
 for (const entry of entries) {
   const prev = byKey.get(entry.key);
   if (prev && prev.default !== entry.default) {
-    errors.push(`conflicto: "${entry.key}" tiene defaults distintos en ${prev.file} y ${entry.file}`);
+    errors.push(`conflict: "${entry.key}" has different defaults in ${prev.file} and ${entry.file}`);
   } else {
     byKey.set(entry.key, entry);
   }
@@ -184,7 +184,7 @@ for (const [key, entry] of byKey) {
       .split(".")
       .reduce<any>((acc, part) => (acc == null ? undefined : acc[part]), defaultLocales[locale]);
     if (typeof resolved !== "string") {
-      errors.push(`vanuikit: "${key}" falta en defaultLocales.${locale} (declared en ${entry.file})`);
+      errors.push(`vanuikit: "${key}" missing from defaultLocales.${locale} (declared in ${entry.file})`);
     }
   }
 }
@@ -200,15 +200,15 @@ for (const locale of HAND_LOCALES) {
 }
 
 // ── 4. Report ────────────────────────────────────────────────────────────────
-console.log(`TEXTS detectados: ${allKeys.length} llaves en ${new Set(entries.map((e) => e.file)).size} archivos`);
+console.log(`TEXTS detected: ${allKeys.length} keys in ${new Set(entries.map((e) => e.file)).size} files`);
 
 for (const [locale, { missing, stale }] of handState) {
   if (missing.length) {
-    console.log(`\n[${locale}] sin traducción (${missing.length}, caen al inglés en runtime):`);
+    console.log(`\n[${locale}] without translation (${missing.length}, fall back to English at runtime):`);
     for (const key of missing) console.log(`  - ${key} = "${byKey.get(key)!.default}"`);
   }
   if (stale.length) {
-    console.log(`\n[${locale}] obsoletas (${stale.length}${PRUNE ? ", eliminadas" : ", usa --prune para eliminar"}):`);
+    console.log(`\n[${locale}] stale (${stale.length}${PRUNE ? ", removed" : ", use --prune to remove"}):`);
     for (const key of stale) console.log(`  - ${key}`);
   }
 }
@@ -222,7 +222,7 @@ if (!CHECK) {
   const previousEn = fs.existsSync(enFile) ? flatten(JSON.parse(fs.readFileSync(enFile, "utf8"))) : [];
   const addedToEn = allKeys.filter((k) => !previousEn.includes(k));
   fs.writeFileSync(enFile, JSON.stringify(buildTree([...byKey.values()]), null, 2) + "\n");
-  console.log(`\nen.json regenerado (${allKeys.length} llaves${addedToEn.length ? `, +${addedToEn.length} nuevas` : ""})`);
+  console.log(`\nen.json regenerated (${allKeys.length} keys${addedToEn.length ? `, +${addedToEn.length} new` : ""})`);
 
   for (const locale of HAND_LOCALES) {
     if (!PRUNE) continue;
@@ -240,13 +240,13 @@ if (!CHECK) {
     const dict = readJson(locale);
     for (const key of stale) remove(dict, key);
     fs.writeFileSync(path.join(LOCALES_DIR, `${locale}.json`), JSON.stringify(dict, null, 2) + "\n");
-    console.log(`${locale}.json podido (-${stale.length})`);
+    console.log(`${locale}.json pruned (-${stale.length})`);
   }
 }
 
 const hasGaps = [...handState.values()].some(({ missing }) => missing.length > 0);
 if (CHECK ? errors.length || hasGaps : errors.length) {
-  console.error(`\ni18n:check FALLÓ (${errors.length} errores${hasGaps ? ", huecos de traducción en es/fr" : ""})`);
+  console.error(`\ni18n:check FAILED (${errors.length} errors${hasGaps ? ", translation gaps in es/fr" : ""})`);
   process.exit(1);
 }
 console.log(CHECK ? "\ni18n:check OK" : "\ni18n:collect OK");

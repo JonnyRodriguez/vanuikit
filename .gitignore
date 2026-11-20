@@ -11,6 +11,8 @@ demo/dist/
 # Local tooling
 .atl/
 .zcodeignore
+.zed/
+.zcode/
 
 # POCs (build artifacts)
 ssg-poc/dist/
